@@ -1,0 +1,41 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test22" README
+===============
+
+Source: node.c errexit.c
+
+Desc:	"node.c" tests the writing of 31 empty datasets;
+	while creating the empty datasets, it also read some of the datasets
+	to make sure that the return number of bytes is zero, or in the case
+	of different setting than write setting, the read should fail.
+
+Invoke:	load [0] node.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use 1 scratch tape
+	* "test22.sh" calls "node.rx" 
+	* log is on "test22.SLr0" 
+	* result is on "test22.SRr0" 
+	* tape will not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+	* USE "test21" to verify
+
+Algo:   * write some empty datasets 
+	* read some datasets to verify the length is zero
+	* read some datasets with different setting than write to check failure
+	* the total number of empty datasets is 31
+	* JMAX = 2 and IMAX = 101
+	  UEXITRET = 1 (value to return when user exit is called) 
+ 	  VERIFY = 1   (set verification to TRUE so that the dataset being
+			read is verified)
+	  ZEROREAD = 1 (set to check the length of empty dataset to be zero)	
+

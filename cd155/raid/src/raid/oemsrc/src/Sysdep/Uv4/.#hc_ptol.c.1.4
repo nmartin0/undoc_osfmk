@@ -1,0 +1,185 @@
+/******************************************************************************
+ ***				IDENTIFICATION				    ***
+ ******************************************************************************
+ Name:		hc_ptol.c
+ Title:		Slot-to-Logical-Adapter-Number Translation
+ Version:	   
+ Revision:	$Revision: 1.1 $
+ Update Date:	$Date: 1992/12/28 18:37:52 $
+ Programmer:	rmj
+ Documents:	1. UNIX V.4 Disk Array Utilities FS no. 348-0027726
+		2. "Object-Oriented Programming in C," C Users Journal, 07/90
+
+ COPYRIGHT 1991-92, NCR Corp.
+
+ Description:	This module contains the function hc_ptol (host controller
+		physical-to-logical) function.
+*/
+
+/******************************************************************************
+ ***				   INCLUDES				    ***
+ *****************************************************************************/
+#include "stddefs.h"
+#include "getrel.h"
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/mkdev.h>
+#include <fcntl.h>
+
+/******************************************************************************
+ ***				   MACRO DEFINITIONS		    	    ***
+ *****************************************************************************/
+#define DEV_MODE	S_IFCHR | S_IRWXU | S_IRGRP | S_IROTH
+
+/******************************************************************************
+ ***				  PROCEDURES				    ***
+ *****************************************************************************/
+static void
+make_nil_IO_device( iod )
+struct IO_DeviceParameters *iod;
+{
+	/* Stuff some bogus values into iod */
+	iod->dp_IO_BusNumber = -1;
+	iod->dp_BaseAddress = -1;
+	iod->dp_IO_BusSlot = 0xFF;
+	iod->dp_SCSI_BusNumber = 0xFF;
+	iod->dp_PUN = 0xFF;
+	iod->dp_LUN = 0xFF;
+}
+
+int
+hc_ptol( hw_addr ) /* host controller physical-to-logical */
+hw_zipcode hw_addr;
+{
+	OS1_Device_t minor1;
+	OS2_Device_t minor2;
+	minor_t *SCSI_Minor1 = ( minor_t *)&minor1;
+	minor_t *SCSI_Minor2 = ( minor_t *)&minor2;
+	u_long release_num;
+	int ctlr_num, RtnV;
+	int fd;
+	u_int mode;
+	dev_t dev_num;
+	char *dev_path = "/tmp/dev_XXXXXX";
+	int DevOpen_Success = FALSE, SlotMatch = FALSE;
+	hw_zipcode_t *hw = (hw_zipcode_t *) &hw_addr;
+	struct IO_DeviceParameters SCSI_HA_Params;
+
+	debug( "Entered translate_slot_to_ctlr\n" );
+
+	/* We know everything we need for the minor (OS_Device_t struct),    */
+	/* except for SCSI_Controller number and OS release number.          */
+
+	/* determine the OS release */
+	release_num=get_release();
+
+	/* build the minor number depending on the OS release */
+	if (release_num == 1) {
+		minor1.OS_Major = 0;
+		minor1.IO_Bus = hw->IO_Bus;
+		minor1.SCSI_Controller = 0; /* Initialize to 0 since we don't */
+					    /* know what proper value is yet. */
+		minor1.SCSI_Bus = hw->SCSI_Bus;
+		minor1.LUN = hw->LUN;
+		minor1.PUN = hw->PUN;
+		minor1.Partition = 0;
+	}
+	else {
+		minor2.OS_Major = 0;
+		minor2.IO_Bus = hw->IO_Bus;
+		minor2.SCSI_Controller = 0; /* Initialize to 0 since we don't */
+					    /* know what proper value is yet. */
+		minor2.SCSI_Bus = hw->SCSI_Bus;
+		minor2.LUN = hw->LUN;
+		minor2.PUN = hw->PUN;
+		minor2.Partition = 0;
+	}
+
+	for ( ctlr_num=0; ctlr_num<SCSI_CONTROLLERS_PER_IO_BUS; ctlr_num++ ) {
+
+		debug( "For loop: Trying controller number %d\n", ctlr_num );
+
+		/* Initialize SCSI_HA_Params with some bogus values so,	     */
+		/* later on, we can tell if IO_GetDeviceParameters() worked. */
+		make_nil_IO_device( &SCSI_HA_Params );
+
+		if (release_num == 1) { /* use the minor number depending */
+					/* on the OS release	          */
+			minor1.SCSI_Controller = ctlr_num;
+			/* device name is composed of major#_minor# ie. 35_32 */
+			sprintf( (char *) dev_path, "/tmp/%d_%d",
+				SCSI_MAJOR, minor1 );
+			/* make the device node */
+			dev_num = makedev( SCSI_MAJOR, *SCSI_Minor1 );
+		}
+		else {
+			minor2.SCSI_Controller = ctlr_num;
+			/* device name is composed of major#_minor# ie. 35_32 */
+			sprintf( (char *) dev_path, "/tmp/%d_%d",
+				SCSI_MAJOR, minor2 );
+			/* make the device node */
+			dev_num = makedev( SCSI_MAJOR, *SCSI_Minor2 );
+		}
+
+		if ( dev_num != NODEV ) {
+			RtnV = mknod( (char *) dev_path, DEV_MODE, dev_num );
+			if ( (RtnV < 0) && (errno != EEXIST) ) {
+				debug("mknod path=%s, mode=%x, dev_num=%x failed, errno=%d\n", dev_path, DEV_MODE, dev_num, errno);
+			}
+			else {
+				DevOpen_Success = TRUE;
+			}
+		}
+		else {
+			if (release_num == 1) {
+				debug("makedev(%d, %d) failed\n",
+				SCSI_MAJOR, minor1);
+			}
+			else {
+				debug("makedev(%d, %d) failed\n",
+				SCSI_MAJOR, minor2);
+			}
+		}
+
+		if ( DevOpen_Success ) {
+			/* open the device node and get an fd/handle */
+			/* if open fails return an error status */
+			mode = O_RDONLY;
+			fd = DEV_Open( (char *) dev_path, mode );
+			if ( fd < 0 ) {
+				debug( "IO_open of %s failed\n", dev_path );
+				DevOpen_Success = FALSE;
+			}
+		}
+
+		if ( DevOpen_Success ) {
+			/* Double check slot number by calling	*/
+			/* IO_GetDeviceParameters()		*/
+			if ( ( RtnV = IO_GetDeviceParameters( fd, &SCSI_HA_Params ) ) != 0 ) {
+				debug( "IO_GetDeviceParameters: bad return value = %d\n", RtnV );
+			}
+			else {
+				if ( SCSI_HA_Params.dp_IO_BusSlot
+				    == (u_char) hw->SCSI_Controller ) {
+					SlotMatch = TRUE;
+					debug( "Slot matched OK: slot=%d\n", hw->SCSI_Controller );
+					break;
+				}
+				else {
+					debug( "Slot mismatch\n" );
+				}
+			}
+			DevOpen_Success = FALSE;
+		}
+		close( fd );
+		unlink( dev_path );
+	}
+
+	close( fd );
+	unlink( dev_path );
+	debug( "Leaving translate_slot_to_ctlr\n" );
+	if ( DevOpen_Success && SlotMatch )
+		return( ctlr_num );
+	else
+		return( -1 );
+}

@@ -1,0 +1,10 @@
+system:*:0:root
+daemon:*:1:daemon
+uucp:*:2:uucp
+mem:*:3:
+kmem:*:3:root
+bin:*:4:bin
+mail:*:6:mail
+terminal:*:7:
+tty:*:7:root
+tcb:*:18:

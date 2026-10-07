@@ -1,0 +1,140 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+# 
+# OSF/1 Release 1.0
+
+#
+# "@(#)$RCSfile: print.ti,v $ $Revision: 1.3 $ (OSF) $Date: 1994/11/19 03:20:53 $"
+#
+# COMPONENT_NAME: (TERMINFO) Termifno
+#
+# FUNCTIONS:    print.ti
+#
+# ORIGINS: 3, 26, 27
+#
+# This module contains IBM CONFIDENTIAL code. -- (IBM
+# Confidential Restricted when combined with the aggregated
+# modules for this product)
+# OBJECT CODE ONLY SOURCE MATERIALS
+# (C) COPYRIGHT International Business Machines Corp. 1985, 1988
+# All Rights Reserved
+# Licensed Material - Property of IBM
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+# print.ti        1.6  com/terminfo,3.1,9013 10/16/89 23:15:43
+
+#
+# NAME:         print (PRINTERS)
+#
+# EXECUTION ENVIRONMENT:
+#
+#       Generic line printer.  Assume it can backspace, since even
+#       those line printers that can't have this hidden by UNIX lpr driver.
+
+lpr|lp|printer|print|printing|line printer,
+	cr=^M, cud1=^J, ind=^J, ff=^L, bel=^G, cub1=^H,
+	lines#66, cols#132, hc, os,
+
+#
+# EXECUTION ENVIRONMENT:
+#
+#       The 'S' beginning mc4 and mc5 is checked for by lp, which sleeps 5
+#       seconds.
+
+pbox|printerbox|box with print mode switch,
+	mc5=Set printer switch to "print"\r\n,
+	mc4=Set printer switch to "terminal"\r\n,
+
+hp|hewlett-packard,
+	tbc=\E3, hts=\E1, cr=^M, cud1=^J, ind=^J, bel=^G, il1=\EL, am, cub1=^H,
+	ed=\EJ, el=\EK, hpa=\E&a%p1%dC, clear=\EH\EJ,
+	cup=\E&a%p2%dc%p1%dY$<6>, cols#80, vpa=\E&a%p1%dY, lm#0, da, db,
+	dch1=\EP, dl1=\EM, rmir=\ER, smir=\EQ, kbs=^H, lines#24, mir,
+	cuf1=\EC, ht=^I, rmso=\E&d@, smso=\E&dJ,
+	smul=\E&dD, rmul=\E&d@, cuu1=\EA, xhp, vt#6,
+
+2621|hp 2621,
+	is2=\E&j@\r, cbt=\Ei, cup=\E&a%p2%dc%p1%dY,
+	dch1=\EP$<2>, ip=$<2>, pb#19200,
+	smso=\E&dD, rmso=\E&d@, smul=\E&dD, rmul=\E&d@, sgr0=\E&d@, xhp@,
+	khome=\Ep\r, kcuu1=\Et\r, kcub1=\Eu\r, kcuf1=\Ev\r, kcud1=\Ew\r,
+	kf1=\Ep\r, kf2=\Eq\r, kf3=\Er\r, kf4=\Es\r, kf5=\Et\r, kf6=\Eu\r,
+	kf7=\Ev\r, kf8=\Ew\r, smkx=\E&jB, rmkx=\E&j@, ht=^I$<2>, xon, use=hp,
+
+2621-pb|hp2621-pb|2621 with printer box,
+	use=printerbox, use=2621,
+
+
+blit|blit running teletype rom,
+	cr=^M, ind=^J, bel=^G, am, ht=^I, it#8, ul, eo,
+	cud1=^J, cuf1=\EC, cuu1=\EA, cub1=\ED,
+	cols#87, lines#72, clear=^L, el=\EK,
+	cup=\EY%p2%' '%+%c%p1%' '%+%c,
+	il1=\EF!, dl1=\EE!, ich1=\Ef!, dch1=\Ee!,
+	il=\EF%p1%' '%+%c, dl=\EE%p1%' '%+%c,
+	ich=\Ef%p1%' '%+%c, dch=\Ee%p1%' '%+%c,
+	kcuu1=\EA, kcud1=\EB, kcuf1=\EC, kcub1=\ED, kbs=^H,
+
+blit-pb|blit with printer box,
+	use=printerbox, use=blit,
+
+#daleblit-pb|daleblit-pb|blit with printer box,
+#        use=printerbox, use=daleblit,
+
+
+h19|heathkit h19,
+	cr=^M, cud1=^J, ind=^J, bel=^G, il1=\EL$<1*>, am, cub1=^H,
+	ed=\EJ, el=\EK, clear=\EE, cup=\EY%p1%' '%+%c%p2%' '%+%c, cols#80,
+	dch1=\EN, dl1=\EM$<1*>, cud1=\EB, rmir=\EO, home=\EH, smir=\E@,
+	lines#24, mir, cuf1=\EC, smacs=\EF, rmacs=\EG, msgr, ht=^I, it#8,
+	ri=\EI, rmso=\Eq, smso=\Ep, cuu1=\EA, cvvis=\Ex4, cnorm=\Ey4,
+	kbs=^h, kcuu1=\EA, kcud1=\EB, kcub1=\ED, kcuf1=\EC, khome=\EH,
+	kf1=\ES, kf2=\ET, kf3=\EU, kf4=\EV, kf5=\EW,
+	lf6=blue, lf7=red, lf8=white, kf6=\EP, kf7=\EQ, kf8=\ER,
+	hs, eslok, tsl=\Ej\Ex5\EY8%p1%' '%+%c\Eo\Eo, fsl=\Ek\Ey5,
+
+h19-pb|heathkit h19 with printer box,
+	use=printerbox, use=h19,
+
+citoh|ci8510|8510|c.itoh 8510a,
+	cols#80, ri=\Er, bold=\E!, smul=\EX, rmul=\EY, sgr0=\E"\EY, it#8,
+	is2=\E(009\054017\054025\054033\054041\054049\054057\054065\054073.,
+	rep=\ER%p2%3d%p1%c, cub1@, use=lpr,
+
+citoh-pica|citoh in pica,
+	is1=\EN, use=citoh,
+
+citoh-elite|citoh in elite,
+	is1=\EE, cols#96, use=citoh,
+
+citoh-comp|citoh in compressed,
+	is1=\EQ, cols#136, use=citoh,
+
+#
+# EXECUTION ENVIRONMENT:
+#
+#       Infinite cols because we don't want lp ever inserting \n\t**.
+
+citoh-prop|citoh-ps|ips|citoh in proportional spacing mode,
+	is1=\EP, cols#32767, use=citoh,
+
+citoh-6lpi|citoh in 6 lines per inch mode,
+	is3=\EA, use=citoh,
+
+citoh-8lpi|citoh in 8 lines per inch mode,
+	is3=\EB, lines#88, use=citoh,

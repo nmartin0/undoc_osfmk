@@ -1,0 +1,41 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+
+
+host_info(1)	    UNIX Programmer's Manual	     host_info(1)
+
+
+NNAAMMEE
+     hostinfo - display information about a Mach host
+
+SSYYNNOOPPSSIISS
+     hostinfo
+
+DDEESSCCRRIIPPTTIIOONN
+     The _h_o_s_t_i_n_f_o program displays information about a Mach host.
+     In particular, it displays the maximum number of processors
+     the kernel was configured for, the actual number of proces-
+     sors physically available in the hardware configuration, and
+     the amount of physical memory available in the host.  Then,
+     for each logical slot, _h_o_s_t_i_n_f_o displays information about
+     the processor configured in that slot.  The information
+     includes the slot number, the cpu type and sub-type, whether
+     or not the processor is executing, and finally, a summary of
+     the processor utilization since boot time.  The processor
+     utilization is split into user, system and idle time.
+
+     The information provided by this program should be expanded
+     in the future.  In addition, it should be possible to query
+     other hosts in the network in future versions.
+
+SSEEEE AALLSSOO
+     _h_o_s_t__i_n_f_o(_2), _s_l_o_t__i_n_f_o(_2), _s_l_o_t__n_a_m_e(_3)

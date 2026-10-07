@@ -1,0 +1,6 @@
+100x100 Linpack (linpack)
+
+This benchmark measures computational performance for factoring and solving
+a dense matrix. The 100 x 100 case is used as a single processor benchmark
+by Intel.
+

@@ -1,0 +1,33 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to delete a drive through software after 
+     permanently removing it from the array subsystem (or integrated 
+     array). 
+ 
+     NOTE:  A procedure for deleting a drive is included in the 
+            help screens following the explanation of option.
+ 
+ 
+     "DELETE" DRIVE STATUS
+ 
+     WHAT "DELETE" MEANS:  Deleting a drive through software causes the 
+     array controller to change the drive status from "Spare" (2) to "Non-
+     existent" (1).  This means you can never delete a drive that is part 
+     of a logical unit.  First, delete the logical unit (after backing up 
+     any data on it), then delete the drive.
+ 
+     WHEN TO DELETE A DRIVE:  Delete a drive when you plan to remove the 
+     drive from an array subsystem (or integrated array) but are not 
+     planning to replace it.  
+                                (CONTINUED)
+     PROCEDURE -- DELETING A DRIVE
+ 
+     1.   Select a drive by pressing the arrow keys.
+ 
+     2.   Press "d" to delete the drive.
+ 
+     3.   Press "c" to confirm that you want to continue
+          with the operation you selected, or press "q" to quit.
+ 
+     4.   Repeat steps 1 - 3 until you have deleted all the drives 
+          you want.

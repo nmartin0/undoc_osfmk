@@ -1,0 +1,16 @@
+                         INQUIRY DATA BUFFER
+
+   0     Peripheral Qualifier -r5(0)     Peripheral Device Type -r0(0)
+   1     RMB -r7(0)   Device Type Modifier -r0(0)
+   2     ISO Version -r6(0)   ECMA Version -r3(0)   ANSI Version -r0(2)
+   3     AENC -r7(0)   TmIOP -r6(0)   Reserved -r4(0)   
+         Response Data Format -r0(2)
+   4     Additional Length (1f)
+   5     Reserved (ff)
+   6     Reserved (f)
+   7     RelAdr -r7(0)   WBus32 -r6(0)   WBus16 -r5(0)   Sync -r4(1)
+         Linked -r3(0)   Rsvd -r2(0)   CmdQue -r1(1)   SftRe -r0(1)
+  8-15   Vendor I.D. "NCR     "
+ 16-31   Product I.D. "ADP-92/00       "
+ 32-35   Product Revision Level "0100"
+         

@@ -1,0 +1,60 @@
+# 		 "@(#)ttys	1.0	(OSF/1)	05/11/90"
+#
+# NOTE: This file is largely obsolete, its function having been taken
+# over by /etc/inittab.  Its only remaining purpose is to mark which
+# tty lines are secure (i.e., allow root logins).  To disallow root
+# logins on a given line, remove the "secure" keyword.
+#
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+# name	getty	type	status	comments
+#
+console	none	none 	secure	# console
+tty00	none	none	secure 	# direct tty
+tty01	none	none	secure 	# direct tty
+tty02	none	none	secure 	# direct tty
+tty03	none	none	secure 	# direct tty
+tty04	none	none	secure 	# direct tty
+tty05	none	none	secure 	# direct tty
+tty06	none	none	secure 	# direct tty
+tty07	none	none	secure 	# direct tty
+ttyd0   none	none    secure	# modem line
+ttyp0	none	network	secure
+ttyp1	none	network secure
+ttyp2	none	network	secure
+ttyp3	none	network	secure
+ttyp4	none	network	secure
+ttyp5	none	network	secure
+ttyp6	none	network	secure
+ttyp7	none	network	secure
+ttyp8	none	network	secure
+ttyp9	none	network	secure
+ttypa	none	network	secure
+ttypb	none	network	secure
+ttypc	none	network	secure
+ttypd	none	network	secure
+ttype	none	network	secure
+ttypf	none	network	secure
+ttyq0	none	network	secure
+ttyq1	none	network	secure
+ttyq2	none	network	secure
+ttyq3	none	network	secure
+ttyq4	none	network	secure
+ttyq5	none	network	secure
+ttyq6	none	network	secure
+ttyq7	none	network	secure
+ttyq8	none	network	secure
+ttyq9	none	network	secure
+ttyqa	none	network	secure
+ttyqb	none	network	secure
+ttyqc	none	network	secure
+ttyqd	none	network	secure
+ttyqe	none	network	secure
+ttyqf	none	network	secure

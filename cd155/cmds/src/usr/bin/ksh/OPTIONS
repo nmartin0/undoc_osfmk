@@ -1,0 +1,50 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+#
+#
+# IBM CONFIDENTIAL
+# Copyright International Business Machines Corp. 1989
+# Unpublished Work
+# All Rights Reserved
+# Licensed Material - Property of IBM
+#
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+# 
+# @(#)OPTIONS	1.1  com/cmd/ksh,3.1,9013 9/30/89 21:24:00
+ACCT=0		# accounting
+BRACEPAT=0	# C-shell {...,...} expansions (note , required)
+ECHOPRINT=0	# make echo equivalent to print, overrides ECHO_N
+ESH=1		# emacs edit option
+ESHPLUS=0	# some additional emacs features
+FLOAT=0		# floating point arithmetic
+JOBS=1		# job notification job control if possible
+IODELAY=0	# tries to delay for output to drain in edit modes
+MULTIBYTE=0	# multibyte character handling
+NEWTEST=1	# new [[...]] compound command
+OLDTEST=1	# old test command as built-in
+P_UID=0		# real uid's that require -p flag for setuid/setgid
+PDU=0		# Portable Distributed UNIX (Newcastle connection)
+RAWONLY=0	# make viraw the only vi mode.  Sometimes set automatically
+RDS=0		# ~host!user expansions
+SEVENBIT=0	# strip the eigth bit from characters
+SUID_EXEC=1	# execute /etc/suid_exec for suid, sgid script
+TIMEOUT=0	# number of seconds for shell timeout, 0 disables feature
+VERSIONS=0	# version files
+VSH=1		# vi edit option

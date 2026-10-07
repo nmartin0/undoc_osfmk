@@ -1,0 +1,80 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+# Bring system to system state 0
+# This is a safe state to turn off power
+
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+
+stty sane 2> /dev/null
+echo "The system is coming down. Please wait..."
+
+ARGONE="$1"
+#
+# Sync the disks
+#
+/sbin/sync
+
+#
+# Do any proceedures in /sbin/rc0.d
+#
+if [ -d /sbin/rc0.d ]; then
+        # Kill procedures
+        for f in /sbin/rc0.d/K*
+        do
+                if [ -s $f ]; then
+                        /sbin/sh $f stop
+                fi
+        done
+
+        # system cleanup functions ONLY (things that end fast)
+        for f in /sbin/rc0.d/S*
+        do
+                if [ -s $f ]; then
+                        /sbin/sh $f start
+                fi
+        done        
+fi
+
+trap "" 15
+kill -15 -1
+sleep 10
+killall 9
+sleep 10
+sync;sync;sync
+echo "Unmounting local filesystems"
+umount -A
+stty sane 2> /dev/null
+sync;sync
+#
+# Init single-user state if shutdown
+#
+if [ "$ARGONE" = shutdown ]; then
+        /sbin/init S
+else
+        halt
+fi
+
+
+
+
+
+
+

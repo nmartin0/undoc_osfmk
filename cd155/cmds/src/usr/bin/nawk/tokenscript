@@ -1,0 +1,55 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# @OSF_COPYRIGHT@
+#
+#
+# HISTORY
+# $Log: tokenscript,v $
+# Revision 1.2  1994/11/19  01:31:38  mtm
+# Copyright additions/changes
+#
+# Revision 1.1  1993/06/18  14:47:37  shala
+# Files for new version of awk command.
+#
+# Revision 2.3  90/12/06  14:10:27  devrcs
+# 	Fixed up comment headers.
+# 	[90/12/03  13:32:23  gm]
+# 
+# Revision 2.2  90/07/05  23:26:10  devrcs
+# 	Use AIX derived nawk source
+# 	[90/06/29  21:48:05  lehotsky]
+# 
+# $EndLog$
+#
+#
+# IBM CONFIDENTIAL
+# Copyright International Business Machines Corp. 1989
+# Unpublished Work
+# All Rights Reserved
+# Licensed Material - Property of IBM
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+/awk.h/
+d
+1,$s/# *define *//
+1,$s/^/"/
+1,$s/ /", /
+1,$s/$/,/
+w temp
+e token.c
+/= *{$/+1,/^};$/-1d
+-r temp
+w  token.c
+q

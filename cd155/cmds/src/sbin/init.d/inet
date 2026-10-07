@@ -1,0 +1,60 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+# Get actual configuration 
+NETDEV=se0;HOSTNAME=unknown;HOSTID=99.99.99.99;NETMASK=0.0.0.0;GATEWAY=0
+if [ -f /etc/rc.config ] ; then
+       	. /etc/rc.config
+else
+       	echo "ERROR: /etc/rc.config defaults file MISSING"
+fi
+export NETDEV HOSTNAME HOSTID NETMASK GATEWAY
+
+ARGTWO="$2"
+#
+# Enable network
+#
+case $1 in
+'start')
+        set `who -r`
+        if [ "$ARGTWO" = "force" -o "$9" = "S" ]; then
+                echo "Configuring network"
+                echo "hostname: \c"
+                /sbin/hostname $HOSTNAME
+		/sbin/hostid $HOSTID
+                echo "hostid: $HOSTID"
+                /sbin/ifconfig $NETDEV $HOSTID netmask $NETMASK -trailers
+                /sbin/ifconfig lo0 127.0.0.1
+                #
+                # Add default routes; start routed
+                #
+#                echo "Adding route for osfgw: "
+#                SUBNET=`expr $HOSTID : ".*\..*\.\(.*\)\..*"`
+#		/sbin/route add default 137.27.$SUBNET.1
+                /sbin/route add default $GATEWAY
+        fi
+        ;;
+'stop')
+        /sbin/ifconfig $NETDEV down
+        /sbin/ifconfig lo0 down
+        ;;
+*)
+        echo "usage: $0 {start|stop} [force]"
+        ;;
+esac

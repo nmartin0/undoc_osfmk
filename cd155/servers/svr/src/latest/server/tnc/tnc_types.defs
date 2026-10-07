@@ -1,0 +1,226 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * Copyright (c) 1991-1995, Locus Computing Corporation
+ * All rights reserved
+ */
+/*
+ * HISTORY
+ * $Log: tnc_types.defs,v $
+ * Revision 1.12  1995/02/01  21:57:39  bolsen
+ *  Reviewer(s): Jerry Toman
+ *  Risk: Medium (lots of files)
+ *  Module(s): Too many to list
+ *  Configurations built: STD, LITE, & RAMDISK
+ *
+ *  Added or Updated the Locus Copyright message.
+ *
+ * Revision 1.11  1994/11/18  20:44:30  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.10  1994/06/02  22:30:18  chrisp
+ * In dpvpop_reap(), perform PVPOP_RMV_PGRP_LIST() for zombie child
+ * only if child's pgrp leader is not its parent; return child pgid.
+ * In dvpop_wait(), analyze pgid returned for zombie child and call
+ * PVPOP_RMV_PGRP_LIST() if this is the parent pid.
+ *
+ * Support added for waitmulti() - viz: elder reporting and reap multi
+ * operation (refer to rtask_cli_vproc.c).
+ *
+ *  Reviewer: cfj
+ *  Risk: M
+ *  Benefit or PTS #: 6463
+ *  Testing:
+ *  Module(s): dpvproc.h dvp_pvpops.c dvp_vpops.c pvp.ops pvps.ops rtask.h
+ * 	    rtask_cli_vproc.c rtask_server.c rtask_svr_vproc.c
+ * 	    spanning_tree.c tnc_async.defs tnc_server_side.c
+ * 	    tnc_types.defs tnc_types.h tnc_types_gen.c
+ *
+ * Revision 1.9  1994/04/04  17:33:42  paul
+ *  Reviewer:John Litvin
+ *  Risk: M
+ *  Benefit or PTS #:7046
+ *  Testing: test program run on Plymouth several thousand times...
+ *  Module(s):
+ *         server/tnc/dvp_vpsops.c
+ *         server/tnc/dpvproc_struct.h
+ *         server/tnc/tnc_types.h
+ *         server/tnc/tnc_types.defs
+ *         server/tnc/rvp_pvpsops.c
+ *         server/tnc/dvp_pvpsops.c
+ *         server/bsd/kern_xxx.c
+ *         server/tnc/rvp_pvpsops_server.c
+ * Use spanning trees for setting global hostname, hostid, domain name,
+ *     timezone, rpm offset
+ *
+ * Revision 1.8  1993/10/21  23:36:58  bolsen
+ * 10-21-93 Locus code drop for Generic Spanning Tree.
+ *
+ * Revision 1.7  1993/07/14  18:35:07  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.6  1993/07/01  20:48:56  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.6  1993/05/06  19:26:34  cfj
+ * ad103+tnc merged with Intel code.
+ *
+ * Revision 1.1.1.4  1993/05/03  17:47:37  cfj
+ * Initial 1.0.3 code drop
+ *
+ * Revision 1.5  1993/04/03  03:09:45  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ *
+ * Revision 1.1.2.2.2.1  1992/12/16  06:03:21  brad
+ * Merged trunk (as of the Main_After_Locus_12_1_92_Bugdrop_OK tag)
+ * into the PFS branch.
+ *
+ * Revision 1.4  1992/12/11  03:02:53  cfj
+ * Merged 12-1-92 bug drop from Locus.
+ *
+ * Revision 1.3  1992/11/30  22:49:02  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.2  1992/11/06  20:32:25  dleslie
+ * Merged bug drop from Locus November 3, 1992, with NX development
+ *
+ * Revision 1.1.2.1  1992/11/05  22:47:07  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ *
+ * Revision 3.18  93/09/16  09:31:48  chrisp
+ * [SPE 0030] Generic Spanning Trees: define a message handle type as a
+ * 	simple int ... it's really a mach port but it's only of local
+ * 	significance and it isn't really sent over the wire.
+ * 
+ * Revision 3.17  93/06/19  15:32:28  yazz
+ * [ ad1.04 merge ]
+ * 	Replace MMAP_ARRAY_SIZE with TNC_MMAP_ARRAY_SIZE.  This stems from
+ * 	the now dynamically allocated vm memory mapped region structures
+ * 	now in the proc structure.
+ * 
+ * Revision 3.16  93/06/02  12:31:03  yazz
+ * Remove definition for MIG type "long" to non-TNC-specific file
+ * uxkern/bsd_types.defs.
+ * 
+ * Revision 3.15  92/12/01  11:44:49  chrisp
+ * Add rval_t defined incorrectly to be int (it's actually a pointer to
+ * 	an int) for use with the NO_REPLY keyword. In this case the
+ * 	parameter is unused and this dodge is just to get MIG to
+ * 	generate runnable code.
+ * 
+ * Revision 3.14  92/11/02  12:24:46  roman
+ * Get rid of type buffer_t; it's really a char_array.
+ * Add types needed for out-of-line data versions of migrate and rexecve.
+ * 
+ * Revision 3.13  92/10/28  15:55:22  roman
+ * Add new types needed for table() pvpsops.
+ * 
+ * Revision 3.12  92/10/01  10:33:47  roman
+ * Fix up types for clean compilation under gcc.
+ * 
+ * Revision 3.11  92/09/29  08:21:54  roman
+ * Add new type for process sets.
+ * Change pid_array_t to get a clean compilation.
+ * 
+ * Revision 3.10  92/08/08  01:48:30  jdh
+ * now 2 port arrays -- one for send rights, one for receive rights -- jdh
+ * 
+ * Revision 3.9  92/06/11  16:10:20  mjl
+ * Added new types blob_t and reloc_port_array_t used in pipe relocation.
+ * 
+ * Revision 3.8  92/04/02  17:08:09  klh
+ * 	Fix log message
+ * 
+ * Revision 3.7  92/04/01  16:22:19  roman
+ * Minor formatting cahnge.
+ * 
+ * Revision 3.6  92/03/27  11:34:38  roman
+ * Add new type for array of credentials cache nodes.
+ * Fix RCS comments.
+ * 
+ * Revision 3.5  92/03/12  15:46:14  roman
+ * Move over vproc arrays using "copy_send" rather than "move_send" to cut
+ * down on overhead on Mach system calls.
+ * 
+ * Revision 3.4  92/02/20  09:30:54  roman
+ * Change the arrays of vprocs that are passed for migrate() and rexec()
+ * to use a #define-ed value rather than the constant "20".
+ * 
+ * Revision 3.3  92/01/07  18:27:45  roman
+ * Add types needed to support them mmap structure in tnc.defs.
+ * 
+ * Revision 3.2  91/12/24  10:37:51  roman
+ * Change type of array of vprocs to have each vproc port passed as
+ * MOVE_SEND rather than COPY_SEND.
+ * 
+ * Revision 3.1  91/12/19  11:13:56  chrisp
+ * Add type for array of stati (status values) for migrate and rexec.
+ * 
+ * Revision 3.0  91/12/13  09:15:54  roman
+ * Initial submission. This file contains the MiG data types used for
+ * server-to-server communication for rfork/rexec/migrate.
+ *
+ */
+
+/*
+ * Types for TNC server-to-server calls.
+ */
+
+#include <tnc/tnc_types_gen.h>
+
+type	caddr_t		= int;
+type	u_int		= int;
+type	dev_t		= int;
+type	uid_t		= int;
+
+type	rval_t		= int;
+
+type	rstat_t		= array[RSTAT_SIZE] of int;
+
+type	command_t	= array[*:PATH_LENGTH] of char;
+type	pid_array_t	= array[*:MAX_VPROC_LIST_SIZE] of pid_t;
+type	vproc_array_t	= array[*:MAX_VPROC_LIST_SIZE] of mach_port_copy_send_t;
+type	stat_array_t	= array[*:MAX_VPROC_LIST_SIZE] of int;
+type	long_pid_array_t   = ^array[*] of pid_t;
+type	long_vproc_array_t = ^array[*] of mach_port_copy_send_t;
+type	long_stat_array_t  = ^array[*] of int;
+type	long_reap_stat_array_t  = ^array[*] of rstat_t;
+
+type	procset_t	= array[PROCSET_SIZE] of int;
+type	rf_data_t	= array[RFORK_DATA_SIZE] of int;
+type	mi_data_t	= array[MIGRATE_DATA_SIZE] of int;
+type	re_data_t	= array[REXEC_DATA_SIZE] of int;
+type	mmap_struct_t	= struct[MMAP_STRUCT_SIZE] of int;
+type	command_name_t	= array[MAXCOMLEN_SIZE] of char;
+type	logname_t	= array[MAXLOGNAME_SIZE] of char;
+
+type	mmap_struct_array_t = array[*:TNC_MMAP_ARRAY_SIZE]
+						of mmap_struct_t;
+type	mmap_port_array_t   = array[*:TNC_MMAP_ARRAY_SIZE]
+						of mach_port_move_send_t;
+
+type	cred_cache_array_t = array[*:CREDENTIALS_CACHE_ARRAY_SIZE] of node_t;
+type	long_cred_cache_array_t = ^array[*] of node_t;
+type	long_node_array_t = ^array[*] of node_t;
+
+type	blob_t		   = array [*:MAX_BLOB_SIZE] of char;
+type	rright_array_t = array [*:RELOC_PORT_ARRAY_SIZE]
+	       					of mach_port_move_receive_t;
+type	sright_array_t = array [*:RELOC_PORT_ARRAY_SIZE]
+	       					of mach_port_move_send_t;
+
+type	msg_handle_t	= int;
+
+import <tnc/tnc_types.h>;

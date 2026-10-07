@@ -1,0 +1,26 @@
+System Balance (balance)
+
+The System Balance test has been designed to demonstrate that all processors
+in a partition operate at the same relative performance, and that the system
+is capable of running multiple parallel applications concurrently in unique,
+non-overlapping partitions.  To do this, the System Balance test consists of
+two phases.
+
+In the first phase, the single processor 100x100 Linpack SAT is executed
+concurrently on all processors in the partition being used.  When all
+processors have finished running Linpack, the minimum, maximum, average,
+and median floating point performance for all the nodes is reported.  Also
+reported is the standard deviation and the percentage of performance
+variation for all processors running the test.
+
+The second phase of the System Balance Sat creates from one to four
+non-overlapping sub-partitions in the partition being used. The number
+created depends on how many nodes are in the partition being used to run
+the System Balance Sat in.  Once the sub-partitions have been created, a
+parallel SAT is executed in each sub-partitions concurrently.  The pass/fail
+results for each test is reported.  The parallel SATs currently used for
+execution in the sub-partitions are PFS, MXM, COMTEST, and MPLINPACK.
+
+The System Balance Sat runs on one or more nodes, and has no partition
+size restrictions.  The System Balance Sat passes only if there are no fails
+of any tests in the first and second phases.

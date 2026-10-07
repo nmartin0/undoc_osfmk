@@ -1,0 +1,289 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * @OSF_COPYRIGHT@
+ */
+/* loader.h
+ *
+ * Loader application program interfaces
+ * Depends on : 
+ *
+ * HISTORY
+ * $Log: loader.h,v $
+ * Revision 1.3  1994/11/18  21:09:58  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.2  1992/11/30  23:14:51  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1  1992/11/05  23:57:50  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ *
+ * Revision 4.1  1992/11/04  01:16:18  cfj
+ * Bump major revision number.
+ *
+ * Revision 1.1  1992/07/20  16:19:00  nandy
+ * Initial revision
+ *
+ * Revision 1.9  92/04/13  14:36:14  stans
+ * "OSF-distribution-ad8.5.2"
+ * 
+ * Revision 1.9  90/10/07  20:28:42  devrcs
+ * 	Added EndLog Marker.
+ * 	[90/09/28  20:47:16  gm]
+ * 
+ * Revision 1.8  90/08/24  13:52:52  devrcs
+ * 	Add LDR_MAIN flag for loading main module
+ * 	[90/08/15  14:39:45  lwa]
+ * 
+ * Revision 1.7  90/07/06  00:14:36  devrcs
+ * 	Add LDR_PREXIST flag.
+ * 	[90/07/01  16:25:39  lwa]
+ * 
+ * 	Removed everything relating to region kind.
+ * 	[90/06/29  09:17:58  kwallace]
+ * 
+ * 	Add ldr_install(), ldr_remove()
+ * 	[90/06/26  10:51:59  lwa]
+ * 
+ * 	Removed everything relating to region kind.
+ * 	[90/06/29  09:17:58  kwallace]
+ * 
+ * Revision 1.6  90/06/22  21:51:52  devrcs
+ * 	Added LDR_UNKNOWN_REGION to the ldr_region_kind_t enumeration.
+ * 	[90/06/13  18:40:19  kwallace]
+ * 
+ * 	Added function prototypes for ldr_xattach() and ldr_xdetach().
+ * 	[90/06/10  16:27:26  kwallace]
+ * 
+ * 	Fixed up the function prototypes for the cross-process loader
+ * 	operations.
+ * 	[90/06/10  07:39:11  kwallace]
+ * 
+ * 	Add definition for propagating load flags.
+ * 	[90/06/01  08:04:19  lwa]
+ * 
+ * 	Change fake-load flag to "no-unload" flag.
+ * 	[90/05/21  14:57:31  lwa]
+ * 
+ * 	Add mapaddr to region info record.  Add fake-load flag (for internal
+ * 	loader use only!)
+ * 	[90/05/14  15:04:38  lwa]
+ * 
+ * Revision 1.4  90/04/27  19:31:37  devrcs
+ * 	Change definitions of loader protections to match mmap protections
+ * 	[90/04/16  10:12:35  lwa]
+ * 
+ * 	Add ldr_my_process(), ldr_kernel_process().  Change some ints to size_t's.
+ * 	Clean up ldr_module_info_t, ldr_region_info_t structures.
+ * 	[90/04/06  12:19:54  lwa]
+ * 
+ * 	Add ldr_my_process(), ldr_kernel_process().  Change some ints to size_t's.
+ * 	Clean up ldr_module_info_t, ldr_region_info_t structures.
+ * 	[90/04/06  12:19:54  lwa]
+ * 
+ * 	Change _ALL_SOURCE to _OSF_SOURCE
+ * 	add ldr_region_kind_t, ldr_prot_t; add them to ldr_region_info_t struct
+ * 	[90/03/05  11:45:16  lwa]
+ * 
+ * 	Don't call external module ID's "handles"
+ * 	[90/02/22  11:52:52  lwa]
+ * 
+ * 	Revision 1.1.3.2  90/02/09  18:10:15  lwa
+ * 	Add more load flags, comments, standards.h stuff
+ * 	[90/01/26  16:14:03  lwa]
+ * 
+ * 	Revision 1.1.1.3  90/01/12  14:32:45  hermi
+ * 	works with or without function prototypes
+ * 
+ * 	Revision 1.1.1.2  90/01/12  09:52:31  hermi
+ * 	initial coding
+ * 
+ * $EndLog$
+ */
+
+#ifndef _H_LOADER
+#define _H_LOADER
+
+#include <standards.h>
+#include <limits.h>
+
+#ifdef	_OSF_SOURCE
+
+#define LDR_REGION_NAME_MAX	64	/* max length of region name */
+
+typedef int		ldr_process_t;	/* process descriptor for xp routines  */
+
+typedef	unsigned	ldr_load_flags_t; /* load flags */
+#define LDR_NOFLAGS	((ldr_load_flags_t)0)
+#define	LDR_NOINIT	((ldr_load_flags_t)0x1)	/* don't run init routines */
+#define LDR_WIRE	((ldr_load_flags_t)0x2)	/* wire loaded module against paging */
+#define LDR_NOUNREFS	((ldr_load_flags_t)0x4)	/* no unresolved refs allowed */
+#define LDR_NOPREXIST	((ldr_load_flags_t)0x8)	/* module must not pre-exist */
+#define LDR_EXPORTONLY	((ldr_load_flags_t)0x10) /* just build module export table (internal only) */
+#define LDR_NOUNLOAD	((ldr_load_flags_t)0x20) /* unloading module disallowed */
+#define LDR_PREXIST	((ldr_load_flags_t)0x40) /* module must already be loaded */
+#define LDR_MAIN	((ldr_load_flags_t)0x80) /* main module (internal only) */
+
+/* The following load flags are propagated to dependencies */
+
+#define	LDR_FLAGS_PROPAGATE	(LDR_NOINIT|LDR_WIRE|LDR_NOUNREFS)
+
+typedef unsigned long	ldr_module_t;	/* a module ID */
+typedef long		ldr_region_t;	/* a region ID */
+typedef int		(*ldr_entry_pt_t)(); /* an entry point */
+
+#define LDR_NULL_MODULE	((ldr_module_t)0) /* null module ID */
+
+typedef unsigned ldr_prot_t;		/* protections for loader regions */
+#define	LDR_R	((ldr_prot_t)0x1)	/* read permission */
+#define	LDR_W	((ldr_prot_t)0x2)	/* write permission */
+#define	LDR_X	((ldr_prot_t)0x4)	/* execute permission */
+
+typedef struct ldr_module_info_t {
+	ldr_module_t	lmi_modid;	/* module ID */
+	int		lmi_nregion;	/* count of no. of regions in module */
+	ldr_load_flags_t lmi_flags;	/* flags for module */
+	char		lmi_name[PATH_MAX]; /* pathname of module */
+} ldr_module_info_t;
+
+typedef struct ldr_region_info_t {
+	ldr_region_t	lri_region_no;	/* region number */
+	ldr_prot_t	lri_prot;	/* protection flags */
+	void		*lri_vaddr;	/* virtual address of region */
+	void		*lri_mapaddr;	/* address region is mapped at */
+	size_t		lri_size;	/* region size */
+	char		lri_name[LDR_REGION_NAME_MAX]; /* region name */
+} ldr_region_info_t;
+
+#ifndef _NO_PROTO
+
+/* 
+ * loader operations on the current process 
+ */
+
+extern ldr_module_t
+load(char *file_pathname, ldr_load_flags_t load_flags);
+
+extern int
+unload(ldr_module_t mod_id);
+
+extern ldr_entry_pt_t
+ldr_entry(ldr_module_t mod_id);
+
+extern void *
+ldr_lookup (ldr_module_t mod_id, char* symbol_name);
+
+extern void *
+ldr_lookup_package(char *package, char *symbol_name);
+
+extern int
+ldr_install(const char *module_name);
+
+extern int
+ldr_remove(const char *module_name);
+
+/*
+ * loader operations across process boundaries 
+ */
+
+extern ldr_process_t
+ldr_my_process(void);
+
+extern ldr_process_t
+ldr_kernel_process(void);
+
+extern int
+ldr_xattach(ldr_process_t process);
+
+extern int
+ldr_xdetach(ldr_process_t process);
+
+extern int
+ldr_xload(ldr_process_t process, char *file_pathname, 
+	  ldr_load_flags_t load_flags, ldr_module_t *mod_id_ptr);
+
+extern int
+ldr_xunload(ldr_process_t process, ldr_module_t mod_id);
+
+extern int
+ldr_xentry(ldr_process_t process, ldr_module_t mod_id,
+	   ldr_entry_pt_t *entry_ptr);
+
+extern int
+ldr_xlookup(ldr_process_t process, ldr_module_t mod_id,
+	    char *symbol_name, void **symbol_addr_ptr);
+
+extern int
+ldr_xlookup_package(ldr_process_t process, char *package_name,
+		    char *symbol_name, void **symbol_addr_ptr);
+
+
+/*
+ * Debug functions
+ */
+
+extern int
+ldr_inq_module(ldr_process_t process, ldr_module_t mod_id,
+	       ldr_module_info_t *info, size_t info_size, size_t *ret_size);
+
+extern int
+ldr_inq_region(ldr_process_t process, ldr_module_t mod_id, ldr_region_t region,
+	       ldr_region_info_t *info, size_t info_size, size_t *ret_size);
+
+extern int
+ldr_next_module(ldr_process_t process, ldr_module_t *mod_id_ptr);
+
+#else	/* _NO_PROTO : no function prototypes */
+
+/* 
+ * loader operations on the current process 
+ */
+
+extern ldr_module_t load();
+extern int unload();
+extern ldr_entry_pt_t ldr_entry();
+extern void *ldr_lookup ();
+extern void *ldr_lookup_package();
+extern int ldr_install();
+extern int ldr_remove();
+
+/*
+ * loader operations across process boundaries 
+ */
+
+extern ldr_process_t ldr_my_process();
+extern ldr_process_t ldr_kernel_process();
+extern int ldr_xload();
+extern int ldr_xunload();
+extern int ldr_xentry();
+extern int ldr_xlookup();
+extern int ldr_xlookup_package();
+
+/*
+ * Debug functions
+ */
+
+extern int ldr_inq_module();
+extern int ldr_inq_region();
+extern int ldr_next_module();
+
+#endif	/* _NO_PROTO */
+
+#endif /* _OSF_SOURCE */
+
+#endif	/* _H_LOADER */
+
+
+

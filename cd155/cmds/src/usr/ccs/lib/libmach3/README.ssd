@@ -1,0 +1,5 @@
+
+[ Tue May 12 16:55:55 PDT 1992 ] stan
+
+Copy Mach3 mk libmach.a (from mk release area) to our export lib dir. libmach3.a
+required for building of "ps" command.

@@ -1,0 +1,5 @@
+                           READ CAPACITY BUFFER
+
+  0-3    Returned Logical Block Address (00000000)
+  4-7    Block Length in Bytes (00000000)
+

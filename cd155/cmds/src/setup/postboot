@@ -1,0 +1,340 @@
+#! /bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, 1991, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+if [ -f  /postboot1 ]; then
+   rm /postboot1
+   if [ $? -ne 0 ]; then
+      echo "Failed to remove /postboot1"
+   fi
+fi
+
+echo
+echo "======================================================================="
+echo "                  Postboot Process"
+echo
+echo "This script will perform final configuration of your Paragon system."
+echo 
+echo "Is this correct date/time: " `date` " (y/n)? [y] \c"
+read answer
+if [ "$answer" = "n" -o "$answer" = "N" ]
+then
+   echo ""
+   echo "Enter date as yymmddhhmm"
+   read cdate
+   date -n $cdate
+   echo ""
+fi
+echo "The remaining tasks this script will perform are:"
+echo ""
+echo "  - Configure Network Time Daemon"
+echo "  - Install compilers and/or documentation"
+echo "  - Install basic math libraries"
+echo "  - Install Paragon tools"
+echo "  - Install Paragon system acceptance tests"
+echo "  - Create the terminfo databases"
+echo "  - Create the spell dictionaries"
+echo "  - Create the cat directories"
+echo "  - Create the lint libraries"
+echo "      Note: You must install the C compiler before"
+echo "      the lint libraries can be created."
+echo ""
+echo "Before each task is performed you will have the chance to"
+echo "choose if you want the task performed."
+echo ""
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Configure Network Time Daemon ..."
+echo ""
+echo "Do you wish to proceed with configuring network time daemon (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ]
+then
+  echo "Network Time Daemon will not be configured."
+else
+  echo "What is name of your network time server?"
+  read netser
+  if [ -z "$netser" ]; then
+	echo "Would you like to try again (y/n)? [y] \c"
+	read answer
+	if [ "$answer" = "n" -o "$answer" = "N" ]
+	then
+		echo "Network Time Daemon will not be configured."
+	else
+	  	echo "What is name of your network time server?"
+  		read netser
+  		if [ -z "$netser" ]; then
+			echo "Network Time Daemon will not be configured."
+		fi
+	fi
+  else
+	status=1
+	grep "^server" /etc/ntp.conf > /dev/null 2>&1
+	if [ "$?" -eq 0 ]; then
+ 	 	line=`grep "^server" /etc/ntp.conf`
+		status=0
+	fi
+	if [ "$status" -eq 0 ]; then
+		echo "Warning, there is already a time server defined in /etc/ntp.conf as:"
+		echo
+		echo "$line"
+		echo
+		echo "Are you sure you want to add a new one (y/n)? [n] \c"
+        	read answer
+        	if [ "$answer" = "y" -o "$answer" = "Y" ]
+        	then
+			newserver=1
+		else
+			newserver=0
+		fi
+        fi
+	if [ "$newserver" -eq 1 ]; then
+  	  grep "$netser" /etc/hosts > /dev/null 2>&1
+  	  if [ "$?" -eq 0 ]; then
+  		echo "Setting up network configuration file '/etc/ntp.conf'"
+  		cat >> /etc/ntp.conf <<EOF
+server	$netser
+EOF
+		if [ -f /sbin/init.d/ntpd -a -f /usr/sbin/ntpd ]; then
+  		  mv /sbin/rc3.d/XS50ntpd /sbin/rc3.d/S50ntpd > /dev/null 2>&1
+		  if [ "$?" -ne 0 ]; then
+			rm -f /sbin/rc3.d/XS50ntpd /sbin/rc3.d/S50ntpd
+			ln -s /sbin/init.d/ntpd /sbin/rc3.d/S50ntpd
+		  fi
+  		  mv /sbin/rc2.d/XK30ntpd /sbin/rc2.d/K30ntpd > /dev/null 2>&1
+		  if [ "$?" -ne 0 ]; then
+			rm -f /sbin/rc2.d/XK30ntpd /sbin/rc2.d/K30ntpd
+			ln -s /sbin/init.d/ntpd /sbin/rc2.d/K30ntpd
+		  fi
+  		  mv /sbin/rc0.d/XK35ntpd /sbin/rc0.d/K35ntpd > /dev/null 2>&1
+		  if [ "$?" -ne 0 ]; then
+			rm -f /sbin/rc0.d/XK35ntpd /sbin/rc0.d/K35ntpd
+			ln -s /sbin/init.d/ntpd /sbin/rc0.d/K35ntpd
+		  fi
+		  echo "Starting the network time server ..."
+		  /sbin/init.d/ntpd stop > /dev/null 2>&1
+                  /sbin/init.d/ntpd start
+		else
+		  if [ ! -f /sbin/init.d/ntpd ]; then	
+			echo "Network Time Daemon cannot not be configured."
+			echo "Startup file /sbin/init.d/ntpd is missing."
+		  else
+			echo "Network Time Daemon cannot not be configured,"
+			echo "/usr/sbin/ntpd file is missing."
+		  fi
+		fi
+  	  else
+		echo "Cannot find '$netser' in /etc/hosts file."
+		echo "Network Time Daemon will not be configured."
+	  fi
+	else
+		echo "Network configuration file '/etc/ntp.conf' remains unchanged"
+		if [ -f /sbin/init.d/ntpd -a -f /usr/sbin/ntpd ]; then
+  		  mv /sbin/rc3.d/XS50ntpd /sbin/rc3.d/S50ntpd > /dev/null 2>&1
+		  if [ "$?" -ne 0 ]; then
+			rm -f /sbin/rc3.d/XS50ntpd /sbin/rc3.d/S50ntpd
+			ln -s /sbin/init.d/ntpd /sbin/rc3.d/S50ntpd
+		  fi
+  		  mv /sbin/rc2.d/XK30ntpd /sbin/rc2.d/K30ntpd > /dev/null 2>&1
+		  if [ "$?" -ne 0 ]; then
+			rm -f /sbin/rc2.d/XK30ntpd /sbin/rc2.d/K30ntpd
+			ln -s /sbin/init.d/ntpd /sbin/rc2.d/K30ntpd
+		  fi
+  		  mv /sbin/rc0.d/XK35ntpd /sbin/rc0.d/K35ntpd > /dev/null 2>&1
+		  if [ "$?" -ne 0 ]; then
+			rm -f /sbin/rc0.d/XK35ntpd /sbin/rc0.d/K35ntpd
+			ln -s /sbin/init.d/ntpd /sbin/rc0.d/K35ntpd
+		  fi
+		  echo "Starting the network time server ..."
+		  /sbin/init.d/ntpd stop > /dev/null 2>&1
+                  /sbin/init.d/ntpd start
+		else
+		  if [ ! -f /sbin/init.d/ntpd ]; then	
+			echo "Network Time Daemon cannot not be configured."
+			echo "Startup file /sbin/init.d/ntpd is missing."
+		  else
+			echo "Network Time Daemon cannot not be configured,"
+			echo "/usr/sbin/ntpd file is missing."
+		  fi
+		fi
+  	fi 
+  fi
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Installing compilers and/or documentation..."
+echo ""
+echo "Do you wish to proceed with installing compilers and/or"
+echo "documentation (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Compilers and/or documentation will not be installed."
+else
+  /usr/bin/installcomp
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Installing basic math libraries..."
+echo ""
+echo "Do you wish to proceed with installing basic math libraries (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Basic math libraries will not be installed."
+else
+  /usr/bin/installbml
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Installing Paragon tools..."
+echo ""
+echo "Do you wish to proceed with installing Paragon tools (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Paragon tools will not be installed."
+else
+  /usr/bin/installtools
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Installing system acceptance tests..."
+echo ""
+echo "Do you wish to proceed with installing system acceptance tests (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "System acceptance tests will not be installed."
+else
+  /usr/bin/installsat
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Creating terminfo databases...."
+echo ""
+echo "Do you wish to proceed with creating terminfo databases (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Terminfo databases will not be created."
+else
+  if [ ! -d /usr/share/lib/terminfo ] 
+  then
+    echo "Directory /usr/share/lib/terminfo does not exist."
+    echo "Creation of terminfo databases is aborted."
+  else
+    cd /usr/share/lib/terminfo
+    echo "Running terminfo translator...."
+    tic *.ti
+  fi
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Creating spell dictionaries...."
+echo ""
+echo "Do you wish to proceed with creating spell dictionaries (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Spell dictionaries will not be created."
+else
+  if [ ! -d /usr/lbin/spell ] 
+  then
+    echo "Directory /usr/lbin/spell does not exist."
+    echo "Creation of spell dictionaries is aborted."
+  elif [ ! -f /usr/lbin/spell/Mkf.native ]
+  then
+    echo "/usr/lbin/spell/Mkf.native not found."
+    echo "Creation of spell dictionaries is aborted."
+  else
+    cd /usr/lbin/spell
+    echo "Making the spell dictionaries...."
+    make -s -f Mkf.native
+  fi
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Creating cat directories...."
+echo ""
+echo "Do you wish to proceed with creating the cat directories (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ]
+then
+  echo "Cat directories will not be created."
+else
+  if [ ! -d /usr/share/man ]
+  then
+    echo "Directory /usr/share/man does not exist."
+    echo "Creation of cat directories is aborted."
+  else
+    echo "Making cat directories...."
+    catman -n
+  fi
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Creating lint libraries...."
+echo ""
+if [ ! -f /usr/ccs/bin/icc ]
+then
+  echo "To successfully complete this task, you must have the C compiler"
+  echo "installed.  You do not have the C compiler in place."
+  echo "Run ./postboot as root to install the C compiler and create"
+  echo "the lint libraries."
+  exit 1
+fi
+
+echo "Do you wish to proceed with creating the lint libraries (y/n)? [y] \c"
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Lint libraries will not be created."
+else
+  if [ ! -d /usr/ccs/lib/lint ] 
+  then
+    echo "Directory /usr/ccs/lib/lint does not exist."
+    echo "Creation of lint libraries is aborted."
+  elif [ ! -f /usr/ccs/lib/lint/Mkf.native ]
+  then
+    echo "/usr/ccs/lib/lint/Mkf.native not found."
+    echo "Creation of lint libraries is aborted."
+  else
+    cd /usr/ccs/lib/lint
+    echo "Making lint libraries...."
+    make -s -f Mkf.native
+  fi
+fi
+sync
+exit 0

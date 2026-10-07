@@ -1,0 +1,79 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# andyp@ssd.intel.com
+#
+BIN	= lex
+SRC	= main.c parser.c sub1.c sub2.c header.c
+ASM	=
+OBJ	= $(SRC:.c=.o) $(ASM:.s=.o)
+#INSTALLDIR = ${INSTALLDIR?${INSTALLDIR}:..}
+DEFS	= -D_BLD
+CC	= cc
+INCS	=
+OPTIM	= -g
+#OPTIM	=
+#SYMS	= -g
+#SYMS	= -Mdebug
+#PROF	= -pg
+PROF	=
+#LIB	= -L../../lib -lcs
+CFLAGS	= ${DEFS} ${INCS} ${OPTIM} ${SYMS} ${PROF}
+BINDIR	= ${INSTALLDIR}/bin
+LIBDIR	= ${INSTALLDIR}/lib/${BIN}
+YACC	= yacc
+YACCSRC	= parser.y
+YACCOUT	= parser.c
+FORMS	= ncform nrform
+
+#
+#	Don't let installed microkernel build kit hacks
+#	cause trouble with re-building the tools
+#
+PATH	= ../bin:.:/sbin:/usr/sbin:/usr/bin:/vol/cvstools/bin
+CPATH	= /usr/local/include:/usr/include
+LPATH	= /usr/local/lib:/lib:/usr/lib
+
+all:	${BIN}
+
+.c.o:
+	${CC} -c ${CFLAGS} $*.c
+
+${BIN}:	${OBJ}
+	mkidinfo
+	${CC} -c _cvs_id.c
+	${CC} ${PROF} -o ${BIN} _cvs_id.o ${OBJ} ${LIB}
+
+y.tab.c:
+	${YACC} ${YACCSRC}
+	mv y.tab.c ${YACCOUT}
+	cp y.tab.c SAVEytabc
+
+depend: y.tab.c
+	cp Makefile :Makefile
+	sed -n '1,/^#@depend/p' < :Makefile > Makefile
+	echo "# DO NOT PLACE ANYTHING BELOW THIS LINE" >> Makefile
+	${CC} -M ${DEFS} ${INCS} ${SRC} >> Makefile
+#	rm -f ${YACCOUT}
+
+clean:
+	rm -f ${OBJ} ${BIN} ${YACCOUT}
+
+${LIBDIR}:
+	mkdir ${LIBDIR}
+
+install:	${BIN} ${LIBDIR}
+	cp -p ${BIN} ${BINDIR}
+	cp -p ${FORMS} ${LIBDIR}
+
+#@depend
+# DO NOT PLACE ANYTHING BELOW THIS LINE

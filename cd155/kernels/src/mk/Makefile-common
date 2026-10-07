@@ -1,0 +1,383 @@
+# 
+# $Copyright
+# Copyright 1991, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1992 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon 
+# the rights to redistribute these changes.
+#  
+# HISTORY
+# $Log: Makefile-common,v $
+# Revision 1.5  1994/11/18  20:23:55  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1994/04/13  18:37:09  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: allows instrumenting of copying of header files to
+# 	the release tree, so that we can later determine where all the
+# 	headers built in the cmds usr/include build actually come from.
+#  Testing: tested with instrumentation on and off
+#  Module(s): Makeconf, Makefile-common
+#
+# Revision 1.3  1993/10/11  16:37:18  dleslie
+# Now set I860_CPP in toplevel Makeconf file, not here
+#
+# Revision 1.4  1993/06/30  22:15:12  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:12:47  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.1.10.1  1993/03/23  19:51:12  dleslie
+# Sources for T9 build
+#
+# Revision 2.10.4.1  92/03/28  09:59:41  jeffreyh
+# 	Changes to make AT386 work as well as I386
+# 	[92/03/23            jeffreyh]
+# 
+# 	Added  definitions for more i860 tools and correct CFLAGS
+# 	[92/03/09            jeffreyh]
+# 
+# Revision 2.10  92/03/05  22:45:29  rpd
+# 	Changed top-level targets to use double-colon rules.
+# 	Restored sane .s and .cs rules.
+# 	[92/02/28            rpd]
+# 
+# Revision 2.9  92/02/20  14:53:26  elf
+# 	.s, .cs rule dependency generation fixup.
+# 	[92/02/20            danner]
+# 
+# Revision 2.8  92/02/20  11:59:48  elf
+# 	Added {LIB,DEP}CMUCS definitions.
+# 	[92/02/20            danner]
+# 
+# 	Added ${TARGET_MACHINE}_LIBS definition here. Comments about
+# 	assembly rules.
+# 	[92/02/20            danner]
+# 
+# Revision 2.7  92/02/19  15:05:49  elf
+# 	Added LIBREADLINE, DEPREADLINE, EXIT_RULE.
+# 	[92/02/16            rpd]
+# 
+# 	Moved recursive make stuff to Makefile-subdirs.
+# 	Moved mkodirs, mkidirs, mkrdirs rules to Makefile-mkdirs.
+# 	Moved mkilinks, mkrlinks rules to Makefile-mklinks.
+# 	Moved xstrip definitions to Makefile-xstrip.
+# 	Turned off debugging symbols on the pmax.
+# 	[92/02/10            rpd]
+# 
+# Revision 2.6  92/02/19  14:33:37  elf
+# 	make LIBCS evaluate to libcmucs.a instead of libcs.a. Ditto with
+# 	 DEPCS
+# 	[92/02/19            danner]
+# 
+# 	Updated .cs.o and .ss.o rules to create an intermediate xXx.c
+# 	 file to run through cpp; some cpp's (namely gcc derived cpp's)
+# 	 will not process files with random suffixes.
+# 	[92/02/19            danner]
+# 
+# Revision 2.5  92/01/27  16:42:50  rpd
+# 	Changed RECURSE_TEMPLATE for '+'.
+# 	[92/01/27            rpd]
+# 
+# Revision 2.4  92/01/24  18:14:26  rpd
+# 	Added -DASSEMBLER to .s and .cs rules.
+# 	[92/01/24            rpd]
+# 
+# Revision 2.3  92/01/24  00:49:20  rpd
+# 	Added RECURSE_TEMPLATE.
+# 	[92/01/23            rpd]
+# 
+# Revision 2.2  92/01/23  15:43:59  rpd
+# 	Created.
+# 	[92/01/14            rpd]
+# 
+
+# Makefile-common defines common, useful definitions.
+# Makefiles should be structured as follows:
+#
+#	include ${MAKETOP}Makefile-common
+#	... rules
+#	-include Makedep
+#
+# Makefile-common is included first and Makedep last.
+# Makefile-common is included first so that the Makefile
+# can override definitions it doesn't like and so that
+# definitions in Makefile-common can be used in dependency lines
+# in the Makefile.
+# 
+# The Makefile can define several variables which are used
+# but not defined by Makefile-common.  DEFS (-D, -U flags)
+# and INCS (-I flags) are passed to cpp and cpp-using programs.
+# CCOPTS augments CFLAGS.  MIGOPTS augments MIGFLAGS.
+
+# ensure that 'install' is the default target
+
+install ::
+
+# If a source directory needs to have machine-dependent files,
+# they should go into subdirectories named mips, sun3, vax, etc.
+# The source Makefile should use
+#	VPATH = .:${cpu}
+# to instruct make to search the machine-dependent subdirectory.
+#
+# A cross-compiling build can override the definition of cpu.
+
+VAX_cpu = vax
+IBMRT_cpu = ca
+SUN3_cpu = sun3
+MMAX_cpu = mmax
+PMAX_cpu = mips
+I386_cpu = i386
+AT386_cpu = i386
+SUN4_cpu = sun4
+I860_cpu = i860
+LUNA88K_cpu = luna88k
+MAC2_cpu = mac2
+cpu = ${${TARGET_MACHINE}_cpu}
+
+# Definitions used to install files in the release directory:
+# Installation rules should look like
+#
+# ${INSTALLDIR}/foo : foo
+#	${RM} $@
+#	${CP} $? $@
+#	strip/whatever
+#	${CHMOD_foo} $@
+#
+# NB: For $? to work properly, the installed file can only depend on one file.
+#
+# For xstrip, see Makefile-xstrip.
+
+RM = rm -f
+
+# Now set in Makeconf file, so we can instrument it.
+#CP = cp -p
+MV = mv -f
+STRIP = strip
+CHMOD_INC = chmod 444
+CHMOD_BIN = chmod 755
+CHMOD_LIB = chmod 644
+CHMOD_O = chmod 644
+CHMOD_MAN = chmod 444
+
+# Definitions used to run mig:
+# A mig rule should look like
+#
+# foo.h foo_server.c fooUser.c : foo.defs
+#	${MIG} ${MIGFLAGS} -server foo_server.c foo.defs
+#
+# All files produced by mig should be listed left of the colon.
+# When given the -MD flag, mig produces dependencies in the file
+# foo.defs.d.  It includes a dependency on migcom.
+
+MIG = mig
+# the Makefile can define MIGOPTS to add something here
+MIGFLAGS = -MD ${DEFS} ${INCS} ${MIGOPTS}
+
+# Definitions used to build programs:
+# A rule for a binary should look like
+#
+# LIBS = ${LIBFOO} ${LIBBAR}
+# DEPS = ${DEPFOO} ${DEPBAR} ${DEPCRT0}
+#
+# foo : ${OBJS}
+#	${RM} $@ $@.out
+#	${DEPS/%/$@} ${CC} -o $@.out ${CFLAGS} ${OBJS} ${LIBS} && \
+#	${MV} $@.out $@
+#
+# The binary is made as foo.out and renamed to foo to prevent foo
+# from existing if there are undefined symbols.  Hence a subsequent
+# make will again try to make foo.
+#
+# The DEPS stuff creates dependencies on crt0.o and libraries.
+# It would be nice if ld created a dependency file just like cpp.
+# Unfortunately, it doesn't.  We use wh to do it ourself.
+# This can be disabled by redefining DEP_TEMPLATE.
+
+PMAX_CDEBUGFLAGS = -O2
+CDEBUGFLAGS = ${${TARGET_MACHINE}_CDEBUGFLAGS?${${TARGET_MACHINE}_CDEBUGFLAGS}:-O}
+
+# increase compiler string space on mips, so the compiler
+# doesn't barf on long file names
+PMAX_CFLAGS = -Wf,-XNk150
+I860_CFLAGS = -DiPSC860 -DPGI
+
+# the Makefile can define CCOPTS to add something here
+CFLAGS = -MD ${${TARGET_MACHINE}_CFLAGS} ${CDEBUGFLAGS} ${DEFS} ${INCS} ${CCOPTS}
+
+# This is now set in the Makeconf file, based on BUILD_HOST.
+#I860_CPP = /lib/cpp
+
+LUNA88K_CPP = ${CC} -E
+CPP = ${${TARGET_MACHINE}_CPP?${${TARGET_MACHINE}_CPP}:${CC} -ES}
+
+LUNA88K_ASCPP = ascpp ${CPP}
+ASCPP = ${${TARGET_MACHINE}_ASCPP?${${TARGET_MACHINE}_ASCPP}:${CPP}}
+
+LUNA88K_CC = gcc2b -Vcmu 
+VAX_CC = gcc
+SUN3_CC = gcc
+I386_CC = gcc
+AT386_CC = gcc
+I860_CC = cc860
+CC = ${${TARGET_MACHINE}_CC?${${TARGET_MACHINE}_CC}:cc}
+
+# Some architectures need additional libraries defined when linking with
+# ${LD} (e.g, compiler support libraries).  These libraries should be defined
+# below as ${TARGET_MACHINE}_LIBS.
+
+LUNA88K_LIBS = /usr/local/lib/gcc/m88k-luna/cmu/libgcc.a
+
+PMAX_ASFLAGS = -nocpp
+ASFLAGS = ${${TARGET_MACHINE}_ASFLAGS}
+
+I860_AS = as860
+AS = ${${TARGET_MACHINE}_AS?${${TARGET_MACHINE}_AS}:as}
+
+I860_LD = ld860
+LD = ${${TARGET_MACHINE}_LD?${${TARGET_MACHINE}_LD}:ld}
+
+PMAX_LDFLAGS = -e __start
+I386_LDFLAGS = -e __start
+AT386_LDFLAGS = -e __start
+LDFLAGS	= ${${TARGET_MACHINE}_LDFLAGS?${${TARGET_MACHINE}_LDFLAGS}:-e start}
+
+WH = wh
+DEP_TEMPLATE = echo "%: `${WH} -Lq NAME`" >> %.out.d;
+
+CRT0 = `wh -Lq crt0.o`
+DEPCRT0 = ${DEP_TEMPLATE/NAME/crt0.o}
+
+LIBMACH = -lmach
+DEPMACH = ${DEP_TEMPLATE/NAME/libmach.a}
+
+LIBMACH_SA = -lmach_sa
+DEPMACH_SA = ${DEP_TEMPLATE/NAME/libmach_sa.a}
+
+LIBTHREADS = -lthreads
+DEPTHREADS = ${DEP_TEMPLATE/NAME/libthreads.a}
+
+LIBMACHID = -lmachid
+DEPMACHID = ${DEP_TEMPLATE/NAME/libmachid.a}
+
+LIBNETNAME = -lnetname
+DEPNETNAME = ${DEP_TEMPLATE/NAME/libnetname.a}
+
+LIBNETMEMORY = -lnetmemory
+DEPNETMEMORY = ${DEP_TEMPLATE/NAME/libnetmemory.a}
+
+LIBSERVICE = -lservice
+DEPSERVICE = ${DEP_TEMPLATE/NAME/libservice.a}
+
+LIBXMM = -lxmm
+DEPXMM = ${DEP_TEMPLATE/NAME/libxmm.a}
+
+LIBL = -ll
+DEPL = ${DEP_TEMPLATE/NAME/libl.a}
+
+LIBCS = -lcs
+DEPCS = ${DEP_TEMPLATE/NAME/libcs.a}
+
+LIBCMUCS = -lcmucs
+DEPCMUCS = ${DEP_TEMPLATE/NAME/libcmucs.a}
+
+LIBM = -lm
+DEPM = ${DEP_TEMPLATE/NAME/libm.a}
+
+LIBTERMCAP = -ltermcap
+DEPTERMCAP = ${DEP_TEMPLATE/NAME/libtermcap.a}
+
+LIBCURSES = -lcurses
+DEPCURSES = ${DEP_TEMPLATE/NAME/libcurses.a}
+
+LIBREADLINE = -lreadline
+DEPREADLINE = ${DEP_TEMPLATE/NAME/libreadline.a}
+
+# Definitions used to build libraries:
+# A rule for a library should look like
+#
+# libfoo.a : ${OBJS}
+#	${RM} $@
+#	${AR} cq $@ ${OBJS}
+#	${RANLIB} $@
+#
+# This ensures that the library is updated properly
+# even if file names are truncated (so that 'ar r' fails).
+
+I860_AR = ar860
+AR = ${${TARGET_MACHINE}_AR?${${TARGET_MACHINE}_AR}:ar}
+
+I860_RANLIB = ranlib860
+RANLIB = ${${TARGET_MACHINE}_RANLIB?${${TARGET_MACHINE}_RANLIB}:ranlib}
+
+# Default suffix-based rules for creating objects:
+
+.SUFFIXES: .cs .ss
+
+.c.o:
+	${CC} -c ${CFLAGS} $*.c
+
+.s.o:
+	${ASCPP} -MD -DASSEMBLER ${DEFS} ${INCS} $*.s > $*.as
+	${AS} ${ASFLAGS} -o $*.o $*.as
+	${RM} $*.as
+
+.cs.o:
+	${ASCPP} -MD -DASSEMBLER ${DEFS} ${INCS} $*.cs > $*.as
+	${AS} ${ASFLAGS} -o $*.o $*.as
+	${RM} $*.as
+
+.ss.o:
+	${AS} ${ASFLAGS} -o $*.o $*.ss
+
+
+MD = md
+
+EXIT_RULE = -${MD} -u Makedep -f -d *.d
+
+.EXIT ::
+	${EXIT_RULE}
+
+# Default definitions for Makefile-bin and Makefile-lib.
+# These definitions are placed here so that a Makefile
+# can override them before including Makefile-bin and/or Makefile-lib.
+# (Because they are used in dependencies, they can't be overridden
+# after including Makefile-bin and/or Makefile-lib.)
+
+# default location for installing a library
+
+LIBDIR = lib/
+
+# default location for installing a binary
+
+BINDIR = bin/

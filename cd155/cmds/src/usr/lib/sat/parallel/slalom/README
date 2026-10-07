@@ -1,0 +1,14 @@
+Slalom (slalom)
+
+This is a parallel implementation of the benchmark that implements the
+radiosity formulation for rendering graphics. It measures the amount
+of work done in one minute, reporting the number of "patches" processed
+in that time. The benchmark includes initialization and completion
+tasks so it is a good demonstration of file I/O and communications
+performance as well as computation speed.
+
+The initial version (Supercomputing Review; Nov. '90), rather than current 
+version (Supercomputing Review; Dec '91), of SLALOM has been implemented herein.
+A requirement for successful execution is that the number of nodes in the par-
+tition be a square.
+

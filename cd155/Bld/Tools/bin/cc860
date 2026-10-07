@@ -1,0 +1,158 @@
+#!/bin/sh
+
+args=
+cppargs="-D_PGC_ -DPGI -Usun"
+files=
+MD=
+dasho=
+dashC=""
+
+ansi=""
+verbose=0
+dashv=""
+dashc=0
+dashS=0
+dashES=0
+cpponly=0
+linkonly=1
+BUILD_XDEV=${BUILD_XDEV-/vol/PBE/${BUILD_HOST}}
+tmpdir=${TMPDIR-/usr/tmp}
+cc="${BUILD_XDEV}/bin/icc"
+CPP="${BUILD_XDEV}/bin/cpp860"
+
+
+#
+# parse args, separate cppargs from cc args, grab -MD
+#
+until [ $# -eq 0 ]
+do
+    case $1 in
+        -fwritable-strings)
+            ;;
+
+        -newicc)
+            cc="icc.new"
+            ;;
+
+        -ansi)
+            ansi="-ansi"
+            cppargs="$cppargs -D__STDC__"
+            ;;
+
+        -MD)
+            MD="-MD"
+            ;;
+
+        -[E])
+            cpponly=1
+            cppargs="$cppargs $1"
+            ;;
+
+        -ES)
+            cpponly=1
+#           dashES=1
+            cppargs="$cppargs -E"
+            ;;
+
+        -[CPRMMB])
+            cppargs="$cppargs $1"
+            ;;
+
+        -[UDI]*)
+            cppargs="$cppargs $1"
+            ;;
+
+        -[v])
+            verbose=1
+            dashv="-v"
+            ;;
+
+        -[o])
+            dasho="$dasho $1"
+            shift 
+            dasho="$dasho $1"
+            ;;
+
+        -[c])
+            dashc=1
+            dashC="-c"
+            args="$args $1"
+            ;;
+
+        -[S])
+            dashS=1
+            args="$args $1"
+            ;;
+
+        *.c)
+            files="$files $1"
+            linkonly=0
+            ;;
+
+        *.cs)
+            files="$files $1"
+            linkonly=0
+            ;;
+
+        *.s)
+            files="$files $1"
+            linkonly=0
+            ;;
+
+        *)
+            args="$args $1"
+            ;;
+    esac
+    shift
+done
+
+#
+# if no .c or .s files were specified then we are just doing a link
+#
+if [ $linkonly -eq 1 ]; then
+    if [ $verbose -eq 1 ]; then 
+        echo $cc $dasho $args $files
+    fi
+    $cc $dashv $dasho $args $files
+    exit 0
+fi
+
+#
+# compile each file with all applicable args
+#
+for file in $files
+do
+    if [ $cpponly -eq 1 ]; then
+      if [ $verbose -eq 1 ]; then 
+        echo $CPP $file $MD $cppargs -Di860 -Ui386 -U__i386__ 
+      fi
+      $CPP $file $MD $cppargs 
+    else
+      base="`basename $file .c`"
+      tmpbase=cpp$$"$base"
+      tmpfile=$tmpdir/$tmpbase".c"
+
+      if [ $verbose -eq 1 ]; then 
+        echo $CPP $file $tmpfile $base".d" $MD $cppargs -D__i860__  
+      fi
+      $CPP $file $tmpfile $base".d" $MD $cppargs -D__i860__
+      if [ $? != 0 ]; then /bin/rm -f $tmpfile $tmpbase".o"; exit 1; fi
+
+      if [ $verbose -eq 1 ]; then 
+         echo $cc $ansi $dasho $args $tmpfile
+      fi
+      $cc $dashv $ansi $dasho $args $tmpfile
+      if [ $? != 0 ]; then /bin/rm -f $tmpfile ; exit 1; fi
+      /bin/rm -f $tmpfile
+
+#
+# name is either tmpbase.o or tmpbase.s if -S was specified
+#
+      if [ $dashS -eq 1 ]; then
+         /bin/mv $tmpbase".s" $base".s"
+      elif [ -w $tmpbase".o" ]; then
+         /bin/mv $tmpbase".o" $base".o"
+      fi
+    fi
+done
+exit 0

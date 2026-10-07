@@ -1,0 +1,37 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+# 
+# @(#)$RCSfile: queuedefs,v $ $Revision: 1.2 $ (OSF) $Date: 1994/11/19 03:05:13 $
+# crontrol values for each queue of batch jobs:
+#
+# 	queue.xxjxxnxxw
+#
+# queues:
+#  a - sh jobs		d - sync event
+#  b - batch jobs	e - ksh jobs
+#  c - cron event	f - csh jobs
+#
+#  xxj - maximum number of jobs in this queue (deafult 100)
+#  xxn - nice value at which these jobs will run at (default 2)
+#  xxw - wait time till next execution attempt (default 60 seconds)
+#
+# 
+# here is an example of a low prority (nice 20), 50 entry batch queue
+b.50j20n60w
+

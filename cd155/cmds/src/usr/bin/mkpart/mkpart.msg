@@ -1,0 +1,33 @@
+$ 
+$ $Copyright
+$ Copyright 1993, 1994, 1995  Intel Corporation
+$ INTEL CONFIDENTIAL
+$ The technical data and computer software contained herein are subject
+$ to the copyright notices; trademarks; and use and disclosure
+$ restrictions identified in the file located in /etc/copyright on
+$ this system.
+$ Copyright$
+$ 
+ 
+$
+$ (c) Copyright 1992, INTEL, CORP.
+$ ALL RIGHTS RESERVED
+$
+$
+$ INTEL Release 1.0
+
+$
+$
+$ messages for command mkpart
+$
+
+$set MS_MKPART
+
+$quote "
+
+USAGE 'Usage: mkpart [(-sz {num_nodes | widthXheight}) | (-nd nodelistt)]\n\
+\t[([-rq rollin_quantum] [-mp pri]) | -ss ]\n\
+\t[-mod mode]\n\
+\tname\n'
+SIZE 'invalid size \n'
+

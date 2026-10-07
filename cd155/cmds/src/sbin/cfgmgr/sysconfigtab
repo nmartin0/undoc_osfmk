@@ -1,0 +1,198 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+automatic:
+	Dynamic_Subsystems = None
+
+default:
+	Method_Flags = None
+	Module_Flags = None
+	Device_Dir = /dev
+	Device_Mode = 666
+	Device_User = root
+	Device_Group = system
+	Device_Flags = None
+
+nfs:
+	Subsystem_Description = NFS File System
+	Method_Name = filsys
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/nfs_kmod
+	FileSys_Flags = None
+
+svfs:
+	Subsystem_Description = System V File System
+	Method_Name = filsys
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/sysv_fs_kmod
+	FileSys_Flags = None
+
+strnull:
+	Subsystem_Description = STREAMS null driver
+	Method_Name = streams
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/strnull_kmod
+	STREAMS_Name = null
+	STREAMS_Major = Any
+	STREAMS_Units = 2
+	Device_Subdir = streams
+
+strecho:
+	Subsystem_Description = STREAMS echo driver
+	Method_Name = streams
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/strecho_kmod
+	STREAMS_Name = echo
+	STREAMS_Major = Any
+	STREAMS_Units = 2
+	Device_Subdir = streams
+
+strpass:
+	Subsystem_Description = STREAMS pass driver
+	Method_Name = streams
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/strpass_kmod
+	STREAMS_Name = pass
+	STREAMS_Major = Any
+	STREAMS_Units = 2
+	Device_Subdir = streams
+
+strtmux:
+	Subsystem_Description = STREAMS tmux driver
+	Method_Name = streams
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/strtmux_kmod
+	STREAMS_Name = tmux
+	STREAMS_Major = Any
+	STREAMS_Units = 2
+	Device_Subdir = streams
+
+strsc:
+	Subsystem_Description = STREAMS sc driver
+	Method_Name = streams
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/strsc_kmod
+	STREAMS_Name = sc
+	STREAMS_Major = Any
+	STREAMS_Units = 2
+	Device_Subdir = streams
+
+timod:
+	Subsystem_Description = STREAMS timod driver
+	Method_Name = streams
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/timod_kmod
+	STREAMS_Name = timod
+	STREAMS_Major = Any
+	STREAMS_Units = 2
+	Device_Subdir = streams
+
+tirdwr:
+	Subsystem_Description = STREAMS tirdwr driver
+	Method_Name = streams
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/tirdwr_kmod
+	STREAMS_Name = tirdwr
+	STREAMS_Major = Any
+	STREAMS_Units = 2
+	Device_Subdir = streams
+
+svtt:
+	Subsystem_Description = STREAMS svtt driver
+	Method_Name = streams
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/svtt_kmod
+	STREAMS_Name = svtt
+	STREAMS_Major = Any
+	STREAMS_Units = 2
+	Device_Subdir = streams
+
+xti-inet:
+	Subsystem_Description = XTI INET
+	Method_Name = xti
+	Method_Type = Static
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/xti_kmod
+	TCP_Name = tcp
+	TCP_Major = 45
+	TCP_Units = 2
+	UDP_Name = udp
+	UDP_Major = 46
+	UDP_Units = 2
+	Device_Subdir = xti
+
+xti-unix:
+	Subsystem_Description = XTI UNIX
+	Method_Name = xti
+	Method_Type = Static
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/xti_kmod
+	UDG_Name = udg
+	UDG_Major = 47
+	UDG_Units = 2
+	UST_Name = ust
+	UST_Major = 48
+	UST_Units = 2
+	Device_Subdir = xti
+
+xti-xns:
+	Subsystem_Description = XTI XNS
+	Method_Name = xti
+	Method_Type = Static
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/xti_kmod
+	IDP_Major = Any
+	SPP_Major = Any
+
+inet:
+	Subsystem_Description = INET protocol family
+	Method_Name = inet
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/inet_kmod
+	Inet_Flags = None
+
+xns:
+	Subsystem_Description = XNS protocol family
+	Method_Name = xns
+	Method_Type = Static
+	Method_Path = None
+	Module_Type = Dynamic
+	Module_Path = /sbin/subsys/xns_kmod
+

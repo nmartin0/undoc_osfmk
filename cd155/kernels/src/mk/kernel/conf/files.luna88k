@@ -1,0 +1,135 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# HISTORY
+# $Log: files.luna88k,v $
+# Revision 1.5  1994/11/18  20:28:24  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:19:47  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:17:37  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:17:28  dleslie
+# First R1_0 release
+#
+# Revision 2.3  91/08/24  11:55:06  af
+# 		Added some missing scsi files.
+# 		sd --> scsi
+# 
+# 	 Revision 2.2  91/07/09  23:14:57  danner
+# 	Added scsi/rz_labels.c
+# 	[91/07/08  22:55:54  danner]
+# 
+# 	Initial Checkin
+# 	[91/03/08            danner]
+# 	 
+# 
+OPTIONS/jkdb			optional jkdb
+#
+chips/busses.c 			optional scsi device-driver
+scsi/adapters/scsi_89352_hdw.c  optional scsi device-driver
+scsi/rz.c			optional scsi device-driver
+scsi/rz_cpu.c			optional scsi device-driver
+scsi/rz_disk.c			optional scsi device-driver
+scsi/rz_disk_bbr.c		optional scsi device-driver
+scsi/rz_labels.c		optional scsi device-driver
+scsi/rz_tape.c			optional scsi device-driver
+scsi/scsi.c			optional scsi device-driver
+scsi/scsi_alldevs.c		optional scsi device-driver
+scsi/scsi_comm.c		optional scsi device-driver
+scsi/scsi_cpu.c			optional scsi device-driver
+scsi/scsi_disk.c		optional scsi device-driver
+scsi/scsi_jukebox.c		optional scsi device-driver
+scsi/scsi_optical.c		optional scsi device-driver
+scsi/scsi_printer.c		optional scsi device-driver
+scsi/scsi_rom.c                 optional scsi device-driver
+scsi/scsi_scanner.c             optional scsi device-driver
+scsi/scsi_tape.c		optional scsi device-driver
+scsi/scsi_worm.c		optional scsi device-driver
+#
+#
+luna88k/autoconf.c		standard device-driver
+luna88k/clock.c			standard
+luna88k/cmmu.c			standard
+luna88k/conf.c			standard
+#
+# MD ddb files
+#
+luna88k/db_disasm.c		optional mach_kdb
+luna88k/db_interface.c		optional mach_kdb
+luna88k/db_sstep.c		optional mach_kdb
+luna88k/db_trace.c		optional mach_kdb
+#
+#luna88k/dkbad.c			standard
+luna88k/exec.c                  standard
+luna88k/in_cksum.c		optional inet
+#
+luna88k/luna_init.c		standard
+#luna88k/m88k_exception.c	standard
+luna88k/machdep.c		standard device-driver
+luna88k/machine_thread.c        standard
+luna88k/mem.c			standard
+luna88k/ns_cksum.c		optional ns
+luna88k/pcb.c			standard
+luna88k/pmap.c			standard
+luna88k/pup_cksum.c		optional pup
+luna88k/setroot.c               standard
+luna88k/softint.c		standard
+luna88k/sys_machdep.c		standard
+luna88k/trap.c			standard
+luna88k/types.c			optional jkdb
+luna88k/ufs_machdep.c		standard
+luna88k/vm_machdep.c		standard
+#luna88kdev/asp.c		optional asp device-driver
+#luna88kdev/asp_conf.c		optional asp device-driver
+#luna88kdev/cm.c			optional gp device-driver
+luna88kdev/cons.c		standard device-driver
+#luna88kdev/console.c		standard device-driver
+#luna88kdev/cosw.c		standard device-driver
+#luna88kdev/cpurom.c		optional cp device-driver
+#luna88kdev/eu.c			optional eu device-driver
+#luna88kdev/ex.c			optional ex device-driver
+#luna88kdev/fbmap.c		optional fb device-driver
+#luna88kdev/gpib.c		optional gp device-driver
+#luna88kdev/gpib.c		optional gp device-driver
+luna88kdev/kbmain.c		standard device-driver
+#luna88kdev/lcd.c		standard device-driver
+luna88kdev/msmain.c		standard device-driver
+#luna88kdev/nvram.c		standard device-driver
+#luna88kdev/pio.c		standard device-driver
+#luna88kdev/ramdisk.c		optional ra device-driver
+#luna88kdev/rd.c			optional rd device-driver
+#luna88kdev/sc_conf.c		standard device-driver
+#luna88kdev/scsi.c		optional SC device-driver
+#luna88kdev/sd.c			optional sd device-driver
+#luna88kdev/sp.c			optional sp device-driver
+#luna88kdev/st.c			optional st device-driver
+#luna88kdev/tasp.c		optional tasp device-driver
+luna88kdev/uart.c		standard device-driver
+#luna88kdev/usc.c		optional usc device-driver
+#luna88kdev/xp.c			optional XP device-driver
+#luna88kdev/xp_conf.c		standard device-driver
+#luna88kdev/xpfd.c		optional fd device-driver
+#luna88kdev/xplp.c		optional lp device-driver
+#luna88kdev/xpsio.c		optional sio device-driver
+#luna88kdev/xpssg.c		optional ssg device-driver
+#luna88kif/enet.c		optional enetfilter
+#luna88kif/if_am.c		optional am device-driver
+#luna88kif/if_en.c		optional en device-driver
+#luna88kif/if_pkbuf.c		optional inet device-driver
+#luna88kif/if_qb.c		optional inet device-driver
+#luna88kif/lance.c		optional en device-driver
+#luna88kif/ln_ram.c		optional en device-driver
+#luna88kif/sub.c			optional en device-driver

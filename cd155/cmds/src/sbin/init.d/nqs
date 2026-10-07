@@ -1,0 +1,130 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+#
+# Start NQS services
+#
+
+LOG_PATH=/usr/spool/nqs/log.d
+N_OLDLOGS=5      # number of old logfiles to save
+GRACE_PERIOD=120 # max. seconds to wait before killing daemons
+
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+
+Kill_nqs ()
+{
+        list=`ps -ea | egrep "NQS" | egrep -v egrep | awk '{ print $1 }'`
+        if [ -n "$list" ]
+        then
+		logger "NQS services shutting down"
+		rm /tmp/nqs.stop > /dev/null 2>&1
+		echo "shutdown 0" > /tmp/nqs.stop
+		# Would like to check for an error return here
+		# but qmgr always returns 0
+		/usr/bin/qmgr < /tmp/nqs.stop > /dev/null
+
+		# wait for daemons to die
+		# sleep for 1, 3, 5, ... seconds up to $GRACE_PERIOD seconds
+		total=0; increment=1
+		while [ $total -lt $GRACE_PERIOD ]
+		do
+			sleep $increment
+			list=`ps -ea | egrep "NQS" | egrep -v egrep | awk '{ print $1 }'`
+			if [ -n "$list" ]; then
+				# NQS daemons still alive after $total seconds
+				total=`expr $total + $increment` 
+				increment=`expr $increment + 2`
+			else
+				# NQS daemons all gone
+				break
+			fi
+		done
+		if [ $total -ge $GRACE_PERIOD ]; then
+			# NQS daemons still alive after more than $GRACE_PERIOD
+			# seconds, kill them
+			/bin/kill -9 $list > /dev/null 2>&1
+
+			# make sure they're gone
+			sleep 10
+			list=`ps -ea | egrep "NQS" | egrep -v egrep | awk '{ print $1 }'`
+			if [ -n "$list" ]; then
+				echo "WARNING: NQS daemons (PID(s)" $list") won't die!"
+				logger "WARNING: NQS daemons (PID(s)" $list") won't die!"
+			fi
+		fi
+        fi
+}
+
+case "$1" in
+'start')
+        set `who -r`
+        if [ $9 = "S" ]; then
+                Kill_nqs 
+
+		# keep $N_OLDLOGS old logfiles (logfile.1 .. logfile.<n>), 
+		# discarding oldest
+
+                i="$N_OLDLOGS"
+                while [ "$i" -gt 1 ]; do
+                        new="$i"
+                        old=`expr "$i" - 1`
+                        if [ -f "${LOG_PATH}/logfile.${old}" ]; then
+                                /bin/mv -f ${LOG_PATH}/logfile.${old} \
+                                           ${LOG_PATH}/logfile.${new}
+                        fi
+                        i="$old"
+                done
+
+                if [ -f "${LOG_PATH}/logfile" ]; then
+                        /bin/mv -f ${LOG_PATH}/logfile ${LOG_PATH}/logfile.1
+                fi
+
+                  /usr/lib/nqs/nqsdaemon > ${LOG_PATH}/logfile
+                  /bin/chmod 644 ${LOG_PATH}/logfile
+		  # Check for the daemons
+		  err="FALSE"
+		  for daemon in logdaemon nqsdaemon netdaemon
+		  do
+		  	d=`ps -ea | egrep $daemon | egrep -v egrep`
+		  	if [ -n "$d" ] 
+		  	then
+				logger "NQS $daemon started"
+		 	else
+				logger "ERROR: NQS $daemon not started"
+				err="TRUE"
+		  	fi 
+		  done
+		  if  [ $err = "FALSE" ]
+		  then
+                  	echo "NQS services provided."
+                  	logger "NQS services provided."
+		  else
+			echo "ERROR starting NQS services. Check ${LOG_PATH}/logfile"
+			logger "ERROR starting NQS services. Check ${LOG_PATH}/logfile"
+		  fi
+        fi
+        ;;
+'stop')
+        Kill_nqs
+        ;;
+*)
+        echo "usage: $0 {start|stop}"
+        ;;
+esac
+

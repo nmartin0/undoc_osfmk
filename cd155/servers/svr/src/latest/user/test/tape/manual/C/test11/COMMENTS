@@ -1,0 +1,42 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test11" COMMENTS
+================
+
+******************* Step to run this test *******************************
+
+1. TO READ THE DATA WRITTEN BY "test12"
+
+	make -f makefile.man all
+
+2. if run all the script, type
+
+	test11.sh 
+
+    and the result will be on "test11.SRr0".  The log will be on "test11a.SLr0",
+    and "test11b.SLr0"
+
+
+
+3. if run only one script, type
+
+	test11a.sh 
+   or
+	test11b.sh
+
+    and the result will be on "test11a.SRr0", or "test11b.SRr0" accordingly.
+    The log will be on "test11a.SLr0", or "test11b.SLr0" accordingly.
+
+
+    "test11a.sh" TAKES ~3 MINUTES TO RUN; 
+    "test11b.sh" TAKES ~14 MINUTES TO RUN; 
+

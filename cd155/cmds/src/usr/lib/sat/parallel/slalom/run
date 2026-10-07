@@ -1,0 +1,418 @@
+#!/bin/sh 
+#
+# This file: /usr/lib/sat/parallel/slalom/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0                     # Successful termination
+testError=1                    # Test failed to terminate correctly
+miscError=2                    # SAT or run script failures
+abortCode=3
+title="`sed -n '1p' README`"   # Test name, first line of README
+
+computeNodes=0                 # Number of nodes in compute partition
+minNodes=4                     # Minimum number of nodes required
+maxNodes=1024                  # Maximum number of nodes required
+slalomPart="slalom$$"          # Name of temporary working partition
+partName=$1                    # Partition name to be used by test
+scratchPart=""                 # Temporary partition and abs path to run test in
+execDir=`pwd`                  # Current working directory
+
+mbf=1                          # Size of message buffer in Mbytes
+
+patches=0
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+# Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/slalom.scratch.$$
+programResultsFile=$SAT_USR_TMP/slalom.results.$$
+programErrorFile=$SAT_USR_TMP/slalom.errors.$$
+
+# Define temporary work space for test application
+programWorkDir=$SAT_USR_TMP/slalom.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+   rm -f $programInputFile
+
+   cd $execDir
+   rm -fr $programWorkDir
+}
+
+# Remove compute partition function: expected cleanup
+removePartition() {
+
+   if test -n "$scratchPart" -a "$scratchPart" != ".compute"
+   then
+      rmpart -f -r $scratchPart > /dev/null 2>&1
+   fi
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   removePartition
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "slalom sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+#
+# Construct a directory path for data files.
+#
+
+# Get pathname for PFS scratch files, otherwise use UFS space for scratch
+
+if test -n "$SAT_PFSDIR"
+then
+   pfsDir="$SAT_PFSDIR"
+elif test -d /pfs
+then
+   pfsDir=/pfs
+else
+   pfsDir=`/sbin/mount | egrep '(type\ pfs)(.*)(local|rw|read-write)' | \
+                                                       awk '{print $3 ; exit}'`
+fi
+
+if test -n "$pfsDir"
+then
+   # PFS directory name for this test:
+   programWorkDir=$pfsDir/slalom.$$
+else
+   # No pfs found
+   echo "No PFS found" 1>&2
+fi
+echo "Using tmp directory \"$programWorkDir\""
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Partition size analysis and adjustment
+lspart -r . | awk 'BEGIN { dir = "" }
+                   index($1,":") == length($1) { dir = substr($1,1,length($1)-1) "."
+                                                 if (substr(dir,1,2) == "..")
+                                                    dir = substr(dir,2)
+                                                 next
+                                               }
+                   { fullname = dir $NF
+                     if (substr(fullname,1,1) == ".")
+                        print fullname, $4
+                   }' > $programScratchFile
+if test "`echo $1 | cut -c1`" = "."
+then
+   # Absolute partition pathname
+   partName=$1
+else
+   # Relative partition pathname
+   partName=.compute.$1
+fi
+computeString=`grep "^$partName " $programScratchFile`
+
+if test -z "$computeString"
+then
+   echo "Compute partition $partName does not exist." 1>&2
+   lspart -r . >> $programScratchFile
+   if [ ! -d $SAT_USR_TMP/failures ] ; then 
+     mkdir -p $SAT_USR_TMP/failures
+   fi
+   cp $programScratchFile $SAT_USR_TMP/failures
+
+   cleanup $miscError
+fi
+
+computeNodes="`echo $computeString | awk '{ print $2 ; exit }'`"
+
+# Check compute node size
+if test -z "$computeNodes"
+then
+   echo "Could not determine number of compute nodes." 1>&2
+   cleanup $miscError
+fi
+
+# Check for minimum size partition
+if test $computeNodes -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError nosave
+fi
+
+# Check for existing partition name
+if test -n "`grep '^${partName}.${slalomPart} ' $programScratchFile`"
+then
+   echo "Compute partition ${partName}.${slalomPart} already exists." 1>&2
+   lspart -r $partName | grep $slalomPart 1>&2
+
+   cleanup $miscError
+fi
+
+# Calculate partition size, largest square
+x=`echo $computeNodes | awk '{ printf "%d\n", int(sqrt($1)) }'`
+slalomSize=`expr $x \* $x`
+if test $slalomSize -gt $maxNodes
+then
+   slalomSize=$maxNodes
+fi
+echo "slalomSize: $slalomSize"
+
+# Verify partition size
+if test $slalomSize -lt $minNodes
+then
+   echo "$partName partition size less than minimum required, $minNodes." 1>&2
+   cleanup $miscError
+fi
+
+scratchPart=${partName}.${slalomPart}
+
+# Allocate required partition
+mkpart -sz $slalomSize $scratchPart >> $programScratchFile 2> $programErrorFile
+if test $? -ne 0
+then
+   echo "Failed to make partition $scratchPart." 1>&2
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $miscError
+fi
+
+# Calculate lower bound, function of partition size
+case $slalomSize in
+    4) patches=1300
+       mbf=1000000
+       ;;
+    9) patches=1800
+       mbf=1000000
+       ;;
+   16) patches=2300
+       mbf=2000000
+       ;;
+   25) patches=2600
+       mbf=2000000
+       ;;
+   36) patches=3000
+       mbf=3000000
+       ;;
+   49) patches=3200
+       mbf=3000000
+       ;;
+   64) patches=3500
+       mbf=4000000
+       ;;
+   81) patches=3700
+       mbf=4000000
+       ;;
+  100) patches=4000
+       mbf=5000000
+       ;;
+  121) patches=4100
+       mbf=5000000
+       ;;
+  144) patches=4200
+       mbf=5000000
+       ;;
+  169) patches=4300
+       mbf=5000000
+       ;;
+  196) patches=4400
+       mbf=5000000
+       ;;
+  225) patches=4500
+       mbf=5000000
+       ;;
+  256) patches=4600
+       mbf=5000000
+       ;;
+  289) patches=4700
+       mbf=5000000
+       ;;
+  324) patches=4800
+       mbf=5000000
+       ;;
+  361) patches=4900
+       mbf=5000000
+       ;;
+  400) patches=5000
+       mbf=5000000
+       ;;
+  441) patches=5100
+       mbf=5000000
+       ;;
+  484) patches=5200
+       mbf=5000000
+       ;;
+  529) patches=5300
+       mbf=5000000
+       ;;
+  576) patches=5400
+       mbf=5000000
+       ;;
+  625) patches=5500
+       mbf=5000000
+       ;;
+  676) patches=5550
+       mbf=5000000
+       ;;
+  729) patches=5600
+       mbf=5000000
+       ;;
+  784) patches=5650
+       mbf=5000000
+       ;;
+  841) patches=5700
+       mbf=5000000
+       ;;
+  900) patches=5750
+       mbf=5000000
+       ;;
+  961) patches=5800
+       mbf=5000000
+       ;;
+  1024) patches=5850
+       mbf=5000000
+       ;;
+    *) # Invalid size
+       echo "Cannot compute a lower bound for a size of $slalomSize" 1>&2
+       cleanup $miscError
+       ;;
+esac
+
+echo "patches: $patches"
+
+# Create input file
+programInputFile=${programWorkDir}/slalom.input.$$
+cat << EOF > $programInputFile
+60
+$patches
+EOF
+
+# Verify input files
+if test ! -r $programInputFile
+then
+   # Input file not available
+   echo "Required input file for \"slalom\" not available." 1>&2
+
+   cleanup $miscError
+fi
+
+cp ${execDir}/geom ${programWorkDir}/geom 2> $programErrorFile
+if test ! -r ${programWorkDir}/geom
+then
+   # either file does not exist or it is not readable
+   echo "Required file \"geom\" either does not exist, or is not readable" 1>&2
+
+   if test -f $programErrorFile
+   then
+      cat $programErrorFile 1>&2
+   fi
+
+   cleanup $miscError
+fi
+
+# Verify program is executable
+if test -x ${execDir}/slal
+then
+   # Execute program
+   if ${execDir}/slal $SAT_NX_ARGS -pn $scratchPart -sz $slalomSize -mbf $mbf < $programInputFile > $programScratchFile 2> $programErrorFile
+   then
+      # Get results, for Number of Patches and MFLOPS from scratch file
+      egrep '(Patches:|MFLOPS:|Time:)' $programScratchFile > $programResultsFile
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "slal exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"slal\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Report PASS/FAIL results
+#        Presence of line "Residual too large" in scratch file or error file
+
+if test "`sed -n '$=' $programResultsFile`" = "3" -a -z "`grep 'Residual too large' $programScratchFile $programErrorFile`" -a ! -f core -a ! -d core
+then
+   # Program PASSed, report performance
+   echo "PASS: $title."
+
+   cat $programResultsFile
+
+else
+   # Program FAILed, cat scratch file back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

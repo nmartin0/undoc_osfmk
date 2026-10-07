@@ -1,0 +1,25 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+ Reviewer: Jerry Kearns
+ Risk: Low
+ Benefit or PTS #: 7385 - Complete WW50 MACS Checkin
+ Testing:
+ Module(s):
+
+CVS: ----------------------------------------------------------------------
+CVS: Enter Log.  Lines beginning with `CVS: ' are removed automatically
+CVS: 
+CVS: Committing in 
+CVS: 
+CVS: Modified Files:
+CVS: 	macd.c 
+CVS: ----------------------------------------------------------------------

@@ -1,0 +1,28 @@
+
+All scripts are to be run from the ../.. 'src' directory.
+
+cmds.sh
+	build all libs and cmds
+host.sh
+	host specific environment concerns. Cross development 386 for i860
+install.sh
+	install libs & cmds into export tree
+installk.sh
+	monolithic kernel install: NOT USED!!
+installsec.sh
+	install security concerns: NOT USED!
+kernel.sh
+	build OSF 1.1 monolithic kernel (Mach2.5++)
+onecmd.sh
+	build one cmd 'onemcd path cmd-name'
+onetool.sh
+	build one tool 'onemcd path tool-name'
+osf1.sh
+	Build environment for doing builds on an OSF1 system
+	
+setup.sh
+	setup environment and OSF specific build tools.
+tools.sh
+	Build OSF ODE development tools; not required to build cmds & libs.
+ultrix.sh
+	Build environment for doing builds on an ULTRIX system

@@ -1,0 +1,416 @@
+#!/bin/sh
+###############################################################################
+#
+# Synopsis:
+# 	install: build script for Paragon SATs
+#
+# Environment:
+#	PARAGON_XDEV	(required on Sun, optional on Paragon)
+#	[SAT_STAGE]	(default=/usr/tmp)
+#	[SAT_TARDIR]	(default=$SAT_STAGE)
+#
+# Usage: 
+#	install (on Sun or Paragon)
+#
+# Output:
+#
+# Informational messages will go to stdout. Any error will be announced
+# with a message containing the string "ERROR". 
+#
+# If all goes well, a staging tree will be created within $SAT_STAGE/sat_stage
+# (~20Mb), and a compressed end-user tar file will be created at 
+# $SAT_TARDIR/sat.tar.Z (~10Mb).
+#
+# Description:
+#
+# This is the build script for the Paragon System Acceptance Tests. Its
+# main objective is to create the end-user visible sat.tar.Z compressed tar 
+# file containing the sat command usr/bin/sat and the sat tests under 
+# usr/lib/sat. The install can be done on a Sun or a Paragon system as long
+# as the required files are accessible.
+#
+# Files are pulled from a cmds/libs sandbox object tree into a staging area
+# where the tar file is created. Prior to creating the tar file user-visible 
+# makefiles are moved into place, an initial build of the tests occurs, 
+# non-visible sources and makefiles are removed for a few of the tests, and
+# ownerships and permissions are set. Permissions are set to match those 
+# listed in the bill of materials (bom) list contained in the "bom" file
+# at usr/lib/sat/bom.
+#
+# This script can be run by any user though root should execute it when
+# building a transmittal so permissions can be made correct. When executing
+# as root consider file permission issues if accessing or creating files 
+# mounted on an NFS files system. 
+#
+# Builds of the sat tests on a Sun are done using the PARAGON_XDEV 
+# cross-development compilers and libraries. In this case the PARAGON_XDEV 
+# environment variable should point to appropriate compilers and libraries. 
+# Your shell's path will temporarily be prepended with 
+# PARAGON_XDEV/paragon/bin.`arch` to include a path to these compiler tools.
+#
+# Builds on a Paragon are typically done using the standard native compilers
+# making the PARAGON_XDEV setting unnecessary. However, you can install the
+# native compilers in any location and use PARAGON_XDEV to point to this
+# alternate location. PARAGON_XDEV/usr/bin is prepended to your shell's PATH
+# variable in this case.
+#
+# No other build environment is required though because of disk space or
+# NFS permission reasons, optional environment variables have been provided
+# to allow flexibility in file placement. They are described next.
+#
+# A staging area is used to do the sat test build and arrange files properly 
+# before creating the tar file. The SAT_STAGE environment variable can be set 
+# to override the default (/usr/tmp). If the path given is not absolute then
+# it will be assumed to be relative to the current directory at invocation.
+# This directory is expected to exist and be writable. A subdirectory will 
+# be created at this point to contain the staging files (SAT_STAGE/sat_stage). 
+# The staging files are cleared every invocation of the install script, prior 
+# to priming the stage area. However, the staging files are left alone when 
+# the script finishes. It's up to the builder to remove the files in the 
+# staging area after running the install script.
+#
+# The end-user compressed tar file will be located at SAT_STAGE (next to the
+# staging area subdirectory). Optionally, the final location of the tar file
+# can be specified by setting the SAT_TARDIR environment variable. The 
+# compressed tar file name is hard coded to sat.tar.Z
+#
+# One can alter the verbosity of the build by altering the make command
+# macros passed on the make command line below. 
+#
+# AT=""				Make will show output of compiler.
+# AT="@"			Opposite of AT="". (default)
+# VERBOSE=""			Compiler will give normal output. (default)
+# VERBOSE="-v"			Compiler will be very verbose. 
+# VERBOSE="-Minfo=noconcur"	Compiler will be quiet when -Mconcur spec'd.
+# This string is passed directly to compiler and linker.
+# The defaults were chosen to maintain user interface for "sat -b" invocations.
+#
+# Notes:
+#
+# This script is intended for internal use only. It is not needed by the
+# end-user. This script and the bom file will not be included in the created 
+# tar file.
+# 
+# Caveats:
+#
+# Currently, this only works if the "install" and "bom" files are sitting 
+# at the top of the SAT library hierarchy ($SAT_LIB_SUBDIR/.). !Don't move 
+# install or bom! You can invoke install from any current working directory 
+# however.
+#
+# (c) Copyright 1992,1993,1994 Intel, Inc.
+# ALL RIGHTS RESERVED
+#
+###############################################################################
+
+PWD=`pwd`				# remember where we invoked from
+SAT_LIB_TOP="$PWD/`dirname $0`"		# abs. path to <obj>/usr/lib/sat
+OBJROOT="$SAT_LIB_TOP/../../.."		# abs. path to <obj>/usr/.. so we 
+					# can find usr/bin as well as usr/lib
+
+SAT_LIB_SUBDIR=usr/lib/sat	
+SAT_CMD_SUBDIR=usr/bin
+
+######################################################
+#### mainline ####
+######################################################
+
+echo ""
+echo "Starting SAT build..."
+echo ""
+
+#
+# check permission to do the install
+#
+
+if [ -z "`id | grep 'uid=0'`" ]; then
+	echo ""
+        echo "WARNING: Not running as root. Permissions may come out wrong"
+	echo ""
+        sleep 3
+fi
+
+#
+# check environment
+#
+
+# Sun must have PARAGON_XDEV set, optional on Paragon
+if [ "`uname`" != "Paragon OSF/1" ]; then
+	if [ -z "$PARAGON_XDEV" ]; then
+		echo ""
+		echo "ERROR: PARAGON_XDEV environment variable not set"
+		echo ""
+		exit 1
+	fi
+fi
+if [ -n "$PARAGON_XDEV" ]; then
+	echo "PARAGON_XDEV=$PARAGON_XDEV"
+	
+	if [ "`uname`" = "Paragon OSF/1" ]; then
+		PATH="$PARAGON_XDEV/usr/bin:$PATH"
+	else
+		PATH="$PARAGON_XDEV/paragon/bin.`arch`:$PATH"
+	fi
+	export PATH
+	echo "PATH=$PATH"
+fi
+	
+if [ ! -n "$SAT_STAGE" ]; then
+	SAT_STAGE="/usr/tmp"
+fi
+if [ ! -d "$SAT_STAGE" -o ! -w "$SAT_STAGE" ]; then
+	echo ""
+	echo "ERROR: Can't access staging directory $SAT_STAGE"
+	echo ""
+	exit 1
+fi
+if [ `echo $SAT_STAGE | cut -c1` != "/" ]; then
+	SAT_STAGE="$PWD/$SAT_STAGE"
+fi
+SAT_STAGE_DIR=$SAT_STAGE/sat_stage
+
+if [ ! -n "$SAT_TARDIR" ]; then
+	SAT_TARDIR="$SAT_STAGE"
+fi
+if [ ! -d "$SAT_TARDIR" -o ! -w "$SAT_TARDIR" ]; then
+	echo ""
+	echo "ERROR: Can't access tar file directory $SAT_TARDIR"
+	echo ""
+	exit 1
+fi
+TAR_FILE=$SAT_TARDIR/sat.tar
+
+#
+# move files from sandbox's object tree into staging area
+#
+
+echo ""
+echo "Priming staging area $SAT_STAGE_DIR..."
+echo ""
+
+rm -rf $SAT_STAGE_DIR
+mkdir $SAT_STAGE_DIR
+mkdir $SAT_STAGE_DIR/usr
+mkdir $SAT_STAGE_DIR/usr/bin
+mkdir $SAT_STAGE_DIR/usr/lib
+mkdir $SAT_STAGE_DIR/usr/lib/sat
+
+# copy sat command
+cd $OBJROOT/$SAT_CMD_SUBDIR/sat
+find sat -print | cpio -pdmv $SAT_STAGE_DIR/$SAT_CMD_SUBDIR
+
+# copy sat tests
+cd $OBJROOT/$SAT_LIB_SUBDIR
+find README help satsum benchmark install parallel system -print | \
+				cpio -pdmv $SAT_STAGE_DIR/$SAT_LIB_SUBDIR
+
+#
+# loop through subdirectories of test source tree and install individual tests.
+#
+
+echo ""
+echo "Renaming makefiles..."
+echo ""
+
+for mkfile in `find $SAT_STAGE_DIR/$SAT_LIB_SUBDIR -type f -name "*.mk" -print`
+do
+	if [ -r "$mkfile" ]; then
+		echo $mkfile
+		newname="`dirname $mkfile`/makefile"
+		mv -f $mkfile $newname
+	fi
+done
+
+#
+# build all the tests then cleanup intermediate build files
+#
+
+echo ""
+echo "Compiling test binaries..."
+echo ""
+
+make_errs=0
+for dir in `find $SAT_STAGE_DIR/$SAT_LIB_SUBDIR -type d -print`
+do
+	if [ -f $dir/run -a -f $dir/makefile ]
+	then
+		echo "$dir"
+		cd $dir
+
+		make AT="" VERBOSE=""
+
+		make_errs=`expr $make_errs + $?`
+		cd $PWD
+	fi
+done
+
+if [ $make_errs -gt 0 ]
+then
+	echo ""
+	echo "ERROR: One or more compiles failed. Aborting..."
+	echo ""
+	exit 1
+fi
+
+
+###########################################################################
+###NOTE: From here on try not to exit, but just call out errors.
+###      Lots of time has been spent and maybe errors can be manually fixed.
+###########################################################################
+
+#
+# remove all objects and sources and makefiles for certain tests
+#
+
+echo ""
+echo "Removing test objects..."
+echo ""
+
+find $SAT_STAGE_DIR/$SAT_LIB_SUBDIR -type f -name "*.o" -print | xargs rm -f
+
+echo ""
+echo "Removing unlicensed test sources..."
+echo ""
+
+cleanDirs=" \
+	parallel/nas/cg \
+	parallel/nas/appbt \
+	parallel/nas/pdefft \
+"
+for subDir in $cleanDirs
+do
+	dir=$SAT_STAGE_DIR/$SAT_LIB_SUBDIR/$subDir
+	if [ -d $dir ]; then
+		cd $dir
+
+		# remove subdirectories
+		for name in *
+		do
+			if [ -d $name ]; then
+				rm -rf $name
+			fi
+		done
+
+		# remove sources, object files, and libraries
+		for name in *.[fcshao] *.inc *.incl *.incl2 *.include makebt
+		do
+			rm -f $name
+		done
+
+		# remove makefile
+		rm -f makefile
+
+		cd $PWD
+	fi
+done
+
+#
+# set permissions/owners
+#
+
+echo ""
+echo "Setting permissions..."
+echo ""
+
+cd $SAT_STAGE_DIR
+# Using a subshell here allows for a huge bom file to be read. See redirection
+# of BOM file as standard input at end of subshell parenthesis.
+(		
+while [ 1 -eq 1 ]; do
+	read pathname mode owner group
+	if [ $? -ne 0 ]; then
+		# eof
+		break
+	fi
+	if [ `echo $pathname | cut -c1` = "#" ]; then
+		# a comment
+		continue
+	fi
+
+	# show the BOM entry
+	echo $pathname mode=$mode owner=$owner group=$group
+
+	# check the BOM entry
+	if [ ! -n "$pathname" -o ! -n "$mode" -o ! -n "$owner" -o \
+							! -n "$group" ]; then
+		echo ""
+		echo "ERROR: ^^^ bad BOM entry. Ignoring"
+		echo ""
+		continue
+	fi
+	if [ ! -f $pathname -a ! -d $pathname ]; then
+		echo ""
+		echo "ERROR: ^^^ file doesn't exist in staging area"
+		echo ""
+		continue
+	fi
+
+	# set the values and check carefully for errors
+	chmod $mode $pathname
+	chmod_stat=$?
+	chgrp $group $pathname
+	chgrp_stat=$?
+	chown $owner $pathname
+	chown_stat=$?
+	if [ $chmod_stat -ne 0 -o $chgrp_stat -ne 0 -o $chown_stat -ne 0 ]; then
+		echo ""
+		echo "ERROR: Couldn't set file access attributes"
+		echo ""
+	fi
+done
+) < $SAT_LIB_TOP/bom
+
+#
+# make shippable tar
+#
+
+echo ""
+echo "Making end-user tar file $TAR_FILE..."
+echo ""
+
+cd $SAT_STAGE_DIR
+echo "pwd --> `pwd`"
+
+if [ ! -d $SAT_CMD_SUBDIR -o ! -d $SAT_LIB_SUBDIR ]
+then
+	echo ""
+	echo "ERROR: Can't find $SAT_CMD_SUBDIR or $SAT_LIB_SUBDIR. Aborting..."
+	echo ""
+	exit 1
+fi
+
+tar cvf $TAR_FILE \
+	$SAT_CMD_SUBDIR/sat \
+	$SAT_LIB_SUBDIR/help \
+	$SAT_LIB_SUBDIR/satsum \
+	$SAT_LIB_SUBDIR/README \
+	$SAT_LIB_SUBDIR/benchmark \
+	$SAT_LIB_SUBDIR/parallel \
+	$SAT_LIB_SUBDIR/system
+# if this failed we'll catch it below during the compress
+
+echo ""
+echo "Compressing the tar file..."
+echo ""
+
+if [ -f ${TAR_FILE}.Z ]
+then
+	echo "Moving existing ${TAR_FILE}.Z to ${TAR_FILE}.Z.old"
+	mv -f ${TAR_FILE}.Z ${TAR_FILE}.Z.old
+fi
+compress $TAR_FILE
+if [ -f ${TAR_FILE}.Z ]
+then
+	echo "Compressed tar file created at ${TAR_FILE}.Z"
+else
+	echo ""
+	echo "ERROR: compress failed. No compressed tar file available."
+	echo ""
+	exit 1
+fi
+
+echo ""
+echo "Sat build done"
+echo ""
+
+exit 0

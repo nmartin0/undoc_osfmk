@@ -1,0 +1,3956 @@
+editing zipcode
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+scsicmd: inquiry
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 0 2a 0 0 0 0 1 4 0
+		cdb.Buffer = 8065ff8
+		cdb.BufferLength = 104
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 12 0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 0 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e5c
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16720 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 20 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 20 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074ea8
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16976 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 40 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 40 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17232 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 60 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 60 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e5c
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 80 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074ea8
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17744 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 a0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_18000 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 c0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e5c
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_18256 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 e0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074ea8
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 5a 0 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_select
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 55 11 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 25 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 91 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 2 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16720 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 5a 20 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 11 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 25 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 91 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 2 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16976 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 5a 40 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 11 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 25 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 91 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 2 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17232 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 5a 60 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 11 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 25 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 91 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 2 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 5a 0 2a 0 0 0 0 1 4 0
+		cdb.Buffer = 8065ff8
+		cdb.BufferLength = 104
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 12 0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 0 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16720 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 20 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 20 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16976 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 40 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 40 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17232 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 60 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 5a 60 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 80 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17744 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 a0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_18000 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 c0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_18256 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 12 e0 0 0 24 0 0 0 0 0
+		cdb.Buffer = 806dd08
+		cdb.BufferLength = 24
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 5a 0 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_select
+
+sysio	: controller_command
+
+find_fdtab :
+ found
+
+		cdb.Byte = 55 11 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 25 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 91 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 2 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16720 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 5a 20 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 11 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 25 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 91 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 19
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 2 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16976 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 5a 40 2b 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 3
+
+		return status from IO_SCSI = 0
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+Slot matched OK: slot=2
+
+Leaving translate_slot_to_ctlr
+
+ add_fd_to_fdtab :
+done
+
+		cdb.Byte = 55 11 0 0 0 0 0 0 94 0
+		cdb.Buffer = 80660fc
+		cdb.BufferLength = 94
+		direction = 2
+
+		return status from IO_SCSI = -2
+
+		(system) errno = 6
+
+ Press <ENTER> to continue: 
+Sense Data:  Valid = 0, Sense Key = 5
+		
+ 70 
+ 0 
+ 5 
+ 0 
+ 0 
+ 0 
+ 0 
+ ffffff98 
+ 0 
+ 0 
+ 0 
+
+		
+ 0 
+ ffffff91 
+ 25 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 0 
+ 1 
+
+		
+ 0 
+ 0 
+ 0 
+ 0 
+
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 0
+
+		scsi_status.Sense_Present = 1
+
+		scsi_status as unsigned hex = c0000000
+
+scsicmd: mode_select
+
+sysio	: destroy
+
+find_fdtab :
+ found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+Slot mismatch
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_83024 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_148560 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_214096 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_279632 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_345168 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_410704 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_476240 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17232 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82768 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_148304 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213840 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_279376 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344912 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_410448 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475984 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: mode_sense
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: inquiry
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16720 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82256 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147792 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213328 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278864 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344400 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409936 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475472 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16976 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82512 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_148048 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213584 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_279120 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344656 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_410192 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475728 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17232 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82768 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_148304 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213840 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_279376 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344912 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_410448 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475984 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17488 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_83024 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_148560 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_214096 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_279632 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_345168 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_410704 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_476240 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_17744 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_83280 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_148816 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_214352 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_279888 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_345424 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_410960 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_476496 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_18000 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_83536 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_149072 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_214608 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_280144 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_345680 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_411216 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_476752 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+scsicmd: inquiry
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074e10
+
+leaving destroy_OBJECT
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_16464 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_82000 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_147536 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_213072 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_278608 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_344144 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_409680 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_475216 failed
+
+Leaving translate_slot_to_ctlr
+
+sysio	: controller_command
+
+find_fdtab :
+ not found
+
+Entered translate_slot_to_ctlr
+
+For loop: Trying controller number 0
+
+IO_open of /tmp/35_18256 failed
+
+For loop: Trying controller number 1
+
+IO_open of /tmp/35_83792 failed
+
+For loop: Trying controller number 2
+
+IO_open of /tmp/35_149328 failed
+
+For loop: Trying controller number 3
+
+IO_open of /tmp/35_214864 failed
+
+For loop: Trying controller number 4
+
+IO_open of /tmp/35_280400 failed
+
+For loop: Trying controller number 5
+
+IO_open of /tmp/35_345936 failed
+
+For loop: Trying controller number 6
+
+IO_open of /tmp/35_411472 failed
+
+For loop: Trying controller number 7
+
+IO_open of /tmp/35_477008 failed
+
+Leaving translate_slot_to_ctlr
+
+		scsi_status.Error = 1
+
+		scsi_status.Errno = 5
+
+		scsi_status.Sense_Present = 0
+
+		scsi_status as unsigned hex = 80000005
+
+sysio	: destroy
+
+find_fdtab :
+ not found
+
+find_fdtab :
+ not found
+
+entered destroy_OBJECT, this = 8074f74
+
+leaving destroy_OBJECT
+

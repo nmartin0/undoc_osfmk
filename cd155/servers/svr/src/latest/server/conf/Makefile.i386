@@ -1,0 +1,153 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1989 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#  
+#
+# HISTORY
+# $Log: Makefile.i386,v $
+# Revision 1.6  1994/11/18  20:29:19  mtm
+# Copyright additions/changes
+#
+# Revision 1.5  1994/04/28  19:01:34  chrisp
+# Changes to allow non-NX, i386 builds.
+#
+#  Reviewer: dleslie, cfj
+#  Risk: M
+#  Benefit or PTS #: 9188
+#  Testing: Builds, builds, builds.
+#  Module(s): Makefile MASTER Makefile.i386 Makefile.i860
+#             Makefile.template make.template
+#
+# Revision 1.4  1993/07/14  17:53:29  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.3  1993/07/01  19:11:51  cfj
+# Adding new code from vendor
+#
+# Revision 1.3  1993/05/06  19:13:49  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.1  1993/05/03  17:26:54  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.2  1992/11/30  22:18:58  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:18:05  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 2.6  1993/03/04  17:04:14  yazz
+# Allow master Makeconf files to lack definitions for OPTIMIZE_{I860,I386}
+# and still compile, using OPTIMIZE_DEFAULT.  Change comments accordingly.
+#
+# Revision 2.5  93/02/26  19:55:18  yazz
+# For i386 architecture, allow OPTIMIZE definition to be optionally
+# overridded by definition of OPTIMIZE_I386 in master Makeconf file.
+# 
+# Revision 2.4  92/03/09  12:00:01  durriya
+# 	[Revision 3.1  92/02/12  10:58:25  bernadat]
+# 	Fixed rule for profiling option
+# 
+# Revision 2.3  91/12/19  12:35:50  roy
+# 	Define SIZE.
+# 
+# Revision 2.2  91/08/31  13:26:32  rabii
+# 	Initial V2.0 Checkin
+# 
+#	Revision 3.0  91/01/17  12:06:38  condict
+#	Unchanged copy from Mach 3.0 BSD UNIX server
+#	
+# Revision 2.3  90/06/19  23:10:07  rpd
+# 	Added -x and -L to LDFLAGS.
+# 	[90/06/03            rpd]
+# 
+# Revision 2.2  90/05/21  13:51:27  dbg
+# 	Convert for u*x server.
+# 	[90/03/14            dbg]
+# 
+# 	Fix locore build rule - add space before '-DLOCORE'.
+# 	[90/02/14            dbg]
+# 
+# Revision 2.6.1.5  90/02/01  13:33:48  rvb
+# 	Don't play with SYS_RULE_1.  And stub out SYS_RULE{2,3,4}
+# 	to @ to not to have (null command) complaint.
+# 	And, the .s's files should be in $(SOURCE_DIR) not ..
+# 	[90/01/23            rvb]
+# 
+# Revision 2.6.1.4  90/01/02  13:55:27  rvb
+# 	SWAPSYS is now coff only.
+# 
+# Revision 2.6.1.3  89/12/21  17:11:24  rvb
+# 	a.out vs coff now handled by MASTER.i386
+# 
+# Revision 2.6.1.2  89/11/21  12:55:09  rvb
+# 	md is no longer in /usr/mach/bin
+# 
+# 
+# Revision 2.6.1.1  89/10/22  11:29:04  rvb
+# 	Indicate coff vs a.out
+# 	[89/10/21            rvb]
+# 
+# Revision 2.6  89/09/25  12:20:10  rvb
+# 	uprt.s -> start.s
+# 	[89/09/23            rvb]
+# 
+# Revision 2.5  89/04/07  14:58:25  rvb
+# 	We don't need INCLUDES any more.
+# 	[89/04/07            rvb]
+# 
+# Revision 2.4  89/04/05  12:57:12  rvb
+# 	Some changes for gcc, and locore is a .s
+# 	[89/03/21            rvb]
+# 
+# Revision 2.3  89/02/25  17:39:18  gm0w
+# 	Changes for cleanup.
+# 
+# Revision 2.2  89/01/23  22:15:23  af
+# 	Created.
+# 	[89/01/16  17:11:51  af]
+# 
+
+###############################################################################
+#BEGIN	Machine dependent Makefile fragment for the i386
+###############################################################################
+C_RULE_2_P=true
+
+#tmp
+
+SYS_RULE_2=-@
+SYS_RULE_3=-@
+SYS_RULE_4=-@
+MD=md
+
+SIZE=size
+
+# The master Makeconf file may have defined OPTIMIZE_I386.  If so we
+# set OPTIMIZE accordingly; if not we use the OPTIMIZE_DEFAULT value
+# we get from the Makefile.template file.
+#
+OPTIMIZE=${OPTIMIZE_I386?$(OPTIMIZE_I386):$(OPTIMIZE_DEFAULT)}
+
+#LIBS_P=-lc_p
+LIBS= -lthreads -lmach_sa
+
+LDOBJS_PREFIX=
+LDFLAGS= -x -e __start -L${MKLIB}
+LINTOPTS=${ALLOPTS} -Di386 -D_i386_ -D__i386__ -Dvolatile=
+
+###############################################################################
+#END	Machine dependent Makefile fragment for the i386
+###############################################################################

@@ -1,0 +1,180 @@
+#
+# Makefile for APPBT
+#
+
+AT=@
+
+FC=if77
+FFLAGS=-c -O4 -Knoieee -Mnodebug -Mextend ${SMP_READY} ${VERBOSE}
+LDFLAGS=-Knoieee -lkmath -nx ${SMP_READY} ${VERBOSE}
+SMP_READY=-Mconcur
+
+FCNOVECT=${FC} ${FFLAGS}
+FCVECT=${FCNOVECT} -Mvect=cachesize:12288,smallvect:70 -Mnostride0
+
+
+SRCS=	appbt.f           dirichlet.f       l2norm.f          xyTxz.f \
+	btadi.f           erhs.f            pintgr.f          xyTxz2.f \
+	btridxy1_kuck.f   error.f           rhs.f             xyTxzH.f \
+	btridxy2_kuck.f   exact.f           rhs2.f            xyTxzH_wait.f \
+	btridzy1_kuck.f   jacx.f            rob.f             xyTxz_wait.f \
+	btridzy2_kuck.f   jacx2.f           setbviv.f         xzTyz.f \
+	btridzy3_kuck.f   jacy.f            updx.f            xzTyzH.f \
+	btverify.f        jacy2.f           updy2.f           xzTyzH_wait.f \
+	compinv.f         jacz.f            updz.f            xzTyz_wait.f \
+	compnode.f        jacz2.f           updz2.f           yzTxy.f
+
+OBJS=	appbt.o           compnode.o        jacz2.o           xyTxz.o \
+	dirichlet.o       l2norm.o          xyTxz2.o \
+	btadi.o           erhs.o            pintgr.o          xyTxzH.o \
+	btridxy1_kuck.o   error.o           rhs.o             xyTxzH_wait.o \
+	btridxy2_kuck.o   exact.o           rhs2.o            xyTxz_wait.o \
+	btridzy1_kuck.o   jacx.o            setbviv.o         xzTyz.o \
+	btridzy2_kuck.o   jacx2.o           updx.o            xzTyzH.o \
+	btridzy3_kuck.o   jacy.o            updy2.o           xzTyzH_wait.o \
+	btverify.o        jacy2.o           updz.o            xzTyz_wait.o \
+	compinv.o         jacz.o            updz2.o           yzTxy.o
+
+EXEC=	bt
+
+all: ${EXEC}
+
+${EXEC}:	${OBJS}
+	${AT} ${FC} -o ${EXEC} ${OBJS} ${LDFLAGS}
+
+appbt.o:	appbt.f
+	${AT}${FCVECT} appbt.f 
+
+btadi.o:	btadi.f
+	${AT}${FCVECT} btadi.f 
+
+btridxy1_kuck.o:	btridxy1_kuck.f
+	${AT}${FCVECT} btridxy1_kuck.f 
+
+btridxy2_kuck.o:	btridxy2_kuck.f
+	${AT}${FCVECT} btridxy2_kuck.f 
+
+btridzy1_kuck.o:	btridzy1_kuck.f
+	${AT}${FCVECT} btridzy1_kuck.f 
+
+btridzy2_kuck.o:	btridzy2_kuck.f
+	${AT}${FCVECT} btridzy2_kuck.f 
+
+btridzy3_kuck.o:	btridzy3_kuck.f
+	${AT}${FCVECT} btridzy3_kuck.f 
+
+btverify.o:	btverify.f
+	${AT}${FCVECT} btverify.f 
+
+compinv.o:	compinv.f
+	${AT}${FCVECT} compinv.f 
+
+compnode.o:	compnode.f
+	${AT}${FCNOVECT} compnode.f
+
+dirichlet.o:	dirichlet.f
+	${AT}${FCVECT} dirichlet.f 
+
+erhs.o:		erhs.f
+	${AT}${FCVECT} erhs.f 
+
+exact.o:	exact.f
+	${AT}${FCVECT} exact.f 
+
+error.o:	error.f
+	${AT}${FCVECT} error.f 
+
+jacx.o:		jacx.f
+	${AT}${FCVECT} jacx.f 
+
+jacy.o:		jacy.f
+	${AT}${FCVECT} jacy.f 
+
+jacz.o:		jacz.f
+	${AT}${FCVECT} jacz.f 
+
+jacx2.o:	jacx2.f
+	${AT}${FCVECT} jacx2.f 
+
+jacy2.o:	jacy2.f
+	${AT}${FCVECT} jacy2.f 
+
+jacz2.o:	jacz2.f
+	${AT}${FCVECT} jacz2.f 
+
+l2norm.o:	l2norm.f
+	${AT}${FCVECT} l2norm.f 
+
+pintgr.o:	pintgr.f
+	${AT}${FCVECT} pintgr.f 
+
+rhs.o:		rhs.f
+	${AT}${FCVECT} rhs.f 
+
+rhs2.o:		rhs2.f
+	${AT}${FCVECT} rhs2.f
+
+setbviv.o:	setbviv.f
+	${AT}${FCVECT} setbviv.f 
+
+updx.o:		updx.f
+	${AT}${FCVECT} updx.f 
+
+updy2.o:	updy2.f
+	${AT}${FCVECT} updy2.f 
+
+updz.o:		updz.f
+	${AT}${FCVECT} updz.f 
+
+updz2.o:	updz2.f
+	${AT}${FCVECT} updz2.f 
+
+xyTxz.o:	xyTxz.f
+	${AT}${FCVECT} xyTxz.f 
+
+xyTxz2.o:	xyTxz2.f
+	${AT}${FCVECT} xyTxz2.f 
+
+xyTxz_wait.o:	xyTxz_wait.f
+	${AT}${FCVECT} xyTxz_wait.f 
+
+xzTyz.o:	xzTyz.f
+	${AT}${FCVECT} xzTyz.f 
+
+xzTyz_wait.o:	xzTyz_wait.f
+	${AT}${FCVECT} xzTyz_wait.f 
+
+xyTxzH.o:	xyTxzH.f
+	${AT}${FCVECT} xyTxzH.f 
+
+xyTxzH_wait.o:	xyTxzH_wait.f
+	${AT}${FCVECT} xyTxzH_wait.f 
+
+xzTyzH.o:	xzTyzH.f
+	${AT}${FCVECT} xzTyzH.f 
+
+xzTyzH_wait.o:	xzTyzH_wait.f
+	${AT}${FCVECT} xzTyzH_wait.f 
+
+yzTxy.o:	yzTxy.f
+	${AT}${FCVECT} yzTxy.f 
+
+clean:
+	${AT}path=`which ${FC}` ;	\
+	if [ -x $$path ] ;		\
+	then				\
+	  remove=TRUE ;			\
+	else				\
+	  remove=FALSE ;		\
+	fi ;				\
+	for file in ${SRCS} ;		\
+	do				\
+	  if [ ! -r $$file ] ;		\
+	  then				\
+	    remove=FALSE ;		\
+	  fi ;				\
+	done ;				\
+	if [ $$remove = TRUE ] ;	\
+	then				\
+	  rm -f ${OBJS} ${EXEC} ;	\
+	fi

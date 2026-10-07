@@ -1,0 +1,8 @@
+
+Local mods:
+
+./IPSC860/kls_coff_machdep.c
+./kls_a.out.c
+	Modified for PGI ANSI C:
+	changed illegal "&(cast)foo" to (cast)&foo
+	see '__i860__'

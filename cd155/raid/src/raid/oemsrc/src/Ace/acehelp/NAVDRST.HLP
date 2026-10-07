@@ -1,0 +1,107 @@
+     NOTE:  The logical unit window is the window in which the cursor 
+            is always placed when you select the Array Configuration 
+            Editor.
+ 
+ 
+     EXPLANATION OF OPTION
+ 
+     The following table gives the keys you use to navigate in either 
+     the drive or logical unit window.
+ 
+     ออออออออออออออออัออออออออออออออออออออออออออออออออออออออออออออออ
+      NAVIGATION     ณ               DESCRIPTION OF KEY'S USE
+         KEY         รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤยฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ In Drive Window  ณ In Logical Unit Window
+     ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ Moves the cursor ณ  Moves the cursor
+         <Tab>       ณ to the logical   ณ  to the drive
+                     ณ unit window.     ณ  window.
+     ออออออออออออออออฯออออออออออออออออออฯอออออออออออออออออออออออออออ
+ 
+ 
+ 
+                                (CONTINUED)
+     ออออออออออออออออัอออออออออออออออออออออออออออออออออออออออออออออออ
+      NAVIGATION     ณ               DESCRIPTION OF KEY'S USE
+         KEY         รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤยฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ In Drive Window  ณ In Logical Unit Window
+     ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ Moves the cursor ณ Moves the cursor down
+       <Space Bar>   ณ to all available ณ in the logical unit
+                     ณ drives in the    ณ display.
+                     ณ drive matrix.    ณ
+     ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ     
+                     ณ Moves the cursor ณ - Moves the cursor down
+                     ณ down in the driveณ   in the logical unit
+       <Down-arrow>  ณ matrix.          ณ   display.
+                     ณ                  ณ
+                     ณ                  ณ - Moves the cursor to
+                     ณ                  ณ   each logical unit  
+                     ณ                  ณ   parameter that can 
+                     ณ                  ณ   be changed.        
+     ออออออออออออออออฯออออออออออออออออออฯอออออออออออออออออออออออออออ
+ 
+ 
+ 
+                                (CONTINUED)
+     ออออออออออออออออัออออออออออออออออออออออออออออออออออออออออออออออ
+      NAVIGATION     ณ               DESCRIPTION OF KEY'S USE
+         KEY         รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤยฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ In Drive Window  ณ In Logical Unit Window
+     ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ Moves the cursor ณ Moves the cursor up
+                     ณ up in the drive  ณ in the logical unit
+       <Up-arrow>    ณ matrix.          ณ display.
+                     ณ                  ณ
+     ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ Moves the cursor ณ
+       <Right-arrow> ณ right in the     ณ
+                     ณ drive matrix.    ณ
+                     ณ                  ณ        N/A
+     ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+                     ณ Moves the cursor ณ
+       <Left-arrow>  ณ left in the      ณ
+                     ณ drive matrix.    ณ
+     ออออออออออออออออฯออออออออออออออออออฯอออออออออออออออออออออออออออ
+ 
+ 
+ 
+                                (CONTINUED)
+     ออออออออออออออออัออออออออออออออออออออออออออออออออออออออออออออออ
+      NAVIGATION     ณ               DESCRIPTION OF KEY'S USE
+         KEY         รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤยฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ In Drive Window  ณ In Logical Unit Window
+     ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ Moves the cursor ณ - Moves the cursor to
+                     ณ to each drive in ณ   each logical unit
+                     ณ a drive group.   ณ   parameter that can
+                     ณ                  ณ   be changed.
+                     ณ                  ณ
+        <Return>     ณ                  ณ - Executes certain
+                     ณ                  ณ   actions.  For example,
+                     ณ                  ณ   when you change the
+                     ณ                  ณ   logical unit parameters,
+                     ณ                  ณ   you type "y" and press
+                     ณ                  ณ   <Return>.
+     ออออออออออออออออฯออออออออออออออออออฯอออออออออออออออออออออออออออ
+ 
+ 
+ 
+ 
+ 
+                               (CONTINUED)
+ 
+     ออออออออออออออออัออออออออออออออออออออออออออออออออออออออออออออออ
+      NAVIGATION     ณ               DESCRIPTION OF KEY'S USE
+         KEY         รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤยฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณ In Drive Window  ณ In Logical Unit Window
+     ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤมฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+                     ณQuits the following:                           
+         <Q>         ณ - Ace (the Array Configuration Editor)        
+                     ณ - The window for selecting a RAID level       
+                     ณ - The window for selecting the Channel and ID 
+                     ณ   of drives                                  
+                     ณ - "Modify/Display Parameters" option         
+                     ณ - Help                                       
+     ออออออออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออ
+ 

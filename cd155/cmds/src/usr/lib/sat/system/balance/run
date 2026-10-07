@@ -1,0 +1,695 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/parallel/balance/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0                     # Successful termination
+testError=1                    # Test failed to terminate correctly
+miscError=2                    # SAT or run script failures
+abortCode=3
+title="`sed -n '1p' README`"   # Test name, first line of README
+
+computeNodes=0                 # Number of nodes in compute partition
+minNodes=1                     # Minimum number of nodes required
+partName=$1                    # Partition name to be used by test
+execDir=`pwd`                  # Current working directory
+phase=1			       # Specifies phase of test and log file set
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+# Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/balance.scratch.$$
+programResultsFile=$SAT_USR_TMP/balance.results.$$
+programErrorFile=$SAT_USR_TMP/balance.errors.$$
+programExitCodeFile=$SAT_USR_TMP/balance.exitcode.$$
+programWorkDir=$SAT_USR_TMP/balance.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove work partitions function: expected cleanup
+
+removePartition() {
+
+   # Remove partitions for all partitions created in phase 2
+   if test $phase -eq 2 -a -n "$numTests"
+   then
+      i=1
+      while test $i -le $numTests
+      do
+         testPart=`eval echo '\$sbsPart'$i`
+         if test -n "$testPart" -a "$testPart" != .compute
+         then
+            rmpart -r -f $testPart > /dev/null 2>&1
+         fi
+         i=`expr $i + 1`
+      done
+   fi
+}
+
+# Remove temporary file(s) function: expected cleanup
+
+removeFiles() {
+
+   rm -f $programScratchFile.$phase
+   rm -f $programResultsFile.$phase
+   rm -f $programErrorFile.$phase
+
+   # Remove additional files created in phase 2
+
+   if [ $phase -eq 2 -a -n "$numTests" ]
+   then
+      tn=1
+      while [ $tn -le $numTests ]
+      do
+         rm -f ${programErrorFile}.$phase.$tn
+         rm -f ${programScratchFile}.$phase.$tn
+         rm -f ${programExitCodeFile}.$phase.$tn
+         tn=`expr $tn + 1`
+      done
+   fi
+
+   # check for core files or dirs
+   if test -f $programWorkDir.$phase/core -o -d $programWorkDir.$phase/core
+   then
+         echo "balance sat dumped core during phase $phase" 1>&2
+	 coreinfo $programWorkDir.$phase/core 1>&2
+   fi
+
+   cd $execDir
+   rm -fr $programWorkDir.$phase
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   removePartition
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   else
+      # check for core files or dirs
+      if test -f $programWorkDir.$phase/core -o -d $programWorkDir.$phase/core
+      then
+         echo "balance sat dumped core during phase $phase" 1>&2
+	 coreinfo $programWorkDir.$phase/core 1>&2
+      fi
+   fi
+
+   exit $exitCode
+}
+
+# Function that returns the number of space-separated words in a string
+length()
+{
+   echo $#
+}
+
+# Function that returns the first word of a space-separated string
+first()
+{
+   echo $1
+}
+
+# Function that returns all but the first word of a space-separated string
+rest()
+{
+   shift
+   echo $*
+}
+
+# Function that effectively appends arguments into a single string with no
+# leading or trailing spaces.
+append()
+{
+   echo $*
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir.$phase
+then
+   cd $programWorkDir.$phase
+else
+   echo "Cannot create temporary directory \"$programWorkDir.$phase\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Partition size analysis and adjustment
+lspart -r . | awk 'BEGIN { dir = "" }
+                   index($1,":") == length($1) { dir = substr($1,1,length($1)-1) "."
+                                                 if (substr(dir,1,2) == "..")
+                                                    dir = substr(dir,2)
+                                                 next
+                                               }
+                   { fullname = dir $NF
+                     if (substr(fullname,1,1) == ".")
+                        print fullname, $4
+                   }' > $programScratchFile.$phase
+if test "`echo $1 | cut -c1`" = "."
+then
+   # Absolute partition pathname
+   partName=$1
+else
+   # Relative partition pathname
+   partName=.compute.$1
+fi
+computeString=`grep "^$partName " $programScratchFile.$phase`
+
+if test -z "$computeString"
+then
+   echo "Compute partition $partName does not exist." 1>&2
+   lspart -r . >> $programScratchFile
+   if [ ! -d $SAT_USR_TMP/failures ] ; then 
+     mkdir -p $SAT_USR_TMP/failures
+   fi
+   cp $programScratchFile $SAT_USR_TMP/failures
+
+   cleanup $miscError
+fi
+
+# Get number of nodes in specified partition
+computeNodes="`echo $computeString | awk '{ print $2 ; exit }'`"
+
+# Check compute node size
+if test -z "$computeNodes"
+then
+   echo "Could not determine number of compute nodes." 1>&2
+   cleanup $miscError
+fi
+
+# Check for minimum size partition
+if test $computeNodes -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError nosave
+fi
+
+# Do phase one.  Run linpack on all nodes of specified partition.
+testProg=linpack
+
+echo ""
+echo Starting phase 1 of System Balance Test
+echo ""
+
+# Verify program is executable
+if test -x ${execDir}/balance
+then
+   # Execute program
+   if ${execDir}/balance -pn $partName -sz $computeNodes -pt 0 -t > $programScratchFile.$phase 2> $programErrorFile.$phase
+   then
+      # Count number of passes, number of fails.
+      pass=`grep -i -c 'Exit: 0' $programScratchFile.$phase`
+
+      # Report PASS/FAIL results
+      #        pass must equal computeNodes (they all must pass)
+
+      if test "$pass" = "$computeNodes" -a ! -f core -a ! -d core
+      then
+         # Program PASSed, report performance
+         echo "PASS: $testProg"
+         echo " Number of Processors: $computeNodes"
+
+         # awk script that prints processor number followed by the maximum
+         # number mflops reported for that processor.  The awk output is
+         # piped into sort, which sorts on the second field (number of mflops)
+         # and this sorted output is written to programResultsFile
+
+         awk \
+         'BEGIN {state=0;}
+          /Processor: / {if (state != 0) printf("%d %f\n", processor, flops);
+                         processor=$2; flops=0; state=1; next}
+          /times for array/ {if (state == 1) state=2; next}
+          /[0-9]/ && state == 2 {flops=$4; state=3; next}
+          /[0-9]/ && state == 3 {if ($4 > flops) flops=$4; next}
+          END { printf("%d %f\n", processor, flops) }' $programScratchFile.$phase | sort +1bn -2 > $programResultsFile.$phase
+
+         # awk script that take sorted flops and processor numbers from previous
+         # awk script, and computes minimum Mflops, maximum Mflops, average
+         # Mflops, median Mflops, standard deviation of Mflops, and performance
+         # variance between slowest and fastes processor.
+
+         awk \
+         'BEGIN {i=0;}
+          {proc[i] = $1; flops[i++] = $2;}
+          END {
+           minflops=flops[0];
+           minproc=proc[0];
+           maxflops=flops[i-1];
+           maxproc=proc[i-1];
+           averageflops=flops[0];
+           medianflops=flops[int(i/2)];
+           for (j=1; j<i; j++) {
+            averageflops+=flops[j];
+           }
+           averageflops = averageflops/i;
+           for (j=0; j<i; j++) {
+            stddev = stddev+(averageflops-flops[j])*(averageflops-flops[j]);
+           }
+           stddev = sqrt(stddev/i);
+           printf(" Minimum Mflops: %1.2f  Processor: %d\n", minflops, minproc);
+           printf(" Maximum Mflops: %1.2f  Processor: %d\n", maxflops, maxproc);
+           printf(" Average Mflops: %1.2f\n", averageflops);
+           printf(" Median Mflops:  %1.2f\n", medianflops);
+           printf(" Stdandard Deviation: %1.2f\n", stddev);
+           printf(" Processor performance varried by %1.2f%%\n", \
+                  (maxflops-minflops)/minflops*100);
+          }' $programResultsFile.$phase
+
+      else
+         # Program FAILed, cat scratch file back to sat
+         echo "FAIL: $testProg"
+
+         cat $programScratchFile.$phase
+         cat $programErrorFile.$phase 1>&2
+
+         cleanup $testError
+      fi
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "balance exit code: $exitCode" >> $programScratchFile.$phase
+
+      cat $programScratchFile.$phase
+      cat $programErrorFile.$phase 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"balance\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Remove scratch partition and files from phase 1
+removePartition
+removeFiles
+
+# Do phase two.  Divide partition up into variable number of non-overlapping
+# subpartitions and run a parallel app in each.
+phase=2
+
+echo ""
+echo Starting Phase 2 of System Balance Test
+echo ""
+
+# Cleanup any old phase 2 log files
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir.$phase
+then
+   cd $programWorkDir.$phase
+else
+   echo "Cannot create temporary directory \"$programWorkDir.$phase\"" 1>&2
+   cleanup $miscError
+fi
+
+# Set testList to the set of parallel apps to run, and the part sizes of each.
+# Partition sizes are either static (absolute) or dynamic (relative).  Integers
+# denote static partition sizes, and request that number of nodes for the test.
+# Floating point numbers denote dynamic partitions sizes, and denote that
+# amount of the nodes left over after static allocation be alloced to that
+# tests (0.5 would allocate 1/2 of the nodes not statically allocated).
+# Dynamic and static partition size requests may be mixed.  If any dynamic
+# partition size requests are present, they must add up to 1.0.
+
+if test -n "$TESTLIST"
+then
+   testList="$TESTLIST"
+else
+   case $computeNodes in
+      1) # big enough for pfs
+         testList="pfs       1"
+         ;;
+      2) # big enough for comtest
+         testList="comtest   1.0"
+         ;;
+      3 | 4 | 5) # big enough for comtest and pfs
+         testList="comtest   2
+                   pfs       1.0"
+         ;;
+      6)
+         testList="comtest   3
+                   pfs       3"
+         ;;
+      7 | 8)
+         testList="mxm       4
+                   comtest   2
+                   pfs       1.0"
+         ;;
+      9 | 10)
+         testList="mxm       4
+                   comtest   3
+                   pfs       1.0"
+         ;;
+      11 | 12 | 13) # finaly big enough for all four
+         testList="mxm       4
+                   mplinpack 4
+                   comtest   2
+                   pfs       1.0"
+         ;;
+      14 | 15)
+         testList="mxm       4
+                   mplinpack 4
+                   comtest   3
+                   pfs       1.0"
+         ;;
+      *)
+         testList="mxm       0.25
+                   mplinpack 0.25
+                   pfs       0.25
+                   comtest   0.25"
+         ;;
+   esac
+fi
+
+# Get number of parallel apps to run. (This is really twice the number of tests
+# since this is a list of testname-partitionsize pairs.)
+numTests=`length $testList`
+
+# Check of testList
+if test `expr $numTests / 2 \* 2` -ne $numTests
+then
+   # Missing test or node requirements
+   echo Invalid test list 1>&2
+   echo \"$testList\" 1>&2
+
+   cleanup $miscError
+fi
+
+# True number of tests
+numTests=`expr $numTests / 2`
+
+# Get the path to each test. We want all subdirectories in the sat lib tree.
+# find both hard directories and symlinks to directories
+find $execDir/../.. \( -type d -o -type l -exec test -d {} \; \) -print > $programScratchFile.$phase
+
+minNodesNeeded=0
+testNum=0
+
+dynamicList=""
+staticList=""
+
+while test -n "$testList"
+do
+
+   # Leading word in testList is the name of the test; assign to test
+   test=`first $testList`
+
+   # Strip test name from testList
+   testList=`rest $testList`
+
+   # Leading word in testList is now partition requirements; get it into
+   # partScale
+   partScale=`first $testList`
+
+   # Strip partition requirements from testList
+   testList=`rest $testList`
+
+   # get path to test
+   testPath="`grep /$test\$ $programScratchFile.$phase`"
+
+   if test -z "$testPath"
+   then
+      # Test not found
+      echo Could not find test \"$test\" 1>&2
+      cat $programScratchFile.$phase 1>&2
+
+      cleanup $miscError
+   fi
+
+   # Make sure only one test was found
+   if test `length $testPath` -gt 1
+   then
+      # located two or more copies of test
+      echo Located two or more copies of \"$test\" 1>&2
+      for name in $testPath
+      do
+         echo $name 1>&2
+      done
+
+      cleanup $miscError
+   fi
+
+   # Get the minimum number of nodes required for each application
+   # by extracting minNodes from the run script for each.
+
+   minNodes=`grep '^minNodes=' $testPath/run 2> /dev/null`
+   minNodes=`echo $minNodes | cut -d' ' -f1 | cut -d= -f2`
+
+   if test -z "$minNodes" -o `length $minNodes` -ne 1
+   then
+      # Could not determine min number of nodes needed
+      echo Unable to determine minimum number of nodes needed for \"$test\" 1>&2
+
+      cleanup $miscError nosave
+   fi
+
+   testNum=`expr $testNum + 1`
+
+   # Check for static (natural numbers) or dynamic (float numbers) partition
+   # size specs and add test to appropriate list.
+
+   if test -n "`echo $partScale | fgrep .`"
+   then
+      dynamicList="`append $dynamicList $testNum`"
+   else
+      staticList="`append $staticList $testNum`"
+   fi
+
+   # Keep tally of total minimum number of nodes needed.
+   minNodesNeeded=`expr $minNodesNeeded + $minNodes`
+
+   # Create ``arrays'' of test name, path to test, nodes required for each
+   # test, and partition sizing info for each test.
+
+   eval test$testNum=$test
+   eval testPath$testNum=$testPath
+   eval nodesNeeded$testNum=$minNodes
+   eval partScale$testNum=$partScale
+done
+
+# Make sure we have enough nodes to run test
+if test $minNodesNeeded -gt $computeNodes
+then
+   # Don't have enough compute nodes
+   echo Partition too small for second part of System Balance Test 1>&2
+   echo Need $minNodesNeeded nodes\; partition $partName has $computeNodes 1>&2
+
+   cleanup $miscError nosave
+fi
+
+nodesNeeded=0
+
+# Loop through static list, verify number of nodes requested for each
+# test is greater than minimum required.  Keep track of number of nodes
+# allocated to tests.  The static list is done first because we need
+# to know how many nodes are left over after static allocation before
+# we can do dynamic allocation.
+
+for i in $staticList
+do
+   # Make sure number of nodes requested is not less than the minimum number
+   # that test must have to run.
+   if test "`eval echo '$nodesNeeded'$i`" -gt "`eval echo '$partScale'$i`"
+   then
+      echo "Requested partition for `eval echo '$test'$i` smaller than minimum required (`eval echo '$nodesNeeded'$i`)" 1>&2
+
+      cleanup $micsError
+   fi
+
+   # set nodesNeeded[123..] to the number of nodes allocated to test [123..]
+   eval nodesNeeded$i='$partScale'$i
+
+   # keep track of the number of nodes statically allocated.
+   nodesNeeded=`eval expr $nodesNeeded + '$nodesNeeded'$i`
+done
+
+# Make sure we haven't allocated more nodes than are in the partition being used
+if test $nodesNeeded -gt $computeNodes
+then
+   # Don't have enough compute nodes
+   echo Partition too small for second part of System Balance Test 1>&2
+   echo Need $nodesNeeded nodes\; partition $partName has $computeNodes 1>&2
+
+   cleanup $miscError
+fi
+
+# Loop throught dynamic list and cut up remaining nodes according to
+# partition scaling information from testList.  Also make sure enough
+# nodes are being allocated to each test.
+
+if test -n "$dynamicList"
+then
+   # Set balanceNodes to number of unallocated nodes after static allocation
+   balanceNodes=`expr $computeNodes - $nodesNeeded`
+
+   # Set partScaleList to a list of all dynamic allocation percents.
+   partScaleList=""
+
+   for i in $dynamicList
+   do
+      partScaleList="$partScaleList `eval echo '$partScale'$i`"
+   done
+
+   # Make sure dynamic allocation adds up to 1.0000
+   if test `echo $partScaleList | awk '{sum=0; for (i=1 ; i <= NF; i++) sum += $i; printf("%.4f\n", sum)}'` != "1.0000"
+   then
+      echo "Dynamic partition size scaling must add up to 1.0" 1>&2
+      cleanup $miscError
+   fi
+
+   # nodesLeftOver is used for rounding the number of nodes allocated to
+   # each partition to make sure all nodes are allocated.
+   nodesLeftOver=0
+
+   for i in $dynamicList
+   do
+      # nodes is the minimum number of nodes application will run on.
+      nodes=`eval echo '$nodesNeeded'$i`
+
+      # partScale is the percent of dynamic nodes to allocate to this app.
+      partScale=`first $partScaleList`
+
+      partScaleList=`rest $partScaleList`
+
+      # nodesNeeded=int(partScale*balanceNodes+nodesLeftOver)
+      nodesNeeded=`echo $partScale $balanceNodes $nodesLeftOver | awk '{print int($1 * $2 + $3)}'`
+
+      # nodesLeftOver=(partScale*balanceNodes+nodesLeftOver)-nodesNeeded
+      nodesLeftOver=`echo $partScale $balanceNodes $nodesLeftOver | awk '{print ($1 * $2 + $3) - int($1 * $2 + $3)}'`
+
+      # Make sure nodes allocated to this app is not less than the minimum
+      # number it will run on.
+      if test $nodesNeeded -lt $nodes
+      then
+         echo "$partScale of $balanceNodes nodes is less than minimum number needed for `eval echo '$test'$i` ($nodes)" 1>&2
+
+         cleanup $miscError
+      fi
+
+      # Set nodesNeeded[123..] to the number of nodes allocated to test[123..]
+      eval nodesNeeded$i=$nodesNeeded
+   done
+fi
+
+# Loop throught tests, making working partitions for each.
+
+# partStart and partEnd are used to allocate partitions from partStart to
+# partEnd using the mkpart command.  partStart and partEnd are updated
+# based on nodesNeeded[123..].
+partStart=0
+partEnd=0
+
+for tn in $dynamicList $staticList
+do
+   sbsPart=$partName.sbs_$$_$tn
+   eval sbsPart$tn=$sbsPart
+   nodes=`eval echo '$nodesNeeded'$tn`
+   partEnd=`expr $partStart + $nodes - 1`
+
+   if mkpart -nd ${partStart}..$partEnd $sbsPart
+   then
+   :
+   else
+      echo "Error creating partition $sbsPart" 1>&2
+      cleanup $miscError
+   fi
+   
+   partStart=`expr $partStart + $nodes`
+done
+
+# Verify that Run script is available and executable
+if test -x ${execDir}/Run
+then
+   for tn in $dynamicList $staticList
+   do
+      eval echo running \$test$tn on \$nodesNeeded$tn processors in partition \$sbsPart$tn
+
+      # Run test in background; capture exit code through file descriptor 3.
+      eval ${execDir}/Run \$test$tn \$testPath$tn \$nodesNeeded$tn \$sbsPart$tn 1> $programScratchFile.$phase.$tn 2> $programErrorFile.$phase.$tn 3> $programExitCodeFile.$phase.$tn &
+   done
+
+   # Wait for all tests to finish
+
+   wait
+
+   # Count up passes and fails for all tests.
+
+   numPass=0
+   numFail=0
+
+   for tn in $dynamicList $staticList
+   do
+      echo ""
+      if grep 0 $programExitCodeFile.$phase.$tn > /dev/null
+      then
+        numPass=`expr $numPass + 1`
+        eval echo PASS: \$test$tn
+        eval cat \$programScratchFile.$phase.$tn
+      else
+        numFail=`expr $numFail + 1`
+        eval echo FAIL: \$test$tn
+        eval cat \$programScratchFile.$phase.$tn
+        eval cat \$programErrorFile.$phase.$tn 1>&2
+        exitCode=$testError
+      fi
+   done
+
+   echo ""
+   echo "Phase 2  Passed: $numPass,   Failed: $numFail"
+
+else
+   echo "No \"Run\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+if test "$exitCode" -eq "0"
+then
+   echo "PASS: $title.  All tests passed."
+else
+   echo "FAIL: $title."
+fi
+
+# Finish and exit
+cleanup $exitCode

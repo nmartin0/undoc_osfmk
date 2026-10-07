@@ -1,0 +1,67 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+#
+#  Master i386 configuration file (see the master machine independent
+#  configuration file for a description of the file format).
+#
+#
+#  i386 (PSEUDO-)DEVICES (select any combination)
+#
+#	du   = CSNET DialupIP interface (software)
+#
+#  CPU TYPE (select exactly one)
+#
+#	i386    = any VAX CPU
+#
+#
+#  Production Configuration Components:
+#  ---------- ------------- ----------
+#
+#  ANY   =[du i386 ]
+#  MF    =[du i386 ]
+#  MP    =[du i386 ]
+#  WS    =[   i386 ]
+#
+#  (any i386 cpu model)
+#
+#  EXTRA =[ ]
+#
+#  ("one-of-a-kind" devices)
+#
+#  Options which are almost always turned on when mach is turned on,
+#  but can still be individually selected:
+#
+#  MSTD  = [ ]
+#
+#  Option to cannibalize one of the i386 mp processors for use as a
+#  high_resolution clock:
+#
+#  HI_RES_CLOCK = [ mp_slave_as_clk ]
+#
+#
+machine		"i386"					# <i386>
+cpu		"AT386"		# Only for show		# <i386>
+
+options		COMPAT					# <compat>
+
+config		vmunix		swap generic
+
+#
+#  CMU/SU packet filter
+#
+pseudo-device	enet					# <en>
+
+#
+#   dialupIP
+#
+pseudo-device	du	2				# <du>

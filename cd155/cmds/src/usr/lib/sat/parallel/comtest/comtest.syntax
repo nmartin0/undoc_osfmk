@@ -1,0 +1,353 @@
+/*******************************************************************************
+*
+*  C O M M U N I C A T I O N   T E S T
+*
+*
+*  SYNTAX:
+*	comtest [-f] [-h] [-i] [-u] [-c msgcnt] [-m numlens] [-n numiter] \
+*	    [-t type_spec] [-b hxw] [-k hxw] [-r {1|2|3}] [-o] [-pn part_name]
+*
+*  NOTE :   For other options, see 'application' in the Paragon OSF/1 Commands
+* 		Reference Manual
+*
+*  ARGUMENTS:
+*
+*       -f      Use forced message types for all tests.
+*               [Default: Standard message types.]
+*
+*       -h      Help flag.  This switch causes the entire SYNTAX and ARGUMENTS
+*               sections to be written to stdout.
+*               [Default: No help message.]
+*
+*       -i      Interactive mode.  Use of this switch causes comtest to go
+*               into the interactive mode.  This will allow repeating a test.
+*               [Default: Do not repeat]
+*
+*
+*       -u      Underscore flag.  Use the communication routines with no
+*               error checking, the underscore routines:
+*               _csend/_isend/_crecv/_irecv.
+*               [Default:  Use routines with error checking
+*               csend/isend/crecv/irecv.]
+*
+*	-c msgcnt
+*		Msgcnt is the number of messages at each stage of the test.
+*               It is included to allow a simple scheme for measuring the
+*               aggregate bandwidth of the bus.  It is functionally like
+*               asynchronous send/receive but is much simpler to implement.
+*               Increasing this parameter causes some increase in run-time
+*               due to the increase in messages, but since the messages can
+*               occur simultaneously, the increase is not linear. The maximum
+*               value for msgcnt is 8 for messages of length up to 256 kbytes
+*               (numlens <= 17), 4 for 512 kbytes (numlens = 18), 2 for 1
+*               Mbytes (numlens = 19), and 2 for 2 Mbyte (numlens = 20).
+*		[Default: 1, Maximum: dependent on numlens - see above]
+*
+*	-m numlens
+*		Number of message lengths used.  The 1st message length is 0.
+*               Subsequent message lenghts are given by 2^(i+1) bytes with
+*               i starting at 2 (8 bytes, 16 bytes, 32 bytes, ..., 2 Mbyte).
+*		[Default: 13 - up to 16 kbytes , Maximum: 20 - for 2 Mbyte].
+*
+*	-n numiter
+*		This is the number of passes taken for each test.  It is
+*               provided to allow direct control over the amount of elapsed
+*               time between calls to the timer routines, thereby allowing for
+*               greater accuracy.
+*		[Default: 25]
+*
+*	-t type_spec
+*		Test type flag. This flag may be used to run tests of a
+*               particular type.  Type_spec may be any combination of the
+*               letters below.
+*		[Default: Run all tests.]
+*
+*                       p   Ping Pong
+*                       e   Exchange
+*                       r   Ring
+*                       b   Broadcast
+*                       f   Fan-in
+*                       a   All-to-all
+*                       l   Latency
+*			n   No Test (Dissables the default selection of all
+*                           tests; does not override them if they are selected.)
+*
+*			Note : The fan-in test needs extended communication
+*			       buffers for messages of size larger than 4
+*                              kbytes.
+*
+*
+*	-b hxw
+*		Flag for the bisection test . Latency and bandwidth are
+*		measured when messages are sent and then returned in a 
+*		rectangular mesh, between :
+*
+*                       - the left half of the mesh, and its right half
+*			  on 'horizontal' direction (this is a 'vertical
+*			  mirror' exchange)
+*                       - the upper half of the mesh, and its lower half
+*                         on 'vertical' direction (this is a 'horizontal
+*                         mirror' exchange)
+*
+*		It is the user's responsability to insure that the partition
+*		with h x w nodes is actually rectangular, with h rows and
+*		w columns
+*
+*       -k hxw
+*               Flag for the corner-to-corner test . Latency and bandwidth are
+*               measured when messages are sent and then returned in a 
+*               rectangular mesh, between :
+*
+*                       - the upper-left corner, and the upper-right corner
+*                         on 'horizontal' direction
+*                       - the upper-left corner, and the bottom-left corner
+*                         on 'vertical' direction
+*
+*               It is the user's responsability to insure that the partition
+*               with h x w nodes is actually rectangular, with h rows and
+*               w columns
+*			
+*	-r {1|2|3}
+*		Flag for the 'random' test. It may be followed by any
+*               combinations of 1, 2, and 3; e.g. '-r 13' selects execution
+*               of random tests 1 and 3.  In test 1, a number of messages
+*               equal to the number of participating nodes are sent from n
+*               randomly chosen sources to n randomly chosen destinations.
+*               Test 2 is similar, but the sources are restricted to the lower
+*		part of the partition, and the destinations to the upper part.
+*		In test 3 a random number of pairs of nodes from the
+*               participating nodes exchange a random number of messages of
+*               random lengths, a random number of times (the random values
+*               are upper limited by the maximum specifications for the run).
+*
+*	-o	Flag for the order test.  Each node in turn receives messages
+*               of lengths 256 kbytes, 0 bytes, and 8 bytes (in this order),
+*               from 5 other nodes . The arrival order is tested, and an error
+*               is reported if it is not identical with the departure order of
+*               the messages . This test is not affected by the '-f' flag, and
+*		is performed only for non-force typed messages .
+*
+*  NOTE :
+*	If an option appears several times on the command line, the last
+*       occurence overrides any previous occurences.
+*
+*  DESCRIPTION:
+*	This program was designed to measure communication performance.  Since
+*	it stresses the message passing system extensively, it can also be an
+*	integral part of the Systems Acceptance Test.
+*
+*	Latency and bandwidth of the network hardware are measured along with
+*	software latencies of both synchronous and asynchronous messages.  The
+*	summary printout includes message passing bandwidth and latencies.
+*	When run as an acceptance test or to measure the communication rates,
+*	it is suggested that no other applications be running in the partition,
+*       as these may significantly affect the performance.  Multiple copies of
+*       this program running in the same partition, however, may be used to
+*       measure the performance loss from mesh sharing.
+*
+*	Parameters which affect communication performance are covered by the
+*	tests, and include:
+*
+*		1) Forced Type Messages
+*		2) Synchronous and Asynchronous Messages
+*
+*	Specific kinds of tests include:
+*
+*		1) Ping-Pong (back and forth communications between only two
+*                  nodes)
+*			- near neighbor and far neighbor (nodes 0 and 1, and
+*                         then, 0 and numnodes - 1, where numnodes is the total
+*                         number of nodes)
+*
+*		2) Exchange (simultaneous data swap between only two nodes)
+*			- near neighbor and far neighbor (nodes 0 and 1, and
+*                         then, 0 and numnodes - 1)
+*
+*		3) Ring (pass to next higher node number, and back to node 0)
+*
+*		4) Broadcast (node 0 sends to all other nodes)
+*
+*		5) Fan-in
+*			- this is the reverse of broadcast, i.e., all nodes
+*                         send to a single node (node 0, and then, node
+*                         numnodes - 1)
+*
+*               6) All-to-all (all the nodes, organized in pairs, exchange
+*                         messages; numnodes - 1 rounds are necesary if
+*                         numnodes is a power of 2, and numnodes rounds
+*                         otherwise)
+*
+*		7) Bisection: a rectangular mesh of height h and width w
+*                         is assumed (the program only checks that
+*                         h * w == numnodes).
+*			- the latency and the bandwidth are measured in 
+*                         two situations, when : first, all the nodes 'on the
+*                         left hand side' send and then get back messages from
+*                         their symmetrics 'on the right hand side' (the axis of
+*                         symmetry is vertical, and may overlap a 'column' of
+*                         nodes) ; second, all the nodes in the 'upper half'
+*                         send and then get back messages with their symmetrics
+*                        in the 'lower half' (the axis of symmetry is horizontal).
+*
+*               8) Corner-to-corner : a rectangular mesh of height h and
+*			  width w is assumed (the program only checks that
+*                         h * w == numnodes).
+*                       - the latency and the bandwidth are measured in 
+*                         two situations, when : first, node 0 (upper left
+*                         corner) sends and then gets back messages from the
+*                         upper right corner ; second, node 0 (upper left corner) 
+*			  corner) sends and then gets back messages from the
+*			  lower left corner .
+*
+*               9) Random (all nodes send messages to all the other nodes,
+*                         but with randomly chosen sources, destinations,
+*                         message lengths, and numbers of iterations. The
+*                         random test has three separate subtests (see the
+*                         flag '-r' above))
+*
+*               10) Latency
+*                       - measures the overhead (0 byte messages) of the
+*                         message passing routines
+*                       - Measures standard latency (alpha)
+*			- the '-f' flag does not affect this test
+*
+*
+*  IMPORTANT NOTE :
+*
+*	The numbers of bytes that may be received by a node in a short interval 
+*	of time, and that may require buffering, are, for each test :
+*
+*		- pingpong : msgcnt * msglen   bytes
+*		  (msgcnt = 1 and msglen <= 16 kbytes in the default 
+*		  case, for numlens  = 13)
+*		
+*		- exchange : msgcnt * msglen   bytes
+*                 (msgcnt = 1 and msglen <= 16 kbytes in the default 
+*		  case, for numlens  = 13)
+*               
+*               - ring : msgcnt * msglen   bytes
+*                 (msgcnt = 1 and msglen <= 16 kbytes in the default 
+*		  case, for numlens  = 13)
+*               
+*               - broadcast : msgcnt * msglen  bytes
+*                 (msgcnt = 1 and msglen <= 16 kbytes in the default 
+*		  case, for numlens  = 13)
+*               
+*               - fanin : msgcnt * msglen * (numnodes - 1)  bytes
+*		  (msgcnt = 1 and msglen <= 16 kbytes in the default
+*		  case, for numlens  = 13; for a larger number of nodes, 
+*		  a smaller value for numlens is necessary, and also,
+*		  extended buffers for receiving messages - see the '-mbf'
+*		  and '-mex' options) [likely to cause problems, if buffering
+*		  space is not sufficient]
+*
+*		- all-to-all : msglen   bytes
+*		  (msglen <= 16 kbytes in the default case, for numlens  = 13)
+*
+*               - bisection : msgcnt * msglen   bytes (msgcnt = 1 and
+*                 msglen <= 16 kbytes in the default case, for numlens  = 13)
+*
+*               - corner-to-corner : msgcnt * msglen   bytes (msgcnt = 1 and
+*                 msglen <= 16 kbytes in the default case, for numlens  = 13)
+*
+*               - order : 5 * (256 k + 8)   bytes
+*
+*		- random 1 : at most msgcnt * msglen * numnodes  bytes
+*                 (msgcnt = 1 and msglen <= 16 kbytes in the default
+*                 case, for numlens  = 13; for a larger number of nodes,
+*                 a smaller value for numlens is necessary, and also,
+*                 extended buffers for receiving messages - see the '-mbf'
+*                 and '-mex' options) [likely to cause problems, if buffering
+*                 space is not sufficient]
+*
+*               - random 2 : at most msgcnt * msglen * (numnodes / 2)  bytes
+*                 (msgcnt = 1 and msglen <= 16 kbytes in the default
+*                 case, for numlens  = 13; for a larger number of nodes,
+*                 a smaller value for numlens is necessary, and also,
+*                 extended buffers for receiving messages - see the '-mbf'
+*                 and '-mex' options) [likely to cause problems, if buffering
+*                 space is not sufficient]
+*
+*               - random 3 : at most MAXCNT * msglen)  bytes
+*		  (MAXCNT = 8 and msglen <= 16 kbytes in the default
+*                 case, for numlens  = 13)
+*
+*
+*  TO COMPILE FOR THE PARAGON :
+*
+*		icc  -o comtest comtest.c -nx -lm
+*
+*  TO COMPILE FOR THE IPSC/860 :
+*		
+*		comment out the definition for the environment variable PARAGON
+*		in commtest.c
+*
+*		icc -o comtest comtest.c -lm
+*  
+*
+*  USAGE EXAMPLES :
+*
+*
+*	1) Find out info about the program :
+*
+*		comtest -h -pn my_partition
+*
+*	2) Run the pingpong, exchange, ring, broadcast, fanin, all-to-all,
+*	   and latency tests, with the default settings : msgcnt = 1, 
+*	   numiter = 25, message lengths from 0 bytes up to 16 kbytes
+*          (numlens = 13), non-forced type messages, with error checking,
+*          on my_partition :
+*	   
+*		comtest -pn my_partition
+*
+*	3) Run only the all-to-all test :
+*
+*		comtest -ta -pn my_partition
+*
+*	4) Run only the all-to-all test, with forced type messages and message
+*	   lengths up to 32 kbytes :
+*
+*		comtest -f -ta -m 14 -pn my_partition
+*	
+*	5) Run only the 'random' tests, with msgcnt = 3 :
+*
+*		comtest -tn -r 123 -c 3 -pn my_partition
+*
+*	6) Run only the third 'random' test and the order test, using 
+*	   numiter = 50 iterations to gather data for statistical processing :
+*
+*		comtest -tn -r 3 -o -n 50 -pn my_partition
+*
+*	7) Run only the fan-in test, with extended communication buffers :
+*
+*		comtest -tf -mbf 6000000 -mex 5000000 -pn my_partition
+*
+*	8) Run the bisection test, on a rectangular mesh (previously
+*	   allocated), with 4 rows and 5 columns :
+*
+*		comtest -tn -b 4x5 -pn my_partition
+*
+*       9) Run the corner-to-corner test, on a rectangular mesh (previously
+*          allocated), with 4 rows and 5 columns, using force-type messages :
+*
+*               comtest -f -tn -k 4x5 -pn my_partition
+*
+*       10) Run only the ring test, with message lengths up to 2 Mbytes. Use
+*          the -plk option to improve communication performance:
+*
+*               comtest -tr -m 20 -plk -pn my_partition
+*
+*       11) Run only the ring test, with message lengths up to 256 kbytes, a
+*          message count of 8, and the -plk option:
+*
+*               comtest -tr -m 17 -c 8 -plk -pn my_partition
+*
+*	12) Run the pingpong, exchange, ring, broadcast, fanin, all-to-all,
+*          and latency tests, with all the default settings, with one 
+*	   exception - use communication routines without error checking
+*	   (_csend, _isend, _crecv, _irecv) . Use the '-i' flag to allow
+*	   running again the test witout exiting the program :
+*
+*		comtest -u -i -pn my_partition
+*
+*******************************************************************************/

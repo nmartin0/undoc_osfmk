@@ -1,0 +1,59 @@
+#!/bin/sh 
+#
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+#
+
+# mksysfiles
+# This script is the first step in installing Paragon cross-compilers
+# on a workstation. It collects the system-dependent header files, libraries
+# and man pages from the Paragon system.  The user copies the resulting
+# compressed tar image to the workstation before installing the actual
+# compilers.
+# Output file: sysfiles.tar.Z
+
+echo "The default base directory is set to / "
+echo "Do you wish to to change it (y/n)? [n] \c "
+read answer
+
+if [ "$answer" = "y" -o "$answer" = "Y" ]
+then
+  OK=0
+  while [ $OK -eq 0 ]; do
+     echo "What is the new base directory? \c"
+     read base
+     if [ ! -z "$base" -a \( -d $base/usr/include -a -d $base/usr/ccs/lib \) ]; then
+        echo "The new base directory is ${base}."
+        BASE=$base
+        OK=1
+     else
+        echo "'$base' is a valid 'root' directory."
+     fi
+  done
+else
+  echo "The base directory is /. "
+  BASE=/         # default base directory is '/' 
+fi
+
+rm -fr lib-coff
+set -x                 # let the user see what's happening
+# Get most of the libraries
+mkdir lib-coff
+cp -r -p ${BASE}/usr/ccs/lib/* lib-coff
+( cd lib-coff
+  rm -rf cflow1 dag flip lint lint1 lint2 lpfx migcom \
+         ncform nmf nrform xpass yaccpar )
+
+# Create the tar
+tar cf -              lib-coff \
+    -C $BASE/usr       include \
+    -C $BASE/usr/share ps.docs man examples README.docs release_notes \
+  | compress > sysfiles.tar.Z
+
+rm -rf lib-coff

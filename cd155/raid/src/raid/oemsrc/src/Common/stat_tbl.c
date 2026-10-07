@@ -1,0 +1,3076 @@
+/*
+ *
+ * $Copyright
+ * Copyright 1992, 1993, 1994, 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ *
+ */ 
+/******************************************************************************
+ ***				IDENTIFICATION				    ***
+ ******************************************************************************
+ Name:		stat_tbl.c
+ Title:		Array Controller Status Decode Table
+ Version:	
+ Revision:	$Revision: 1.1.4.1 $
+ Update Date:	$Date: 1995/06/11 23:30:54 $ 
+ Programmer:
+ Documents:	1. UNIX V.4 Disk Array Utilities FS, no. 348-0027726
+		2. Object-Oriented Programming in C, C Users Journal 7/90
+
+ COPYRIGHT 1991, NCR Corp.
+
+ Description:	This module contains the status decode table and any
+		status-dependent interpretation functions.
+*/
+
+/******************************************************************************
+ ***				   INCLUDES				    ***
+ *****************************************************************************/
+#include "stddefs.h"
+#include "dac_event.h"
+
+/******************************************************************************
+ ***				  DEFINITIONS 				    ***
+ *****************************************************************************/
+static void print_FRU( DAC_EVENT *this );
+
+/******************************************************************************
+ ***		             VARIABLE DEFINITIONS			    ***
+ *****************************************************************************/
+
+/*__STARTMAGIC__*/		/*  don't remove this line  */
+
+stat_tbl_entry_t stat_tbl[] = {
+  {
+    Key_No_Sense, 0x00, 0x00,
+    "\tNO ADDITIONAL SENSE INFORMATION",
+    print_FRU
+  },
+  {
+    Key_No_Sense, 0x00, 0x06,
+    "\tI/O PROCESS TERMINATED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x01, 0x00,
+    "\tNO INDEX/SECTOR SIGNAL",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x01, 0x00,
+    "\tNO INDEX/SECTOR SIGNAL",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x02, 0x00,
+    "\tNO SEEK COMPLETE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x02, 0x00,
+    "\tNO SEEK COMPLETE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x03, 0x00,
+    "\tPERIPHERAL DEVICE WRITE FAULT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x03, 0x00,
+    "\tPERIPHERAL DEVICE WRITE FAULT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x04, 0x00,
+    "\tLOGICAL UNIT NOT READY, CAUSE NOT REPORTABLE",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x04, 0x00,
+    "\tLOGICAL UNIT NOT READY, CAUSE NOT REPORTABLE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x04, 0x01,
+    "\tLOGICAL UNIT IS IN PROCESS OF BECOMING READY",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x04, 0x01,
+    "\tLOGICAL UNIT IS IN PROCESS OF BECOMING READY",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x04, 0x02,
+    "\tLOGICAL UNIT NOT READY, INITIALIZING COMMAND REQUIRED\n\tStart unit command required",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x04, 0x02,
+    "\tLOGICAL UNIT NOT READY, INITIALIZING COMMAND REQUIRED\n\tStart unit command required",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x04, 0x03,
+    "\tLOGICAL UNIT NOT READY, MANUAL INTERVENTION REQUIRED",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x04, 0x03,
+    "\tLOGICAL UNIT NOT READY, MANUAL INTERVENTION REQUIRED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x04, 0x04,
+    "\tLOGICAL UNIT NOT READY, FORMAT IN PROGRESS",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x04, 0x04,
+    "\tLOGICAL UNIT NOT READY, FORMAT IN PROGRESS",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x04, 0x80,
+    "\tLOGICAL UNIT NOT READY, ROM INSTALLED DOES NOT SUPPORT\n\tREDUNDANT CONTROLLER CONFIGURATION",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x05, 0x00,
+    "\tLOGICAL UNIT DOES NOT RESPOND TO SELECTION",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x05, 0x00,
+    "\tLOGICAL UNIT DOES NOT RESPOND TO SELECTION",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x06, 0x00,
+    "\tNO REFERENCE POSITION FOUND",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x06, 0x00,
+    "\tNO REFERENCE POSITION FOUND",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x06, 0x00,
+    "\tNO REFERENCE POSITION FOUND",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x07, 0x00,
+    "\tMULTIPLE PERIPHERAL DEVICES SELECTED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x07, 0x00,
+    "\tMULTIPLE PERIPHERAL DEVICES SELECTED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x08, 0x00,
+    "\tLOGICAL UNIT COMMUNICATION FAILURE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x08, 0x00,
+    "\tLOGICAL UNIT COMMUNICATION FAILURE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x08, 0x01,
+    "\tLOGICAL UNIT COMMUNICATION TIME-OUT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x08, 0x01,
+    "\tLOGICAL UNIT COMMUNICATION TIME-OUT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x08, 0x02,
+    "\tLOGICAL UNIT COMMUNICATION PARITY ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x08, 0x02,
+    "\tLOGICAL UNIT COMMUNICATION PARITY ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x09, 0x00,
+    "\tTRACK FOLLOWING ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x09, 0x00,
+    "\tTRACK FOLLOWING ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x0A, 0x00,
+    "\tERROR LOG OVERFLOW",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x0A, 0x00,
+    "\tERROR LOG OVERFLOW",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x0C, 0x01,
+    "\tWRITE ERROR RECOVERED WITH AUTO REALLOCATION",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x0C, 0x02,
+    "\tWRITE ERROR - AUTO REALLOCATION FAILED",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x0C, 0x02,
+    "\tWRITE ERROR - AUTO REALLOCATION FAILED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x0C, 0x02,
+    "\tWRITE ERROR - AUTO REALLOCATION FAILED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x10, 0x00,
+    "\tID CRC OR ECC ERROR",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x10, 0x00,
+    "\tID CRC OR ECC ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x10, 0x00,
+    "\tID CRC OR ECC ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x11, 0x00,
+    "\tUNRECOVERED READ ERROR\n\tThe description of this error as being unrecovered may be\n\tmisleading since a drive reported unrecovered read error\n\tcan be recovered by the array using parity.  The sense key\n\tfor this case will be RECOVERED and the recovery actions\n\tfield in the sense will indicate that parity was used.",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x11, 0x00,
+    "\tUNRECOVERED READ ERROR\n\tThe description of this error as being unrecovered may be\n\tmisleading since a drive reported unrecovered read error\n\tcan be recovered by the array using parity.  The sense key\n\tfor this case will be RECOVERED and the recovery actions\n\tfield in the sense will indicate that parity was used.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x11, 0x00,
+    "\tUNRECOVERED READ ERROR\n\tThe description of this error as being unrecovered may be\n\tmisleading since a drive reported unrecovered read error\n\tcan be recovered by the array using parity.  The sense key\n\tfor this case will be RECOVERED and the recovery actions\n\tfield in the sense will indicate that parity was used.",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x11, 0x01,
+    "\tREAD RETRIES EXHAUSTED",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x11, 0x01,
+    "\tREAD RETRIES EXHAUSTED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x11, 0x01,
+    "\tREAD RETRIES EXHAUSTED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x11, 0x02,
+    "\tERROR TOO LONG TO CORRECT",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x11, 0x02,
+    "\tERROR TOO LONG TO CORRECT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x11, 0x02,
+    "\tERROR TOO LONG TO CORRECT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x11, 0x04,
+    "\tUNRECOVERED READ ERROR - AUTO REALLOCATE FAILED",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x11, 0x04,
+    "\tUNRECOVERED READ ERROR - AUTO REALLOCATE FAILED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x11, 0x04,
+    "\tUNRECOVERED READ ERROR - AUTO REALLOCATE FAILED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x11, 0x0A,
+    "\tMISCORRECTED ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x11, 0x0A,
+    "\tMISCORRECTED ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x11, 0x0B,
+    "\tUNRECOVERED READ ERROR - RECOMMEND REASSIGNMENT",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x11, 0x0B,
+    "\tUNRECOVERED READ ERROR - RECOMMEND REASSIGNMENT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x11, 0x0C,
+    "\tUNRECOVERED READ ERROR - RECOMMEND REWRITE THE DATA",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x11, 0x0C,
+    "\tUNRECOVERED READ ERROR - RECOMMEND REWRITE THE DATA",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x12, 0x00,
+    "\tADDRESS MARK NOT FOUND FOR ID FIELD",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x12, 0x00,
+    "\tADDRESS MARK NOT FOUND FOR ID FIELD",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x13, 0x00,
+    "\tADDRESS MARK NOT FOUND FOR DATA FIELD",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x13, 0x00,
+    "\tADDRESS MARK NOT FOUND FOR DATA FIELD",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x14, 0x00,
+    "\tRECORDED ENTITY NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x14, 0x00,
+    "\tRECORDED ENTITY NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x14, 0x01,
+    "\tRECORD NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x14, 0x01,
+    "\tRECORD NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x15, 0x00,
+    "\tRANDOM POSITIONING ERROR",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x15, 0x00,
+    "\tRANDOM POSITIONING ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x15, 0x00,
+    "\tRANDOM POSITIONING ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x15, 0x01,
+    "\tMECHANICAL POSITIONING ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x15, 0x01,
+    "\tMECHANICAL POSITIONING ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x15, 0x02,
+    "\tPOSITIONING ERROR DETECTED BY READ OF MEDIUM",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x15, 0x02,
+    "\tPOSITIONING ERROR DETECTED BY READ OF MEDIUM",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x15, 0x02,
+    "\tPOSITIONING ERROR DETECTED BY READ OF MEDIUM",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x16, 0x00,
+    "\tDATA SYNCHRONIZATION MARK ERROR",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x16, 0x00,
+    "\tDATA SYNCHRONIZATION MARK ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x16, 0x00,
+    "\tDATA SYNCHRONIZATION MARK ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x17, 0x00,
+    "\tRECOVERED DATA WITH NO ERROR CORRECTION APPLIED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x17, 0x01,
+    "\tRECOVERED DATA WITH RETRIES",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x17, 0x02,
+    "\tRECOVERED DATA WITH POSITIVE HEAD OFFSET",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x17, 0x03,
+    "\tRECOVERED DATA WITH NEGATIVE HEAD OFFSET",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x17, 0x05,
+    "\tRECOVERED DATA USING PREVIOUS SECTOR ID",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x17, 0x06,
+    "\tRECOVERED DATA WITHOUT ECC - DATA AUTO-REALLOCATED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x17, 0x07,
+    "\tRECOVERED DATA WITHOUT ECC - RECOMMEND REASSIGNMENT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x18, 0x00,
+    "\tRECOVERED DATA WITH ERROR CORRECTION APPLIED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x18, 0x01,
+    "\tRECOVERED DATA WITH ERROR CORRECTION AND RETRIES APPLIED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x18, 0x02,
+    "\tRECOVERED DATA - DATA AUTO-REALLOCATED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x18, 0x05,
+    "\tRECOVERED DATA - RECOMMEND REASSIGNMENT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x19, 0x00,
+    "\tDEFECT LIST ERROR",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x19, 0x00,
+    "\tDEFECT LIST ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x19, 0x01,
+    "\tDEFECT LIST NOT AVAILABLE",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x19, 0x01,
+    "\tDEFECT LIST NOT AVAILABLE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x19, 0x02,
+    "\tDEFECT LIST ERROR IN PRIMARY LIST",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x19, 0x02,
+    "\tDEFECT LIST ERROR IN PRIMARY LIST",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x19, 0x03,
+    "\tDEFECT LIST ERROR IN GROWN LIST",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x19, 0x03,
+    "\tDEFECT LIST ERROR IN GROWN LIST",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x1A, 0x00,
+    "\tPARAMETER LIST LENGTH ERROR",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x1A, 0x00,
+    "\tPARAMETER LIST LENGTH ERROR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x1B, 0x00,
+    "\tSYNCHRONOUS DATA TRANSFER ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x1B, 0x00,
+    "\tSYNCHRONOUS DATA TRANSFER ERROR",
+    print_FRU
+  },
+  {
+    Key_No_Sense, 0x1C, 0x00,
+    "\tDEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x1C, 0x00,
+    "\tDEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x1C, 0x00,
+    "\tDEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_No_Sense, 0x1C, 0x01,
+    "\tPRIMARY DEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x1C, 0x01,
+    "\tPRIMARY DEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x1C, 0x01,
+    "\tPRIMARY DEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_No_Sense, 0x1C, 0x02,
+    "\tGROWN DEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x1C, 0x02,
+    "\tGROWN DEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x1C, 0x02,
+    "\tGROWN DEFECT LIST NOT FOUND",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x1D, 0x00,
+    "\tMISCOMPARE DURING VERIFY OPERATION",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x1D, 0x00,
+    "\tMISCOMPARE DURING VERIFY OPERATION",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x1E, 0x00,
+    "\tRECOVERED ID WITH ECC CORRECTION",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x20, 0x00,
+    "\tINVALID COMMAND OPERATION CODE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x20, 0x00,
+    "\tINVALID COMMAND OPERATION CODE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x21, 0x00,
+    "\tLOGICAL BLOCK ADDRESS OUT OF RANGE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x21, 0x00,
+    "\tLOGICAL BLOCK ADDRESS OUT OF RANGE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x22, 0x00,
+    "\tILLEGAL FUNCTION",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x22, 0x00,
+    "\tILLEGAL FUNCTION",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x24, 0x00,
+    "\tINVALID FIELD IN CDB",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x24, 0x00,
+    "\tINVALID FIELD IN CDB",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x25, 0x00,
+    "\tLOGICAL UNIT NOT SUPPORTED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x25, 0x00,
+    "\tLOGICAL UNIT NOT SUPPORTED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x26, 0x00,
+    "\tINVALID FIELD IN PARAMETER LIST",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x26, 0x01,
+    "\tPARAMETER NOT SUPPORTED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x26, 0x02,
+    "\tPARAMETER VALUE INVALID",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x26, 0x03,
+    "\tTHRESHOLD PARAMETERS NOT SUPPORTED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x27, 0x00,
+    "\tWRITE PROTECTED",
+    print_FRU
+  },
+  {
+    Key_Data_Protect, 0x27, 0x00,
+    "\tWRITE PROTECTED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x28, 0x00,
+    "\tNOT READY TO READY TRANSITION (MEDIUM MAY HAVE CHANGED)",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x29, 0x00,
+    "\tPOWER ON, RESET, OR BUS DEVICE RESET OCCURRED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x2A, 0x00,
+    "\tPARAMETERS CHANGED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x2A, 0x01,
+    "\tMODE PARAMETERS CHANGED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x2A, 0x02,
+    "\tLOG PARAMETERS CHANGED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x2C, 0x00,
+    "\tCOMMAND SEQUENCE ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x2C, 0x00,
+    "\tCOMMAND SEQUENCE ERROR",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x2F, 0x00,
+    "\tCOMMANDS CLEARED BY ANOTHER INITIATOR",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x30, 0x00,
+    "\tINCOMPATIBLE MEDIUM INSTALLED\n\t(Disk array drives in the rank are not of the same type)",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x30, 0x00,
+    "\tINCOMPATIBLE MEDIUM INSTALLED\n\t(Disk array drives in the rank are not of the same type)",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x30, 0x01,
+    "\tCANNOT READ MEDIUM - UNKNOWN FORMAT",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x30, 0x01,
+    "\tCANNOT READ MEDIUM - UNKNOWN FORMAT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x30, 0x02,
+    "\tCANNOT READ MEDIUM - INCOMPATIBLE FORMAT",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x30, 0x02,
+    "\tCANNOT READ MEDIUM - INCOMPATIBLE FORMAT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x31, 0x00,
+    "\tMEDIUM FORMAT CORRUPTED",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x31, 0x00,
+    "\tMEDIUM FORMAT CORRUPTED",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x31, 0x01,
+    "\tFORMAT COMMAND FAILED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x31, 0x01,
+    "\tFORMAT COMMAND FAILED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x31, 0x80,
+    "\tFORMAT COMMAND CANNOT EXECUTE BECAUSE OF\n\tMULTIPLE LUN ASSIGNMENTS PER PHYSICAL DRIVE",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x32, 0x00,
+    "\tNO DEFECT SPARE LOCATION AVAILABLE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x32, 0x00,
+    "\tNO DEFECT SPARE LOCATION AVAILABLE",
+    print_FRU
+  },
+  {
+    Key_Medium_Error, 0x32, 0x01,
+    "\tDEFECT LIST UPDATE FAILURE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x32, 0x01,
+    "\tDEFECT LIST UPDATE FAILURE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x37, 0x00,
+    "\tROUNDED PARAMETER",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x39, 0x00,
+    "\tSAVING PARAMETERS NOT SUPPORTED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x3A, 0x00,
+    "\tMEDIUM NOT PRESENT",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x3A, 0x00,
+    "\tMEDIUM NOT PRESENT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x3D, 0x00,
+    "\tINVALID BITS IN IDENTIFY MESSAGE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x3D, 0x00,
+    "\tINVALID BITS IN IDENTIFY MESSAGE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x3E, 0x00,
+    "\tLOGICAL UNIT HAS NOT SELF-CONFIGURED YET",
+    print_FRU
+  },
+  {
+    Key_Not_Ready, 0x3E, 0x00,
+    "\tLOGICAL UNIT HAS NOT SELF-CONFIGURED YET",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x00,
+    "\tTARGET OPERATING CONDITIONS HAVE CHANGED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x01,
+    "\tMICROCODE HAS BEEN CHANGED\n\tReturned when new drive microcode has been downloaded",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x02,
+    "\tCHANGED OPERATING DEFINITION",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x03,
+    "\tINQUIRY DATA HAS CHANGED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x80,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR ****\n\tOne or more drives in the disk array has been marked DOWN\n\tdue to detection of the following error:\n\tDRIVE DOWNED BECAUSE OF A FAILED WRITE OPERATION\n\tThe drive(s) should be replaced as soon as possible to\n\tavoid the possibility of data loss or corruption.\n\t- This is the result of an error that prevents access to\n\t  user data on this drive.  This may result in erroneous\n\t  data being read/written.  (ex. An Unrecovered Write\n\t  Error)\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x81,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR ****\n\tOne or more drives in the disk array has been marked DOWN\n\tdue to detection of the following error:\n\tAUTOMATIC REALLOCATION OF RECOVERED DRIVE ERROR FAILED\n\tThe drive(s) should be replaced as soon as possible to\n\tavoid the possibility of data loss or corruption.\n\t- Either reassign block or recovery of data on the re-\n\t  assigned sector failed.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x82,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR ****\n\tRECONSTRUCTION FAILED - ERROR ON DRIVE BEING RECONSTRUCTED\n\tThis condition requires that the drive be replaced as soon\n\tas possible.  User data is still available by using parity,\n\tbut a second failure at this time will result in loss of\n\tuser data for the entire LUN (RAID 5), or will result in an\n\tunrecoverable error (other RAID levels).\n\t- The reconstruction operation cannot complete because of\n\t  an unrecoverable write error or a failed drive format\n\t  (before reconstruction starts) on the drive being recon-\n\t  structed.  It must be replaced (again) before the recon-\n\t  struction can be retried.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x83,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****\n\tRECONSTRUCTION FAILED - ERROR ON DRIVE REQUIRED FOR RECON-\n\tSTRUCTION.\n\tThe reconstruction operation cannot complete because of an\n\tunrecoverable read error on one of the drives needed for\n\treconstruction.  The array can still be run in degraded\n\tmode, but if user data is stored at the address in error\n\tit cannot be read.  A back-up of the array should be attemp-\n\tted to recover the remaining data.  To bring the LUN to an\n\toptimal state, the failed drive must be replaced, the array\n\tmust be formatted, and the data must be restored from a\n\tback-up (the one just made or a previous successful back-up).\n\t*************************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x84,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tDRIVE FAILED DUE TO A HARDWARE COMPONENT DIAGNOSTICS FAILURE\n\tThis condition requires that the drive be replaced as soon as\n\tpossible.  User data is still available by using parity, but\n\ta second failure at this time (when a drive has been downed)\n\twill result in the loss of data for the entire Lun (Raid 5)\n\tor will result in an unrecoverable error (other raid levels).",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x85,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tDRIVE FAILED BECAUSE IT FAILED A TEST UNIT READY COMMAND\n\t(DURING START OF DAY) OR IT FAILED A READ CAPACITY COMMAND\n\t(DURING START OF DAY OR DURING A FORMAT OR RECONSTRUCTION\n\tOPERATION)\n\tThis condition requires that the drive be replaced as soon as\n\tpossible.  User data is still available by using parity, but\n\ta second failure at this time (when a drive has been downed)\n\twill result in the loss of data for the entire Lun (Raid 5)\n\tor will result in an unrecoverable error (other raid levels).",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x86,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tDRIVE FAILED BECAUSE IT FAILED A FORMAT UNIT COMMAND\n\tThis condition requires that the drive be replaced as soon as\n\tpossible.  User data is still available by using parity, but\n\ta second failure at this time (when a drive has been downed)\n\twill result in the loss of data for the entire Lun (Raid 5)\n\tor will result in an unrecoverable error (other raid levels).",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x87,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tDRIVE FAILED BY A HOST MODE SELECT COMMAND\n\tThis condition requires that the drive be replaced as soon as\n\tpossible.  User data is still available by using parity, but\n\ta second failure at this time (when a drive has been downed)\n\twill result in the loss of data for the entire Lun (Raid 5)\n\tor will result in an unrecoverable error (other raid levels).",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x88,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tDRIVE FAILED BECAUSE OF A DEFERED ERROR REPORTED BY THE DRIVE\n\tThis condition requires that the drive be replaced as soon as\n\tpossible.  User data is still available by using parity, but\n\ta second failure at this time (when a drive has been downed)\n\twill result in the loss of data for the entire Lun (Raid 5)\n\tor will result in an unrecoverable error (other raid levels).",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x89,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tDRIVE FAILED BY START OF DAY APPLICATION CODE BECAUSE OF A\n\tDRIVE REPLACEMENT ERROR\n\tThis condition requires that the drive be replaced as soon as\n\tpossible.  User data is still available by using parity, but\n\ta second failure at this time (when a drive has been downed)\n\twill result in the loss of data for the entire Lun (Raid 5)\n\tor will result in an unrecoverable error (other raid levels).",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x90,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tUNRECOVERED READ/WRITE ERROR\n\tUnrecovered read errors always will cause this condition to\n\tbe generated.  Unrecovered write errors will cause this if\n\tthe state of the LUN or the RAID level guarantees that data\n\tat other addresses will not be affected by the failed oper-\n\tation and continued access to this drive.\n\tA second drive failure or warning condition on another\n\tdrive may prevent reconstruction of this drive.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0x91,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tDRIVE REPORTED DEFERRED ERROR CAUSED DRIVE TO BE PLACED IN\n\tWARNING\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xA0,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tThis is an early drive replacement warning for the disk array.\n\tThe following error was detected:\n\tSINGLE DRIVE ARRAY ASSURANCE ERROR - DRIVE ECC TEST FAILED\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xB0,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tThis is an early drive replacement warning for the disk array.\n\tThe following error was detected:\n\tEXCESSIVE MEDIA ERROR RATE\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xB1,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tThis is an early drive replacement warning for the disk array.\n\tThe following error was detected:\n\tEXCESSIVE SEEK ERROR RATE\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xB2,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tThis is an early drive replacement warning for the disk array.\n\tThe following error was detected:\n\tEXCESSIVE GROWN DEFECTS\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xC0,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tNO RESPONSE FROM ONE OR MORE DRIVES\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xC1,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tCOMMUNICATIONS ERROR\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xC2,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tROM CODE INDICATES NO DRIVE IS PRESENT EVEN THOUGH INFORMATION\n\tSTORED ON THE DISK INDICATES DRIVE SHOULD BE PRESENT\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xC7,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tSUBSYSTEM COMPONENT FAILURE\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xC8,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tAC POWER IS LOST, DC POWER IS BEING SUPPLIED BY A HOLD OVER\n\tBATTERY \n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xC9,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tAC POWER IS LOST, DC POWER SUPPLIED FOR A MAXIMUM OF 2 MINUTES.\n\tTHE HOST SHOULD START ITS SHUTDOWN PROCEDURES.\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xCA,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tAC POWER IS LOST, DC POWER IS EXHAUSTED.\n\tTHE ARRAY CONTROLLER WILL COMPLETE CURRENTLY EXECUTING DRIVE\n\tCOMMANDS TO MAINTAIN DATA INTEGRITY.\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xCB,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tAC POWER WAS LOST, BUT IS NOW RESTORED.\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xCC,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tAC POWER IS LOST, DC POWER IS EXHAUSTED.\n\tTHE ARRAY CONTROLLER WILL COMPLETE CURRENTLY EXECUTING DRIVE\n\tCOMMANDS TO MAINTAIN DATA INTEGRITY.\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xCD,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tA check of the installation of a drive in the disk array\n\tis needed because the following error was detected:\n\tAC POWER WAS LOST, BUT IS NOW RESTORED.\n\tThe drive will still be used until a failed WRITE of user\n\tdata occurs.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xD0,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tPotential performance degradation of the disk array has\n\tbeen detected.  The indication of this condition is:\n\tGREATER THAN 75% OF TRANSFER DELAYS CAUSED BY ONE DRIVE\n\tThe drive is still being used.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xD1,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tPotential performance degradation of the disk array has\n\tbeen detected.  The indication of this condition is:\n\tGREATER THAN 75% OF NON-ALIGNED RESELECTIONS CAUSED BY ONE DRIVE\n\tThe drive is still being used.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x3F, 0xD2,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tPotential performance degradation of the disk array has\n\tbeen detected.  The indication of this condition is:\n\tSYNCHRONOUS TRANSFER VALUE DIFFERENCES BETWEEN DRIVES\n\tThe drive is still being used.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xD2,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tPotential performance degradation of the disk array has\n\tbeen detected.  The indication of this condition is:\n\tSYNCHRONOUS TRANSFER VALUE DIFFERENCES BETWEEN DRIVES\n\tThe drive is still being used.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xD3,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tPotential performance degradation of the disk array has\n\tbeen detected.  The indication of this condition is:\n\tSOFTWARE MEASURED PERFORMANCE DEGRADATION\n\tThe drive is still being used.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xD4,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tPotential performance degradation of the disk array has\n\tbeen detected.  The indication of this condition is:\n\tMODE PARAMETER DIFFERENCES BETWEEN DRIVES MAY CAUSE PERFORM-\n\tANCE DEGRADATION\n\tThe drive is still being used.\n\t***********************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xE0,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****\n\tLUN DOWNED - COMMAND CANNOT EXECUTE BECAUSE THE LUN HAS BEEN\n\tDOWNED\n\tSubsequent media access commands to this LUN will not execute,\n\tbut will return sense information as to the cause.\n\t  ASC     ASCQ          Meaning\n\t  84      01            Multiple drives have been downed\n\t  84      02            Mode parameters for drives don't match\n\t  84      03            Drive channel verification failed\n\t  84      04            SCSI ID verification failed\n\t  84      05            Format in progress\n\t  84      06            Awaiting format\n\t  84      08            Wrong drive was replaced\n\t  84      09            Component failure on multiple channels\n\tAttempt a backup of the array.  Replace the failed drives,\n\treformat, and restore data from the last successful backup\n\tcopy. \n\t**************************************************************",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xE1,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****\n\tMULTIPLE DRIVES HAVE BEEN DOWNED\n\tSubsequent media access commands to this LUN will not execute,\n\tbut will return sense information as to the cause.\n\t  ASC     ASCQ          Meaning\n\t  84      01            Multiple drives have been downed\n\t  84      02            Mode parameters for drives don't match\n\t  84      03            Drive channel verification failed\n\t  84      04            SCSI ID verification failed\n\t  84      05            Format in progress\n\t  84      06            Awaiting format\n\t  84      08            Wrong drive was replaced\n\t  84      09            Component failure on multiple channels\n\tAttempt a backup of the array.  Replace the failed drives,\n\treformat, and restore data from the last successful backup\n\tcopy. ",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xE2,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****\n\tMODE PARAMETERS FOR DRIVES IN LUN DO NOT MATCH\n\tSubsequent media access commands to this LUN will not execute,\n\tbut will return sense information as to the cause.\n\t  ASC     ASCQ          Meaning\n\t  84      01            Multiple drives have been downed\n\t  84      02            Mode parameters for drives don't match\n\t  84      03            Drive channel verification failed\n\t  84      04            SCSI ID verification failed\n\t  84      05            Format in progress\n\t  84      06            Awaiting format\n\t  84      08            Wrong drive was replaced\n\t  84      09            Component failure on multiple channels\n\tAttempt a backup of the array.  Replace the failed drives,\n\treformat, and restore data from the last successful backup\n\tcopy. ",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xE3,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****\n\tDRIVE CHANNEL VERIFICATION FAILED\n\tSubsequent media access commands to this LUN will not execute,\n\tbut will return sense information as to the cause.\n\t  ASC     ASCQ          Meaning\n\t  84      01            Multiple drives have been downed\n\t  84      02            Mode parameters for drives don't match\n\t  84      03            Drive channel verification failed\n\t  84      04            SCSI ID verification failed\n\t  84      05            Format in progress\n\t  84      06            Awaiting format\n\t  84      08            Wrong drive was replaced\n\t  84      09            Component failure on multiple channels\n\tAttempt a backup of the array.  Replace the failed drives,\n\treformat, and restore data from the last successful backup\n\tcopy. ",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xE4,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****\n\tSCSI ID VERIFICATION FAILED\n\tSubsequent media access commands to this LUN will not execute,\n\tbut will return sense information as to the cause.\n\t  ASC     ASCQ          Meaning\n\t  84      01            Multiple drives have been downed\n\t  84      02            Mode parameters for drives don't match\n\t  84      03            Drive channel verification failed\n\t  84      04            SCSI ID verification failed\n\t  84      05            Format in progress\n\t  84      06            Awaiting format\n\t  84      08            Wrong drive was replaced\n\t  84      09            Component failure on multiple channels\n\tAttempt a backup of the array.  Replace the failed drives,\n\treformat, and restore data from the last successful backup\n\tcopy. ",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xE5,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****\n\tWRONG DRIVE WAS REPLACED\n\tSubsequent media access commands to this LUN will not execute,\n\tbut will return sense information as to the cause.\n\t  ASC     ASCQ          Meaning\n\t  84      01            Multiple drives have been downed\n\t  84      02            Mode parameters for drives don't match\n\t  84      03            Drive channel verification failed\n\t  84      04            SCSI ID verification failed\n\t  84      05            Format in progress\n\t  84      06            Awaiting format\n\t  84      08            Wrong drive was replaced\n\t  84      09            Component failure on multiple channels\n\tAttempt a backup of the array.  Replace the failed drives,\n\treformat, and restore data from the last successful backup\n\tcopy. ",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xE6,
+    "\t****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****\n\tCOMPONENT FAILURE AFFECTING MULTIPLE CHANNELS\n\tSubsequent media access commands to this LUN will not execute,\n\tbut will return sense information as to the cause.\n\t  ASC     ASCQ          Meaning\n\t  84      01            Multiple drives have been downed\n\t  84      02            Mode parameters for drives don't match\n\t  84      03            Drive channel verification failed\n\t  84      04            SCSI ID verification failed\n\t  84      05            Format in progress\n\t  84      06            Awaiting format\n\t  84      08            Wrong drive was replaced\n\t  84      09            Component failure on multiple channels\n\tAttempt a backup of the array.  Replace the failed drives,\n\treformat, and restore data from the last successful backup\n\tcopy. ",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xF0,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tEEPROM ERROR\n\tThe configuration change (drive being marked failed/warning) \n\tcould not be saved to EEPROM, but the update of the RAM infor-\n\tmation on the board and the DACSTORE information on the disk\n\twere successful.  The new configuration information will be used\n\tuntil a board power-up/reset.  At that time, a diagnostic fail-\n\ture will be detected that prevents the board from being used.",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xF1,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tEEPROM HARD CHECKSUM ERROR\n\tThe configuration change (drive being marked failed/warning) \n\tcould not be saved to EEPROM, but the update of the RAM info-\n\tmation on the board and the DACSTORE information on the disk\n\twere successful.  The new configuration information will be used\n\tuntil a board power-up/reset.  At that time, a diagnostic fail-\n\ture will be detected that prevents the board from being used.",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xF2,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tMAXIMUM EEPROM WRITE COUNT EXCEEDED\n\tThe configuration change (drive being marked failed/warning) \n\tcould not be saved to EEPROM, but the update of the RAM info-\n\tmation on the board and the DACSTORE information on the disk\n\twere successful.  The new configuration information will be used\n\tuntil a board power-up/reset.  At that time, a diagnostic fail-\n\ture will be detected that prevents the board from being used.",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x3F, 0xF8,
+    "\t***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***\n\tAPPLICATION SOFTWARE COPY TO GREATER THAN ONE DRIVE FAILED\n\tANOTHER DOWNLOAD IS REQUIRED IF THE DRIVE WITH THE CURRENT\n\tAPPLICATION CODE IS FAILED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x00,
+    "\tRAM FAILURE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x80,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x81,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x82,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x83,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x84,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x85,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x86,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x87,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x88,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x89,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x8A,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x8B,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x8C,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x8D,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x8E,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x8F,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x90,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x91,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x92,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x93,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x94,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x95,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x96,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x97,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x98,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x99,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x9A,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x9B,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x9C,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x9D,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x9E,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0x9F,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA0,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA1,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA2,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA3,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA4,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA5,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA6,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA7,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA8,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xA9,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xAA,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xAB,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xAC,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xAD,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xAE,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xAF,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB0,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB1,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB2,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB3,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB4,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB5,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB6,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB7,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB8,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xB9,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xBA,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xBB,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xBC,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xBD,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xBE,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xBF,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC0,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC1,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC2,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC3,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC4,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC5,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC6,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC7,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC8,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xC9,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xCA,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xCB,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xCC,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xCD,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xCE,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xCF,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD0,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD1,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD2,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD3,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD4,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD5,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD6,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD7,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD8,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xD9,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xDA,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xDB,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xDC,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xDD,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xDE,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xDF,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE0,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE1,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE2,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE3,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE4,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE5,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE6,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE7,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE8,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xE9,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xEA,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xEB,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xEC,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xED,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xEE,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xEF,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF0,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF1,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF2,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF3,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF4,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF5,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF6,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF7,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF8,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xF9,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xFA,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xFB,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xFC,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xFD,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xFE,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x40, 0xFF,
+    "\tDIAGNOSTIC FAILURE ON COMPONENT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x41, 0x00,
+    "\tDATA PATH FAILURE\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x41, 0x00,
+    "\tDATA PATH FAILURE\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x42, 0x00,
+    "\tPOWER-ON OR SELF-TEST FAILURE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x43, 0x00,
+    "\tMESSAGE ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x43, 0x00,
+    "\tMESSAGE ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x44, 0x00,
+    "\tINTERNAL TARGET FAILURE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x44, 0x00,
+    "\tINTERNAL TARGET FAILURE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x45, 0x00,
+    "\tSELECT/RESELECT FAILURE\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x45, 0x00,
+    "\tSELECT/RESELECT FAILURE\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x46, 0x00,
+    "\tUNSUCCESSFUL SOFT RESET\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x47, 0x00,
+    "\tSCSI PARITY ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x47, 0x00,
+    "\tSCSI PARITY ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x48, 0x00,
+    "\tINITIATOR DETECTED ERROR MESSAGE RECEIVED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x48, 0x00,
+    "\tINITIATOR DETECTED ERROR MESSAGE RECEIVED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x49, 0x00,
+    "\tINVALID MESSAGE ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x49, 0x00,
+    "\tINVALID MESSAGE ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x4A, 0x00,
+    "\tCOMMAND PHASE ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x4A, 0x00,
+    "\tCOMMAND PHASE ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x4B, 0x00,
+    "\tDATA PHASE ERROR\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x4B, 0x80,
+    "\tDATA OVERRUN/UNDERRUN",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x4C, 0x00,
+    "\tLOGICAL UNIT FAILED SELF-CONFIGURATION",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x4C, 0x00,
+    "\tLOGICAL UNIT FAILED SELF-CONFIGURATION",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x4E, 0x00,
+    "\tOVERLAPPED COMMANDS ATTEMPTED",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x4E, 0x00,
+    "\tOVERLAPPED COMMANDS ATTEMPTED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5A, 0x00,
+    "\tOPERATOR REQUEST OR STATE CHANGE INPUT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x5A, 0x02,
+    "\tOPERATOR SELECTED WRITE PROTECT",
+    print_FRU
+  },
+  {
+    Key_Data_Protect, 0x5A, 0x02,
+    "\tOPERATOR SELECTED WRITE PROTECT",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5A, 0x03,
+    "\tOPERATOR SELECTED WRITE PERMIT",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x5B, 0x00,
+    "\tLOG EXCEPTION",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5B, 0x00,
+    "\tLOG EXCEPTION",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x5B, 0x01,
+    "\tTHRESHOLD CONDITION MET",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5B, 0x01,
+    "\tTHRESHOLD CONDITION MET",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x5B, 0x02,
+    "\tLOG COUNTER AT MAXIMUM",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5B, 0x02,
+    "\tLOG COUNTER AT MAXIMUM",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x5B, 0x03,
+    "\tLOG LIST CODES EXHAUSTED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5B, 0x03,
+    "\tLOG LIST CODES EXHAUSTED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x5C, 0x00,
+    "\tRPL STATUS CHANGE",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5C, 0x00,
+    "\tRPL STATUS CHANGE",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x5C, 0x01,
+    "\tSPINDLES SYNCHRONIZED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5C, 0x01,
+    "\tSPINDLES SYNCHRONIZED",
+    print_FRU
+  },
+  {
+    Key_Recovered_Error, 0x5C, 0x02,
+    "\tSPINDLES NOT SYNCHRONIZED",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x5C, 0x02,
+    "\tSPINDLES NOT SYNCHRONIZED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x80, 0x00,
+    "\tERROR MANAGER DETECTED ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x80, 0x01,
+    "\tTHE ERROR MANAGER WAS INVOKED WITHOUT ANY EM_CODE(S) LOADED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x80, 0x02,
+    "\tTHE ERROR MANAGER WAS PASSED AN OUT OF RANGE CODE\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x80, 0x03,
+    "\tTHE ERROR MANAGER WAS PASSED A CODE BY THE SCSI DRIVER,\n\tBUT NO ERROR HANDLER EXISTED\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x80, 0x04,
+    "\tFATAL NULL POINTER",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x80, 0x05,
+    "\t*** WARNING *** WARNING *** WARNING *** WARNING ****\n\tNO AEN CODE (OR INVALID AEN CODE) WAS LOADED BY ARRAY S/W\n\tThis error is detected when the AEN condition is requested\n\tby the command handler (either when the next command for\n\tthis host/lun is received or when a polled Request Sense\n\tis received), not when the AEN condition was detected.  The\n\tillegal AEN code is loaded into the error specific infor-\n\tmation field in the sense data.\n\t**********************************************************",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x80, 0x06,
+    "\tMAXIMUM NUMBER OF ERRORS FOR THIS I/O EXCEEDED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x80, 0x07,
+    "\tDRIVE REPORTED RECOVERED ERROR WITHOUT TRANSFERRING ALL OF DATA",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x81, 0x00,
+    "\tRECONSTRUCTION SETUP FAILED",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x82, 0x00,
+    "\tOUT OF HEAP",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x82, 0x01,
+    "\tNO COMMAND CONTROL STRUCTURES AVAILABLE",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x82, 0x02,
+    "\tNO DAC APPLICATION CONTROL BLOCKS AVAILABLE",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x83, 0x00,
+    "\tRESERVATION CONFLICT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x00,
+    "\tCOMMAND CANNOT EXECUTE BECAUSE THE LUN HAS BEEN DOWNED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x01,
+    "\tMULTIPLE DRIVES HAVE BEEN DOWNED\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.\n\tThis error will be returned on every media access command to\n\tthe downed Lun until the error is corrected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x02,
+    "\tMODE PARAMETERS FOR DRIVES IN THE LUN DO NOT MATCH\n\tThe FRU code in byte 14 of the sense data indicates where\n\tthe error was detected.\n\tThis error will be returned on every media access command to\n\tthe downed Lun until the error is corrected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x03,
+    "\tDRIVE CHANNEL VERIFICATION FAILED\n\tThis error will be returned on every media access command to\n\tthe downed Lun until the error is corrected.\n\tThe expected and observed values will be returned on every\n\tmedia access command to the downed Lun until the error is\n\tcorrected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x04,
+    "\tSCSI ID VERIFICATION FAILED\n\tThis error will be returned on every media access command to\n\tthe downed Lun until the error is corrected.\n\tThe expected and observed values will be returned on every\n\tmedia access command to the downed Lun until the error is\n\tcorrected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x05,
+    "\tFORMAT IN PROGRESS\n\tThis error will be returned on every media access command to\n\tthe downed Lun until the error is corrected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x06,
+    "\tAWAITING FORMAT\n\tThis error will be returned on every media access command to\n\tthe downed Lun until the error is corrected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x08,
+    "\tWRONG DRIVE WAS REPLACED\n\tThis error will be returned on every media access command to\n\tthe downed Lun until the error is corrected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x84, 0x09,
+    "\tCOMPONENT FAILURE AFFECTING MULTIPLE CHANNELS\n\tThis error will be returned on every media access command to\n\tthe downed Lun until the error is corrected.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x00,
+    "\tGENERAL APPLICATION CODE COMMAND HANDLER ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x01,
+    "\tDRIVE ERROR\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x02,
+    "\tHOST ERROR\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x03,
+    "\tDRIVE TYPE MISMATCH WITHIN LUN\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x04,
+    "\tOPERATION NOT ALLOWED DURING RECONSTRUCTION\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x05,
+    "\tDATA RETURNED BY DRIVE IS INVALID\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x06,
+    "\tNON-FAILED DRIVE UNAVAILABLE FOR OPERATIONS\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x07,
+    "\tINSUFFICIENT RANK STRUCTURES AVAILABLE\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x08,
+    "\tFULL FORMAT REQUIRED, BUT NOT ALLOWED (SUBLUNS)\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x09,
+    "\tDRIVE CANNOT BE MODE SELECTED TO MEET LUN PARAMETERS\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x0A,
+    "\tDATA RECOVERY AFTER RE-ASSIGN BLOCK COMMAND FAILED\n\tThe original CDB field in the array sense data will show the\n\tfailing command.  Debug information will be shown in the Error\n\tDetection Point sense field.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x85, 0x0B,
+    "\tDRIVE NOT RETURNING REQUIRED MODE SENSE PAGE(s).\n\tDRIVE MUST SUPPORT MODE SENSE PAGES 3 AND 4.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x86, 0x00,
+    "\tCOMMAND CANNOT EXECUTE BECAUSE THE LUN IS IN A DEGRADED MODE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x00,
+    "\tCODE DOWNLOAD/UPLOAD ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x01,
+    "\tPARTIAL DOWNLOAD (MISSING APPLICATION CODE SEGMENT)",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x87, 0x02,
+    "\t**** WARNING  ***  WARNING  ***  WARNING  ***  WARNING ****\n\tDOWNLOADED CODE CANNOT BE SAVED TO THE DISK\n\tThe previous version of the code will be uploaded on the next\n\tpower-up/reset.  Be aware that after reset, the code that was\n\tdownloaded, will be overwritten.\n\t*************************************************************",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x03,
+    "\tAPPLICATION CODE CRC FAILURE\n\tCheck is performed on the disk read after the new code is \n\tsaved to disk.",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x87, 0x04,
+    "\t**** WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ****\n\tUPLOAD OF LATEST VERSION OF CODE FAILED\n\tThe latest version of controller code could not be uploaded\n\tfrom a drive.  An older version of controller code has been\n\tuploaded.  It is advisable to repeat the download of the new\n\tversion of array application code.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x05,
+    "\tNO PACKAGE VERIFICATION PARTITION WAS DOWNLOADED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x06,
+    "\tROM PARTITIONS REQUIRED FOR DOWNLOAD OF CODE ARE MISSING",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x07,
+    "\tINCOMPLETE RAM PARTITIONS",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x08,
+    "\tINCOMPATIBLE BOARD TYPE FOR THE CODE DOWNLOADED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x09,
+    "\tINCOMPATIBLE ROM VERSION FOR SUPPORT OF THE DOWNLOADED CODE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x87, 0x0A,
+    "\tDOWNLOAD OF MICROCODE TO A FAILED DISK COMPLETED SUCCESSFULLY\n\tThe drive will still be unusable until the drive is marked\n\tas replaced and has been reconstructed.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x88, 0x00,
+    "\tEEPROM COMMAND ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x88, 0x02,
+    "\tEEPROM NOT RESPONDING (THERE IS EEPROM ON BOARD)",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x88, 0x03,
+    "\tEEPROM IS NOT FORMATTED (KEY FIELDS HAVE NOT BEEN SET)",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x88, 0x04,
+    "\tINVALID EEPROM OFFSET (ATTEMPT TO WRITE TO PROTECTED AREA)",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x88, 0x05,
+    "\tEEPROM SOFT CHECKSUM ERROR (UPDATE WAS INTERRUPTED)",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x88, 0x06,
+    "\tEEPROM HARD CHECKSUM ERROR (PART MAY BE GOING BAD)",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x88, 0x07,
+    "\tMAXIMUM WRITE COUNT WAS EXCEEDED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x88, 0x09,
+    "\tEEPROM NOT INITIALIZED",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x89, 0x00,
+    "\tERROR ON REQUEST SENSE COMMAND TO A DRIVE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x8A, 0x00,
+    "\tILLEGAL COMMAND FOR PASS-THRU MODE\n\tThe original CDB field in the array sense data will show\n\tthe failing command.",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x8B, 0x00,
+    "\tWRITE BUFFER COMMAND (FOR CODE DOWNLOAD) WAS ATTEMPTED WHILE\n\tANOTHER COMMAND WAS ACTIVE, OR ANOTHER COMMAND WAS RECEIVED\n\tWHILE THE DOWNLOAD COMMAND WAS EXECUTING",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x8B, 0x01,
+    "\tWRITE BUFFER COMMAND (FOR DRIVE MICROCODE DOWNLOAD) ATTEMPTED\n\tBUT ANOTHER COMMAND WAS ACTIVE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x8C, 0x00,
+    "\tDESTINATION TRANSFER STATE MACHINE ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x8C, 0x01,
+    "\tINVALID TRANSFER RELEASE REQUESTOR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x8C, 0x02,
+    "\tINVALID TRANSFER REQUESTOR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x8C, 0x03,
+    "\tSDP CHIP CONFIGURATION ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x8C, 0x04,
+    "\tDATA TRANSFER REQUEST ERROR",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x8C, 0x05,
+    "\tINVALID TRANSFER PAD REQUESTOR",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x8D, 0x00,
+    "\tDESTINATION DRIVER DATA TRANSFER DID NOT COMPLETE",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x8D, 0x00,
+    "\tDESTINATION DRIVER DATA TRANSFER DID NOT COMPLETE",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x8E, 0x00,
+    "\tPARITY STRIPE/PARITY GENERATION ASIC ERROR",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x8E, 0x01,
+    "\tPARITY/DATA MISMATCH",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x8E, 0x02,
+    "\tDATA UNDERRUN",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x8F, 0x00,
+    "\tPREMATURE COMPLETION OF A DRIVE COMMAND (EXPECTED DATA\n\tTRANSFER AND GOT GOOD STATUS INSTEAD)",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x00,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - DACSTORE directory\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x01,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Disk Store\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x02,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - LUN Store\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x03,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Controller Store\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x04,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Log Store\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x05,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - High controller serial number store\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x06,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Low controller serial number store\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x07,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - RDAC Common store\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x08,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Boot Block Eeprom store\n\t  Error Type - Setup Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x10,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - DACSTORE directory\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x11,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Disk Store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x12,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - LUN Store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x13,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Controller Store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x14,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Log Store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x15,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - High controller serial number store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x16,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Low controller serial number store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x17,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - RDAC Common store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x18,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Boot Block Eeprom store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x20,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - DACSTORE directory\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x21,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Disk Store\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x22,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - LUN Store\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x23,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Controller Store\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x24,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Log Store\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x25,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - High controller serial number store\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x26,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Low controller serial number store\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x27,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - RDAC Common store\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x28,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Boot Block Eeprom store\n\t  Error Type - Drive Error\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x30,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - DACSTORE directory\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x31,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Disk Store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x32,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - LUN Store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x33,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Controller Store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x34,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Log Store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x35,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - High controller serial number store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x36,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Low controller serial number store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x37,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - RDAC Common store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x38,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Boot Block Eeprom store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Read",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x80,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - DACSTORE directory\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x81,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Disk Store\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x82,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - LUN Store\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x83,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Controller Store\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x84,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Log Store\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x85,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - High controller serial number store\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x86,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Low controller serial number store\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x87,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - RDAC Common store\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x88,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Boot Block Eeprom store\n\t  Error Type - Setup Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x90,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - DACSTORE directory\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x91,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Disk Store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x92,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - LUN Store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x93,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Controller Store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x94,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Log Store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x95,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - High controller serial number store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x96,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Low controller serial number store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x97,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - RDAC Common store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0x98,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Boot Block Eeprom store\n\t  Error Type - Invalid Directory Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA0,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - DACSTORE directory\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA1,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Disk Store\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA2,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - LUN Store\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA3,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Controller Store\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA4,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Log Store\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA5,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - High controller serial number store\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA6,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Low controller serial number store\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA7,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - RDAC Common store\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xA8,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Boot Block Eeprom store\n\t  Error Type - Drive Error\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB0,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - DACSTORE directory\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB1,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Disk Store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB2,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - LUN Store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB3,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Controller Store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB4,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Log Store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB5,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - High controller serial number store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB6,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Low controller serial number store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB7,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - RDAC Common store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x90, 0xB8,
+    "\tDACSTORE ERROR\n\t  DACSTORE Identifier - Boot Block Eeprom store\n\t  Error Type - Invalid Store Data\n\t  Operation Type - Write",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x00,
+    "\tMODE SELECT ERRORS",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x01,
+    "\tLUN ALREADY EXISTS; CANNOT DO ADD LUN FUNCTION 80",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x02,
+    "\tLUN DOES NOT EXIST; CANNOT DO REPLACE LUN FUNCTION 83\n\tOR ANY LOGICAL FUNCTION",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x03,
+    "\tDRIVE ALREADY EXISTS; CANNOT DO ADD DRIVE FUNCTION 80",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x04,
+    "\tDRIVE DOES NOT EXIST; CANNOT DO REQUESTED ACTION FOR IT",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x05,
+    "\tDRIVE CANNOT BE DELETED; IT IS PART OF A LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x06,
+    "\tDRIVE CANNOT BE FAILED; IT IS FORMATTING",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x07,
+    "\tDRIVE CANNOT BE REPLACED; IT IS NOT MARKED AS FAILED OR\n\tREPLACED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x08,
+    "\tINVALID ACTION TO TAKE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x09,
+    "\tINVALID ACTION WITH MULTIPLE SUB LUNS DEFINED (PROBABLY\n\tAN ATTEMPT TO CHANGE PAGE 3 - FORMAT DEVICE PAGE)",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x0A,
+    "\tINVALID RECONSTRUCTION AMOUNT",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x0B,
+    "\tINVALID RECONSTRUCTION FREQUENCY",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x0C,
+    "\tINVALID LUN BLOCK SIZE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x0D,
+    "\tINVALID LUN TYPE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x0E,
+    "\tINVALID SEGMENT SIZE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x0F,
+    "\tINVALID SEGMENT 0 SIZE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x10,
+    "\tINVALID NUMBER OF DRIVES IN LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x11,
+    "\tINVALID NUMBER OF LUN BLOCKS",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x12,
+    "\tINVALID RAID LEVEL",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x13,
+    "\tINVALID DRIVE SECTOR SIZE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x14,
+    "\tINVALID LUN BLOCK SIZE/DRIVE SECTOR SIZE MODULO",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x15,
+    "\tNO DISKS DEFINED FOR LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x16,
+    "\tINSUFFICIENT RANK STRUCTURES AVAILABLE TO DEFINE LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x17,
+    "\tDISK DEFINED MULTIPLE TIMES FOR LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x18,
+    "\tSUB LUN DRIVES NOT THE SAME AS THOSE USED BY OTHER SUB\n\tLUNS ON THESE DRIVES",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x19,
+    "\tSUB LUN RAID LEVEL MISMATCH",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x1A,
+    "\tFIRST SUB LUN DEFINED FOR THESE DRIVES HAS NOT YET BEEN\n\tFORMATTED;  SECOND SUB LUN IS ILLEGAL",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x1B,
+    "\tNON-SUB LUN DRIVE ALREADY OWNED BY ANOTHER LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x1C,
+    "\tSUB LUN DRIVE ALREADY OWNED BY A NON-SUB LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x1D,
+    "\tDRIVE TYPE DOES NOT MATCH THE DRIVE TYPE OF THE OTHER\n\tDRIVES IN THE LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x1E,
+    "\tDRIVE CANNOT BE INCLUDED IN RANK BECAUSE RANK IS FULL",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x1F,
+    "\tRANKS HAVE DIFFERENT NUMBER OF DISKS DEFINED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x20,
+    "\tMULTIPLE DISKS ON SAME CHANNEL WITHIN SAME RANK",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x21,
+    "\tMIRRORED DISKS ON THE SAME CHANNEL",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x22,
+    "\tNO PARITY DISK DEFINED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x23,
+    "\tNO DATA DISKS DEFINED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x24,
+    "\tTOO MANY DISKS DEFINED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x25,
+    "\tNO SPACE AVAILABLE FOR LUN\n\t- SUBLUN CANNOT BE DEFINED",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x26,
+    "\tDRIVE STATUS CANNOT BE CHANGED TO GOOD (DRIVE CANNOT BE REVIVED\n\tTHROUGH MODE SELECT)",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x27,
+    "\tERROR IN PROCESSING A SUBSYSTEM MODE PAGE",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x28,
+    "\tDRIVE INQUIRY DATA MISMATCH BETWEEN DRIVES IN THE LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x29,
+    "\tDRIVE CAPACITY MISMATCH BETWEEN DRIVES IN THE LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x2A,
+    "\tDRIVE BLOCK SIZE MISMATCH BETWEEN DRIVES IN THE LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x2B,
+    "\tSUPPORT OF TTD/CIOP MESSAGES IS NOT THE SAME FOR ALL DRIVES \n\tIN THE LUN",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x91, 0x2C,
+    "\tFIRMWARE DOES NOT SUPPORT REDUNDANT CONTROLLER OPTIONS SELECTED",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0x92, 0x00,
+    "\tBUSY STATUS FROM DRIVES COULD NOT BE CLEARED BY ARRAY\n\tCONTROLLER",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x93, 0x00,
+    "\tDRIVE VENDOR UNIQUE SENSE DATA RETURNED.\n\tREFER TO DRIVE SENSE AREA OF ARRAY SENSE FOR THE DRIVE\n\tASC/ASCQ AND SENSE KEY.  REFER TO DRIVE DOCUMENTATION FOR\n\tFURTHER DESCRIPTION.",
+    print_FRU
+  },
+  {
+    Key_Illegal_Request, 0x94, 0x00,
+    "\tINVALID REQUEST OF A CONTROLLER IN REDUNDANT CONTROLLER\n\tMODE.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x95, 0x00,
+    "\tA DRIVE CHANNEL WAS RESET (LIKELY CAUSE: REMOVAL/REPLACEMENT\n\tOF A DRIVE DURING A HOT SWAP OPERATION).",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0x95, 0x01,
+    "\tAN EXTENDED DRIVE CHANNEL RESET HAS BEEN DETECTED (LIKELY\n\tCAUSE: DRIVE LEFT PARTIALLY EXTRACTED/INSERTED).",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x96, 0x00,
+    "\tREDUNDANT CONTROLLER NOT SUPPORTED BY CURRENT FIRMWARE",
+    print_FRU
+  },
+  {
+    Key_Unit_Attention, 0x96, 0x01,
+    "\tALTERNATE REDUNDANT CONTROLLER NOT SUPPORTED BY CURRENT\n\tFIRMWARE, ALTERNATE HAS BEEN DETECTED HOWEVER.",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0xB0, 0x00,
+    "\tCOMMAND TIMEOUT",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0xB0, 0x01,
+    "\tWATCHDOG TIMER TIMEOUT",
+    print_FRU
+  },
+  {
+    Key_Copy_Aborted, 0xB0, 0x02,
+    "\tSOFTWARE LOOP TIMEOUT",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD0, 0x00,
+    "\tSCSI DRIVER TIMEOUT\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD0, 0x01,
+    "\tDISCONNECT TIMEOUT\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD0, 0x02,
+    "\tCHIP COMMAND TIMEOUT\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD0, 0x03,
+    "\tBYTE TRANSFER TIMEOUT\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x00,
+    "\tBUS ERRORS\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x01,
+    "\tCDB TRANSFER INCOMPLETE\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x02,
+    "\tUNEXPECTED BUS PHASE\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x03,
+    "\tDISCONNECT EXPECTED\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x04,
+    "\tID MESSAGE NOT SENT\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x05,
+    "\tSYNCHRONOUS NEGOTIATION ERROR\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x06,
+    "\tTARGET TRANSFER DISABLE (TTD) NEGOTIATION CONFLICT\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x07,
+    "\tUNEXPECTED DISCONNECTION\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x08,
+    "\tUNEXPECTED MESSAGE\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x09,
+    "\tUNEXPECTED TAG MESSAGE\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD1, 0x0A,
+    "\tCHANNEL BUSY\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD2, 0x00,
+    "\tMISCELLANEOUS SCSI DRIVER ERROR\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD2, 0x01,
+    "\tILLEGAL C96 CHIP COMMAND RECEIVED\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD2, 0x02,
+    "\tUNCODED EXECUTION PATH\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD3, 0x00,
+    "\tDRIVE SCSI CHIP REPORTED GROSS ERROR\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD4, 0x00,
+    "\tNON-SCSI BUS PARITY ERROR\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD5, 0x00,
+    "\tMISCELLANEOUS HOST RELATED ERRORS\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD5, 0x01,
+    "\tMAXIMUM MESSAGES RECEIVED\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD5, 0x02,
+    "\tMESSAGE REJECT RECEIVED ON A VALID MESSAGE\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD6, 0x00,
+    "\tSOURCE DRIVER (HOST SIDE) CHIP RELATED ERROR\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD7, 0x00,
+    "\tSOURCE DRIVER PROGRAMMING ERROR\n\tByte 14 in the sense data will indicate which SCSI channel the\n\terror was detected on.",
+    print_FRU
+  },
+  {
+    Key_Hardware_Error, 0xD8, 0x00,
+    "\tAN ERROR WAS ENCOUNTERED THAT REQUIRED THE DATA POINTERS TO BE\n\tRESTORED BUT THE HOST IS NON-DISCONNECTING AND DOES NOT\n\tSUPPORT THE RESTORE POINTERS MESSAGE (INDICATED BY AN EEPROM\n\tOPTION CONTROL BIT OR BY HOST SELECTION WITHOUT SENDING THE\n\tIDENTIFY MESSAGE)",
+    print_FRU
+  },
+};
+
+/*__ENDMAGIC__*/		/*  don't remove this line  */
+
+int stat_tbl_size = sizeof( stat_tbl ) / sizeof( stat_tbl_entry_t );
+
+/******************************************************************************
+ ***				  PROCEDURES				    ***
+ *****************************************************************************/
+static void
+print_FRU( DAC_EVENT *this )
+{
+}

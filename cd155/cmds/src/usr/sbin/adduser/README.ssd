@@ -1,0 +1,3 @@
+Cleaned up the adduser.sh script in order to use dspmsg correctly (if parameters
+need to be passed in the string it should use single quotes and not double.)
+Wed Apr 22 15:18:46 PDT 1992 - Shala

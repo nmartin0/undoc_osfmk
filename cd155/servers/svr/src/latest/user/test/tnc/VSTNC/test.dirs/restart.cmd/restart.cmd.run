@@ -1,0 +1,62 @@
+#!/bin/ksh
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Copyright (c) 1992-1995, Locus Computing Corporation
+# All rights reserved
+#
+#
+# HISTORY
+# $Log: restart.cmd.run,v $
+# Revision 1.3  1995/02/02  00:49:28  bolsen
+#  Reviewer(s): Jerry Toman
+#  Risk: Medium (lots of files)
+#  Module(s): Too many to list
+#  Configurations built: STD, LITE, & RAMDISK
+#
+#  Added or Updated the Locus Copyright message.
+#
+# Revision 1.2  1994/11/18  21:07:57  mtm
+# Copyright additions/changes
+#
+# Revision 1.1  1994/03/14  17:57:22  slk
+# Checkpoint Restart Code Drop
+#  Reviewer: Chris Peak, chrisp@locus.com
+#  Risk: Low
+#  Benefit or PTS #: Enhancement
+#  Testing: Locus VSTNC, individual checkpoint restart by hand
+#  Module(s):
+#
+#Revision 2.2  93/11/10  12:19:03  slk
+#Check into main tree for checkpoint restart merge.
+#
+#Revision 2.1.1.1  93/08/27  14:35:59  hao
+#
+#	 Run the restart cmd test.
+#
+for testcase in 1 2 3 4 5 6 7 8 10
+do
+	echo testcase is $testcase
+	rm -rf /chkpnt/*
+	./simp_pgrp > simp_out &
+	pid=$!
+	mkdir /chkpnt/pgrp.$pid
+	sleep 1
+	/etc/chkpnt_pgrp $pid
+	sleep 1
+	kill -9 -$pid
+	sleep 2
+	restart.cmd $testcase $pid
+	sync
+	echo " "
+done
+rm -rf *std*

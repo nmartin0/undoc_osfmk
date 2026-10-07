@@ -1,0 +1,113 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1991 , 1994, 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon 
+ * the rights to redistribute these changes.
+ */
+
+/*
+ * HISTORY
+ * $Log: mach_i386.defs,v $
+ * Revision 1.5  1994/11/18  20:54:31  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.4  1993/06/30  22:48:24  dleslie
+ * Adding copyright notices required by legal folks
+ *
+ * Revision 1.3  1993/04/27  20:39:47  dleslie
+ * Copy of R1.0 sources onto main trunk
+ *
+# Revision 1.1.10.2  1993/04/22  18:41:07  dleslie
+# First R1_0 release
+#
+ * Revision 2.2.3.1  92/03/03  16:21:26  jeffreyh
+ * 	Changes from TRUNK
+ * 	[92/02/26  11:58:37  jeffreyh]
+ * 
+ * Revision 2.3  92/01/03  20:19:56  dbg
+ * 	Renamed io_map to io_port_add.  Added io_port_remove,
+ * 	io_port_list, set_ldt, get_ldt.
+ * 	[91/08/20            dbg]
+ * 
+ * Revision 2.2  91/07/31  17:51:57  dbg
+ * 	Created.
+ * 	[91/07/30  17:09:09  dbg]
+ * 
+ */
+
+/*
+ * Special functions for i386.
+ */
+
+subsystem
+#if	KERNEL_SERVER
+	  KernelServer
+#endif	KERNEL_SERVER
+		       mach_i386 3800;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+#include <device/device_types.defs>
+
+type	device_list_t	=	^array[] of device_t;
+
+type	descriptor_t	= 	struct[2] of int;
+type	descriptor_list_t =	array[*] of descriptor_t;
+
+#undef	i386		/* XXX! */
+import <mach/i386/mach_i386_types.h>;
+
+routine	i386_io_port_add(
+		target_thread	: thread_t;
+		device		: device_t);
+
+routine	i386_io_port_remove(
+		target_thread	: thread_t;
+		device		: device_t);
+
+routine	i386_io_port_list(
+		target_thread	: thread_t;
+	out	device_list	: device_list_t);
+
+routine	i386_set_ldt(
+		target_thread	: thread_t;
+		first_selector	: int;
+		desc_list	: descriptor_list_t, serverCopy);
+
+routine	i386_get_ldt(
+		target_thread	: thread_t;
+		first_selector	: int;
+		selector_count	: int;
+	out	desc_list	: descriptor_list_t);

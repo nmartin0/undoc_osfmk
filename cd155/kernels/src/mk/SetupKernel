@@ -1,0 +1,49 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# create everything you need for the kernel build environment
+#
+#
+# If we have an argument, we'll link to there for the release tree 
+if [ $# -gt 0 ] ; then
+	INSTALLDIR=$1
+	ln -s $INSTALLDIR ../../release
+else
+#	INSTALLDIR=${INSTALLDIR-../../release}
+	INSTALLDIR=../../release
+fi
+
+#OBJECTDIR=${OBJECTDIR-../../obj}
+OBJECTDIR=../../obj
+
+# Reset this if building for X86 or other target processor
+TARGET_MACHINE=i860
+
+top=`pwd`
+here=`basename $top`
+
+[ -d $OBJECTDIR ] || mkdir $OBJECTDIR
+[ -d $OBJECTDIR/${TARGET_MACHINE}_mach ] || mkdir $OBJECTDIR/${TARGET_MACHINE}_mach 
+[ -d $OBJECTDIR/${TARGET_MACHINE}_mach/${here} ] || mkdir $OBJECTDIR/${TARGET_MACHINE}_mach/${here} 
+[ -d $INSTALLDIR ] || mkdir $INSTALLDIR 
+[ -d $INSTALLDIR/${TARGET_MACHINE}_mach ] || mkdir $INSTALLDIR/${TARGET_MACHINE}_mach 
+#
+rm -f kernel/machine kernel/mach/machine
+cd kernel
+ln -s ${TARGET_MACHINE} machine
+cd mach
+ln -s ${TARGET_MACHINE} machine
+
+cd $top
+chmod +w Makeconf
+echo "SRCTOP=$here" >> Makeconf

@@ -1,0 +1,151 @@
+#!/bin/ksh
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Copyright (c) 1992-1995, Locus Computing Corporation
+# All rights reserved
+#
+#
+# HISTORY
+# $Log: bee,v $
+# Revision 1.7  1995/02/02  00:18:11  bolsen
+#  Reviewer(s): Jerry Toman
+#  Risk: Medium (lots of files)
+#  Module(s): Too many to list
+#  Configurations built: STD, LITE, & RAMDISK
+#
+#  Added or Updated the Locus Copyright message.
+#
+# Revision 1.6  1994/11/18  20:57:10  mtm
+# Copyright additions/changes
+#
+# Revision 1.5  1994/03/14  17:50:14  slk
+# Checkpoint Restart Code Drop
+#  Reviewer: Chris Peak, chrisp@locus.com
+#  Risk: Low
+#  Benefit or PTS #: Enhancement
+#  Testing: Locus VSTNC, individual checkpoint restart by hand
+#  Module(s):
+#
+# Revision 1.4  1993/07/14  18:54:05  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.3  1992/12/11  03:09:37  cfj
+# Merged 12-1-92 bug drop from Locus.
+#
+# Revision 1.2  1992/11/30  23:04:30  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/06  00:15:00  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 1.1.1.2  1993/07/01  21:21:40  cfj
+# Adding new code from vendor
+#
+# Revision 3.2  92/11/23  11:50:45  chrisp
+# Major overhaul: now use stresslib, accept node ranges, various other tweeks.
+# 
+# Revision 3.1  92/09/21  14:18:34  chrisp
+# Change the -t n option to generate a random lifetime in the range 1..n secs.
+# The -T n option should now be used to specify a fixed liftime of n secs.
+# 
+# Revision 3.0  92/07/21  12:06:11  chrisp
+# First appearance
+# 
+#
+. stresslib
+
+DELAY=30		# default working time on each node
+EAT_OR_SLEEP=eat
+
+while getopts ":L:E:e:Nnr:S:s:T:t:qX:x:" opt; do
+	case "$opt" in
+	    L)	LOGFILE="$OPTARG";;
+	    N)	RANDOMIZING_NODES=;;
+	    n)	RANDOMIZING_NODES=true;;
+	    E)	EAT_OR_SLEEP=eat; DELAY=$OPTARG;;
+	    e)	EAT_OR_SLEEP=eat; DELAY=$OPTARG; randomizing_delay=true;;
+	    q)	QUIET=please;;
+	    r)	RANDOM=$OPTARG;;
+	    S)	EAT_OR_SLEEP=sleep; DELAY=$OPTARG;;
+	    s)	EAT_OR_SLEEP=sleep; DELAY=$OPTARG; randomizing_delay=true;;
+	    T)	TIME=$OPTARG;;
+	    t)	let "TIME=(RANDOM % OPTARG) + 1";;
+	    X)	EAT_OR_SLEEP=either; DELAY=$OPTARG;;
+	    x)	EAT_OR_SLEEP=either; DELAY=$OPTARG; randomizing_delay=true;;
+	    :)	echo "$NAME: $OPTARG requires a value"
+		exit 2;;
+	   \?)	echo "$NAME: unknown option $OPTARG"
+		echo "usage: $NAME -n -t|T<secs> -e|E|s|S|x|X<secs> <node_list>"
+		exit 2;;
+	esac
+done
+shift OPTIND-1
+node_list="$*"
+
+#
+# Prompt for all the important stuff if not given
+# 
+[ "$node_list" ]  || read node_list?"Node list? "
+[ "$node_list" ]  || node_list="$(node_self)"
+
+declare_nodes $node_list
+
+trap 'stop_eating; stop_timing; exit' INT KILL TERM
+trap 'log "HUP received but ignored"' HUP
+
+if [ "$TIME" ]; then
+	CYCLING_NODES=true
+	start_timing $TIME
+	log "buzzing around nodes ${NODES[*]} for $TIME seconds..."
+else
+	CYCLING_NODES=
+	log "buzzing through nodes ${NODES[*]}..."
+fi
+		
+#
+# Take a random walk through the nodes,
+#	pausing to do a random amount of work on each.
+#
+let "delay_time = DELAY"
+while timing; do
+	#
+	# Make a (random) selection from the list of nodes
+	#	and migrate there
+	#
+	next_node
+	[ "$NODE" ] || break
+	log "buzzing to node $NODE"
+	migrate_to_node $NODE
+
+	[ $DELAY -eq 0 ] && continue
+
+	#
+	# Eat cpu for a time
+	#
+	if [ "$randomizing_delay" ]; then
+		let "delay_time = (RANDOM % DELAY) + 1"
+	fi
+	eat_or_sleep=$EAT_OR_SLEEP
+	if [ $eat_or_sleep = "either" ]; then
+	        if ((RANDOM % 2)); then
+			eat_or_sleep="eat"
+		else
+			eat_or_sleep="sleep"
+		fi
+	fi
+	log "${eat_or_sleep}ing on node $(node_self) for $delay_time secs"
+	$eat_or_sleep $delay_time
+done
+
+log "...expiring on node $(node_self)"
+exit 0

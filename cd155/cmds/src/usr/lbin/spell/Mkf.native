@@ -1,0 +1,57 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+# 
+# 
+# OSF/1 Release 1.0
+
+# "@(#)$RCSfile: Mkf.native,v $ $Revision: 1.2 $ (OSF) $Date: 1994/11/19 02:48:06 $"
+
+# COMPONENT_NAME: (CMDTEXT) Text Formatting Services
+# 
+# FUNCTIONS:
+# 
+# ORIGINS: 3,27
+# 
+# (C) COPYRIGHT International Business Machines Corp. 1989
+# All Rights Reserved
+# Licensed Materials - Property of IBM
+# 
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+# 
+# Make spelling database on target system
+# Mkf.native	1.2 11/18/89 17:47:33
+# 
+
+all: hlista hlistb hstop htemp1
+
+hlista: american /usr/lbin/spell/hashmake /usr/bin/spellin htemp1
+	tail +2 american | /usr/lbin/spell/hashmake |sort -u - htemp1 >htemp2
+	/usr/bin/spellin `wc -l htemp2` <htemp2 >hlista || rm hlista
+
+hlistb: british /usr/lbin/spell/hashmake /usr/bin/spellin htemp1
+	tail +2 british | /usr/lbin/spell/hashmake |sort -u - htemp1 >htemp2
+	/usr/bin/spellin `wc -l htemp2` <htemp2 >hlistb || rm hlistb
+
+hstop:  stop /usr/bin/spellin /usr/lbin/spell/hashmake
+	tail +2 stop | /usr/lbin/spell/hashmake | sort -u >htemp2
+	/usr/bin/spellin `wc -l htemp2` <htemp2 >hstop || rm hstop
+
+htemp1: list local extra /usr/lbin/spell/hashmake
+	tail +2 list >htemp3
+	tail +2 local >>htemp3
+	tail +2 extra >>htemp3
+	cat htemp3 | /usr/lbin/spell/hashmake >htemp1
+

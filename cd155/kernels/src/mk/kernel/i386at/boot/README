@@ -1,0 +1,336 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+/*
+ * @OSF_FREE_COPYRIGHT@
+ */
+/*
+ * HISTORY
+ * README,v
+# Revision 1.1.4.2  1993/02/12  17:35:22  dleslie
+# Adding new code from vendor
+#
+ * Revision 1.1  1992/09/30  02:46:43  robert
+ * Initial revision
+ *
+ * $EndLog$
+ */
+/* CMU_HIST */
+/*
+ * Revision 2.1.2.2  92/06/24  17:58:35  jeffreyh
+ * 	Updates to reflect new boot syntax and build.
+ * 	[92/06/12            bernadat]
+ * 
+ * Revision 2.1.2.1  92/04/30  11:52:06  bernadat
+ * 	Copied from main line
+ * 	[92/04/21            bernadat]
+ * 
+ * Revision 2.2  92/04/04  11:33:55  rpd
+ * 	From 2.5
+ * 	[92/03/30            mg32]
+ * 
+ */
+/* CMU_ENDHIST */
+/*
+ * Mach Operating System
+ * Copyright (c) 1992, 1991 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+
+/*
+ */
+
+		AT386 Protected Mode Bootstrap Loader
+		=====================================
+
+1. Overview of Startup
+   -------------------
+
+	After the system is rebooted, the BIOS bootstrap routine reads Sector
+	1, Track 0 into memory at location 0000:7C00H.  If location 0000:7DFEH
+	(last two bytes of that sector) contains the value AA55H, the BIOS
+	bootstrap routine will transfer control to 0000:7C00H.  Otherwise, the
+	boot code in that sector is bad and the boot routine stops.
+	
+	For DOS compatibility reason, one extra stage of boot is required if
+	the boot device is a hard disk.  The first sector of the hard disk will
+	contain the MOS-DOS boot code and a boot record partition table.
+	When this sector is loaded into 0000:7C00H, it will relocate itself
+	to somewhere else and then load the first sector of the active
+	partition into 0000:7C00H.  Both UNIX and DOS use the command "fdisk"
+	to install this first sector into the hard disk and to manipulate
+	the hard disk partitions.
+
+	
+
+2. The First Stage Bootstrap Loader
+   --------------------------------
+
+	After startup, the first stage boot is loaded at 0000:7C00H.  This
+	first stage boot will load itself and the second stage boot into
+	memory at location 0000:1000H.  For floppy disks, the first cylinder
+	is reserved as the boot cylinder, and the boot code (first and second)
+	will be loaded from there.  Currently, only double sided, high density
+	(15 sectors per track) floppies are supported.  For hard disks, the
+	first 29 sectors of the active partition is reserved for boot code
+	which will be loaded by the first stage boot.  All the disk types
+	recognized by BIOS are supported by this bootstrap loader. 
+
+
+
+3. The Second Stage Bootstrap Loader
+   --------------------------------
+
+	After the boot code is loaded, the control is passed to the second
+	stage bootstrap loader "boot2()".  In order to be able to load the
+	big kernel image (bigger than 512K or 640K, depends on the memory
+	configuration), the second stage boot loader will run on the protected
+	mode.  This bootstarp loader does not have any stand alone device
+	drivers, all the I/O's are through the BIOS calls.  Since the first
+	stage boot code will no longer be used at this moment, the memory
+	location of the first stage boot code (0000:1000H to 0000:1200H) will
+	be used as an internal buffer for BIOS calls.  Immediately after this 
+	internal buffer is the GDT table for the second stage boot loader. 
+	Since this boot loader needs to switch back and forth between protected
+	and real mode in order to use BIOS calls, the limit of the boot code
+	and boot data segments must not be greater than 64K.
+	
+	The boot loader loads the kernel image at memory location above 1 MB
+	to skip the memory hole between 521K/640K and 1MB.  After the kernel
+	is loaded, the boot loader stores the information in the stack and
+	then passes control to kernel.  Currently, the three information passed
+	fromm the boot loader to the kernel are type of the boot device, size
+	of the base memory and size of the extended memory.
+
+
+4. The UNIX Startup
+   ----------------
+
+	Since the boot loader loads the kernel image at memory location above
+	1MB, the kernel has to start as protected mode.  In addition, the
+	link editor description file (vuifile) has to indicate that
+	the text and data segments start above 1MB.  Also, the boot loader
+	passes the infomation to the kernel through the stack.
+
+
+5. Disk Layout and Bad Block Handling
+   ---------------------------------
+	
+    The System V/386 Release 3.2 (AT) disk layout will be used as the disk
+    layout for the MACH System on the AT platform.
+
+    This disk layout is as follows:
+
+	* Reserve the first sector of cylinder 0 for the DOS boot record which
+	  contains the master boot code (446 bytes) and the partition table.
+	  (Refer to DOS Technical Reference Manual page 9-6 to 9-10).
+
+	* Reserve the first 29 sectors of the UNIX partition for the first
+	  and the second stage bootstrap.
+
+	* Reserve the 30th sector of the UNIX partition for the pdinfo and
+	  the vtoc tables.
+
+	* Reserve the 31st to the 34th sectors of the UNIX partition for the
+	  bad track and the bad block mapping tables.
+
+	* Reserve up to 253 consecutive tracks when required, beginning with
+	  the 35th sector of the UNIX partition, for alternate tracks.
+
+	* Reserve up to 253 consecutive blocks, beginning with the first
+	  sector after the alternate tracks area, for alternate blocks.
+
+	 SEC
+	  1
+	----------------------------------------------------
+	| X |                                              | CYL 0, TRK 0
+	----------------  ..........    --------------------
+	|                 ..........                       |
+	----------------  ..........    --------------------
+	|                 ..........                       |
+   ===============================================================
+    ^   |               BOOTSTRAP                          | CYL N, TRK M
+    |   ----------------------------------------------------
+    |   |                              |30 |31 |32 |33 |34 |
+	----------------------------------------------------  ---
+    U   |                 ..........                       |   ^
+    N   ----------------  ..........   ---------------------   |
+    I   |                 ..........                       | Alternate Tracks
+    X   ----------------  ..........   ---------------------   |
+        |                 ..........                       |   V
+    P   ----------------------------------------------------  --- 
+    A   |                 ..........                       |   ^
+    R   ----------------  ..........   ---------------------   |
+    T   |                 ..........                       | Alternate Blocks
+    I   ----------------  ..........   --------------------    |
+    T   |                 ..........                       |   V
+    I   ----------------------------------------------------  ---
+    O   |  Unix root partition starts from here            |
+    N   ----------------                   -----------------
+  	|                                                  |
+        ----------------------------------------------------
+        |                                                  |
+	----------------------------------------------------
+	|                                                  |
+    |   ---------------------------------------------------
+    |   |                                                  |
+    |   ----------------------------------------------------
+    V   |                                                  |
+   ===============================================================
+  	|                   ........                       |
+	---------------     ........          --------------
+	|                   ........                       |
+	----------------------------------------------------
+
+
+	The bad block handling mechanism is as follows:
+
+	* Use the alternate track in the alternate tracks area if the
+	  track containing the target sector is bad.
+
+	* Use the alternate block in the alternate blocks area if the
+	  target sector is bad.
+
+
+
+
+6. How to make:
+   -----------
+
+	The boot is built as part of the kernel objects, the boot
+	object file will be located in obj/i386_mach/mk/kernel/i386at/boot
+
+7. How to install:
+   --------------
+
+	The boot imahe is the same for all devices: EDI & SCSI disks, floppies
+
+	to copy it, type
+
+	dd if=<boot_file> of=/dev/<raw_device> conv=sync
+
+
+7. Boot Syntax:
+   -----------
+
+	The general syntax is as follows:
+
+	hd(0,a)/kernel:server -a|-h|-s|-d|-<digit> server_options
+	
+	Every field is optionnal, the boot assumes default arguments if
+	the user just type returns or if the prompt times out.
+
+	default arguments are:
+
+		/mach 
+
+		The /mach file is booted from the booted device. if this file
+		is missing, the boot will try the following files:
+
+		/RFS/.LOCALROOT/mach
+		/mach_kernel
+		/RFS/.LOCALROOT/mach_kernel
+		/vmunix
+		/RFS/.LOCALROOT/vmunix
+		/mach.old
+		/RFS/.LOCALROOT/mach.old
+
+
+	hd(0,a)/kernel:server -a|-h|-s|-d|-<digit> server_options
+        **
+
+		the boot device can either be
+			hd: The hard disk
+			fd: the floppy
+			sd: same as hd
+
+	hd(0,a)/kernel:server -a|-h|-s|-d|-<digit> server_options
+           *
+
+		the boot device unit is either 0 or 1
+
+	hd(0,a)/kernel:server -a|-h|-s|-d|-<digit> server_options
+             *
+
+		The boot partition for hard disks is a character
+		in the range [a-p]: a is partition 0, and p is partition 15.
+
+	hd(0,a)/kernel:server -a|-h|-s|-d|-<digit> server_options
+		******
+
+		the kernel file is a a unix like path_name, but it cannot
+		not contain the ":" character.
+
+	hd(0,a)/kernel:server -a|-h|-s|-d|-<digit> server_options
+		       ******
+
+		If the kernel file is a micro kernel, the server file can
+		be specified next the kernel file, ":" beeing the separator.
+		The server file name is a unix like path_name
+
+	hd(0,a)/kernel:server -a|-h|-s|-d|-<digit> server_options
+			      ********************
+
+		arguments:
+			-a: if the kernel is a mach micro kernel,
+			    it will prompt for the server name
+			    (compatibility with old boot)
+
+			-h: kernel will hald and enter debugger as soon
+			    as possible
+
+			-s: single user mode
+
+			-d: load kernel symbol names for debugger (Also done
+			    if the kernel file has x modes)
+
+			-<digit>: NUmber of cpus to boot on MPs
+
+	hd(0,a)/kernel:server -a|-h|-s|-d|-<digit> server_options
+						   ***************
+
+		All other argumjentsthan the one above are considered
+		server arguments and will be passed to the server if
+		the kernel is a micro kernel.
+
+	Examples:
+
+		/mach_kernel.STD+WS.MK72
+
+		hd(1,a)/vmunix
+
+		:/mach_servers/server.23 -s -e /mach_servers/emulator.23
+
+			(note that -e is not a boot argument but is passed
+			as is to the server)
+
+
+

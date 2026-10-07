@@ -1,0 +1,1553 @@
+	%W% (Berkeley) %G%
+; 
+; $Copyright
+; Copyright 1992, 1993, 1994, 1995 Intel Corporation
+; INTEL CONFIDENTIAL
+; The technical data and computer software contained herein are subject
+; to the copyright notices; trademarks; and use and disclosure
+; restrictions identified in the file located in /etc/copyright on
+; this system.
+; Copyright$
+; 
+ 
+;
+; @OSF_COPYRIGHT@
+;
+; Copyright (c) 1991, Locus Computing Corporation
+; All rights reserved
+;
+; This source file was modified by the Center for High Performance 
+; Computing (CHPC) on behalf of OSF.
+;
+; HISTORY
+; $Log: syscalls.master,v $
+; Revision 1.33.4.2  1995/06/12  15:27:23  kat
+; Updated copyright for R1.3 PSCP
+;
+; Revision 1.33.4.1  1995/06/11  18:49:12  kat
+; Updated copyright for R1.3 PSCP
+;
+; Revision 1.33  1995/04/04  18:44:30  rlg
+; The gopen step (for the M_UNIX, M_RECORD, and M_ASYNC I/O modes) of
+; duplicating the file server's file table was redesigned.  This change
+; results in only one "many to one" messages (sent from N-1 compute nodes
+; to logical node 0 in the application's partition) and one set of "one to
+; many" messages (sent from each file server to those N-1 compute nodes).
+; The old code required each of the compute nodes in the application's
+; partition (minus one) to execute a sequence of four RPCs to the file
+; servers containing the header file and each stripe file.  This resulted
+; in four "many to one" messages sent to each of those file servers.
+;
+;  Reviewer:  Balaji Narasimhan, Stan Smith
+;  Risk:      Medium (number of modules changed, scope of redesign)
+;  PTS#       9637
+;  Testing:   pfs and fileio EATs, five Eval gopen tests,
+;             rw and iomode integration tests
+;  Module(s): cmds_libs/src/usr/ccs/lib/libnx/_gopen.c
+;             cmds_libs/src/usr/ccs/lib/libnx/pfs_iomode.h
+;             server/svr/src/svr/emulator/pfs_user_side.c
+;             server/svr/src/svr/server/conf/syscalls.master
+;             server/svr/src/svr/server/uxkern/fsvr.defs
+;             server/svr/src/svr/server/uxkern/fsvr_server_side.c
+;             server/svr/src/svr/server/uxkern/pfs2.defs
+;             server/svr/src/svr/server/uxkern/pfs2_server_side.c
+;
+; Revision 1.32  1995/03/02  19:13:22  stans
+;  Vnode caching support: pfs_host_init() syscall.
+;
+;  Reviewer:jlitvin,suri,cfj
+;  Risk:medium
+;  Benefit or PTS #:8129
+;  Testing:WW07 sats
+;
+; Revision 1.31  1994/11/18  20:30:05  mtm
+; Copyright additions/changes
+;
+; Revision 1.30  1994/11/04  18:19:36  toman
+;    Made recv() a STUB routine.
+;
+;  Reviewer: John Litvin, Bob Yasi
+;  Risk: med
+;  Benefit or PTS #: 9422
+;  Testing: Lachman t_recv test, TCP/IP EAT
+;  Module(s): emulator/fsvr_user_side.c
+; 	    server/conf/syscalls.master
+; 	    server/uxkern/bsd_1.defs
+; 	    server/uxkern/bsd_server_side.c
+;
+; Revision 1.29  94/06/02  22:15:22  chrisp
+; New system called added - waitmulti().
+; 
+;  Reviewer: cfj
+;  Risk: M
+;  Benefit or PTS #: 6463
+;  Testing:
+;  Module(s): syscalls.master
+; 
+; Revision 1.28  1994/06/01  20:36:35  mag
+; Mesh utilities changes adding Node Attributes
+;  Reviewer: cfj, sdh, shala
+;  Risk: High
+;  Benefit or PTS #: Needed for MP support
+;  Testing: EATS: rmcall, rmcmd, sched
+;  Module(s): server/sys/errno.h, server/sys/version.h server/nx/nx.c
+; 	    server/nx/nx.defs server/nx/nx_svr.defs server/nx/nx_types.defs,
+; 	    server/nx/nx_types.h, server/nx/nx_create_attr.c (new)
+; 	    emulator/i860/emul_machdep.c
+;  Related: libnx, allocator, bootmesh, mkpart, showpart, lspart
+;
+; Revision 1.27  1994/04/11  22:12:39  slk
+;  Reviewer: Hao Wu, Chris Peak.
+;  Risk: Low
+;  Benefit or PTS #: Fixes 8907.
+;  Testing: Build with and without +chkpnt.
+;  Module(s):
+;
+; Revision 1.26  1994/03/29  20:54:26  dleslie
+;  Reviewer: Charlie Johnson
+;  Risk: low
+;  Benefit or PTS #: change 'ifdef i860' to 'ifdef __i860__'.  This
+; 	allows the syscall.h file created by server builds to be
+; 	used by cmds/libs builds with one less 'munge' step.
+;  Testing:  built entire server, built syscall.h in cmds/libs build
+; 	which is identical to previous version.
+;  Module(s): syscalls.master
+;
+; Revision 1.25  1994/03/14  02:01:43  slk
+; Checkpoint Restart Code Drop
+;  Reviewer: Stefan Tritscher
+;  Risk: Medium
+;  Benefit or PTS #: Enhancement
+;  Testing: Locus VSTNC, EATS TCP-IP, Individual Checkpoint/Restart tests.
+;  Module(s):
+;
+; Revision 1.24  1993/11/30  23:35:10  carbajal
+;  Reviewer: None
+;  Risk: Low
+;  Benefit or PTS #: added calls nx_pspart_rpc(), nx_alloc_exit()
+;  for R1.2 User Model
+;  Testing:
+;  Module(s):
+;
+; Revision 1.23  1993/11/17  02:26:14  carbajal
+; Added system calls for R1.2 User model
+;  Reviewer: cfj
+;  Risk: Medium
+;  Benefit or PTS #:  R1.2 User Model system calls
+;  Testing:
+;  Module(s):
+;
+; Revision 1.22  1993/11/16  15:27:17  cfj
+; Ifdef out the force_migrate syscall.
+;
+;  Reviewer:nandy,jlitvin
+;  Risk:L
+;  Benefit or PTS #:7151
+;  Testing:
+;  Module(s):
+;
+; Revision 1.21  1993/10/27  01:16:15  carbajal
+; Changed nx_init parameters from 5 to 3
+; Added nx_app_node_list system call
+;
+; Revision 1.20  1993/10/04  19:14:07  cfj
+; Bump the trap number for _nx_init to 324.
+;
+; Revision 1.19  1993/09/17  18:13:27  cfj
+; Merge R1.1 bug fix into main stem.
+;
+; Revision 1.18.2.1  1993/09/17  18:11:39  cfj
+; Fix so that commands which depend on PFS syscalls function under the
+; ramdisk.
+;
+; Revision 1.18  1993/08/28  00:43:25  carbajal
+; Added nx_register_daemon for PTS # 6141
+;
+; Revision 1.17  1993/07/18  19:35:13  carbajal
+; Changed nx_chpart_rpc from 5 to 2
+;
+; Revision 1.16  1993/07/16  03:07:18  dbm
+; Added an extra parameter to pfs_set_global_info for support of
+; token optimization.
+;
+; Revision 1.15  1993/07/14  21:04:21  carbajal
+; Added partition mgmt system calls
+;
+; Revision 1.14  1993/07/14  17:54:44  cfj
+; OSF/1 AD 1.0.4 code drop from Locus.
+;
+; Revision 1.1.1.4  1993/07/01  19:13:08  cfj
+; Adding new code from vendor
+;
+; Revision 1.13  1993/06/17  00:33:54  brad
+; Removed _pfs_unshare system call, which was never needed.
+;
+; Revision 1.12  1993/06/10  17:35:42  brad
+; Added _lestat.
+;
+; Revision 1.11  1993/05/13  09:06:51  stefan
+; Integrated static load leveling support.
+;
+; Revision 1.10  1993/05/06  19:15:22  cfj
+; ad103+tnc merged with Intel code.
+;
+; Revision 1.1.1.2  1993/05/03  17:28:21  cfj
+; Initial 1.0.3 code drop
+;
+; Revision 1.9  1993/04/12  16:50:24  cfj
+; Added join_root_part() syscall.
+;
+; Revision 1.8  1993/04/05  15:16:53  cfj
+; Merge with T9.
+;
+; Revision 1.5.6.2  1993/04/04  01:41:05  cfj
+; Moved nx_init to trap #315.
+;
+; Revision 1.7  1993/04/03  03:05:48  brad
+; Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+; Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+;
+; Revision 1.1.2.7.2.8  1993/03/20  23:04:02  brad
+; Removed cread/cwrite stubs ... they are now emulated in libnx.  Added
+; ireadv/iwritev stubs.
+;
+; Revision 1.1.2.7.2.7  1993/03/11  00:56:49  dbm
+; Added an extra parameter to statpfs and fstatpfs.
+;
+; Revision 1.6  1993/02/24  18:48:23  nandy
+; Changes brought in from T9
+;
+; Revision 1.5.6.1  1993/02/22  17:40:35  nandy
+; Changed # of arguments to nx_init
+;
+; Revision 1.1.2.7.2.6  1993/02/12  17:22:00  dbm
+; Added pfs_set_debug to allow debug to be turned on by program.
+;
+; Revision 1.1.2.7.2.5  1993/01/14  20:43:34  dbm
+; Added pfs_get_fdte_info, pfs_put_fdte_info, pfs_get_fdte_size to support the
+; gopen() function.
+;
+; Revision 1.1.2.7.2.4  1993/01/11  17:33:50  dbm
+; Added changes to support PFS files with I/O modes.
+;
+; Revision 1.1.2.7.2.3  1993/01/09  00:03:58  brad
+; Merged changes between ...Locus_Bug_Drop_OK... and Jan5 main trunk
+; tags into the PFS branch, to bring PFS up-to-date with Transmittal
+; 7.
+;
+; Revision 1.5  1993/01/05  19:40:49  shala
+; Added new system call nx_pri()
+; 
+; Revision 1.1.2.7.2.2  1992/12/16  05:59:55  brad
+; Merged trunk (as of the Main_After_Locus_12_1_92_Bugdrop_OK tag)
+; into the PFS branch.
+;
+; Revision 1.4  1992/12/11  02:56:10  cfj
+; Merged 12-1-92 bug drop from Locus.
+;
+; Revision 1.3  1992/11/30  22:19:41  dleslie
+; Copy of NX branch back into main trunk
+; 
+; Revision 1.1.2.7.2.1  1992/11/25  23:09:50  brad
+; Added first cut at PFS file striping capability.
+; 
+; Revision 1.1.2.7  1992/11/13  18:51:42  cfj
+; Added reset_boot_node_list() system call.
+;
+; Revision 1.1.2.6  1992/11/09  20:05:10  cfj
+; Did not quite have the RCS comment string correct.(again)
+;
+; Revision 1.1.2.5  1992/11/09  19:57:36  cfj
+; Did not quite have the RCS comment string correct.
+;
+; Revision 1.1.2.4  1992/11/09  19:51:54  cfj
+; Change comment chars from # to ;
+;
+; Revision 1.1.2.3  1992/11/09  19:44:06  cfj
+; FIx up syscall 285 since Locus added a new TNC syscall.
+;
+; Revision 1.1.2.2  1992/11/06  18:22:35  dleslie
+; Conflict resolution resulting from merge of November 3 bugdrop from Locus
+; into the NX tree
+;
+; Revision 1.1.2.1  1992/11/05  23:18:47  dleslie
+; Local changes for NX through noon, November 5, 1992.
+;
+; Revision 2.25  1992/10/22  15:28:28  dbm
+; Added definitions for PFS.
+;
+; Revision 2.27  93/06/16  15:29:52  klh
+; 	Revision 2.23  93/06/04  12:22:24  rabii
+; 		Added non TNC rfork (rabii)
+; 
+; Revision 2.26  93/06/02  09:53:13  yazz
+; For Sys V IPC under TNC change svipc system calls to use the new "TNC5MSG"
+; system call category.
+; 
+; Revision 2.25  92/10/28  15:02:50  roman
+; Add new TNC-specific table_node() system call.
+; Change typos in declaration for node_self() and rexecve_arrival()
+; 	system calls.
+;
+; Revision 2.24  92/10/14  08:17:16  chrisp
+; [Bug #68] The wait system call should be TNCPARALLEL for all machines.
+; 
+; Revision 2.23  92/10/08  11:29:44  roman
+; Add new system call for TNC - rexecve_arrival. This is an
+; 	emulator-only system call.
+; 
+; Revision 2.22  92/10/06  12:11:16  roman
+; Fix RCS comments.
+; 
+; Revision 2.21  92/10/05  13:37:55  klh
+; 	Revision 2.21  92/08/26  12:10:46  loverso
+; 		Fix type of "profil".  (loverso)
+; 
+; Revision 2.20  92/06/10  10:11:09  klh
+; 	Revision 2.19  92/06/08  18:20:16  pjg
+; 		Change nfssvc to be a STUB rather than a MSG  (durriya)
+; 
+; Revision 2.19  92/06/05  13:57:15  klh
+; 	Revision 2.18  92/05/18  12:28:12  roy
+; 		Modified swapon to be a stub (rabii)
+; 
+; Revision 2.18  92/05/20  13:43:15  chrisp
+; Remove emulation of umask() via the shared user area.
+; 
+; Revision 2.17  92/04/14  10:22:40  roman
+; Change "parallelized" field for all vproc syscalls from SERIAL to
+; 	TNCPARALLEL. This equates to SERIAL in the non-TNC case, but to
+; 	PARALLEL for TNC. This mapping is performed by makesyscalls.sh.
+; 
+; Revision 2.16  92/04/07  13:44:41  pjg
+; 	Rearrranged syscall numbers for AD and TNC syscalls so that we do not 
+; 	clash with OSF IK/1.1 syscall numbers (durriya).
+; 
+; Revision 2.15  92/04/05  16:52:55  pjg
+; 	Add devstat system call (durriya)
+; 
+; 	Add new TNC system calls set_tnc_port(), get_tnc_port() and node_self()
+; 	(roman)
+; 
+; Revision 2.14  92/03/03  13:53:50  pjg
+; 	Revision 2.13.1.1  92/03/02  15:48:50  jeffreyh
+; 		Change dup to use 2 arguments
+; 
+; Revision 2.13  92/03/01  18:28:09  pjg
+; 	Change mmap to be a STUB rather than a MSG (durriya).
+; 
+; Revision 2.12  92/02/11  22:03:48  pjg
+; 	ptrace() becomes a vproc operation (chrisp@locus).
+; 	Add system calls for rexec()/rfork()/migrate()/kill3().
+; 	Move rmknod() system call to not conflict with TNC (roman@locus).
+; 
+; Revision 2.11  92/01/14  10:46:42  roy
+; 	92/01/07  17:10:45  noemi
+; 	OSF1_ADFS: getfsstat is a STUB with 4 args.  sync is a STUB with 1 arg.
+; 
+; Revision 2.10  92/01/09  16:09:50  roy
+; 	i860 mods (rabii).
+; 
+; Revision 2.9  92/01/02  18:47:13  roy
+; 	1991/10/14  21:28:04  noemi
+; 	Changes to reflect new stubs handled by fileserver.
+; 
+; Revision 2.8  91/12/18  12:46:45  roy
+; 	91/12/16  15:56:07  roy
+; 	Uncomment out rmknod.
+; 
+; 	91/10/30  17:43:08  bernadat
+; 	Fixed AFS syscall entries.
+; 
+; 	91/10/29  16:11:32  barbou
+; 	Fix for bug #29: turned getgroups() to "generic".
+; 
+; 	91/10/28  11:09:59  condict
+; 	Change msleep/mwakeup from using generic MSG to MIG STUBs.
+; 
+; Revision 2.7  91/12/13  10:08:45  roy
+; 	91/11/12  10:29:27  roy
+; 	Made read and lseek STUB.  Comment out rmknod until kernel
+; 	can support more syscall numbers.
+; 
+; Revision 2.6  91/11/25  11:23:40  rabii
+; 	Added rmknod as syscall #258
+; 
+; Revision 2.5  91/11/15  17:07:19  rabii
+; 	Added i860 support
+; 
+; Revision 2.4  91/10/15  09:27:32  sjs
+; 	 91/09/27  12:00:11  emcmanus
+; 	 Enabled profil() system call.
+; 	 
+; 
+;Revision 2.3  91/09/16  16:39:59  rabii
+;	 Merge of V2.0 and Locus (locus check-in by roman)
+;	 System calls changed types due to file descriptor handling being
+;	 moved from the server to the emulator. Some system calls were
+;	 made "NOSERV" for entire emulator handling. System calls with
+;	 file descriptor as the first parameter were either changed
+;	 to "STUB" or "FSMSG". Change other system calls dealing with
+;	 file descriptors (i.e. open(), pipe(), socketpair()) to
+;	 "STUB" handling. Number of arguments for certain system calls
+;	 that were incorrect were adjusted (accuracy is necessary for
+;	 routines that become "STUB" or "NOSERV"). Changed certain system
+;	 calls to "VPMSG" for generic system calls directed at vprocs.
+;
+;Revision 2.2  91/08/31  13:31:36  rabii
+;	Initial V2.0 Checkin
+;
+; Revision 3.9  91/08/28  14:02:04  condict
+; 	Update to OSF 1.0.2.
+; 
+; Revision 1.15.10.2  91/06/20  14:57:31  tmt
+; 	Change getpeername and async_daemon to UPARALLEL.
+; 	[91/06/20  08:49:19  tmt]
+; 
+; Revision 1.15.4.3  91/02/26  17:18:27  jvs
+; 	Retain profil system call name but have it go to nosys.
+; 	[91/02/26  16:15:57  jvs]
+; 
+; Revision 1.15.4.2  91/02/19  14:34:22  jvs
+; 	Remove the profil system call for R1.0.1.
+; 	[91/02/19  14:31:07  jvs]
+; 
+; Revision 1.15  90/12/06  14:02:13  devrcs
+; 	Cleanup copyright and history log comments.
+; 	[90/11/15  11:05:50  gm]
+; 
+; Revision 1.14  90/10/31  13:51:42  devrcs
+; 	changed *chflags to nosys
+; 	[90/10/26  15:14:08  gmf]
+; 
+; 	marked *chflags as UNIMPL
+; 	[90/10/25  16:59:21  gmf]
+; 
+; 	Added system call clx_sys() for Xenix compatibility (only on the 386).
+; 	[90/10/08  13:25:18  swallace]
+; 
+; Revision 1.13  90/10/07  13:24:06  devrcs
+; 	Added EndLog Marker.
+; 	[90/09/28  09:09:50  gm]
+; 
+; Revision 1.12  90/09/13  11:43:36  devrcs
+; 	correct previously botched submission
+; 	should be 1.11.1.2 plus security syscall turned parallel
+; 	[90/09/02  00:11:59  hosking]
+; 
+; 	Change mach_swapon to swapon.
+; 	[90/08/22  18:14:46  brezak]
+; 
+; Revision 1.11  90/08/24  11:21:35  devrcs
+; 	Removed MACH_VMTP references.
+; 	Removed ustat.
+; 	Got rid of cmu system calls (kept table, moved it to #85).
+; 	Make creat COMPAT -- it's a library call to open now.
+; 	Removed swapon.
+; 	Put revoke at 56, and moved plock to 107 (was vtimes).
+; 	[90/08/17  17:41:08  gmf]
+; 
+; 	Replaced old and useless quota calls with new and
+; 	currently useless 4.3-Reno calls.
+; 	[90/08/18  23:38:45  nags]
+; 
+; 	mapfrcounter should have always been PARALLEL.
+; 	[90/08/18  03:41:22  nags]
+; 
+; 	Gave open() a new system call number.  Made old one oopen.
+; 	[90/08/13  14:57:27  ers]
+; 
+; 	Added revoke system call at 56; moved plock from 56 to 107 (was vtimes).
+; 	[90/08/10  14:20:14  gmf]
+; 
+; 	Added signal -> ssig for System V compatibility.
+; 	[90/08/08  15:34:16  coren]
+; 
+; Revision 1.10  90/08/09  13:16:48  devrcs
+; 	Revision DECdts 90/06/25 14:37:09 Joe Comuzzi/DEC
+; 	Added utc_gettime and utc_adjtime system calls used by DECdts. These
+; 	are located in the module kern_utctime.c. The system call numbers are
+; 	just the next two available(219 and 220).
+; 	[90/07/31  16:35:17  brezak]
+; 
+; 	Added the msync system call.
+; 	[90/07/24  15:17:43  havens]
+; 
+; 	NFS parallelization.
+; 	[90/07/24  13:03:20  nags]
+; 
+; Revision 1.9  90/07/17  11:21:06  devrcs
+; 	Added mwakeup and msleep system calls.
+; 	[90/07/04  14:49:34  havens]
+; 
+; Revision 1.8  90/06/22  20:09:24  devrcs
+; 	nags merge
+; 	[90/06/12  21:22:07  nags]
+; 
+; 	Introduced new versions of stat, lstat, and fstat.  Changed previous
+; 	entries to COMPAT.
+; 	[90/06/06  13:04:04  ers]
+; 
+; 	Changes from SecureWare for least privilege, MAC, DAC, auditing, etc.
+; 	[90/06/09  18:42:34  seiden]
+; 
+; 	Add getaddressconf as standard.
+; 	[90/06/06  09:32:14  lwa]
+; 
+; 	Add mvalid as standard.
+; 	[90/06/04  15:58:49  lwa]
+; 
+; 	Added kloadcall(2).
+; 	[90/06/06  21:29:10  kwallace]
+; 
+; 	Compressed history (reverse chronology):
+; 	New syscall format, Parallelized syscalls.	nags@encore.com
+; 	mpxchan==>plock, STDALT alternate syscalls.	ers@osf.org
+; 	System V shared memory calls.			bet@osf.org
+; 	Added configuration system kmodcall().		knight@osf.org
+; 	Make non-POSIX signal calls COMPAT.		kwallace@osf.org
+; 	exec_with_loader, set_program_attributes.	kwallace@osf.org
+; 	COMPAT_43 for sockaddr compatibility.		tmt@osf.org
+; 	Added mach_swapon entry.			jeffc@osf.org
+; 	Added poll system call.				coren@osf.org
+; 	Obsolete exportfs system call.			gmf@osf.org
+; 	File layer parallelization and cleanup.		nags@osf.org
+; 	Makefile statfs and fstatfs available on PMAX.	gm@osf.org
+; 	Redefine System V IPC system calls.		bet@osf.org
+; 	Fixed order of notyet in previous change.	coren@osf.org
+; 	Placed notyet around define of getpgrp at 63.	coren@osf.org
+; 	Made getpgrp and killpg STD not COMPAT.		coren@osf.org
+; 	sigvec, sigblock and sigsetmask COMPAT ==> STD.	coren@osf.org
+; 	CMUCS_RP and MACH_AFS exported to user-space.	coren@osf.org
+; 	Incorporated changes from file system.		coren@osf.org
+; 	Adapted from 4.4BSD.				coren@osf.org
+; 	[90/06/07  08:36:50  kwallace]
+; 
+; $EndLog$
+
+; System call name/number master file.
+; Processed to create init_sysent.c, syscalls.c, syscall.h and emul_sysent.c.
+
+; Columns: number type parallelized emulation nargs name altname/comments
+;	number		system call number, must be in order
+;	type		one of STD, STDALT, OBSOL, UNIMPL, COMPAT
+;	parallelized	one of SERIAL, PARALLEL, UPARALLEL or TNCPARALLEL
+;	emulation	one of MSG(sysg), STUB(syss), EMUL(syse), RMUL(sysr)
+;	nargs		number of arguments
+;	name		name of syscall routine
+;	altname		name of system call if different
+;			for UNIMPL/OBSOL, name continues with comments
+
+; types:
+;	STD	always included
+;	STDALT	always included, alternate trap number for std syscall
+;	COMPAT	included only with COMPAT #ifdef; func name has 'o' prefix
+;	NEW	always included; with COMPAT #ifdef, syscall name has 'n'
+;		prefix, otherwise same as STD
+;	OBSOL	obsolete, not included in system, only specifies name
+;	UNIMPL	not implemented, placeholder only
+;
+; Note that OBSOL and UNIMPL -- anything that expands to nosys -- will
+; always be marked as parallel in the resulting system call table; there's
+; no reason why nosys can't be handled on any processor.
+;
+
+; The presence of often-repeated conditionals makes this file somewhat
+; difficult to maintain. A mechanism needs to be developed to generate
+; these things more automatically and cleanly.
+
+; Reserved/unimplemented system calls in the range 0-150 inclusive
+; are reserved for use in future Berkeley releases.
+; Additional system calls implemented in vendor and other
+; redistributions should be placed in the reserved range at the end
+; of the current calls.
+
+#ifdef	sun4
+0	STD	SERIAL		MSG	1 indir syscall
+#else
+0	STD	PARALLEL	MSG	0 nosys syscall
+#endif
+1	STD	TNCPARALLEL	STUB	1 rexit exit
+2	STD	TNCPARALLEL	RMUL	0 fork
+3	STD	UPARALLEL	STUB	3 read
+4	STD	UPARALLEL	STUB	3 write
+5	COMPAT	UPARALLEL	STUB	3 open
+6	NOSERV	UPARALLEL	STUB	1 close
+7	STD	TNCPARALLEL	VPMSG	4 wait4
+8	COMPAT	UPARALLEL	STUB	2 creat
+9	STD	UPARALLEL	STUB	2 link
+10	STD	UPARALLEL	STUB	1 unlink
+11	STD	UPARALLEL	RMUL	2 execv
+12	STD	UPARALLEL	STUB	1 chdir
+13	STD	UPARALLEL	STUB	1 fchdir
+14	STD	UPARALLEL	STUB	3 mknod
+15	STD	UPARALLEL	STUB	2 chmod
+16	STD	UPARALLEL	STUB	3 chown
+#ifdef	MAP_UAREA
+17	STD	SERIAL		EMUL	1 obreak
+#else	MAP_UAREA
+17	STD	SERIAL		MSG	1 obreak
+#endif	MAP_UAREA
+#ifdef  OSF1_ADFS
+18	STD	UPARALLEL	STUB	4 getfsstat
+#else
+18	STD	UPARALLEL	MSG	3 getfsstat
+#endif
+19	STD	UPARALLEL	STUB	3 lseek
+20	STD	PARALLEL	STUB	0 getpid
+21	STD	UPARALLEL	STUB	4 mount
+22	STD	UPARALLEL	STUB	2 unmount
+23	STD	UPARALLEL	MSG	1 setuid
+24	STD	UPARALLEL	MSG	0 getuid
+25	STD	SERIAL		STUB	5 exec_with_loader
+#ifdef	sun
+26	STD	TNCPARALLEL	VPMSG	5 ptrace
+#else
+26	STD	TNCPARALLEL	VPMSG	4 ptrace
+#endif
+#ifdef	COMPAT_43
+; BSD4.4 versions of socket calls, with "new" names
+27	STD	UPARALLEL	FSMSG	3 recvmsg nrecvmsg
+28	STD	UPARALLEL	STUB	3 sendmsg nsendmsg
+29	STD	UPARALLEL	STUB	6 recvfrom nrecvfrom
+30	STD	UPARALLEL	STUB	3 accept naccept
+31	STD	UPARALLEL	STUB	3 getpeername ngetpeername
+32	STD	UPARALLEL	STUB	3 getsockname ngetsockname
+#else
+; BSD4.4 versions of socket calls, with actual names - LATER
+27	STD	UPARALLEL	FSMSG	3 recvmsg
+28	STD	UPARALLEL	STUB	3 sendmsg
+29	STD	UPARALLEL	STUB	6 recvfrom
+30	STD	UPARALLEL	STUB	3 accept
+31	STD	UPARALLEL	STUB	3 getpeername
+32	STD	UPARALLEL	STUB	3 getsockname
+#endif
+33	STD	UPARALLEL	STUB	2 saccess access
+34	STD	UPARALLEL	MSG	2 nosys chflags
+35	STD	UPARALLEL	FSMSG	2 nosys fchflags
+#ifdef  OSF1_ADFS
+36	STD	UPARALLEL	STUB	1 sync
+#else
+36	STD	UPARALLEL	MSG	0 sync
+#endif
+37	STD	TNCPARALLEL	VPMSG	2 kill
+38	COMPAT	UPARALLEL	STUB	2 stat
+39	STD	TNCPARALLEL	VPMSG	2 setpgid
+40	COMPAT	UPARALLEL	STUB	2 lstat
+41	NOSERV	UPARALLEL	STUB	2 dup
+42	STD	UPARALLEL	STUB	0 pipe
+43	STD	SERIAL		MSG	4 set_program_attributes
+44	STD	SERIAL		STUB	4 profil
+45	STD	UPARALLEL	STUB	3 open
+#if	defined(balance) || defined(mips) || defined(__i860__)
+46	STD	SERIAL		STUB	4 sigaction
+#else
+46	STD	SERIAL		STUB	3 sigaction
+#endif
+47	STD	UPARALLEL	MSG	0 getgid
+#ifdef	MAP_UAREA
+48	STD	SERIAL		EMUL	2 sigprocmask
+#else	MAP_UAREA
+48	STD	SERIAL		MSG	2 sigprocmask
+#endif	MAP_UAREA
+49	STD	UPARALLEL	MSG	2 getlogin
+50	STD	UPARALLEL	MSG	2 setlogin
+51	STD	UPARALLEL	STUB	1 sysacct acct
+#ifdef	MAP_UAREA
+52	STD	SERIAL		EMUL	1 sigpending
+#else	MAP_UAREA
+52	STD	SERIAL		MSG	1 sigpending
+#endif	MAP_UAREA
+#ifdef	notyet
+53	STD	SERIAL		MSG	3 sigaltstack
+#else
+53	UNIMPL	PARALLEL	MSG	0 nosys
+#endif
+#if	MACH_AFS
+54	STD	SERIAL		STUB	3 afs_xioctl
+#else
+54	STD	UPARALLEL	STUB	3 ioctl
+#endif
+55	STD	SERIAL		MSG	1 reboot
+56	STD	UPARALLEL	STUB	1 revoke
+57	STD	UPARALLEL	STUB	2 symlink
+58	STD	UPARALLEL	STUB	3 readlink
+59	STD	UPARALLEL	RMUL	3 execve
+60	STD	UPARALLEL	MSG	1 umask
+61	STD	UPARALLEL	STUB	1 chroot
+62	COMPAT	UPARALLEL	STUB	2 fstat
+63	STD	TNCPARALLEL	VPMSG	0 getpgrp
+#ifdef ECACHE
+64	STD	PARALLEL	EMUL	1 getpagesize
+#else ECACHE
+64	STD	PARALLEL	MSG	1 getpagesize
+#endif ECACHE
+#ifdef	notyet
+65	STD	SERIAL		MSG	2 msync
+#else
+65	STD	SERIAL		MSG	5 mremap
+#endif
+66	STD	TNCPARALLEL	RMUL	0 vfork
+67	STD	UPARALLEL	STUB	2 stat
+68	STD	UPARALLEL	STUB	2 lstat
+69	STD	SERIAL		MSG	1 sbrk
+70	STD	SERIAL		MSG	1 sstk
+71	STD	SERIAL		STUB	6 smmap mmap
+72	STD	SERIAL		MSG	1 ovadvise
+73	STD	SERIAL		MSG	2 munmap
+74	STD	SERIAL		MSG	3 mprotect
+75	STD	SERIAL		MSG	3 madvise
+76	COMPAT	UPARALLEL	MSG	1 vhangup
+77	STD	SERIAL		MSG	6 kmodcall
+78	STD	SERIAL		MSG	3 mincore
+79	STD	UPARALLEL	MSG	2 getgroups
+#if	MACH_AFS
+80	STD	SERIAL		MSG	2 afs_xsetgroups setgroups
+#else
+80	STD	UPARALLEL	STUB	2 setgroups
+#endif
+81	COMPAT	TNCPARALLEL	VPMSG	1 getpgrp
+82	STD	TNCPARALLEL	VPMSG	2 setpgrp
+83	STD	UPARALLEL	STUB	3 setitimer
+#if defined(mips) || defined(__i860__)
+84	COMPAT	TNCPARALLEL	VPMSG	3 wait
+#else
+84	COMPAT	TNCPARALLEL	RMUL	0 wait
+#endif
+85	STD	SERIAL		STUB	5 table
+86	STD	UPARALLEL	MSG	2 getitimer
+87	STD	UPARALLEL	MSG	2 gethostname
+88	STD	UPARALLEL	STUB	2 sethostname
+#if defined(ECACHE) || defined(MAP_UAREA)
+89	STD	UPARALLEL	EMUL	0 getdtablesize
+#else defined(ECACHE) || defined(MAP_UAREA)
+89	STD	UPARALLEL	MSG	0 getdtablesize
+#endif defined(ECACHE) || defined(MAP_UAREA)
+90	NOSERV	UPARALLEL	STUB	2 dup2
+91	STD	UPARALLEL	STUB	2 fstat
+92	STD	UPARALLEL	STUB	3 fcntl
+93	NOSERV	UPARALLEL	STUB	5 select
+94	NOSERV	UPARALLEL	STUB	3 poll
+95	STD	UPARALLEL	STUB	1 fsync
+96	STD	TNCPARALLEL	VPMSG	3 setpriority
+97	STD	UPARALLEL	STUB	3 socket
+98	STD	UPARALLEL	STUB	3 connect
+99	COMPAT	UPARALLEL	STUB	3 accept
+100	STD	TNCPARALLEL	VPMSG	2 getpriority
+101	COMPAT	UPARALLEL	STUB	4 send
+102	COMPAT	UPARALLEL	STUB	4 recv
+103	STD	SERIAL		RMUL	1 sigreturn
+104	STD	UPARALLEL	STUB	3 bind
+105	STD	UPARALLEL	STUB	5 setsockopt
+106	STD	UPARALLEL	FSMSG	2 listen
+107	STD	SERIAL		MSG	1 plock
+#if	defined(balance) || defined(mips) || defined(__i860__)
+108	COMPAT	SERIAL		STUB	4 sigvec
+#else
+108	COMPAT	SERIAL		STUB	3 sigvec
+#endif
+#ifdef	MAP_UAREA
+109	COMPAT	SERIAL		EMUL	1 sigblock
+110	COMPAT	SERIAL		EMUL	1 sigsetmask
+#else	MAP_UAREA
+109	COMPAT	SERIAL		MSG	1 sigblock
+110	COMPAT	SERIAL		MSG	1 sigsetmask
+#endif	MAP_UAREA
+111	STD	SERIAL		MSG	1 sigsuspend
+112	STD	SERIAL		STUB	2 sigstack
+113	COMPAT	UPARALLEL	FSMSG	3 recvmsg
+114	COMPAT	UPARALLEL	STUB	3 sendmsg
+#ifdef	TRACE
+115	STD	SERIAL		MSG	2 vtrace
+#else
+115	OBSOL	SERIAL		MSG	2 vtrace
+#endif
+116	STD	UPARALLEL	MSG	2 gettimeofday
+117	STD	SERIAL		STUB	2 getrusage
+118	STD	UPARALLEL	STUB	5 getsockopt
+#if	defined(vax) || defined(i386)
+119	STD	SERIAL		MSG	1 resuba
+#else
+119	UNIMPL	PARALLEL	MSG	0 nosys
+#endif
+120	STD	UPARALLEL	STUB	3 readv
+121	STD	UPARALLEL	STUB	3 writev
+122	STD	UPARALLEL	STUB	2 settimeofday
+123	STD	UPARALLEL	STUB	3 fchown
+124	STD	UPARALLEL	STUB	2 fchmod
+125	COMPAT	UPARALLEL	STUB	6 recvfrom
+126	STD	UPARALLEL	MSG	2 setreuid
+127	STD	UPARALLEL	MSG	2 setregid
+128	STD	UPARALLEL	STUB	2 rename
+129	STD	UPARALLEL	STUB	2 truncate
+130	STD	UPARALLEL	STUB	2 ftruncate
+#if	MACH_AFS
+131	STD	SERIAL		STUB	2 afs_xflock
+#else
+131	STD	UPARALLEL	STUB	2 flock
+#endif
+132	STD	UPARALLEL	MSG	1 setgid
+133	STD	UPARALLEL	STUB	6 sendto
+134	STD	UPARALLEL	FSMSG	2 shutdown
+135	STD	UPARALLEL	STUB	5 socketpair
+136	STD	UPARALLEL	STUB	2 mkdir
+137	STD	UPARALLEL	STUB	1 rmdir
+138	STD	UPARALLEL	STUB	2 utimes
+139	OBSOL	SERIAL		MSG	0 4.2 sigreturn
+140	STD	UPARALLEL	STUB	2 adjtime
+141	COMPAT	UPARALLEL	STUB	3 getpeername
+142	STD	UPARALLEL	MSG	0 gethostid
+143	STD	UPARALLEL	MSG	1 sethostid
+#ifdef	MAP_UAREA
+144	STD	SERIAL		EMUL	2 getrlimit
+#else	MAP_UAREA
+144	STD	SERIAL		MSG	2 getrlimit
+#endif	MAP_UAREA
+145	STD	SERIAL		STUB	2 setrlimit
+146	COMPAT	TNCPARALLEL	VPMSG	2 killpg
+147	STD	TNCPARALLEL	VPMSG	0 setsid
+148	STD	SERIAL		MSG	4 quotactl
+149	STD	SERIAL		MSG	4 oldquota
+150	COMPAT	UPARALLEL	STUB	3 getsockname
+
+; Syscalls 151-180 inclusive are reserved for vendor-specific
+; system calls.  (This includes various calls added for compatibity
+; with other Unix variants.)
+
+
+#ifdef	ibmrt
+151	STD	UPARALLEL	MSG	3 exect
+152	UNIMPL	PARALLEL	MSG	0 nosys
+153	STD	SERIAL		MSG	0 getfpemulator
+#if	MACH_AFS
+154	COMPAT	SERIAL		MSG	3 iopen
+155	COMPAT	SERIAL		MSG	6 iread
+156	COMPAT	SERIAL		MSG	6 iwrite
+157	COMPAT	SERIAL		MSG	3 iinc
+158	COMPAT	SERIAL		MSG	3 idec
+159	COMPAT	SERIAL		MSG	4 pioctl
+160	COMPAT	SERIAL		MSG	0 setpag
+161	COMPAT	SERIAL		MSG	6 icreate
+#else
+154	UNIMPL	PARALLEL	MSG	0 nosys
+155	UNIMPL	PARALLEL	MSG	0 nosys
+156	UNIMPL	PARALLEL	MSG	0 nosys
+157	UNIMPL	PARALLEL	MSG	0 nosys
+158	UNIMPL	PARALLEL	MSG	0 nosys
+159	UNIMPL	PARALLEL	MSG	0 nosys
+160	UNIMPL	PARALLEL	MSG	0 nosys
+161	UNIMPL	PARALLEL	MSG	0 nosys
+#endif
+162	UNIMPL	PARALLEL	MSG	0 nosys
+163	UNIMPL	PARALLEL	MSG	0 nosys
+164	UNIMPL	PARALLEL	MSG	0 nosys
+165	UNIMPL	PARALLEL	MSG	0 nosys
+166	UNIMPL	PARALLEL	MSG	0 nosys
+167	STD	SERIAL		MSG	2 getfloatstate
+168	STD	SERIAL		MSG	3 setfloatstate
+169	STD	UPARALLEL	STUB	3 nfssvc
+170	STD	UPARALLEL	FSMSG	4 getdirentries
+171	STD	UPARALLEL	STUB	2 statfs
+172	STD	UPARALLEL	FSMSG	2 fstatfs
+173	OBSOL	UPARALLEL	MSG	1 vfsunmount
+174	STD	UPARALLEL	MSG	0 async_daemon
+175	STD	UPARALLEL	STUB	2 getfh
+176	STD	UPARALLEL	MSG	2 getdomainname
+177	STD	UPARALLEL	MSG	2 setdomainname
+178	OBSOL	SERIAL		MSG	4 quotactl
+179	OBSOL	UPARALLEL	MSG	3 exportfs
+180	OBSOL	UPARALLEL	MSG	1 vfsmount
+#elif	defined(sun)
+151	UNIMPL	PARALLEL	MSG	0 nosys
+152	UNIMPL	PARALLEL	MSG	0 nosys
+153	UNIMPL	PARALLEL	MSG	0 nosys
+154	UNIMPL	PARALLEL	MSG	0 nosys
+155	STD	UPARALLEL	STUB	3 nfssvc
+156	STD	UPARALLEL	FSMSG	4 getdirentries
+157	STD	UPARALLEL	STUB	2 statfs
+158	STD	UPARALLEL	FSMSG	2 fstatfs
+159	OBSOL	UPARALLEL	MSG	1 vfsunmount
+160	STD	UPARALLEL	MSG	0 async_daemon
+161	STD	UPARALLEL	STUB	2 getfh
+162	STD	UPARALLEL	MSG	2 getdomainname
+163	STD	UPARALLEL	MSG	2 setdomainname
+164	UNIMPL	PARALLEL	MSG	0 nosys
+165	OBSOL	SERIAL		MSG	4 quotactl
+166	OBSOL	UPARALLEL	MSG	3 exportfs
+167	OBSOL	UPARALLEL	MSG	1 vfsmount
+#if	MACH_AFS
+168	COMPAT	SERIAL		MSG	4 pioctl
+169	COMPAT	SERIAL		MSG	0 setpag
+170	COMPAT	SERIAL		MSG	6 icreate
+171	COMPAT	SERIAL		MSG	3 iopen
+172	COMPAT	SERIAL		MSG	6 iread
+173	COMPAT	SERIAL		MSG	6 iwrite
+174	COMPAT	SERIAL		MSG	3 iinc
+175	COMPAT	SERIAL		MSG	3 idec
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+180	COMPAT	SERIAL		MSG	6 afs_call
+#else	/* MACH_AFS */
+168	UNIMPL	PARALLEL	MSG	0 nosys
+169	UNIMPL	PARALLEL	MSG	0 nosys
+170	UNIMPL	PARALLEL	MSG	0 nosys
+171	UNIMPL	PARALLEL	MSG	0 nosys
+172	UNIMPL	PARALLEL	MSG	0 nosys
+173	UNIMPL	PARALLEL	MSG	0 nosys
+174	UNIMPL	PARALLEL	MSG	0 nosys
+175	UNIMPL	PARALLEL	MSG	0 nosys
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+180	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* MACH_AFS */
+#elif	(defined(vax) || defined(i386) || defined(__i860__))
+#if	MACH_AFS && !defined(i386) && !defined(__i860__)
+151	COMPAT	SERIAL		MSG	6 icreate	
+152	COMPAT	SERIAL		MSG	3 iopen
+153	COMPAT	SERIAL		MSG	6 iread
+154	COMPAT	SERIAL		MSG	6 iwrite
+155	COMPAT	SERIAL		MSG	3 iinc
+156	COMPAT	SERIAL		MSG	3 idec
+157	COMPAT	SERIAL		MSG	4 afs_pioctl
+158	COMPAT	SERIAL		MSG	0 setpag
+#else	/* MACH_AFS && !defined(i386) && !defined(__i860__) */
+151	UNIMPL	PARALLEL	MSG	0 nosys
+152	UNIMPL	PARALLEL	MSG	0 nosys
+153	UNIMPL	PARALLEL	MSG	0 nosys
+154	UNIMPL	PARALLEL	MSG	0 nosys
+155	UNIMPL	PARALLEL	MSG	0 nosys
+156	UNIMPL	PARALLEL	MSG	0 nosys
+157	UNIMPL	PARALLEL	MSG	0 nosys
+158	UNIMPL	PARALLEL	MSG	0 nosys
+#endif
+159	STD	UPARALLEL	STUB	3 nfssvc
+160	STD	UPARALLEL	STUB	2 statfs
+161	STD	UPARALLEL	FSMSG	2 fstatfs
+162	OBSOL	UPARALLEL	MSG	1 vfsunmount
+163	STD	UPARALLEL	MSG	0 async_daemon
+164	STD	UPARALLEL	FSMSG	4 getdirentries
+165	STD	UPARALLEL	STUB	2 getfh
+166	OBSOL	SERIAL		MSG	4 quotactl
+167	OBSOL	UPARALLEL	MSG	3 exportfs
+168	OBSOL	UPARALLEL	MSG	1 vfsmount
+169	STD	UPARALLEL	MSG	2 getdomainname
+170	STD	UPARALLEL	MSG	2 setdomainname
+#if	MACH_AFS_30
+171	STD 	SERIAL		MSG	4 afs_pioctl	
+172	STD 	SERIAL		MSG	0 setpag	
+173	STD 	SERIAL		MSG	6 icreate	
+174	STD 	SERIAL		MSG	3 iopen		
+175	STD 	SERIAL		MSG	6 iread		
+176	STD 	SERIAL		MSG	6 iwrite	
+177	STD 	SERIAL		MSG	3 iinc
+178	STD 	SERIAL		MSG	3 idec
+179	COMPAT 	SERIAL		MSG	6 afs_call
+#else	/* MACH_AFS_30 */
+171	UNIMPL	PARALLEL	MSG	0 nosys
+172	UNIMPL	PARALLEL	MSG	0 nosys
+173	UNIMPL	PARALLEL	MSG	0 nosys
+174	UNIMPL	PARALLEL	MSG	0 nosys
+175	UNIMPL	PARALLEL	MSG	0 nosys
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* MACH_AFS_30 */
+#ifdef	__i860__
+180	UNIMPL	PARALLEL	MSG	0 nosys
+#else	/* __i860__ */
+180	STD	SERIAL		MSG	0 clx_sys
+#endif	/* __i860__ */
+#elif	defined(balance)
+151	STD	UPARALLEL	FSMSG	4 getdirentries
+152	STD	SERIAL		MSG	2 tmp_ctl
+153	STD	SERIAL		MSG	0 universe
+154	UNIMPL	PARALLEL	MSG	0 nosys
+155	STD	UPARALLEL	STUB	3 nfssvc
+156	UNIMPL	PARALLEL	MSG	0 nosys
+157	STD	UPARALLEL	STUB	2 statfs
+158	STD	UPARALLEL	FSMSG	2 fstatfs
+159	OBSOL	UPARALLEL	MSG	1 vfsunmount
+160	STD	UPARALLEL	MSG	0 async_daemon
+161	STD	UPARALLEL	STUB	2 getfh
+162	STD	UPARALLEL	MSG	2 getdomainname
+163	STD	UPARALLEL	MSG	2 setdomainname
+164	UNIMPL	PARALLEL	MSG	0 nosys
+165	OBSOL	SERIAL		MSG	4 quotactl
+166	OBSOL	UPARALLEL	MSG	3 exportfs
+167	OBSOL	UPARALLEL	MSG	1 vfsmount
+#if	MACH_AFS
+168	COMPAT	SERIAL		MSG	4 pioctl
+169	COMPAT	SERIAL		MSG	0 setpag
+170	COMPAT	SERIAL		MSG	6 icreate
+171	COMPAT	SERIAL		MSG	3 iopen
+172	COMPAT	SERIAL		MSG	6 iread
+173	COMPAT	SERIAL		MSG	6 iwrite
+174	COMPAT	SERIAL		MSG	3 iinc
+175	COMPAT	SERIAL		MSG	3 idec
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+180	COMPAT	SERIAL		MSG	6 afs_call
+#else	/* MACH_AFS */
+168	UNIMPL	PARALLEL	MSG	0 nosys
+169	UNIMPL	PARALLEL	MSG	0 nosys
+170	UNIMPL	PARALLEL	MSG	0 nosys
+171	UNIMPL	PARALLEL	MSG	0 nosys
+172	UNIMPL	PARALLEL	MSG	0 nosys
+173	UNIMPL	PARALLEL	MSG	0 nosys
+174	UNIMPL	PARALLEL	MSG	0 nosys
+175	UNIMPL	PARALLEL	MSG	0 nosys
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+180	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* MACH_AFS */
+#elif	mips
+151	STD	SERIAL		MSG	5 sysmips
+152	OBSOL	SERIAL		MSG	0 cacheflush
+153	OBSOL	SERIAL		MSG	0 cachectl
+154	OBSOL	SERIAL		MSG	0 debug
+155	UNIMPL	PARALLEL	MSG	0 nosys
+156	UNIMPL	PARALLEL	MSG	0 nosys
+157	OBSOL	UPARALLEL	MSG	0 nfs_mount
+158	STD	UPARALLEL	STUB	3 nfssvc
+159	STD	UPARALLEL	FSMSG	4 getdirentries
+160	STD	UPARALLEL	STUB	2 statfs
+161	STD	UPARALLEL	FSMSG	2 fstatfs
+162	OBSOL	UPARALLEL	MSG	1 vfsunmount
+163	STD	UPARALLEL	MSG	0 async_daemon
+164	STD	UPARALLEL	STUB	2 getfh
+165	STD	UPARALLEL	MSG	2 getdomainname
+166	STD	UPARALLEL	MSG	2 setdomainname
+167	OBSOL	SERIAL		MSG	0 old pcfs_mount
+168	OBSOL	SERIAL		MSG	4 quotactl
+169	OBSOL	UPARALLEL	MSG	3 exportfs
+170	OBSOL	UPARALLEL	MSG	1 vfsmount
+171	STD	SERIAL		MSG	0 mipshwconf
+172	UNIMPL	PARALLEL	MSG	0 nosys
+173	UNIMPL	PARALLEL	MSG	0 nosys
+174	UNIMPL	PARALLEL	MSG	0 nosys
+175	UNIMPL	PARALLEL	MSG	0 nosys
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+180	UNIMPL	PARALLEL	MSG	0 nosys
+#elif	multimax
+151	STD	PARALLEL	MSG	2 mapfrcounter
+152	UNIMPL	PARALLEL	MSG	0 nosys
+153	UNIMPL	PARALLEL	MSG	0 nosys
+154	UNIMPL	PARALLEL	MSG	0 nosys
+155	STD	UPARALLEL	STUB	3 nfssvc
+156	STD	UPARALLEL	FSMSG	4 getdirentries
+157	STD	UPARALLEL	STUB	2 statfs
+158	STD	UPARALLEL	FSMSG	2 fstatfs
+159	UNIMPL	PARALLEL	MSG	0 vfs_unmount
+160	STD	UPARALLEL	MSG	0 async_daemon
+161	STD	UPARALLEL	STUB	2 getfh
+162	STD	UPARALLEL	MSG	2 getdomainname
+163	STD	UPARALLEL	MSG	2 setdomainname
+164	UNIMPL	PARALLEL	MSG	0 nosys
+165	OBSOL	SERIAL		MSG	4 quotactl
+166	OBSOL	UPARALLEL	MSG	3 exportfs
+167	UNIMPL	UPARALLEL	MSG	0 vfs_mount
+#if	MACH_AFS
+168	COMPAT	SERIAL		MSG	4 pioctl
+169	COMPAT	SERIAL		MSG	0 setpag
+170	COMPAT	SERIAL		MSG	6 icreate
+171	COMPAT	SERIAL		MSG	3 iopen
+172	COMPAT	SERIAL		MSG	6 iread
+173	COMPAT	SERIAL		MSG	6 iwrite
+174	COMPAT	SERIAL		MSG	3 iinc
+175	COMPAT	SERIAL		MSG	3 idec
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+180	COMPAT	SERIAL		MSG	6 afs_call
+#else	/* MACH_AFS */
+168	UNIMPL	PARALLEL	MSG	0 nosys
+169	UNIMPL	PARALLEL	MSG	0 nosys
+170	UNIMPL	PARALLEL	MSG	0 nosys
+171	UNIMPL	PARALLEL	MSG	0 nosys
+172	UNIMPL	PARALLEL	MSG	0 nosys
+173	UNIMPL	PARALLEL	MSG	0 nosys
+174	UNIMPL	PARALLEL	MSG	0 nosys
+175	UNIMPL	PARALLEL	MSG	0 nosys
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+180	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* MACH_AFS */
+#else	/* generic case */
+151	UNIMPL	PARALLEL	MSG	0 nosys
+152	UNIMPL	PARALLEL	MSG	0 nosys
+153	UNIMPL	PARALLEL	MSG	0 nosys
+154	UNIMPL	PARALLEL	MSG	0 nosys
+155	STD	UPARALLEL	STUB	3 nfssvc
+156	STD	UPARALLEL	FSMSG	4 getdirentries
+157	STD	UPARALLEL	STUB	2 statfs
+158	STD	UPARALLEL	FSMSG	2 fstatfs
+159	OBSOL	UPARALLEL	MSG	1 vfsunmount
+160	STD	UPARALLEL	MSG	0 async_daemon
+161	STD	UPARALLEL	STUB	2 getfh
+162	STD	UPARALLEL	MSG	2 getdomainname
+163	STD	UPARALLEL	MSG	2 setdomainname
+164	UNIMPL	PARALLEL	MSG	0 nosys
+165	OBSOL	SERIAL		MSG	4 quotactl
+166	OBSOL	UPARALLEL	MSG	3 exportfs
+167	OBSOL	UPARALLEL	MSG	1 vfsmount
+#if	MACH_AFS && !defined(PMAX)
+168	COMPAT	SERIAL		MSG	4 pioctl
+169	COMPAT	SERIAL		MSG	0 setpag
+170	COMPAT	SERIAL		MSG	6 icreate
+171	COMPAT	SERIAL		MSG	3 iopen
+172	COMPAT	SERIAL		MSG	6 iread
+173	COMPAT	SERIAL		MSG	6 iwrite
+174	COMPAT	SERIAL		MSG	3 iinc
+175	COMPAT	SERIAL		MSG	3 idec
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+180	COMPAT	SERIAL		MSG	6 afs_call
+#else	/* MACH_AFS  && !defined(PMAX) */
+168	UNIMPL	PARALLEL	MSG	0 nosys
+169	UNIMPL	PARALLEL	MSG	0 nosys
+170	UNIMPL	PARALLEL	MSG	0 nosys
+171	UNIMPL	PARALLEL	MSG	0 nosys
+#ifdef PMAX
+172	STDALT	SERIAL		MSG	3 msgctl
+173	STDALT	SERIAL		MSG	2 msgget
+174	STDALT	SERIAL		MSG	5 msgrcv
+175	STDALT	SERIAL		MSG	4 msgsnd
+176	STDALT	SERIAL		MSG	4 semctl
+177	STDALT	SERIAL		MSG	3 semget
+178	STDALT	SERIAL		MSG	3 semop
+179	STDALT	UPARALLEL	MSG	1 uname
+#else  	/* PMAX */
+172	UNIMPL	PARALLEL	MSG	0 nosys
+173	UNIMPL	PARALLEL	MSG	0 nosys
+174	UNIMPL	PARALLEL	MSG	0 nosys
+175	UNIMPL	PARALLEL	MSG	0 nosys
+176	UNIMPL	PARALLEL	MSG	0 nosys
+177	UNIMPL	PARALLEL	MSG	0 nosys
+178	UNIMPL	PARALLEL	MSG	0 nosys
+179	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* PMAX */
+180	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* MACH_AFS && !defined(PMAX) */
+#endif	/* generic case */
+
+#ifdef	PMAX
+181	STDALT	SERIAL		MSG	1 plock
+#ifdef	notyet
+182	STD	SERIAL		MSG	0 lockf (future)
+#else	/* notyet */
+182	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* notyet */
+183	UNIMPL	PARALLEL	MSG	0 nosys
+184	STD	SERIAL		MSG	5 getmnt
+#undef	SYS_mount
+185	STD	UPARALLEL	STUB	5 mount
+#ifdef notyet
+#undef	SYS_unmount
+186	STD	UPARALLEL	STUB	1 unmount
+#else	/* notyet */
+186	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* notyet */
+#ifdef	MAP_UAREA
+187	STDALT	SERIAL		EMUL	1 sigpending
+#else	MAP_UAREA
+187	STDALT	SERIAL		MSG	1 sigpending
+#endif	MAP_UAREA
+188	STDALT	SERIAL		MSG	0 setsid
+#else	/* PMAX */
+#ifdef	ibmrt
+181	STD	SERIAL		MSG	6 afs_call
+#else	/* ibmrt */
+181	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* ibmrt */
+182	UNIMPL	PARALLEL	MSG	0 nosys
+183	UNIMPL	PARALLEL	MSG	0 nosys
+184	UNIMPL	PARALLEL	MSG	0 nosys
+185	UNIMPL	PARALLEL	MSG	0 nosys
+186	UNIMPL	PARALLEL	MSG	0 nosys
+187	UNIMPL	PARALLEL	MSG	0 nosys
+#ifdef MP_SLAVE_AS_CLK /* for i386 multiprocessors only */
+188	STD	SERIAL		MSG	0 mmap_hi_res_clock
+#else  /* MP_SLAVE_AS_CLK */
+188	UNIMPL	PARALLEL	MSG	0 nosys
+#endif /* MP_SLAVE_AS_CLK */
+#endif	/* PMAX */
+189	UNIMPL	PARALLEL	MSG	0 nosys
+#ifdef	PMAX
+#if	MACH_AFS
+190	COMPAT	SERIAL		MSG	3 iopen
+191	COMPAT	SERIAL		MSG	6 iread
+192	COMPAT	SERIAL		MSG	6 iwrite
+193	COMPAT	SERIAL		MSG	3 iinc
+194	COMPAT	SERIAL		MSG	3 idec
+195	COMPAT	SERIAL		MSG	4 pioctl
+196	COMPAT	SERIAL		MSG	0 setpag
+197	COMPAT	SERIAL		MSG	6 icreate
+198	COMPAT	SERIAL		MSG	6 afs_call
+#else	/* MACH_AFS */
+190	UNIMPL	PARALLEL	MSG	0 nosys
+191	UNIMPL	PARALLEL	MSG	0 nosys
+192	UNIMPL	PARALLEL	MSG	0 nosys
+193	UNIMPL	PARALLEL	MSG	0 nosys
+194	UNIMPL	PARALLEL	MSG	0 nosys
+195	UNIMPL	PARALLEL	MSG	0 nosys
+196	UNIMPL	PARALLEL	MSG	0 nosys
+197	UNIMPL	PARALLEL	MSG	0 nosys
+198	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* MACH_AFS */
+#else	/* PMAX */
+190	UNIMPL	PARALLEL	MSG	0 nosys
+191	UNIMPL	PARALLEL	MSG	0 nosys
+192	UNIMPL	PARALLEL	MSG	0 nosys
+193	UNIMPL	PARALLEL	MSG	0 nosys
+194	UNIMPL	PARALLEL	MSG	0 nosys
+195	UNIMPL	PARALLEL	MSG	0 nosys
+196	UNIMPL	PARALLEL	MSG	0 nosys
+197	UNIMPL	PARALLEL	MSG	0 nosys
+198	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* PMAX */
+199	STD	UPARALLEL	STUB	4 swapon
+200	STD	SERIAL		TNC5MSG	3 msgctl
+201	STD	SERIAL		TNC5MSG	2 msgget
+202	STD	SERIAL		TNC5MSG	5 msgrcv
+203	STD	SERIAL		TNC5MSG	4 msgsnd
+204	STD	SERIAL		TNC5MSG	4 semctl
+205	STD	SERIAL		TNC5MSG	3 semget
+206	STD	SERIAL		TNC5MSG	3 semop
+207	STD	UPARALLEL	MSG	1 uname
+208	UNIMPL	PARALLEL	MSG	0 nosys
+209	STD	SERIAL		TNC5MSG	3 shmat
+210	STD	SERIAL		TNC5MSG	3 shmctl
+211	STD	SERIAL		TNC5MSG	1 shmdt
+212	STD	SERIAL		TNC5MSG	3 shmget
+213	STD	SERIAL		MSG	3 mvalid
+214	STD	SERIAL		MSG	2 getaddressconf
+215	STD	PARALLEL	STUB	1 msleep
+216	STD	PARALLEL	STUB	1 mwakeup
+217	STD	PARALLEL	MSG	3 msync
+#if	defined(balance) || defined(mips) || defined(__i860__)
+218	STD	SERIAL		STUB	3 ssig signal
+#else
+218	STD	SERIAL		STUB	2 ssig signal
+#endif
+219	STD	SERIAL		MSG	1 utc_gettime
+220	STD	SERIAL		MSG	2 utc_adjtime
+221	UNIMPL	PARALLEL	MSG	0 nosys
+#if	SEC_BASE
+222	STD	PARALLEL	MSG	6 security
+#else
+222	UNIMPL	PARALLEL	MSG	0 nosys
+#endif
+223     STD     SERIAL		MSG	5 kloadcall
+; /* standardized afs system call numbers */
+
+#if	MACH_AFS || !defined(KERNEL)
+
+#undef	SYS_afs_pioctl
+#undef	SYS_setpag
+#undef	SYS_iopen
+#undef	SYS_icreate
+#undef	SYS_iread
+#undef	SYS_iwrite
+#undef	SYS_iinc
+#undef	SYS_idec
+#undef	SYS_afs_call
+
+224	STD	SERIAL		MSG	4 afs_pioctl	pioctl
+225	STD	SERIAL		MSG	0 setpag
+226	STD	SERIAL		MSG	3 iopen
+227	STD	SERIAL		MSG	6 icreate
+228	STD	SERIAL		MSG	6 iread
+229	STD	SERIAL		MSG	6 iwrite
+230	STD	SERIAL		MSG	3 iinc
+231	STD	SERIAL		MSG	3 idec
+232	STD	SERIAL		MSG	6 afs_call
+233	STD	SERIAL		MSG	6 afs_syscall
+#else	/* MACH_AFS || !defined(KERNEL) */
+224	UNIMPL	PARALLEL	MSG	0 nosys
+225	UNIMPL	PARALLEL	MSG	0 nosys
+226	UNIMPL	PARALLEL	MSG	0 nosys
+227	UNIMPL	PARALLEL	MSG	0 nosys
+228	UNIMPL	PARALLEL	MSG	0 nosys
+229	UNIMPL	PARALLEL	MSG	0 nosys
+230	UNIMPL	PARALLEL	MSG	0 nosys
+231	UNIMPL	PARALLEL	MSG	0 nosys
+232	UNIMPL	PARALLEL	MSG	0 nosys
+233	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* MACH_AFS || !defined(KERNEL) */
+234	UNIMPL	PARALLEL	MSG	0 nosys
+235	UNIMPL	PARALLEL	MSG	0 nosys
+236	UNIMPL	PARALLEL	MSG	0 nosys
+237	UNIMPL	PARALLEL	MSG	0 nosys
+238	UNIMPL	PARALLEL	MSG	0 nosys
+239	UNIMPL	PARALLEL	MSG	0 nosys
+240	UNIMPL	PARALLEL	MSG	0 nosys
+241	UNIMPL	PARALLEL	MSG	0 nosys
+242	UNIMPL	PARALLEL	MSG	0 nosys
+243	UNIMPL	PARALLEL	MSG	0 nosys
+244	UNIMPL	PARALLEL	MSG	0 nosys
+245	UNIMPL	PARALLEL	MSG	0 nosys
+246	UNIMPL	PARALLEL	MSG	0 nosys
+247	UNIMPL	PARALLEL	MSG	0 nosys
+248	UNIMPL	PARALLEL	MSG	0 nosys
+249	UNIMPL	PARALLEL	MSG	0 nosys
+250	UNIMPL	PARALLEL	MSG	0 nosys
+251	UNIMPL	PARALLEL	MSG	0 nosys
+252	UNIMPL	PARALLEL	MSG	0 nosys
+253	UNIMPL	PARALLEL	MSG	0 nosys
+254	UNIMPL	PARALLEL	MSG	0 nosys
+255	UNIMPL	PARALLEL	MSG	0 nosys
+#ifdef	PMAX
+256	STD	SERIAL		MSG	6 getsysinfo
+257	STD	SERIAL		MSG	5 setsysinfo
+#else	/* PMAX */
+256	UNIMPL	PARALLEL	MSG	0 nosys
+#ifdef  __i860__
+257     STD     SERIAL          MSG     2 debug_portal
+#else
+257	UNIMPL	PARALLEL	MSG	0 nosys
+#endif  /* __i860__ */
+#endif	/* PMAX */
+;
+; calls 258 - 265 are for OSF integrated kernel
+;
+258	UNIMPL	PARALLEL	MSG	0 nosys
+259	UNIMPL	PARALLEL	MSG	0 nosys
+260	UNIMPL	PARALLEL	MSG	0 nosys
+261	UNIMPL	PARALLEL	MSG	0 nosys
+262	UNIMPL	PARALLEL	MSG	0 nosys
+263	UNIMPL	PARALLEL	MSG	0 nosys
+264	UNIMPL	PARALLEL	MSG	0 nosys
+265	UNIMPL	PARALLEL	MSG	0 nosys
+;
+; call 266 - 275 are for AD specific calls
+;
+266	STD	UPARALLEL	STUB	4 rmknod
+267	STD	UPARALLEL	STUB	2 devstat
+268	UNIMPL	PARALLEL	MSG	0 nosys
+269	UNIMPL	PARALLEL	MSG	0 nosys
+270	UNIMPL	PARALLEL	MSG	0 nosys
+271	UNIMPL	PARALLEL	MSG	0 nosys
+272	UNIMPL	PARALLEL	MSG	0 nosys
+273	UNIMPL	PARALLEL	MSG	0 nosys
+274	UNIMPL	PARALLEL	MSG	0 nosys
+275	UNIMPL	PARALLEL	MSG	0 nosys
+#ifndef	TNC
+276	STD	TNCPARALLEL	RMUL	1 rfork
+277	UNIMPL	PARALLEL	MSG	0 nosys
+278	UNIMPL	PARALLEL	MSG	0 nosys
+279	UNIMPL	PARALLEL	MSG	0 nosys
+280	UNIMPL	PARALLEL	MSG	0 nosys
+281	UNIMPL	PARALLEL	MSG	0 nosys
+282	UNIMPL	PARALLEL	MSG	0 nosys
+283	UNIMPL	PARALLEL	MSG	0 nosys
+284	UNIMPL	PARALLEL	MSG	0 nosys
+285	UNIMPL	PARALLEL	MSG	0 nosys
+286	UNIMPL	PARALLEL	MSG	0 nosys
+287	UNIMPL	PARALLEL	MSG	0 nosys
+288	UNIMPL	PARALLEL	MSG	0 nosys
+289	UNIMPL	PARALLEL	MSG	0 nosys
+290	UNIMPL	PARALLEL	MSG	0 nosys 
+#else	/* TNC */
+276	STD	PARALLEL	RMUL	1 rfork
+277	STD	PARALLEL	RMUL	1 migrate
+278	STD	PARALLEL	RMUL	4 rexecve
+279	STD	PARALLEL	RMUL	4 rforkmulti
+280	STD	TNCPARALLEL	VPMSG	3 kill3
+281	STD	PARALLEL	STUB	2 set_tnc_port
+282	STD	PARALLEL	STUB	3 get_tnc_port
+283	NOSERV	PARALLEL	STUB	0 node_self
+284	NOSERV	PARALLEL	RMUL	0 rexecve_arrival
+285	NOSERV	SERIAL		STUB	6 table_node
+#ifdef CHKPNT
+286	NOSERV	SERIAL		STUB	1 on_checkpoint
+287	NOSERV	SERIAL		STUB	1 on_restart
+288	STD	PARALLEL	RMUL	2 nosys forkfamily
+289	STD	PARALLEL	RMUL	2 exec_restart
+#else	/* CHKPNT */
+286	UNIMPL	PARALLEL	MSG	0 nosys
+287	UNIMPL	PARALLEL	MSG	0 nosys
+288	UNIMPL	PARALLEL	MSG	0 nosys
+289	UNIMPL	PARALLEL	MSG	0 nosys 
+#endif	/* CHKPNT */
+290	STD	PARALLEL	VPMSG	4 waitmulti
+#endif	/* TNC */
+291	UNIMPL	PARALLEL	MSG	0 nosys
+292	UNIMPL	PARALLEL	MSG	0 nosys
+293	UNIMPL	PARALLEL	MSG	0 nosys
+294	UNIMPL	PARALLEL	MSG	0 nosys
+295	UNIMPL	PARALLEL	MSG	0 nosys
+296	UNIMPL	PARALLEL	MSG	0 nosys
+297	UNIMPL	PARALLEL	MSG	0 nosys
+298	UNIMPL	PARALLEL	MSG	0 nosys
+#ifndef	SLL
+299	UNIMPL	PARALLEL	MSG	0 nosys
+#else	/* SLL */
+299	STD	UPARALLEL	MSG	1 fork_remote_ctl
+#endif	/* SLL */
+#ifndef	NX
+300	UNIMPL	PARALLEL	MSG	0 nosys
+301	UNIMPL	PARALLEL	MSG	0 nosys
+302	UNIMPL	PARALLEL	MSG	0 nosys
+303	UNIMPL	PARALLEL	MSG	0 nosys
+304	UNIMPL	PARALLEL	MSG	0 nosys
+305	UNIMPL	PARALLEL	MSG	0 nosys
+306	UNIMPL	PARALLEL	MSG	0 nosys
+307	UNIMPL	PARALLEL	MSG	0 nosys
+308	UNIMPL	PARALLEL	MSG	0 nosys
+309	UNIMPL	PARALLEL	MSG	0 nosys
+310	UNIMPL	PARALLEL	MSG	0 nosys
+311	UNIMPL	PARALLEL	MSG	0 nosys
+312	UNIMPL	PARALLEL	MSG	0 nosys
+313	UNIMPL	PARALLEL	MSG	0 nosys
+314	UNIMPL	PARALLEL	MSG	0 nosys
+315	UNIMPL	PARALLEL	MSG	0 nosys
+316	UNIMPL	PARALLEL	MSG	0 nosys
+317	UNIMPL	PARALLEL	MSG	0 nosys
+318	UNIMPL	PARALLEL	MSG	0 nosys
+319	UNIMPL	PARALLEL	MSG	0 nosys
+320	UNIMPL	PARALLEL	MSG	0 nosys
+321	UNIMPL	PARALLEL	MSG	0 nosys
+322	UNIMPL	PARALLEL	MSG	0 nosys
+323	UNIMPL	PARALLEL	MSG	0 nosys
+324	UNIMPL	PARALLEL	MSG	0 nosys
+#else	/* NX */
+300	UNIMPL	PARALLEL	MSG	0 nosys
+301	STD	PARALLEL	STUB	5 nx_matching_bitmap
+302	STD	PARALLEL	MSG	0 nx_allocator_node
+303	STD	PARALLEL	STUB	1 nx_attach_pgrp
+304	STD	PARALLEL	STUB	1 nx_detach_pgrp
+305	STD	PARALLEL	RMUL	1 nx_join
+#ifdef FORCE_MIGRATION
+306	NOSERV	PARALLEL	RMUL	1 force_migrate
+#else
+306	UNIMPL	PARALLEL	MSG	0 nosys
+#endif /* FORCE_MIGRATION */
+307	STD	TNCPARALLEL	VPMSG	3 nx_tam_wait
+308	STD	TNCPARALLEL	VPMSG	4 nx_tam_ptrace
+309	STD	TNCPARALLEL	VPMSG	3 nx_traced_add_mem
+310	STD	TNCPARALLEL	VPMSG	3 nx_traced_delete_mem
+311	STD	UPARALLEL	MSG	0 nx_getacctid
+312	STD	UPARALLEL	MSG	1 nx_setacctid
+313	STD	UPARALLEL	MSG	2 reset_boot_node_list
+314	STD	PARALLEL	STUB	2 nx_pri
+315	NOSERV	PARALLEL	STUB	0 incompatible
+316	STD	PARALLEL	STUB	0 join_root_part
+317	STD	PARALLEL	STUB	2 nx_part_attributes
+318	STD	PARALLEL	STUB	3 nx_node_list
+319	STD	PARALLEL	STUB	3 nx_part_bitmap
+320	STD	PARALLEL	STUB	3 nx_mkpart_rpc
+321	STD	PARALLEL	STUB	2 nx_chpart_rpc
+322	STD	PARALLEL	STUB	4 nx_rmpart_rpc
+323	STD	PARALLEL	STUB	3 nx_register_daemon
+324	STD	PARALLEL	STUB	6 _nx_init
+#endif	/* NX */
+#ifdef	PFS
+325	NOSERV	UPARALLEL	STUB	3 _iread
+326	NOSERV	UPARALLEL	STUB	3 _iwrite
+327	NOSERV	UPARALLEL	STUB	3 _ireadv
+328	NOSERV	UPARALLEL	STUB	3 _iwritev
+329	NOSERV	UPARALLEL	STUB	4 __eseek
+330	NOSERV	UPARALLEL	STUB	4 __esize
+#else	/* PFS */
+325	UNIMPL	PARALLEL	MSG	0 nosys
+326	UNIMPL	PARALLEL	MSG	0 nosys
+327	UNIMPL	PARALLEL	MSG	0 nosys
+328	UNIMPL	PARALLEL	MSG	0 nosys
+329	UNIMPL	PARALLEL	MSG	0 nosys
+330	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* PFS */
+331	NOSERV	UPARALLEL	STUB	2 _estat
+332	NOSERV	UPARALLEL	STUB	2 _festat
+#ifdef	PFS
+333	NOSERV	UPARALLEL	STUB	1 _iodone
+334	NOSERV	UPARALLEL	STUB	1 _iomode
+335	NOSERV	UPARALLEL	STUB	1 _iseof
+336	NOSERV	UPARALLEL	STUB	1 _iowait
+337	STD	UPARALLEL	STUB	3 _lsize
+338	NOSERV	UPARALLEL	STUB	3 _get_local_iomode_info
+339	NOSERV	UPARALLEL	STUB	3 _release_iomode_info
+340	NOSERV	UPARALLEL	STUB	2 _reset_iomode_info
+341	NOSERV	UPARALLEL	STUB	6 _set_local_iomode_info
+342	NOSERV	UPARALLEL	STUB	4 _set_global_iomode_info
+343	UNIMPL	PARALLEL	MSG	0 nosys
+344	STD	UPARALLEL	STUB	4 statpfs
+345	STD	UPARALLEL	STUB	4 fstatpfs
+346	NOSERV	UPARALLEL	STUB	4 pfs_get_fdte_info
+347	NOSERV	UPARALLEL	STUB	4 pfs_put_fdte_info
+348	NOSERV	UPARALLEL	STUB	2 pfs_get_fdte_size
+349	NOSERV	UPARALLEL	STUB	1 pfs_set_debug
+#else	/* PFS */
+333	UNIMPL	PARALLEL	MSG	0 nosys
+334	UNIMPL	PARALLEL	MSG	0 nosys
+335	UNIMPL	PARALLEL	MSG	0 nosys
+336	UNIMPL	PARALLEL	MSG	0 nosys
+337	UNIMPL	PARALLEL	MSG	0 nosys
+338	UNIMPL	PARALLEL	MSG	0 nosys
+339	UNIMPL	PARALLEL	MSG	0 nosys
+340	UNIMPL	PARALLEL	MSG	0 nosys
+341	UNIMPL	PARALLEL	MSG	0 nosys
+342	UNIMPL	PARALLEL	MSG	0 nosys
+343	UNIMPL	PARALLEL	MSG	0 nosys
+344	UNIMPL	PARALLEL	MSG	0 nosys
+345	UNIMPL	PARALLEL	MSG	0 nosys
+346	UNIMPL	PARALLEL	MSG	0 nosys
+347	UNIMPL	PARALLEL	MSG	0 nosys
+348	UNIMPL	PARALLEL	MSG	0 nosys
+349	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* PFS */
+350	NOSERV	UPARALLEL	STUB	2 _lestat
+#ifdef	PFS	/* reserved for future use */
+351	NOSERV	UPARALLEL	STUB	1 pfs_host_init
+352	NOSERV	UPARALLEL	STUB	5 pfs_dup_fdte_info
+353	UNIMPL	PARALLEL	MSG	0 nosys
+354	UNIMPL	PARALLEL	MSG	0 nosys
+355	UNIMPL	PARALLEL	MSG	0 nosys
+356	UNIMPL	PARALLEL	MSG	0 nosys
+357	UNIMPL	PARALLEL	MSG	0 nosys
+358	UNIMPL	PARALLEL	MSG	0 nosys
+359	UNIMPL	PARALLEL	MSG	0 nosys
+#else	/* PFS */
+351	UNIMPL	PARALLEL	MSG	0 nosys
+352	UNIMPL	PARALLEL	MSG	0 nosys
+353	UNIMPL	PARALLEL	MSG	0 nosys
+354	UNIMPL	PARALLEL	MSG	0 nosys
+355	UNIMPL	PARALLEL	MSG	0 nosys
+356	UNIMPL	PARALLEL	MSG	0 nosys
+357	UNIMPL	PARALLEL	MSG	0 nosys
+358	UNIMPL	PARALLEL	MSG	0 nosys
+359	UNIMPL	PARALLEL	MSG	0 nosys
+#endif	/* PFS */
+#ifdef	NX	/* Reserved for future use */
+360     STD     PARALLEL        STUB    2 nx_mypart
+361     STD     PARALLEL        STUB    2 nx_app_info       
+362     STD     PARALLEL        STUB    3 nx_app_node_list
+363     STD     PARALLEL        STUB    3 nx_free_node_list
+364     STD     PARALLEL        STUB    3 nx_pspart_rpc
+365     STD     PARALLEL        STUB    1 nx_alloc_exit_rpc
+#else	/* NX */
+360	UNIMPL	PARALLEL	MSG	0 nosys
+361	UNIMPL	PARALLEL	MSG	0 nosys
+362	UNIMPL	PARALLEL	MSG	0 nosys
+363	UNIMPL	PARALLEL	MSG	0 nosys
+364	UNIMPL	PARALLEL	MSG	0 nosys
+365	UNIMPL	PARALLEL	MSG	0 nosys
+#endif /* NX */
+
+

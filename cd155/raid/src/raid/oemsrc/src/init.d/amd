@@ -1,0 +1,53 @@
+#!/sbin/sh
+#
+# Control the array monitor daemon
+#
+
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+Timer=7200	#two hours
+Constant=213
+counter=0
+slog="/var/array/logs/startup"
+
+case "$1" in
+'start')
+	echo "Starting Disk Array Monitor(s); see '$slog' for details."
+	/sbin/init.d/amd background &
+        ;;
+
+'background')
+        if [ -x /usr/sbin/amd ] 
+	then
+	    mv $slog $slog.old
+	    date >>$slog
+	    arrays=`find /dev -name "scsi*" -print`
+	    for i in $arrays
+	    do
+	    if device=`can $i 2>/dev/null | cut -dl -f1`
+	    then 
+	    	type=`acf -i -z$device 2>&1 |awk '{print $4}' `
+	    	if  [ "$type" = "NCR" ]
+	    	then
+			counter=`expr $counter + 1`
+			timer=`expr $Timer + $counter \* $Constant`
+	    		/usr/sbin/amd -z $device -n5 -i $timer -r 1
+              		echo Array Monitor started for ${i}. Log file /var/array/logs/${device} 1>> $slog
+		fi
+    	    fi
+	    done
+        fi
+        ;;
+'stop')
+	pid=`/sbin/gps -ej | grep /usr/sbin/amd |grep -v grep | awk '{print $4}' `
+
+	if [ "X$pid" != "X" ]
+	then
+		/bin/kill -9 -$pid >/dev/null 2>&1
+	fi
+	;;
+*)
+        echo "usage: $0 {start|stop}"
+        ;;
+esac
+

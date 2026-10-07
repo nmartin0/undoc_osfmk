@@ -1,0 +1,27 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+#
+is:3:initdefault:
+ss:Ss:wait:/sbin/rc0 shutdown < /dev/console > /dev/console 2>&1
+s0:0:wait:/sbin/rc0 off < /dev/console > /dev/console 2>&1
+fs:23:bootwait:/sbin/bcheckrc < /dev/console > /dev/console 2>&1
+#kls:23:bootwait:/sbin/kloadsrv < /dev/console > /dev/console 2>&1
+update:23:respawn:/sbin/update > /dev/console 2>&1
+s2:23:wait:/sbin/rc2 < /dev/console > /dev/console 2>&1
+s3:3:wait:/sbin/rc3 < /dev/console > /dev/console 2>&1
+cons:1234:respawn:/usr/sbin/getty console console ansi
+#xdm:23:respawn:/sbin/sh /sbin/init.d/xdm respawn > /dev/console 2>&1

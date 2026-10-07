@@ -1,0 +1,52 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+#
+# I860 magic number info
+#
+0	short		0515	i860 COFF object
+#
+0	long	0177555			very old pdp11 archive
+0	short	0177545			old pdp11 archive
+0	string	^<ar>			System V archive
+0	string	^!<arch>\n__\\.SYMDEF	archive random library
+0	string	^!<arch>\n		archive
+#
+#  All sorts of scripts (like /bin/sh, /bin/awk, etc.) are identified
+#  here.
+#
+0	string	^#![ ]*\\%[^ \n]*\\%	%s
+#
+#  Various sorts of text and data files.
+#
+0	string	^\01h[0-9][0-9][0-9][0-9][0-9]	sccsfile
+0	string	^#ifndef			c program
+0	string	^070707				ASCII cpio archive
+0	string	^%!PS-Adobe-\\%[.0-9]*\\%\n	PostScript (v%s) text
+#
+#
+0	string	^\0377\0377\0177	ddis/ddif 
+0	string	^\0377\0377\0174	ddis/dots archive
+0	string	^\0377\0377\0176	ddis/dtif table data
+0	string	^\033c\033		LN03 output
+0	string	^\0100\0357		troff (CAT) output
+0	long	04553207		X image
+0	short	017777			compacted data
+0	short	0116437			compressed data 
+0	short	070707			cpio archive
+0	short	017037			packed data
+0	string	^begin\040[0-9]		uuencoded data

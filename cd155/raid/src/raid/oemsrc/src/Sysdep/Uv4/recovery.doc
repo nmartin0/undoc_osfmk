@@ -1,0 +1,15 @@
+                 READ WRITE ERROR RECOVERY PAGE
+
+   0     Page Code (01)
+   1     Page Length (09)
+   2     AWRE -r7(1)   ARRE -r6(1)   TB -r5(0)   RC -r4(1)
+         EER -r3(1)   PER -r2(0)   DTE -r1(1)   DCR -r0(1)
+   3     Read Retry Count (5)
+   4     Correction Span (0)
+   5     Head Offset Count (0)
+   6     Data Strobe Offset Count (0)
+   7     Reserved (00)
+   8     Write Retry Count (5)
+   9     Reserved (00)
+  10     Recovery Time Limit (0)
+

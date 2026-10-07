@@ -1,0 +1,79 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1991 , 1994, 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * Copyright 1992 by Open Software Foundation,
+ * Cambridge, Massachusetts USA
+ *
+ * 		All Rights Reserved
+ * 
+ *   Permission to use, copy, modify, and distribute this software and
+ * its documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright notice appears in all copies and
+ * that both the copyright notice and this permission notice appear in
+ * supporting documentation, and that the name of OSF or Open Software
+ * Foundation not be used in advertising or publicity pertaining to
+ * distribution of the software without specific, written prior
+ * permission.
+ * 
+ *   OSF DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS,
+ * IN NO EVENT SHALL OSF BE LIABLE FOR ANY SPECIAL, INDIRECT, OR
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ * LOSS OF USE, DATA OR PROFITS, WHETHER IN ACTION OF CONTRACT,
+ * NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/*
+ * HISTORY
+ * $Log: ms_device_read_request.c,v $
+ * Revision 1.5  1994/11/18  21:05:25  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.4  1993/06/30  23:03:54  dleslie
+ * Adding copyright notices required by legal folks
+ *
+ * Revision 1.3  1993/04/27  20:58:11  dleslie
+ * Copy of R1.0 sources onto main trunk
+ *
+ * Revision 1.1.8.2  1993/04/22  19:04:08  dleslie
+ * First R1_0 release
+ *
+ * 
+ */
+
+#include <mach/mach.h>
+#include <mach/message.h>
+#include <device/device_request.h>
+
+extern	int	device_read_traps;
+
+kern_return_t device_read_request(device, reply_port, mode, recnum, bytes_wanted)
+	mach_port_t		device;
+	mach_port_t		reply_port;
+	dev_mode_t		mode;
+	recnum_t		recnum;
+	int			bytes_wanted;
+{
+	kern_return_t result;
+
+	if (device_read_traps) {
+		result = syscall_device_read_request(device, reply_port, mode, recnum, bytes_wanted);
+		if (result == MACH_SEND_INTERRUPTED)
+			result = mig_device_read_request(device, reply_port, mode, recnum, bytes_wanted);
+	} else {
+			result = mig_device_read_request(device, reply_port, mode, recnum, bytes_wanted);
+	}
+	return(result);
+}

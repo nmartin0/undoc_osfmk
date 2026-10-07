@@ -1,0 +1,224 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1988 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#
+# HISTORY
+# $Log: files.i860,v $
+# Revision 1.13  1994/11/18  20:29:41  mtm
+# Copyright additions/changes
+#
+# Revision 1.12  1994/06/29  15:29:38  johannes
+# new option "paracore" defined and included in STD & LITE
+# in order to enable the parallel core dumping
+#
+#  Initial check-in of parallel core dumping
+#  Reviewer: stefan, jlitvin
+#  Risk: Medium
+#  Benefit or PTS #: OS support for Postmortem Debugging
+#  Testing: developer tests
+#  Module(s):
+# 	svr/server/conf/MASTER
+# 	svr/server/conf/MASTER.i860
+# 	svr/server/conf/files.i860
+# 	svr/server/paracore/allocinfo.c
+# 	svr/server/paracore/core.c
+# 	svr/server/paracore/dump.c
+# 	svr/server/paracore/dvp_pvpcore.c
+# 	svr/server/sys/allocinfo.h
+# 	svr/server/sys/core.h
+# 	svr/server/sys/user.h
+# 	svr/server/nx/nx.defs
+# 	svr/server/nx/nx.c
+# 	svr/server/bsd/kern_exit.c
+# 	svr/server/bsd/kern_fork.c
+# 	svr/server/bsd/kern_sig.c
+# 	svr/server/tnc/dpvproc.h
+# 	svr/server/tnc/dvp_init.c
+# 	svr/server/tnc/dvp_pvpops.c
+# 	svr/server/tnc/pvp.ops
+# 	svr/server/uxkern/fsvr_msg.c
+# 	cmds_libs/src/usr/sbin/allocator/alloc.defs
+# 	cmds_libs/src/usr/sbin/allocator/misc_rpcs.c
+# 	cmds_libs/src/usr/sbin/allocator/Makefile
+# 	cmds_libs/src/usr/include/README.locate
+# 	cmds_libs/src/usr/include/sys/Makefile
+#
+# Revision 1.11  1994/06/29  11:54:42  johannes
+# supplement for IPI-3 devices support: definition of new file i860/ipi_ops.c
+#
+#  Reviewer: None
+#  Risk: Low
+#  Benefit or PTS #: 10033
+#  Testing: build of server
+#
+# Revision 1.10  1994/06/01  20:36:13  mag
+# Mesh utilities changes adding Node Attributes
+#  Reviewer: cfj, sdh, shala
+#  Risk: High
+#  Benefit or PTS #: Needed for MP support
+#  Testing: EATS: rmcall, rmcmd, sched
+#  Module(s): server/sys/errno.h, server/sys/version.h server/nx/nx.c
+# 	    server/nx/nx.defs server/nx/nx_svr.defs server/nx/nx_types.defs,
+# 	    server/nx/nx_types.h, server/nx/nx_create_attr.c (new)
+# 	    emulator/i860/emul_machdep.c
+#  Related: libnx, allocator, bootmesh, mkpart, showpart, lspart
+#
+# Revision 1.9  1993/09/21  20:03:24  cfj
+# Add i860/bcopy.s since the dnoveck@osf.org i860 bcopy enhancements were
+# picked up.
+#
+# Revision 1.8  1993/07/14  17:54:04  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.3  1993/07/01  19:12:29  cfj
+# Adding new code from vendor
+#
+# Revision 1.7  1993/05/27  22:49:04  hobbes
+# Added HIPPI networking and HIPPI raw support.
+#
+# Revision 1.6  1993/05/13  09:06:12  stefan
+# Integrated static load leveling support.
+#
+# Revision 1.5  1993/05/06  19:14:32  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.1  1993/05/03  17:27:38  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.4  1993/04/03  03:05:34  brad
+# Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+# Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+#
+# Revision 1.1.2.1.2.2  1992/12/16  05:59:46  brad
+# Merged trunk (as of the Main_After_Locus_12_1_92_Bugdrop_OK tag)
+# into the PFS branch.
+#
+# Revision 1.3  1992/12/11  02:56:01  cfj
+# Merged 12-1-92 bug drop from Locus.
+#
+# Revision 1.1.2.1.2.1  1992/11/25  23:09:45  brad
+# Added first cut at PFS file striping capability.
+#
+# Revision 1.2  1992/11/30  22:19:17  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:18:24  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 2.6  1992/10/22  15:27:18  dbm
+# Added files for PFS.
+#
+# Revision 2.5  1992/11/17  19:48:10  loverso
+# 	Add user_bcopy.s  (mmp)
+#
+# Revision 2.4  92/05/12  16:14:13  loverso
+# 	Put back slock.s for current_pc().  Rename slock.c to slock2.c.
+# 
+# Revision 2.3  92/03/15  14:36:46  roy
+# 	lock support (cfj@intel).
+# 
+# Revision 2.2  91/11/15  17:05:26  rabii
+# 	Initial check-in
+# 
+# Revision 2.2  91/08/31  13:29:54  rabii
+#	Initial V2.0 Checkin
+#
+#	Revision 3.5  91/08/05  11:59:03  jose
+#	added i386/mach_o_hdr.c
+#	
+#	Revision 3.4  91/06/25  17:05:26  condict
+#	Added networking files and miscellaneous other stuff.
+#	
+#	Revision 3.3  91/05/29  14:30:08  condict
+#	Add full set of OPTIONS/ lines from OSF/1.
+#	
+#	Revision 3.2  91/04/12  13:58:42  condict
+#	Add the new files for the OSF/1 file system;
+#	Get rid of unused files (stubs from the old ufs_* file system).
+#	
+#	
+#	Revision 3.1  91/01/17  17:19:16  condict
+#	Fix file name.
+#	
+# Revision 3.0  91/01/17  12:06:54  condict
+# Unchanged copy from Mach 3.0 BSD UNIX server
+# 
+# Revision 2.2  90/05/21  13:51:36  dbg
+# 	Created.
+# 	[90/05/03            dbg]
+# 
+#
+# Machine-dependent files for out-of-kernel version
+#
+OPTIONS/syscalltrace		optional syscalltrace
+OPTIONS/mach_rdb		optional mach_rdb
+OPTIONS/stack_limit_check	optional stack_limit_check
+OPTIONS/itrace			optional itrace
+OPTIONS/idebug			optional idebug
+
+netns/ns_cksum.c		optional ns
+i860/in_cksum.c			optional inet
+i860/bsd_machdep.c		standard
+i860/mach_o_hdr.c		optional osf_mach_o
+i860/conf.c			standard
+i860/i860_exception.c		optional mach
+i860/libc.c			standard
+i860/slock.s			standard
+i860/slock2.c			standard
+i860/primitives.s		standard
+i860/queue.c			standard
+i860/user_bcopy.s		standard
+i860/bcopy.s			standard
+uxkern/raw_hippi.c		standard
+# Added by us to allow a second server to run under another BSD server:
+i860/second_syscalls.s		optional second_server
+#
+# NX
+#
+nx/nx.c				optional nx
+nx/nx_mig.c			optional nx
+nx/nx_svr_server.c		optional nx
+nx/nx_acct.c			optional nx
+# Needed during server boot to create node attributes.
+# Not really message-passing related, but this seems like the "best" place:
+nx/nx_create_attr.c		standard
+#
+# PFS
+#
+uxkern/pfs2_server_side.c	optional pfs
+uxkern/pfs_server.c		optional pfs
+pfs/pfs_vfsops.c		optional pfs
+pfs/pfs_vnops.c			optional pfs
+#
+# SLL
+#
+sll/sll.c			optional sll
+#
+# Paragon HIPPI interface support
+#
+net/if_hippisubr.c		optional rfc_1323
+uxkern/hippi_io.c		optional rfc_1323
+#
+# IPI-3 device support
+#
+i860/ipi_ops.c			standard
+#
+# PARACORE
+#
+paracore/allocinfo.c		optional paracore
+paracore/core.c			optional paracore
+paracore/dump.c			optional paracore
+paracore/dvp_pvpcore.c		optional paracore

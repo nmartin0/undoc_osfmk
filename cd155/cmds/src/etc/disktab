@@ -1,0 +1,220 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+#                             Disk Partition Diagram
+#
+#             /-------------------------------------------------------\
+#             |                          g                            | 
+#   /-----+---+---+-------------+-------------------------------------+
+#   |  a  | b | d |      e      |                   f                 |
+#   +-----+---+---+-------------+-------------------------------------+
+#   |                               c                                 |
+#   \-----------------------------------------------------------------/
+#
+#   where:
+#        a = root, b = paging, c = whole disk, d = var,
+#        e = usr, f = home, g = partitions d+e+f
+
+magic|maxtor1240|Maxtor MXT-1240S:\
+	:ty=winchester:dt=SCSI:\
+	:ns#65:nt#15:nc#620:se#2048:rm#6300:\
+	:oa#0:pa#51200:ba#8192:fa#2048:ta=4.2BSD:\
+	:ob#51200:pb#51200:bb#8192:fb#2048:tb=swap:\
+	:oc#0:pc#604160:bc#8192:fc#2048:tc=all:\
+	:od#102400:pd#5120:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#107520:pe#153600:be#8192:fe#2048:te=4.2BSD:\
+	:of#261120:pf#343040:bf#8192:ff#2048:tf=4.2BSD:\
+	:og#102400:pg#501760:bg#8192:fg#2048:tg=d+e+f:
+
+panther|panther17|Maxtor P1-17S:\
+	:ty=winchester:dt=SCSI:\
+	:ns#79:nt#18:nc#1730:se#2048:rm#3600:\
+	:oa#0:pa#20515:ba#8192:fa#2048:ta=4.2BSD:\
+	:ob#20515:pb#51507:bb#8192:fb#2048:tb=swap:\
+	:oc#0:pc#2460060:bc#8192:fc#2048:tc=all:\
+	:od#72022:pd#5120:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#77142:pe#153576:be#8192:fe#2048:te=4.2BSD:\
+	:of#230718:pf#384297:bf#8192:ff#2048:tf=4.2BSD:\
+	:og#72022:pg#542993:bg#8192:fg#2048:tg=d+e+f:
+
+raid3|RAID3|RAID 3 One Rank MXT-1240S:\
+	:ty=winchester:dt=SCSI:\
+	:ns#65:nt#15:nc#2480:se#2048:rm#6300:\
+	:oa#0:pa#102400:ba#8192:fa#2048:ta=4.2BSD:\
+	:ob#102400:pb#524288:bb#8192:fb#2048:tb=swap:\
+	:oc#0:pc#2416640:bc#8192:fc#2048:tc=all:\
+	:od#626688:pd#5120:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#631808:pe#736256:be#8192:fe#2048:te=4.2BSD:\
+	:of#1368064:pf#1048576:bf#8192:ff#2048:tf=4.2BSD:\
+	:og#626688:pg#1789952:bg#8192:fg#2048:tg=d+e+f:
+
+raid5|RAID5|RAID 5 One Rank MXT-1240S:\
+	:ty=winchester:dt=SCSI:\
+	:ns#65:nt#15:nc#2479:se#2048:rm#6300:\
+	:oa#0:pa#102400:ba#8192:fa#2048:ta=4.2BSD:\
+	:ob#102400:pb#524288:bb#8192:fb#2048:tb=swap:\
+	:oc#0:pc#2416640:bc#8192:fc#2048:tc=all:\
+	:od#626688:pd#5120:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#631808:pe#736256:be#8192:fe#2048:te=4.2BSD:\
+	:of#1368064:pf#1048576:bf#8192:ff#2048:tf=4.2BSD:\
+	:og#626688:pg#1789952:bg#8192:fg#2048:tg=d+e+f:
+
+scsi|maxtor76|Maxtor XT8760:\
+	:ty=winchester:dt=SCSI:\
+	:ns#54:nt#15:nc#404:se#2048:rm#3600:\
+	:oa#0:pa#51232:ba#8192:fa#2048:ta=4.2BSD:\
+	:ob#51232:pb#46255:bb#8192:fb#2048:tb=swap:\
+	:oc#0:pc#327122:bc#8192:fc#2048:tc=all:\
+	:od#97487:pd#5120:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#102607:pe#102400:be#8192:fe#2048:te=4.2BSD:\
+	:of#205007:pf#122115:bf#8192:ff#2048:tf=4.2BSD:\
+	:og#97487:pg#229635:bg#8192:fg#2048:tg=d+e+f:
+
+1gb|1GB|Generic 1gb drive:\
+        :ty=winchester:dt=SCSI:\
+        :ns#57:nt#14:nc#643:se#2048:sk#7:rm#5400:\
+        :oa#0:pa#51077:ba#8192:fa#2048:ta=4.2BSD:\
+        :ob#51077:pb#50760:bb#8192:fb#2048:tb=swap:\
+        :oc#0:pc#512715:bc#8192:fc#2048:tc=all:\
+        :od#101837:pd#5120:bd#8192:fd#2048:td=4.2BSD:\
+        :oe#106957:pe#153549:be#8192:fe#2048:te=4.2BSD:\
+        :of#260506:pf#252209:bf#8192:ff#2048:tf=4.2BSD:\
+        :og#101837:pg#410878:bg#8192:fg#2048:tg=d+e+f:
+
+4gbraid3|4GBRAID3|RAID 3 One Rank 1GB drives:\
+        :ty=winchester:dt=SCSI:\
+        :ns#57:nt#14:nc#2563:se#2048:sk#7:rm#5400:\
+        :oa#0:pa#102400:ba#8192:fa#2048:ta=4.2BSD:\
+        :ob#102400:pb#524288:bb#8192:fb#2048:tb=swap:\
+        :oc#0:pc#2045272:bc#8192:fc#2048:tc=all:\
+        :od#626688:pd#5120:bd#8192:fd#2048:td=4.2BSD:\
+        :oe#631808:pe#614400:be#8192:fe#2048:te=4.2BSD:\
+        :of#1246208:pf#799064:bf#8192:ff#2048:tf=4.2BSD:\
+        :og#626688:pg#1418584:bg#8192:fg#2048:tg=d+e+f:
+
+4gbraid5|4GBRAID5|RAID 5 One Rank 1GB drives:\
+        :ty=winchester:dt=SCSI:\
+        :ns#57:nt#14:nc#2563:se#2048:sk#7:rm#5400:\
+        :oa#0:pa#102400:ba#8192:fa#2048:ta=4.2BSD:\
+        :ob#102400:pb#524288:bb#8192:fb#2048:tb=swap:\
+        :oc#0:pc#2044928:bc#8192:fc#2048:tc=all:\
+        :od#626688:pd#5120:bd#8192:fd#2048:td=4.2BSD:\
+        :oe#631808:pe#614400:be#8192:fe#2048:te=4.2BSD:\
+        :of#1246208:pf#798720:bf#8192:ff#2048:tf=4.2BSD:\
+        :og#626688:pg#1418240:bg#8192:fg#2048:tg=d+e+f:
+
+4gbraid3pfs|4GBRAID3PFS|RAID 3 One Rank PFS 1GB drives:\
+        :ty=winchester:dt=SCSI:\
+        :ns#57:nt#14:nc#2563:se#2048:sk#7:rm#5400:\
+        :oa#0:pa#10240:ba#8192:fa#2048:ta=4.2BSD:\
+        :ob#10240:pb#1017516:bb#65536:fb#8192:tb=4.2BSD:\
+        :oc#1027756:pc#1017516:bc#65536:fc#8192:tc=4.2BSD:
+
+4gbraid3pfspg|4GBRAID3PFSPG|RAID 3 One Rank PFS PAGING 1GB drives:\
+        :ty=winchester:dt=SCSI:\
+        :ns#57:nt#14:nc#2563:se#2048:sk#7:rm#5400:\
+        :oa#0:pa#10240:ba#8192:fa#2048:ta=4.2BSD:\
+        :ob#10240:pb#1017516:bb#8192:fb#2048:tb=4.2BSD:\
+        :oc#1027756:pc#1017516:bc#65536:fc#8192:tc=4.2BSD:
+
+raid3pfs|RAID3PFS|RAID 3 One Rank PFS drives:\
+        :ty=winchester:dt=SCSI:\
+        :ns#65:nt#15:nc#2480:se#2048:rm#6300:\
+        :oa#0:pa#10240:ba#8192:fa#2048:ta=4.2BSD:\
+        :ob#10240:pb#1048576:bb#65536:fb#8192:tb=4.2BSD:\
+        :oc#1058816:pc#1048576:bc#65536:fc#8192:tc=4.2BSD:\
+        :od#2107392:pd#309248:bd#65536:fd#8192:td=4.2BSD:
+
+raid3pfspg|RAID3PFSPG|RAID 3 One Rank PFS PAGING drives:\
+        :ty=winchester:dt=SCSI:\
+        :ns#65:nt#15:nc#2480:se#2048:rm#6300:\
+        :oa#0:pa#10240:ba#8192:fa#2048:ta=4.2BSD:\
+        :ob#10240:pb#1048576:bb#8192:fb#2048:tb=4.2BSD:\
+        :oc#1058816:pc#1048576:bc#65536:fc#8192:tc=4.2BSD:\
+        :od#2107392:pd#309248:bd#65536:fd#8192:td=4.2BSD:
+
+16gbraid3pfs|16GBRAID3PFS|RAID 3 One Rank PFS 4GB drives:\
+	:ty=winchester:dt=SCSI:\
+	:ns#111:nt#19:nc#3973:se#2048:sc#2109:sk#11:rm#5411:\
+	:oa#0:pa#1039737:ba#65536:fa#8192:ta=4.2BSD:\
+	:ob#1039737:pb#1039737:bb#65536:fb#8192:tb=4.2BSD:\
+	:oc#2079474:pc#27417:bc#8192:fc#2048:tc=4.2BSD:\
+	:od#2106891:pd#27417:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#2134308:pe#1039737:be#65536:fe#8192:te=4.2BSD:\
+	:of#3174045:pf#1039737:bf#65536:ff#8192:tf=4.2BSD:\
+	:og#4213782:pg#1039737:bg#65536:fg#8192:tg=4.2BSD:\
+	:oh#5253519:ph#1039737:bh#65536:fh#8192:th=4.2BSD:\
+	:oi#6293256:pi#1039737:bi#65536:fi#8192:ti=4.2BSD:\
+	:oj#7332993:pj#1039737:bj#65536:fj#8192:tj=4.2BSD:
+
+16gbraid3pfspg|16GBRAID3PFSPG|RAID 3 One Rank PFS PAGING 4GB drives:\
+	:ty=winchester:dt=SCSI:\
+	:ns#111:nt#19:nc#3973:se#2048:sc#2109:sk#11:rm#5411:\
+	:oa#0:pa#1039737:ba#65536:fa#8192:ta=4.2BSD:\
+	:ob#1039737:pb#1039737:bb#8192:fb#2048:tb=4.2BSD:\
+	:oc#2079474:pc#27417:bc#8192:fc#2048:tc=4.2BSD:\
+	:od#2106891:pd#27417:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#2134308:pe#1039737:be#65536:fe#8192:te=4.2BSD:\
+	:of#3174045:pf#1039737:bf#65536:ff#8192:tf=4.2BSD:\
+	:og#4213782:pg#1039737:bg#65536:fg#8192:tg=4.2BSD:\
+	:oh#5253519:ph#1039737:bh#65536:fh#8192:th=4.2BSD:\
+	:oi#6293256:pi#1039737:bi#65536:fi#8192:ti=4.2BSD:\
+	:oj#7332993:pj#1039737:bj#65536:fj#8192:tj=4.2BSD:
+
+gen4|GEN-4|Maximum Strategy GEN-4:\
+	:ty=winchester:dt=IPI:\
+	:ns#15:nt#9:nc#2626:\
+	:sc#135:su#354510:se#65536:sf#0:\
+	:rm#5400:sk#0:cs#0:hs#0:ts#1700:il#1:\
+	:bs#65536:sb#65536:\
+	:oa#0:pa#32400:ba#524288:fa#65536:ta=4.2BSD:\
+	:ob#32400:pb#32400:bb#524288:fb#65536:tb=4.2BSD\
+	:oc#0:pc#354510:tc=all:\
+	:od#64800:pd#32400:bd#524288:fd#65536:td=4.2BSD:\
+	:oe#97200:pe#32400:be#524288:fe#65536:te=4.2BSD:\
+	:of#129600:pf#32400:bf#524288:ff#65536:tf=4.2BSD:\
+	:og#162000:pg#32400:bg#524288:fg#65536:tg=4.2BSD:\
+	:oh#194400:ph#32400:bh#524288:fh#65536:th=4.2BSD:\
+	:oi#226800:pi#32400:bi#524288:fi#65536:ti=4.2BSD:\
+	:oj#259200:pj#32400:bj#524288:fj#65536:tj=4.2BSD:\
+	:ok#291600:pk#32400:bk#524288:fk#65536:tk=4.2BSD:\
+	:ol#324000:pl#30510:bl#524288:fl#65536:tl=4.2BSD:
+
+9gb|9GBDISK|For 9GB stand alone drives boot partitioning:\
+	:ty=winchester:dt=SCSI:\
+	:ns#33:nt#27:nc#4926:se#2048:sc#891:su#4438903:sk#11:rm#5400:\
+	:oa#0:pa#114048:ba#8192:fa#2048:ta=4.2BSD:\
+	:ob#114048:pb#524288:bb#8192:fb#2048:tb=swap:\
+	:oc#0:pc#4438903:bc#8192:fc#2048:tc=all:\
+	:od#638336:pd#14256:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#652592:pe#741312:be#8192:fe#2048:te=4.2BSD:\
+	:of#1393904:pf#1040688:bf#8192:ff#2048:tf=4.2BSD:\
+	:og#2434592:pg#1040688:bg#8192:fg#2048:tg=4.2BSD:\
+	:oh#3475280:ph#955152:bh#8192:fh#2048:th=4.2BSD:
+
+9gbpfspg|16GBRAID3PFSPG|For 9GB stand alone drives:\
+	:ty=winchester:dt=SCSI:\
+	:ns#33:nt#27:nc#4926:se#2048:sc#891:su#4438903:sk#11:rm#5400:\
+	:oa#0:pa#1039737:ba#65536:fa#8192:ta=4.2BSD:\
+	:ob#1039737:pb#1039737:bb#8192:fb#2048:tb=4.2BSD:\
+	:oc#2079474:pc#1039737:bc#65536:fc#8192:tc=4.2BSD:\
+	:od#3119211:pd#1039737:bd#65536:fd#8192:td=4.2BSD:\
+	:oe#4158948:pe#279955:be#8192:fe#2048:te=4.2BSD:
+
+9gbpfs|16GBRAID3PFSPG|For 9GB stand alone drives:\
+	:ty=winchester:dt=SCSI:\
+	:ns#33:nt#27:nc#4926:se#2048:sc#891:su#4438903:sk#11:rm#5400:\
+	:oa#0:pa#1039737:ba#65536:fa#8192:ta=4.2BSD:\
+	:ob#1039737:pb#1039737:bb#65536:fb#8192:tb=4.2BSD:\
+	:oc#2079474:pc#139977:bc#8192:fc#2048:tc=4.2BSD:\
+	:od#2106891:pd#139978:bd#8192:fd#2048:td=4.2BSD:\
+	:oe#2134308:pe#1039737:be#65536:fe#8192:te=4.2BSD:\
+	:of#3174045:pf#1039737:bf#65536:ff#8192:tf=4.2BSD:
+

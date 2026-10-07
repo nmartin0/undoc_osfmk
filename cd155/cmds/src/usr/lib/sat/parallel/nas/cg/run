@@ -1,0 +1,305 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/parallel/nas/cg/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0
+testError=1
+miscError=2
+abortCode=3
+title="`sed -n '1p' README`"
+
+computeNodes=0
+minNodes=32
+cgPart="cg$$"
+partName=$1
+scratchPart=""
+execDir=`pwd`
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+# Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/cg.scratch.$$
+programResultsFile=$SAT_USR_TMP/cg.results.$$
+programErrorFile=$SAT_USR_TMP/cg.errors.$$
+programInputFile=$SAT_USR_TMP/cg.input.$$
+programWorkDir=$SAT_USR_TMP/cg.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+   rm -f $programInputFile
+
+   cd $execDir
+   rm -fr $programWorkDir
+}
+
+# Remove compute partition function: expected cleanup
+removePartition() {
+
+   if test -n "$scratchPart" -a "$scratchPart" != ".compute"
+   then
+      rmpart -f -r $scratchPart > /dev/null 2>&1
+   fi
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   removePartition
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "cg sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Partition size analysis and adjustment
+lspart -r . | awk 'BEGIN { dir = "" }
+                   index($1,":") == length($1) { dir = substr($1,1,length($1)-1) "."
+                                                 if (substr(dir,1,2) == "..")
+                                                    dir = substr(dir,2)
+                                                 next
+                                               }
+                   { fullname = dir $NF
+                     if (substr(fullname,1,1) == ".")
+                        print fullname, $4
+                   }' > $programScratchFile
+if test "`echo $1 | cut -c1`" = "."
+then
+   # Absolute partition pathname
+   partName=$1
+else
+   # Relative partition pathname
+   partName=.compute.$1
+fi
+computeString=`grep "^$partName " $programScratchFile`
+
+if test -z "$computeString"
+then
+   echo "Compute partition $partName does not exist." 1>&2
+   lspart -r . >> $programScratchFile
+   if [ ! -d $SAT_USR_TMP/failures ] ; then 
+     mkdir -p $SAT_USR_TMP/failures
+   fi
+   cp $programScratchFile $SAT_USR_TMP/failures
+
+   cleanup $miscError
+fi
+
+computeNodes="`echo $computeString | awk '{ print $2 ; exit }'`"
+
+# Check compute node size
+if test -z "$computeNodes"
+then
+   echo "Could not determine number of compute nodes." 1>&2
+   cleanup $miscError
+fi
+
+# Check for minimum size partition
+if test $computeNodes -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError nosave
+fi
+
+# Check for existing partition name
+if test -n "`grep '^${partName}.${cgPart} ' $programScratchFile`"
+then
+   echo "Compute partition ${partName}.${cgPart} already exists." 1>&2
+   lspart -r $partName | grep $cgPart 1>&2
+
+   cleanup $miscError
+fi
+
+# Calculate required partition size, largest power of two (2)
+cgSize=`echo $computeNodes | \
+awk '{ n = 2
+       for (i = 1 ; i <= 50 ; i++) {
+           n *= 2
+           if (n > $1) { printf "%d\n", (n/2) ; exit }
+     } }'`
+echo "cgSize: $cgSize"
+
+# Verify partition size
+if test $cgSize -lt $minNodes
+then
+   echo "$partName partition size less than minimum required, $minNodes." 1>&2
+   cleanup $miscError
+fi
+
+scratchPart=${partName}.${cgPart}
+
+# Allocate required partition
+mkpart -sz $cgSize $scratchPart >> $programScratchFile 2> $programErrorFile
+if test $? -ne 0
+then
+   echo "Failed to make partition $scratchPart." 1>&2
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $miscError
+fi
+
+# Create input file
+case $cgSize in
+   32)
+      size="4 8"
+      ;;
+   64)
+      size="8 8"
+      ;;
+   128)
+      size="8 16"
+      ;;
+   256)
+      size="16 16"
+      ;;
+   512)
+      size="16 32"
+      ;;
+  1024)
+      size="32 32"
+      ;;
+  2048)
+      size="32 64"
+      ;;
+   *)
+      echo Invalid partition size for \"cg\" 1>&2
+      cleanup $miscError
+      ;;
+esac
+
+cat << EOF > $programInputFile
+$size
+-1
+EOF
+
+# Verify input files
+if test ! -r $programInputFile
+then
+   # Input file not available
+   echo "Unable to create required input file for \"cg\" not available." 1>&2
+   cleanup $miscError
+fi
+
+# Verify program is executable
+if test -x ${execDir}/cg
+then
+   # Execute program
+   if ${execDir}/cg $SAT_NX_ARGS -pn $scratchPart -sz $cgSize < $programInputFile > $programScratchFile 2> $programErrorFile
+   then
+      # Verify results, see filter results below
+      tail -4 $programScratchFile | head -2 > $programResultsFile
+
+      # Determine pass or fail from first line in programResultsFile
+      pass=`head -1 $programResultsFile | awk '{ p = index($3,"-00");
+                             while (p > 0) {
+                                n=substr($3,0,p);
+                                $3=n substr($3,p+2,length($3)-p-1)
+                                p = index($3,"-00");
+                             }
+                             if ($3+0 < 3.5094E-4) print "PASS" ;
+                             else print "FAIL" }'`
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "cg exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"cg\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Get results: line containing string Mflops
+results="`grep 'TIME =' $programResultsFile`"
+results="`echo $results | awk '{print $1, $2, $3 \",  \" $4, $5, $6}'`"
+
+# Report PASS/FAIL results, results non-null
+if test -n "$results" -a "$pass" = "PASS" -a ! -f core -a ! -d core
+then
+   # Program PASSed, report results
+   echo "PASS: $title, $results."
+
+   #cat $programResultsFile
+else
+   # Program FAILed, cat (filtered) scratch file back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

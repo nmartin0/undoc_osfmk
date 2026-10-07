@@ -1,0 +1,16 @@
+
+Fix problem with mktemp.c (causing command "mget *" in ftp to core dump)
+by changing the following lines:
+
+Line 63 changing
+   for(i = 1; i <= TMPSIZE; i++)  {
+to
+   for(i = 0; i <= TMPSIZE; i++)  {
+
+line 68 changing
+   t[TMPSIZE + 1] = '\0';
+to
+   t[TMPSIZE] = '\0';
+
+Shala
+Thu Apr  2 14:26:58 PST 1992

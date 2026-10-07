@@ -1,0 +1,20 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+#
+# @(#)protocols	4.1	11/23/87
+# Internet (IP) protocols
+#
+ip	0	IP	# internet protocol, pseudo protocol number
+icmp	1	ICMP	# internet control message protocol
+ggp	3	GGP	# gateway-gateway protocol
+tcp	6	TCP	# transmission control protocol
+pup	12	PUP	# PARC universal packet protocol
+udp	17	UDP	# user datagram protocol

@@ -1,0 +1,6 @@
+Communications (comtest)
+
+This is a parallel communications test that measures latency and bandwidth
+for NX message passing. It is designed to verify basic functionality
+of synchronous and asynchronous operations and to check performance levels.
+

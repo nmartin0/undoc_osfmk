@@ -1,0 +1,26 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+/:#if.*[ \t]*KPROF/d
+/:#if.*[ \t]*PGINPROF/d
+/:#if.*[ \t]*UNFAST/d
+/:#if.*[ \t]*INSECURE/d
+/:#if.*[ \t]*TRACE/d
+/:#if.*[ \t]*DISKMON/d
+/:#if.*[ \t]*INTRLVE/d
+/:#if.*[ \t]*lint/d
+/:#if.*[ \t]*notdef/d
+/:#if.*[ \t]*unneeded/d
+/:#if.*[ \t]*vax/d
+/:#if.*[ \t]*TCPTRUEOOB/d
+/:#if.*[ \t]*irele/d
+/:#if.*[ \t]*ilock/d
+/:#if.*[ \t]*notyet/d

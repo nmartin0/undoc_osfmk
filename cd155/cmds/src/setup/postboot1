@@ -1,0 +1,235 @@
+#! /bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, 1991, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+
+cd /dev
+echo "Complete creating devices for boot node ..."
+echo 
+mknod rmd0a     c 22 0 > /dev/null 2>&1
+mknod rmd0b     c 22 1 > /dev/null 2>&1
+mknod rmd0c     c 22 2 > /dev/null 2>&1
+mknod rmd0d     c 22 3 > /dev/null 2>&1
+mknod md0a      b 7 0 > /dev/null 2>&1
+mknod md0b      b 7 1 > /dev/null 2>&1
+mknod md0c      b 7 2 > /dev/null 2>&1
+mknod md0d      b 7 3 > /dev/null 2>&1
+mknod ttyp2     c 9 2 > /dev/null 2>&1
+mknod ttyp3     c 9 3 > /dev/null 2>&1
+mknod ttyp4     c 9 4 > /dev/null 2>&1
+mknod ttyp5     c 9 5 > /dev/null 2>&1
+mknod ttyp6     c 9 6 > /dev/null 2>&1
+mknod ttyp7     c 9 7 > /dev/null 2>&1
+mknod ttyp8     c 9 8 > /dev/null 2>&1
+mknod ttyp9     c 9 9 > /dev/null 2>&1
+mknod ttypa	c 9 10 > /dev/null 2>&1
+mknod ttypb	c 9 11 > /dev/null 2>&1
+mknod ttypc	c 9 12 > /dev/null 2>&1
+mknod ttypd	c 9 13 > /dev/null 2>&1
+mknod ttype	c 9 14 > /dev/null 2>&1
+mknod ttypf	c 9 15 > /dev/null 2>&1
+mknod ttyq0	c 9 16 > /dev/null 2>&1
+mknod ttyq1	c 9 17 > /dev/null 2>&1
+mknod ttyq2	c 9 18 > /dev/null 2>&1
+mknod ttyq3	c 9 19 > /dev/null 2>&1
+mknod ttyq4	c 9 20 > /dev/null 2>&1
+mknod ttyq5	c 9 21 > /dev/null 2>&1
+mknod ttyq6	c 9 22 > /dev/null 2>&1
+mknod ttyq7	c 9 23 > /dev/null 2>&1
+mknod ttyq8	c 9 24 > /dev/null 2>&1
+mknod ttyq9	c 9 25 > /dev/null 2>&1
+mknod ttyqa	c 9 26 > /dev/null 2>&1
+mknod ttyqb	c 9 27 > /dev/null 2>&1
+mknod ttyqc	c 9 28 > /dev/null 2>&1
+mknod ttyqd	c 9 29 > /dev/null 2>&1
+mknod ttyqe	c 9 30 > /dev/null 2>&1
+mknod ttyqf	c 9 31 > /dev/null 2>&1
+mknod ttyr1	c 9 32 > /dev/null 2>&1
+mknod ttyr2	c 9 33 > /dev/null 2>&1
+mknod ttyr3	c 9 34 > /dev/null 2>&1
+mknod ttyr4	c 9 35 > /dev/null 2>&1
+mknod ttyr5	c 9 36 > /dev/null 2>&1
+mknod ttyr6	c 9 37 > /dev/null 2>&1
+mknod ttyr7	c 9 38 > /dev/null 2>&1
+mknod ttyr8	c 9 39 > /dev/null 2>&1
+mknod ttyr9	c 9 40 > /dev/null 2>&1
+mknod ttyra	c 9 41 > /dev/null 2>&1
+mknod ttyrb	c 9 42 > /dev/null 2>&1
+mknod ttyrc	c 9 43 > /dev/null 2>&1
+mknod ttyrd	c 9 44 > /dev/null 2>&1
+mknod ttyre	c 9 45 > /dev/null 2>&1
+mknod ttyrf	c 9 46 > /dev/null 2>&1
+mknod ttys0	c 9 47 > /dev/null 2>&1
+mknod ttys1	c 9 48 > /dev/null 2>&1
+mknod ttys2	c 9 49 > /dev/null 2>&1
+mknod ttys3	c 9 50 > /dev/null 2>&1
+mknod ttys4	c 9 51 > /dev/null 2>&1
+mknod ttys5	c 9 52 > /dev/null 2>&1
+mknod ttys6	c 9 53 > /dev/null 2>&1
+mknod ttys7	c 9 54 > /dev/null 2>&1
+mknod ttys8	c 9 55 > /dev/null 2>&1
+mknod ttys9	c 9 56 > /dev/null 2>&1
+mknod ttysa	c 9 57 > /dev/null 2>&1
+mknod ttysb	c 9 58 > /dev/null 2>&1
+mknod ttysc	c 9 59 > /dev/null 2>&1
+mknod ttysd	c 9 60 > /dev/null 2>&1
+mknod ttyse	c 9 61 > /dev/null 2>&1
+mknod ttysf	c 9 62 > /dev/null 2>&1
+mknod ttyt0	c 9 63 > /dev/null 2>&1
+mknod ttyt1	c 9 64 > /dev/null 2>&1
+mknod ttyt2	c 9 65 > /dev/null 2>&1
+mknod ttyt3	c 9 66 > /dev/null 2>&1
+mknod ttyt4	c 9 67 > /dev/null 2>&1
+mknod ttyt5	c 9 68 > /dev/null 2>&1
+mknod ttyt6	c 9 69 > /dev/null 2>&1
+mknod ttyt7	c 9 70 > /dev/null 2>&1
+mknod ttyt8	c 9 71 > /dev/null 2>&1
+mknod ttyt9	c 9 72 > /dev/null 2>&1
+mknod ttyta	c 9 73 > /dev/null 2>&1
+mknod ttytb	c 9 74 > /dev/null 2>&1
+mknod ttytc	c 9 75 > /dev/null 2>&1
+mknod ttytd	c 9 76 > /dev/null 2>&1
+mknod ttyte	c 9 77 > /dev/null 2>&1
+mknod ttytf	c 9 78 > /dev/null 2>&1
+mknod ttyu1	c 9 79 > /dev/null 2>&1
+mknod ttyu2	c 9 80 > /dev/null 2>&1
+mknod ttyu3	c 9 81 > /dev/null 2>&1
+mknod ttyu4	c 9 82 > /dev/null 2>&1
+mknod ttyu5	c 9 83 > /dev/null 2>&1
+mknod ttyu6	c 9 84 > /dev/null 2>&1
+mknod ttyu7	c 9 85 > /dev/null 2>&1
+mknod ttyu8	c 9 86 > /dev/null 2>&1
+mknod ttyu9	c 9 87 > /dev/null 2>&1
+mknod ttyua	c 9 88 > /dev/null 2>&1
+mknod ttyub	c 9 89 > /dev/null 2>&1
+mknod ttyuc	c 9 90 > /dev/null 2>&1
+mknod ttyud	c 9 91 > /dev/null 2>&1
+mknod ttyue	c 9 92 > /dev/null 2>&1
+mknod ttyuf	c 9 93 > /dev/null 2>&1
+mknod ptyp2     c 10 2 > /dev/null 2>&1
+mknod ptyp3     c 10 3 > /dev/null 2>&1
+mknod ptyp4     c 10 4 > /dev/null 2>&1
+mknod ptyp5     c 10 5 > /dev/null 2>&1
+mknod ptyp6     c 10 6 > /dev/null 2>&1
+mknod ptyp7     c 10 7 > /dev/null 2>&1
+mknod ptyp8     c 10 8 > /dev/null 2>&1
+mknod ptyp9     c 10 9 > /dev/null 2>&1
+mknod ptypa	c 10 10 > /dev/null 2>&1
+mknod ptypb	c 10 11 > /dev/null 2>&1
+mknod ptypc	c 10 12 > /dev/null 2>&1
+mknod ptypd	c 10 13 > /dev/null 2>&1
+mknod ptype	c 10 14 > /dev/null 2>&1
+mknod ptypf	c 10 15 > /dev/null 2>&1
+mknod ptyq0	c 10 16 > /dev/null 2>&1
+mknod ptyq1	c 10 17 > /dev/null 2>&1
+mknod ptyq2	c 10 18 > /dev/null 2>&1
+mknod ptyq3	c 10 19 > /dev/null 2>&1
+mknod ptyq4	c 10 20 > /dev/null 2>&1
+mknod ptyq5	c 10 21 > /dev/null 2>&1
+mknod ptyq6	c 10 22 > /dev/null 2>&1
+mknod ptyq7	c 10 23 > /dev/null 2>&1
+mknod ptyq8	c 10 24 > /dev/null 2>&1
+mknod ptyq9	c 10 25 > /dev/null 2>&1
+mknod ptyqa	c 10 26 > /dev/null 2>&1
+mknod ptyqb	c 10 27 > /dev/null 2>&1
+mknod ptyqc	c 10 28 > /dev/null 2>&1
+mknod ptyqd	c 10 29 > /dev/null 2>&1
+mknod ptyqe	c 10 30 > /dev/null 2>&1
+mknod ptyqf	c 10 31 > /dev/null 2>&1
+mknod ptyr1	c 10 32 > /dev/null 2>&1
+mknod ptyr2	c 10 33 > /dev/null 2>&1
+mknod ptyr3	c 10 34 > /dev/null 2>&1
+mknod ptyr4	c 10 35 > /dev/null 2>&1
+mknod ptyr5	c 10 36 > /dev/null 2>&1
+mknod ptyr6	c 10 37 > /dev/null 2>&1
+mknod ptyr7	c 10 38 > /dev/null 2>&1
+mknod ptyr8	c 10 39 > /dev/null 2>&1
+mknod ptyr9	c 10 40 > /dev/null 2>&1
+mknod ptyra	c 10 41 > /dev/null 2>&1
+mknod ptyrb	c 10 42 > /dev/null 2>&1
+mknod ptyrc	c 10 43 > /dev/null 2>&1
+mknod ptyrd	c 10 44 > /dev/null 2>&1
+mknod ptyre	c 10 45 > /dev/null 2>&1
+mknod ptyrf	c 10 46 > /dev/null 2>&1
+mknod ptys0	c 10 47 > /dev/null 2>&1
+mknod ptys1	c 10 48 > /dev/null 2>&1
+mknod ptys2	c 10 49 > /dev/null 2>&1
+mknod ptys3	c 10 50 > /dev/null 2>&1
+mknod ptys4	c 10 51 > /dev/null 2>&1
+mknod ptys5	c 10 52 > /dev/null 2>&1
+mknod ptys6	c 10 53 > /dev/null 2>&1
+mknod ptys7	c 10 54 > /dev/null 2>&1
+mknod ptys8	c 10 55 > /dev/null 2>&1
+mknod ptys9	c 10 56 > /dev/null 2>&1
+mknod ptysa	c 10 57 > /dev/null 2>&1
+mknod ptysb	c 10 58 > /dev/null 2>&1
+mknod ptysc	c 10 59 > /dev/null 2>&1
+mknod ptysd	c 10 60 > /dev/null 2>&1
+mknod ptyse	c 10 61 > /dev/null 2>&1
+mknod ptysf	c 10 62 > /dev/null 2>&1
+mknod ptyt0	c 10 63 > /dev/null 2>&1
+mknod ptyt1	c 10 64 > /dev/null 2>&1
+mknod ptyt2	c 10 65 > /dev/null 2>&1
+mknod ptyt3	c 10 66 > /dev/null 2>&1
+mknod ptyt4	c 10 67 > /dev/null 2>&1
+mknod ptyt5	c 10 68 > /dev/null 2>&1
+mknod ptyt6	c 10 69 > /dev/null 2>&1
+mknod ptyt7	c 10 70 > /dev/null 2>&1
+mknod ptyt8	c 10 71 > /dev/null 2>&1
+mknod ptyt9	c 10 72 > /dev/null 2>&1
+mknod ptyta	c 10 73 > /dev/null 2>&1
+mknod ptytb	c 10 74 > /dev/null 2>&1
+mknod ptytc	c 10 75 > /dev/null 2>&1
+mknod ptytd	c 10 76 > /dev/null 2>&1
+mknod ptyte	c 10 77 > /dev/null 2>&1
+mknod ptytf	c 10 78 > /dev/null 2>&1
+mknod ptyu1	c 10 79 > /dev/null 2>&1
+mknod ptyu2	c 10 80 > /dev/null 2>&1
+mknod ptyu3	c 10 81 > /dev/null 2>&1
+mknod ptyu4	c 10 82 > /dev/null 2>&1
+mknod ptyu5	c 10 83 > /dev/null 2>&1
+mknod ptyu6	c 10 84 > /dev/null 2>&1
+mknod ptyu7	c 10 85 > /dev/null 2>&1
+mknod ptyu8	c 10 86 > /dev/null 2>&1
+mknod ptyu9	c 10 87 > /dev/null 2>&1
+mknod ptyua	c 10 88 > /dev/null 2>&1
+mknod ptyub	c 10 89 > /dev/null 2>&1
+mknod ptyuc	c 10 90 > /dev/null 2>&1
+mknod ptyud	c 10 91 > /dev/null 2>&1
+mknod ptyue	c 10 92 > /dev/null 2>&1
+mknod ptyuf	c 10 93 > /dev/null 2>&1
+
+chmod 666 tty* > /dev/null 2>&1
+chmod 666 tty > /dev/null 2>&1
+chmod 666 pt* > /dev/null 2>&1
+chmod 666 null > /dev/null 2>&1
+chmod 622 console > /dev/null 2>&1
+chmod 666 io0/*rmt* > /dev/null 2>&1
+cd /
+chmod 600 /mach_servers/paging_file > /dev/null 2>&1
+chmod 1777 /tmp > /dev/null 2>&1
+chmod 1777 /usr/tmp > /dev/null 2>&1
+
+/usr/share/lib/term/tablpr.X > /usr/share/lib/term/tablpr
+
+echo 
+echo "Updating message of the day (motd) ..."
+echo 
+/sbin/init.d/motd start
+
+sync
+rm -f /sbin/rc3.d/*postboot1 > /dev/null 2>&1
+exit 0

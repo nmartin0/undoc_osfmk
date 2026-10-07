@@ -1,0 +1,38 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test9" README
+===============
+
+Source: node.c errexit.c
+
+Desc:	"node.c" tests the writing to a not yet expired dataset should cause
+	error.
+
+Invoke:	load [0] node.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use 1 scratch tape
+	* "test9.sh" calls "node.rx" 
+	* log is on "test9.SLr0" 
+	* result is on "test9.SRr0" 
+	* tape will not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+
+Algo:   * write 1 dataset with expiration date "day 100, 2092"
+	  (this means that all following dataset will have this default 
+	   expiration date)
+	* write 2nd dataset.  This will fail because the dataset is not yet
+	  expired
+	* write 2nd dataset with user exit return value = -1.  This means that
+	  the writing will still fail
+	* write 2nd dataset with user exit return value = 1.  This means that
+	  the writing will be successful because 1 means to write even though
+	  the dataset is not yet expired.

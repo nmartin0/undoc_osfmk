@@ -1,0 +1,72 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test13" README
+==============
+
+Source: node_a.c node_b.c errexit.c
+
+Desc:	"node_a.c" tests the reading of the end of datasets with "feov" call
+	"node_b.c" tests the reading of datasets made with "feov"
+
+Invoke: load [0] node_a.rx [/cfs/ctape0 [TEST01 [TEST02 [TEST03 [TEST04
+                          [TEST05 [TEST06 [TEST07 [TEST08 [TEST09]]]]]]]]]]
+        load [0] node_b.rx [/cfs/ctape0 [TEST01 [TEST02 [TEST03 [TEST04
+                          [TEST05 [TEST06 [TEST07 [TEST08 [TEST09]]]]]]]]]]
+
+
+Note:	* use 11 to 32 tapes from test14a
+	* ASSUME "test14a" has written data into the tape already
+	* "test13a.sh" calls "node_a.rx" and 
+	  "test13b.sh" calls "node_b.rx" and
+	* log is on "test13a.SLr0" and "test13b.SLr0" respectively
+	* result is on "test13a.SRr0" and "test13b.SRr0" respectively
+	* to run both "test13a.sh" and "test13b.sh", call "test13.sh" 
+	  and the result will be on "test13.SRr0" with the 
+	  1st line for "test13a" and 2nd line for "test13b"
+
+Algo:	"node_a.c"
+	* tapealloc
+	* tdsopen, feov, tread, dsclose for 11 to 32 datasets depending on
+          the TESTNUM1, TESTNUM2, and TESTNUM3 values.  If (1,0,0), then
+          only 11 datasets.  If (1,1,0), then 21 datasets.  If (1,1,1),
+          then 32 datasets.
+        (since the program only store vol/serial numbers TEST01 to TEST09,
+         the user need to respond to the program with TEST10 to TEST32, one
+         at a time, when it ask for vol/serial number.  Also the user need
+         to put the corresponding tape on the cabinet, but NOT load it
+         a because the program will auto load the tape)
+        * tapedealloc
+        * IMAX = 101
+          JMAX = 4
+          ZEROREAD = 1
+	  VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)
+
+
+
+     	"node_b.c"
+	* tapealloc
+	* tdsopen, tread, dsclose for 11 to 32 datasets depending on
+          the TESTNUM1, TESTNUM2, and TESTNUM3 values.  If (1,0,0), then
+          only 11 datasets.  If (1,1,0), then 21 datasets.  If (1,1,1),
+          then 32 datasets.
+        (since the program only store vol/serial numbers TEST01 to TEST09,
+         the user need to respond to the program with TEST10 to TEST32, one
+         at a time, when it ask for vol/serial number.  Also the user need
+         to put the corresponding tape on the cabinet, but NOT load it
+         a because the program will auto load the tape)
+        * tapedealloc
+        * IMAX = 101
+          JMAX = 4
+          ZEROREAD = 1
+	  VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)

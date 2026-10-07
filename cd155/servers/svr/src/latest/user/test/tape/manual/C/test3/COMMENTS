@@ -1,0 +1,48 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test3" COMMENTS
+================
+
+******************* Step to run this test *******************************
+
+1. make -f makefile.man all
+
+2. if run all the script, type
+
+	test3.sh 
+
+    and the result will be on "test3.SRr0".  The log will be on "test3a.SLr0"
+    and "test3b.SLr0".  The test will require the user to prepare 4 tapes that
+    have been written by "test4".  The user will need to put the 4 tapes on
+    the 4980 cabinet and load the first tape onto the drive.  Then the user
+    will need to hit the return.  Since "test3.sh" runs "test3a.sh" and 
+    "test3b.sh", it will ask the user to do the above 2 times.
+
+
+
+3. if run only one script, type
+
+	test3a.sh 
+   or
+	test3b.sh
+
+    and the result will be on "test3a.SRr0" or "test3b.SRr0" accordingly.  
+    The log will be on "test3a.SLr0" or "test3b.SLr0" accordingly.  The test
+    will require the user to prepare 4 tapes that have been written by "test4".
+    The user will need to put the 4 tapes on the 4980 cabinet and load the 
+    first tape onto the drive.  Then the user will need to hit the return.
+
+   "test3a.sh" TAKES ~8 MINUTES TO RUN; 
+   "test3b.sh" TAKES ~25 MINUTES TO RUN
+
+
+4. Originally, Greg Tensor (author) calls "test3b" as "test3".

@@ -1,0 +1,31 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+type APPLINFO_T =  struct [24] of MACH_MSG_TYPE_INTEGER_32;
+type NX_INIT_T =  struct [17] of MACH_MSG_TYPE_INTEGER_32;
+type nx_app_info_t = struct [9] of MACH_MSG_TYPE_INTEGER_32;
+type MIG_BITMAP_T= ^array [*] of MACH_MSG_TYPE_CHAR;
+type LP_MAP_T = ^array [*] of int;
+type PARTREQ_T = struct [60] of MACH_MSG_TYPE_BYTE;
+type ino_t = MACH_MSG_TYPE_INTEGER_32;
+type pid_t = MACH_MSG_TYPE_INTEGER_32;
+type uid_t = MACH_MSG_TYPE_INTEGER_32;
+type gid_t = MACH_MSG_TYPE_INTEGER_32;
+type string = ^array [] of MACH_MSG_TYPE_CHAR;
+type smd_iface_t = ^array [*] of MACH_MSG_TYPE_CHAR;
+type inode_list_t  = ^array [*] of ino_t;
+type generic_t	= ^array [*] of MACH_MSG_TYPE_CHAR;
+
+import <sys/types.h>;
+import <nx/nx_types.h>;
+import <i860paragon/mcmsg/mcmsg_appl.h>;

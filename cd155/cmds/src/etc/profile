@@ -1,0 +1,42 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+trap "" 2 3
+
+export LOGNAME TERM
+
+. /etc/TIMEZONE
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+# Login and -su shell get /etc/profile services.
+# -rsh is given its environment in its .profile.
+case "$0" in
+-su )
+        export PATH
+        ;;
+-sh )
+        export PATH
+        ;;
+-ksh )
+        export PATH
+        ;;
+esac
+
+umask 022
+trap 2 3
+

@@ -1,0 +1,49 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to format a logical unit when restoring a RAID 0 
+     logical unit or a RAID 1, 3, or 5 logical unit with multiple-
+     drive failures.  Note that the array controller automatically 
+     formats the logical unit after you modify a logical unit 
+     parameter requiring a format.
+ 
+     CAUTION:  When you format a logical unit, ALL data on the logical 
+               unit is lost.  For this reason, back up the data 
+               file-by-file before formatting the logical unit (if
+               possible).
+ 
+     NOTE:  A procedure to format the logical unit is included
+            in the help screens following the explanation of
+            this option.
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     PROCEDURE -- FORMATTING A LOGICAL UNIT
+ 
+     1.   Make sure you have backed up all the data on the logical 
+          unit by copying it file-by-file to the back-up media (if
+          possible).
+ 
+     2.   Press "f" to format the logical unit.
+ 
+     3.   Press "c" to confirm that you want to continue with 
+          the format, or press "q" to quit.
+ 
+     4.   Press "q" to quit ace.
+ 
+     5.   Press <F3> (CONT) to run mkdtab or mktable.
+ 
+          This will take some time.
+ 
+     6.   Add the logical unit as a device by partitioning and 
+          slicing it, and creating a filesystem(s) on the slice(s)
+          if you want filesystems on the logical unit.
+ 
+     7.   Copy your data to your logical unit from the backÄup media 
+          fileÄbyÄfile.
+ 
+     8.   Mount the filesystem.
+ 

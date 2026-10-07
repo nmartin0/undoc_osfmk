@@ -1,0 +1,14 @@
+Local mods
+
+[ Tue Apr 14 12:15:26 PDT 1992 ] stan
+main.c line #1063
+	char *help_strngs[ ] = {
+
+	changed to
+
+	char *help_strngs[ 24 ] = {
+
+	ic version 2.1.0, long compile time bug work around!
+
+	compile times of 4.5hrs observed.
+

@@ -1,0 +1,88 @@
+#!/bin/sh
+#
+# Add i386 magic number and ignore -x. dfc 1/21/91	
+#
+# Add support for -l. dfc 1/27/91	
+#
+# Add -k switch to make data alignment correct, explicitly specify
+# text and data start. dfc 2/28/91	
+#
+args=
+libc=
+entry="-e __start"
+# GreenHills flavor of crt0.o entry="-e start"
+dashk=
+verbose=0
+dashV=""
+textStart="-T 0x10000"
+dataStart=""
+#archType="-i386"
+archType=""
+
+#/bin/echo ld860 $*
+
+# ld860 V1.2
+ld860=$PARAGON_XDEV/paragon/bin.sun4/ld860
+ 
+#
+# parse args 
+#
+until [ $# -eq 0 ]
+do
+    case $1 in
+
+        -v)
+	    dashV="-v"
+	    verbose=1
+            ;;
+
+        -z)
+            ;;
+
+        -K)
+            ;;
+
+        -x)
+            ;;
+
+        -T)
+            shift
+	    textStart="-T $1"
+            ;;
+
+        -d)
+            shift
+	    dataStart="-d $1"
+            ;;
+
+        -e)
+            shift
+	    entry="-e $1"
+            ;;
+
+	-r)
+	    entry=
+	    dashk=
+	    args="$args -r"
+	    ;;
+ 
+        *libc.a)
+            #libc="$libc $1"
+            args="$args $1"
+            ;;
+
+        *)
+            args="$args $1"
+            ;;
+    esac
+    shift
+done
+
+#/bin/echo " BEWARE - ld860 -i386 option ON "
+
+if [ $verbose -eq 1 ]; then
+  echo $ld860 $dashV $dashk $archType $textStart $dataStart $entry $args $libc
+fi
+
+#$ld860 $dashV $dashk -i386 $textStart $dataStart $entry $args $libc 
+$ld860 $dashV $dashk $archType $textStart $dataStart $entry $args $libc 

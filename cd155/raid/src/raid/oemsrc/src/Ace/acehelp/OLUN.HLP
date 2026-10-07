@@ -1,0 +1,36 @@
+     OVERVIEW OF THE OPTIONS IN THE LOGICAL UNIT WINDOW
+ 
+     NOTE:  Press <Tab> to toggle between the logical unit window
+            and the drive window.
+ 
+ 
+     Use the logical unit window, to perform the following tasks:
+ 
+          - Create a logical unit by configuring "spare" drives or 
+            configuring available drives in an existing drive group
+          - Delete a logical unit
+          - Modify logical unit parameters
+          - Display logical unit parameters
+          - Format a logical unit
+          - Determine the status of logical units (LUN status)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     NOTE:  If your array is root, use the Generic Stand-Alone 
+            Array Tools Set (GSATS) diskette to do the following
+            to the logical unit that is root:
+ 
+               - Configure the root device
+               - Delete the root device
+               - Format the root device
+               - Modify logical unit parameters for 
+                 the root device
+ 
+            Remember, after completing any of these tasks, you must
+            reinstall UNIX.
+ 

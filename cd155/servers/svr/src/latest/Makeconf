@@ -1,0 +1,402 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1989 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#
+#
+# HISTORY
+# $Log: Makeconf,v $
+# Revision 1.27  1994/11/18  20:21:53  mtm
+# Copyright additions/changes
+#
+# Revision 1.26  1994/06/22  22:56:58  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: 9090 -- eliminate dependence on CPATH and LPATH
+# 	referring to local system paths on the build machine for
+# 	Suns
+#  Testing: built server, emulator on Sun and Mach X86
+#  Module(s):
+#         server/src/config/Makefile
+#         server/conf/make.template
+#         emulator/conf/make.template
+#         Makeconf
+#
+# Revision 1.25  1994/05/02  18:18:20  dleslie
+#  Reviewer:none
+#  Risk: low
+#  Benefit or PTS #: fix typo in definition of sparc_HCFLAGS
+#  Testing: none
+#  Module(s): Makeconf
+#
+# Revision 1.24  1994/05/02  17:11:54  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: look in /usr/ccs/lib for libic.a on X86 build
+# 	platforms
+#  Testing: none
+#  Module(s): Makeconf
+#
+# Revision 1.23  1994/04/28  22:08:31  chrisp
+# Further correction to .EXPORT: CONFIG.
+#
+# Revision 1.22  1994/04/28  20:18:42  chrisp
+# Darn, checking-in Makeconf itself is tricky. Further corrcetion.
+#
+#  Reviewer: None
+#  Risk: L
+#  Benefit or PTS #: 9188
+#  Testing:
+#  Module(s): Makeconf
+#
+# Revision 1.21  1994/04/28  20:16:00  chrisp
+# Replace .EXPORT CONFIG.
+#
+#  Reviewer: None
+#  Risk: L
+#  Benefit or PTS #: 9188
+#  Testing:
+#  Module(s): Makeconf
+#
+# Revision 1.20  1994/04/28  20:05:36  chrisp
+# Remove errant sandbox-specific lines introduced by provious check-in.
+#
+#  Reviewer: yazz
+#  Risk: L
+#  Benefit or PTS #: 9188
+#  Testing:
+#  Module(s): Makeconf
+#
+# Revision 1.19  1994/04/28  18:50:42  chrisp
+# Re-instated the significance of DOI860 to determine
+# whether the environment is setup for i860 versus i386.
+# SOURCEDIR directory shadowing is now not enabled.
+# 'make lint' now goes through the server/emulator Makefiles
+# like compilations rather than proceeding directly to the
+# CONFIG directory.
+#
+#  Reviewer: dleslie, cfj
+#  Risk: M
+#  Benefit or PTS #: 9188
+#  Testing: Builds, builds, builds.
+#  Module(s):
+#
+# Revision 1.18  1994/04/13  18:39:19  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: allows instrumenting of copy of header files to
+# 	the obj tree, so we can later figure out where all the header files
+# 	built in the cmds build of usr/include actually come from
+#  Testing: built with instrumentation both on and off
+#  Module(s): Makeconf
+#
+# Revision 1.17  1993/11/22  21:19:28  cfj
+# Move start of server data back to 0x1000000.
+#
+#  Reviewer:nandy, jlitvin
+#  Risk:L
+#  Benefit or PTS #:Allow system acceptance like at Bergen to pass.
+#  Testing:Relinked and made sure server would boot.
+#  Module(s):Makeconf, server/conf/Makefile.i860
+#
+# Revision 1.16  1993/11/18  17:35:17  dleslie
+#  Reviewer: None
+#  Risk: low
+#  Benefit or PTS #: find correct 'migcom' when building using a kernel release
+# 	tree built on a different architecture
+#  Testing: built on 486 and Sun
+#  Module(s): Makeconf
+#
+# Revision 1.15  1993/10/21  22:47:23  dleslie
+# We now tack BUILD_XDEV/lib onto the beginning of MKLIB if BUILD_XDEV is
+# set, so we can build on platoform A (such as Sun) while pointing at a
+# kernel tree built on platform B (such as 486) and find a migcom that
+# will run.
+#
+# Revision 1.14  1993/10/11  17:03:22  dleslie
+# Changes for more portable and generic build environment
+#
+# Revision 1.13  1993/07/14  17:29:51  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.5  1993/07/01  18:19:18  cfj
+# Adding new code from vendor
+#
+# Revision 1.12  1993/06/08  00:11:21  cfj
+# Change PGILIBS to use libic.a
+#
+# Revision 1.11  1993/06/03  22:10:22  cfj
+# Make it possible to set PGILIBS on the make command line.
+#
+# Revision 1.10  1993/06/03  20:15:05  cfj
+# Change value of PGILIB so that native builds and cross builds can
+# use the same value.  Also make it so that CONFIG can be specified on the
+# command line.
+#
+# Revision 1.9  1993/05/17  19:09:03  cfj
+# Mistakenly checked in a version with -Mdebug set.
+#
+# Revision 1.8  1993/05/17  19:05:10  cfj
+# 05-06-93 MI driver drop from Locus.
+#
+# Revision 1.7  1993/05/11  01:07:19  cfj
+# Modify PGILIBS to directly reference AFS.
+#
+# Revision 1.6  1993/05/06  22:21:23  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.3  1993/05/03  17:16:25  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.5  1992/12/11  02:50:08  cfj
+# Merged 12-1-92 bug drop from Locus.
+#
+# Revision 1.4  1992/11/30  22:14:09  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.3  1992/11/09  17:52:34  cfj
+# Conflict resolution of 11/05/92 bug fix drop from Locus.
+#
+# Revision 1.1.2.2  1992/11/06  18:20:16  dleslie
+# Conflict resolution resulting from merge of November 3 bugdrop from Locus
+# into the NX tree
+#
+# Revision 1.1.2.1  1992/11/05  22:14:58  dleslie
+# cal modifications for NX through noon, November 5, 1992ZZ
+#
+# Revision 2.20  1993/04/28  17:04:09  klh
+# Define HDPATH and HLPATH vars, for compilation of host programs in a
+# cross-compilation environment (condict)
+#
+# Revision 2.19  93/03/03  18:22:19  klh
+# Change CONFIG to STD+WS+TNC for tnc builds with mi driver.
+# Put Bob Yasi's changes for OPTIMIZATION defaults and paths for
+# GHLIBS and PGILIBS
+# 
+# Revision 2.18  92/11/05  15:41:59  klh
+# TARGET_LPATH now uses the MAKECONF:h construct for tnc builds
+# 
+# Revision 2.16  92/10/09  14:37:07  klh
+# Move picking up OBJECTDIR/user/lib/tnc to TARGET_LPATH for correct
+# compilation with libtnc.a
+# 
+# Revision 2.15  92/09/10  16:47:37  klh
+# fix LPATH (again) and change CONFIG to include tnc as the default
+# 
+# Revision 2.14  92/08/07  08:45:10  klh
+# fix LOCAL_LPATH 
+# 
+# Revision 2.13  92/08/06  10:15:37  klh
+# Add OBJECTDIR/user/tnc to LOCAL_LPATH so tests may be linked with most
+# recently built libtnc.
+# 
+# Revision 2.12  92/05/07  11:57:43  klh
+# LCC version of Makeconf.
+# 
+# Revision 2.9  91/12/19  16:16:28  rabii
+# 	Fixed macros so we don't get infinite recusive macros
+# 
+# Revision 2.8  91/12/19  14:35:08  roy
+# 	i860 cross-compilation support (rabii).
+# 
+# Revision 2.6  91/12/18  10:27:33  roy
+# 	Uncomment TARGET_MODEL and target_model.
+# 
+# Revision 2.5  91/11/21  14:54:44  rabii
+# 	Commented out setting of TARGET_MODEL and target_model. These are 
+# 	now set through the script mksvr.
+# 
+# Revision 2.4  91/10/14  21:27:59  roy
+# Fix MKMACHLIB def.
+# 
+# Revision 2.3  91/10/08  17:44:35  rabii
+# 	Added change for making shadowing work
+# 
+#
+
+#
+# Specify the type of target machine and operating system for the build.
+#
+# NOTE1: By default, target machine type will be assumed to be same as the
+# machine being used to do the build.  This can be overridden in the shell
+# environment, by setting $TARGET_CPU and $target_cpu
+#
+# NOTE2: The following uses the CMU extensions to make, namely the CPUTYPE
+# and cputype macros:
+#
+# Setting DOI860 in this file allows i860 cross-compilations.
+#
+# This variable determines what cross build environment we're in.
+# Currently supported values are sparc, X86, and i860.
+# Default is X86
+BUILD_HOST=${BUILD_HOST?${BUILD_HOST}:X86}
+DOI860=
+
+#
+# Define paths for the target, both target machine paths and local
+# (build) machine paths.  Both are required during the build process.
+X86_I860_CPATH = /usr1/bld0/cmds/osf/export/ipsc860/usr/include
+i860_I860_CPATH = /usr1/bld0/cmds/osf/export/ipsc860/usr/include
+sparc_I860_CPATH = ${PARAGON_XDEV}/paragon/include
+I860_CPATH = ${${BUILD_HOST}_I860_CPATH}
+
+X86_I860_LPATH = /usr1/bld0/cmds/osf/export/ipsc860/usr/ccs/lib
+i860_I860_LPATH = /usr1/bld0/cmds/osf/export/ipsc860/usr/ccs/lib
+sparc_I860_LPATH = ${PARAGON_XDEV}/paragon/lib-coff
+I860_LPATH = ${${BUILD_HOST}_I860_LPATH}
+
+# Set compiler flags for compiles of programs (such as bsd_types_gen)
+# generated and run on the build machine during the build process.
+X86_HCFLAGS =
+i860_HCFLAGS =  -Ui386 -U__i386__ -Di860 -D__i860__
+sparc_HCFLAGS = -Usparc -U__sparc__ -Usun -U__sun__ ${DOI860?-Di860 -D__i860__:}
+HCFLAGS = ${${BUILD_HOST}_HCFLAGS}
+
+# This is the C preprocessor used primarily to munge .s files before the
+# assembler grabs them.
+sparc_KCPP=cpp860 -Usparc -U__sparc__
+i860_KCPP=cpp860
+X86_KCPP=cc -ES -Ui386 -U__i386__
+KCPP=${${BUILD_HOST}_KCPP}
+
+
+I386_CPATH = /usr1/i386/include
+I386_LPATH = /usr1/i386/lib
+
+LOCAL_CPATH = /usr/local/include:/usr/include
+LOCAL_LPATH = ${BUILD_XDEV?${BUILD_XDEV}/lib:/usr/local/lib}:/lib:/usr/lib
+
+TARGET_CPATH = ${$(TARGET_CPU)_CPATH}:${$(TARGET_CPU)_CPATH}/$(TARGET_M)
+TARGET_LPATH = $(MAKECONF:h)/../../obj/${target_sys}/${BCSBBASE?$(BCSBBASE:t):latest}/user/lib/tnc:${$(TARGET_CPU)_LPATH}
+
+.EXPORT: LOCAL_CPATH LOCAL_LPATH TARGET_CPATH TARGET_LPATH HCFLAGS KCPP
+
+#
+# Note that the server generally uses "HCPATH" and "HLPATH" as the
+# names for the local CPATH & LPATH; elsewhere we use LOCAL_CPATH
+# and LOCAL_LPATH.  In other words, two different names for the same
+# thing for historical reasons.  Here we define HCPATH and HLPATH as
+# identical to LOCAL_CPATH and LOCAL_LPATH.
+
+HCPATH = $(LOCAL_CPATH)
+HLPATH = $(LOCAL_LPATH)
+
+.EXPORT: HCPATH HLPATH DOI860
+
+NEWCPUTYPE = ${DOI860?I860:${CPUTYPE}}
+newcputype = ${DOI860?i860:${cputype}}
+TARGET_CPU=${TARGET_CPU?${TARGET_CPU}:${NEWCPUTYPE}}
+target_cpu=${target_cpu?${target_cpu}:${newcputype}}
+
+# Need to distinguish between the cpu type (TARGET_CPU) and the make/model
+# of computer in which that cpu is installed.  The following defines the latter
+# in the case of the i386.  For other cpu types, MODEL and CPU are the same.
+# Use another substitution in an intermediate assignment to do the same thing
+# for a different cpu type:
+#
+# NOTE: setting the TARGET_MODEL as below:
+# TARGET_MODEL = ${DOI860?IPSC860:${TARGET_MODEL}}
+# will not work and gives an error of infinitly recursive macros, so 
+# we have to use the following work-around.
+#
+TARGET_M = ${TARGET_CPU:I386=AT386}
+target_m = ${target_cpu:i386=at386}
+
+TARGET_MODEL = ${DOI860?IPSC860:${TARGET_M}}
+target_model = ${DOI860?ipsc860:${target_m}}
+
+# This one has to be in the form produced by the AFS "sys" command or "@sys"
+# translation, which has an operating system name appended to a cpu type.  For
+# us, the only valid operating system is Mach 3.0, so:
+target_sys = ${target_cpu}_mach
+
+.EXPORT: TARGET_CPU target_cpu TARGET_MODEL target_model target_sys
+
+#SOURCEDIR=${BCSSBASE?$(BCSSBASE):/usr1/bld0/osf1ad+tnc/svr/src/latest}
+OBJECTDIR=${OBJECTDIR?${OBJECTDIR}:../../obj/${target_sys}/${BCSBBASE?$(BCSBBASE:t):latest}}
+
+MKREL=${MKREL?${MKREL}:$(MAKECONF:h)/../../../mkrel/${BCSBBASE?$(BCSBBASE:t):latest}/release/${target_sys}}
+MKMACHLIB= $(MAKECONF:h)/../../../mkrel/${BCSBBASE?$(BCSBBASE:t):latest}/src/mk/user/libmach
+MKINC= ${MKREL}/include
+
+# We try to get the migcom executable out of BUILD_XDEV/lib if we can.
+MKLIB= ${MKREL}/lib
+MIGCOMDIR= ${BUILD_XDEV?${BUILD_XDEV}/lib:${MKLIB}}
+MKBIN= ${MKREL}/bin
+
+.EXPORT: MKINC MKLIB MKBIN MKMACHLIB MIGCOMDIR
+
+#
+# Pluck some hard-coded pathnames out of lower-level makefiles and put
+# them here, where all hard-code pathnames rightly belong.
+
+GHLIBS=/usr1/i860/bld/greenhills/lib/librt.a
+
+
+# Where to find the runtime lib required to link with PGI compiler output
+X86_PGILIBS = ${DOI860?/usr/ccs/lib/libic.a:}
+i860_PGILIBS = /usr/ccs/lib/libic.a
+sparc_PGILIBS = ${PARAGON_XDEV}/paragon/lib-coff/libic.a
+PGILIBS = ${PGILIBS?${PGILIBS}:${${BUILD_HOST}_PGILIBS}}
+
+# This is the host compiler used in the emulator for programs built on the
+# fly
+sparc_HOST_CC=gcc
+i860_HOST_CC=cc
+X86_HOST_CC=gcc
+HOST_CC=${${BUILD_HOST}_HOST_CC}
+
+
+COMPILER_RT=${PGILIBS}
+.EXPORT: COMPILER_RT PGILIBS HOST_CC
+
+# To override the architecture-independent default value of
+# ${OPTIMIZE_DEFAULT} (set in file server/conf/Makefile.template) on a
+# per-architecture basis, define and export the apropriate override
+# variable here.  For example:
+#	OPTIMIZE_I386 = -g
+#	OPTIMIZE_I860 = -O
+#	.EXPORT: OPTIMIZE_I386 OPTIMIZE_I860
+
+OPTIMIZE_I386 = -g
+OPTIMIZE_I860 = -O
+
+# This is here to set things up for capturing output when we copy
+# headers to the obj tree.  This output can later be used to
+# determine where headers which the cmds/libs build copies from the
+# server build actually live in the server source tree.
+# Set INSTRUMENT_HDRS to turn this all on.
+#INSTRUMENT_HDRS=1
+CP=${INSTRUMENT_HDRS?capture_cp:cp -p}
+# This is the name of the file in which to capture output from capture_cp.
+CAPTURE_OUT=${CAPTURE_SVR_OUT?${CAPTURE_SVR_OUT}:/tmp/ServerHdrOutput}
+
+.EXPORT: CP CAPTURE_OUT
+
+
+#
+# Specifiy ld command line args to set data start.
+# May not simply be -d <addr>.
+#
+DATA_START_I860 = -d 0x1000000
+
+.EXPORT: OPTIMIZE_I386 OPTIMIZE_I860 DATA_START_I860
+
+CONFIG=${CONFIG?${CONFIG}:STD+WS}
+
+.EXPORT: CONFIG
+#SOURCEDIR=/tmp_mnt/vol/bigrls1/copywr/bld0/server/svr/src/latest
+BCSBBASE=latest
+.EXPORT: BCSBBASE SOURCEDIR

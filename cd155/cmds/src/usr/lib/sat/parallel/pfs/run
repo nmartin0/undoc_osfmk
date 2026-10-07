@@ -1,0 +1,348 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/parallel/pfs/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0
+testError=1
+miscError=2
+abortCode=3
+title="`sed -n '1p' README`"
+
+computeNodes=0
+minNodes=1
+partName=$1
+execDir=`pwd`
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+# Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/pfs.scratch.$$
+programResultsFile=$SAT_USR_TMP/pfs.results.$$
+programErrorFile=$SAT_USR_TMP/pfs.errors.$$
+programWorkDir=$SAT_USR_TMP/pfs.$$
+
+blockMin=0
+blockMax=1048576
+
+# Use a 32Mbyte file size by default
+filesize=`expr 32 \* 1024 \* 1024`
+
+programUFSFile=""
+programPFSFile=""
+
+perfFlag=""
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+   rm -f "$programUFSFile"
+   rm -f "$programPFSFile"
+
+   cd $execDir
+   rm -rf $programWorkDir
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "pfs sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Check for environment variable overrides of certain params.
+
+# Get pathname for UFS scratch file
+
+if test -z "$SAT_UFSDIR"
+then
+   programUFSFile=$SAT_USR_TMP/pfstest.ufsfile.$$
+else
+   programUFSFile=${SAT_UFSDIR}/pfstest.ufsfile.$$
+fi
+echo "Using tmp UFS file $programUFSFile"
+
+# Make sure $programUFSFile can be created for writing and reading
+
+touch $programUFSFile 2> /dev/null
+if test $? -ne 0
+then
+   echo "Could not create UFS file \"$programUFSFile\"" 1>&2
+   cleanup $miscError
+fi
+
+# Get pathname for PFS scratch file
+
+if test -n "$SAT_PFSDIR"
+then
+   pfsDir="$SAT_PFSDIR"
+elif test -d /pfs
+then
+   pfsDir=/pfs
+else
+   pfsDir=`/sbin/mount | egrep '(type\ pfs)(.*)(local|rw|read-write)' |
+                                                       awk '{print $3 ; exit}'`
+fi
+if test -z "$pfsDir"
+then
+   echo "No PFS found" 1>&2
+   cleanup $miscError
+fi
+programPFSFile=${pfsDir}/pfstest.pfsfile.$$
+
+echo "Using tmp PFS file $programPFSFile"
+
+# Make sure $programPFSFile can be created for writing and reading
+
+touch $programPFSFile 2> /dev/null
+if test $? -ne 0
+then
+   echo "Could not create PFS file \"$programPFSFile\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for blocksize environmental variable override
+
+if test -z "$BLOCKSIZE"
+then
+   # Get # of stripedirs and stripunit from showfs command
+   showfs -t pfs $pfsDir > $programScratchFile 2> $programErrorFile
+
+   stripeUnit=`cat $programScratchFile | awk 'BEGIN {line=1} line==2 {print $5; exit 0} {line++}'`
+
+   stripeDirs=`cat $programScratchFile | awk 'BEGIN {line=1} line==2 {print $6; exit 0} {line++}'`
+
+   if test -z "$stripeUnit" -o -z "$stripeDirs"
+   then
+      # Could not determine number of PFS stripe directories or sunit
+      echo "Could not determine number of PFS stripe directories or sunit size for $pfsDir" 1>&2
+
+      cleanup $miscError
+   fi
+   if test "$stripeDirs" -gt 4
+   then
+      blocksize=`expr $stripeUnit \* 4`
+   else
+      blocksize=`expr $stripeUnit \* $stripeDirs`
+   fi
+else
+   blocksize=$BLOCKSIZE
+fi
+
+# Check for legal blocksize
+
+if test $blocksize -lt $blockMin
+then
+   blocksize=$blockMin
+elif test $blocksize -gt $blockMax
+then
+   blocksize=65536
+fi
+
+# Check for filesize environmental variable override
+
+if test -n "$FILESIZE"
+then
+   filesize=$FILESIZE
+fi
+
+# Check for performance flag override
+
+if printenv PFSPERFORM > /dev/null
+then
+   perfFlag="$PFSPERFORM"
+fi
+
+# Partition size analysis and adjustment
+lspart -r . | awk 'BEGIN { dir = "" }
+                   index($1,":") == length($1) { dir = substr($1,1,length($1)-1) "."
+                                                 if (substr(dir,1,2) == "..")
+                                                    dir = substr(dir,2)
+                                                 next
+                                               }
+                   { fullname = dir $NF
+                     if (substr(fullname,1,1) == ".")
+                        print fullname, $4
+                   }' > $programScratchFile
+if test "`echo $1 | cut -c1`" = "."
+then
+   # Absolute partition pathname
+   partName=$1
+else
+   # Relative partition pathname
+   partName=.compute.$1
+fi
+computeString=`grep "^$partName " $programScratchFile`
+
+if test -z "$computeString"
+then
+   echo "Compute partition $partName does not exist." 1>&2
+   lspart -r . >> $programScratchFile
+   if [ ! -d $SAT_USR_TMP/failures ] ; then 
+     mkdir -p $SAT_USR_TMP/failures
+   fi
+   cp $programScratchFile $SAT_USR_TMP/failures
+
+   cleanup $miscError
+fi
+
+computeNodes="`echo $computeString | awk '{ print $2 ; exit }'`"
+
+# Check compute node size
+if test -z "$computeNodes"
+then
+   echo "Could not determine number of compute nodes." 1>&2
+   cleanup $miscError
+fi
+
+# Check for minimum size partition
+if test $computeNodes -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError nosave
+fi
+
+# Verify numrun program is executable
+if test -x ${execDir}/numrun
+then
+   # Execute program
+   if ${execDir}/numrun -pn $partName -sz $computeNodes $programPFSFile > $programScratchFile 2> $programErrorFile
+   then
+      pfsNodes="`cat $programScratchFile`"
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "numrun exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"numrun\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Make sure that pfsNodes is a single numeric work.  If NF is 0 or
+# more than 1, pfsNodes is not a single word, so evaluate to FAIL.
+# If pfsNodes is 1 or more digits 0-9, eval to a pass.  Otherwise FAIL.
+
+if test "`echo $pfsNodes | awk 'NF != 1 { print \"FAIL\" ; exit }
+                               /^[0-9]+$/ { print \"PASS\" ; exit }
+                                        { print \"FAIL\" ; exit }'`" = FAIL
+then
+   echo "Could not determine number of I/O nodes" 1>&2
+   cat $programScratchFile 1>&2
+   cat $programErrorFile 1>&2
+
+   cleanup $miscError
+fi
+
+# Verify pfs program is executable
+if test -x ${execDir}/pfs
+then
+   # Execute program
+   if ${execDir}/pfs $SAT_NX_ARGS -pn $partName -sz $pfsNodes -u $programUFSFile -p $programPFSFile -b $blocksize -f $filesize $perfFlag > $programScratchFile 2> $programErrorFile
+   then
+      tail +2 $programScratchFile > $programResultsFile
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "pfs exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"pfs\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Report PASS/FAIL results
+
+if test -n "`grep 'Parallel File System SAT PASSED' $programScratchFile`" -a ! -f core -a ! -d core
+then
+   # Program PASSed, cat (filtered) results back to sat
+   echo "PASS: $title."
+
+   cat $programResultsFile
+else
+   # Program FAILed, cat (filtered) scratch and error files back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

@@ -1,0 +1,150 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * Copyright (c) 1993, Locus Computing Corporation
+ * All rights reserved
+ *
+ * HISTORY
+ * $Log: vp.ops,v $
+ * Revision 1.2  1994/11/18  20:51:10  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.1  1994/04/28  19:21:02  chrisp
+ * Changes for introduction of tncgen and support of i386 builds.
+ * Generated prototype header files changed for consistency with tnc/.
+ *
+ *  Reviewer: dleslie, cfj
+ *  Risk: M
+ *  Benefit or PTS #: 9188
+ *  Testing: Builds and tested on i386 platform.
+ *  Module(s):
+ *      Modified Files:
+ *      	bvp_init.c bvp_vpops.c bvp_vpsops.c
+ *      Added Files:
+ *      	gen_dispatch_table.sh gen_op_macros.sh gen_prototypes.sh
+ *      	gen_table_struct.sh tncgen vp.ops vprocgen.mk vps.ops
+ *      Removed Files:
+ *      	maketables.sh
+ *
+ * $EndLog$
+ *
+ */
+
+/*
+ * This file defines the TNC virtual process operations.
+ * It is used as input to the tncgen script for automatic generation
+ * of *_gen* source files.
+ */
+operation fork {
+	parameter IN struct vproc *v	/* vproc being forked */
+	parameter OUT pid_t *retval	/* return value (child pid) */
+	parameter IN node_t  node	/* node number */
+	parameter IN caddr_t nstate	/* new thread state */
+	parameter IN unsigned int nstate_cnt /* size of thread state */
+}
+operation exit {
+	parameter IN struct vproc *v	/* vproc that is exiting */
+	parameter IN int exitcode	/* exit code */
+}
+operation free {
+	parameter IN struct vproc *v	/* vproc just freed */
+}
+operation wait {
+	parameter IN struct vproc *pp	/* vproc of parent used to scan */
+					/* parent-child-sibling list */
+	parameter IN pid_t pid		/* specifies who we wait for */
+	parameter IN int options	/* options to vary function */
+	parameter OUT int *wstat	/* return status value */
+	parameter OUT struct rusage_dev *ru_loc /* resource usage statistics */
+	parameter OUT pid_t *ret_val	/* return value */
+}
+operation proc_nice {
+	parameter IN struct vproc *v	/* vproc being queried */
+	parameter INOUT int *nice	/* nice value */
+	parameter IN int flag		/* VPROC_SET or VPROC_GET */
+}
+operation pgrp_nice {
+	parameter IN struct vproc *g	/* vproc of group being queried */
+	parameter INOUT int *nice	/* nice value */
+	parameter IN int flag		/* VPROC_SET or VPROC_GET */
+}
+operation sigproc {
+	parameter IN struct vproc *v	/* destination vproc */
+	parameter IN int signo		/* signal to be sent */
+	parameter IN int arg		/* argument (for SIGMIGRATE) */
+	parameter IN int flag		/* signaling flags */
+}
+operation sigpgrp {
+	parameter IN struct vproc *g	/* destination pgrp leader vproc */
+	parameter IN int signo		/* signal to be sent */
+	parameter IN int arg		/* argument (for SIGMIGRATE) */
+	parameter OUT int *nproc	/* number of processes signaled */
+	parameter IN int flag		/* signaling flags */
+}
+operation report_state {
+	parameter IN struct vproc *v	/* vproc having state modified */
+	parameter IN int state		/* selects zombie/stop/unstop */
+}
+operation setsid {
+	parameter IN struct vproc *v	/* vproc creating new session */
+}
+operation setpgid {
+	parameter IN struct vproc *v	/* vproc of process to assign */
+	parameter IN struct vproc *g	/* vproc of group to be assigned to */
+	parameter IN pid_t pid		/* caller's pid */
+	parameter IN pid_t sid		/* caller's sid */
+}
+operation get_attr {
+	parameter IN struct vproc *v	/* process being queried */
+	parameter OUT pid_t *ppid	/* returns parent pid */
+	parameter OUT pid_t *pgrp	/* returns process group id */
+	parameter OUT pid_t *sid	/* returns session id */
+	parameter OUT uid_t *uid	/* returns effective user id */
+	parameter OUT uid_t *ruid	/* returns real user id */
+	parameter OUT int *job_control	/* returns if job control applies */
+	parameter OUT boolean_t *has_sctty /* returns if session tty control */
+}
+operation setpinit {
+	parameter IN struct vproc *v	/* process to be kernelized */
+}
+operation ctty_getattr {
+	parameter IN struct vproc *v	/* process being queried */
+	parameter IN struct vproc *s	/* vproc of session leader */
+	parameter OUT pid_t *t_pgid	/* foreground pgrp */
+	parameter OUT dev_t *dev	/* controlling device */
+	parameter OUT node_t *node	/* node of controlling device */
+	parameter OUT struct tty **ttyp	/* output param, controlling tty */
+}
+operation set_ctty {
+	parameter IN struct vproc *v	/* process setting ctty */
+	parameter IN struct vproc *s	/* vproc of session leader */
+	parameter IN struct tty *ttyp	/* controlling tty */
+	parameter IN int flag		/* VPROC_SET or VPROC_CLEAR */
+}
+operation ptrace {
+	parameter IN struct vproc *vd	/* debugger process */
+	parameter IN struct vproc *ve	/* traced child process */
+	parameter IN int req		/* trace request code */
+	parameter IN int *addr		/* memory address */
+	parameter IN int data		/* data to write */
+	parameter OUT int *retval	/* returned data */
+}
+operation get_task_port {
+	parameter IN struct vproc *v	/* process being queried */
+	parameter OUT mach_port_t *portp /* task port of process */
+}
+operation terminal_sigpgrp {
+	parameter IN struct vproc *v	/* vproc whose pgrp being signalled */
+	parameter IN int signo		/* signal to be sent */
+}

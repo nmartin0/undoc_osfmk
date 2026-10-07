@@ -1,0 +1,2300 @@
+# senscode.lst - File which contains Additional Sense Code (ASC),
+#		 Additional Sense Code Qualifier (ASCQ), "most probable
+#		 sense key" (MPSK), and description information from the
+#		 ADP-92 Small Disk Array Software functional specification.
+#
+#		This file is parsed by the senscode.sh script (which uses
+#		the senscode.awk program) to produce C source code lines
+#		which can be incorporated into the 'stat_tbl.c' file.
+#
+#	NOTE: The really important messages for the Disk Array Utilities
+#	are those with ASC code = 3F and with ASCQ codes in the range
+#	80-FF (the vendor unique range).  These are the codes that the
+#	disk array controller returns for AEN request sense.  Since the
+#	array monitor daemon (amd) is the only program which regularly
+#	performs AEN request sense, these messages are the ones that will
+#	appear on the V.4 system console (and in the amd log file).
+#
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+#
+#	Here is the format of the valid lines in this file (those not
+#	beginning with a '# '):
+#
+# ASC ASCQ MPSK   Description
+# --- ---- ------ -------------------------------------------------------------
+# xx  xx   x,x,x  DESCRIPTION
+# handler_function_name
+#	<open line>
+#
+#  DO NOT CHANGE THE FOLLOWING LINE (it begins with "#-- ", a magic token)
+#-- ---- -----	---------------------------------------------------------------
+00  00   0	NO ADDITIONAL SENSE INFORMATION
+print_FRU
+
+00  06   0	I/O PROCESS TERMINATED
+print_FRU
+
+01  00   1,4	NO INDEX/SECTOR SIGNAL
+print_FRU
+
+02  00   1,4	NO SEEK COMPLETE
+print_FRU
+
+03  00   1,4	PERIPHERAL DEVICE WRITE FAULT
+print_FRU
+
+04  00   1,2	LOGICAL UNIT NOT READY, CAUSE NOT REPORTABLE
+print_FRU
+
+04  01   1,2	LOGICAL UNIT IS IN PROCESS OF BECOMING READY
+print_FRU
+
+04  02   1,2	LOGICAL UNIT NOT READY, INITIALIZING COMMAND REQUIRED
+		Start unit command required
+print_FRU
+
+04  03   1,2	LOGICAL UNIT NOT READY, MANUAL INTERVENTION REQUIRED
+print_FRU
+
+04  04   1,2	LOGICAL UNIT NOT READY, FORMAT IN PROGRESS
+print_FRU
+
+04  80   2	LOGICAL UNIT NOT READY, ROM INSTALLED DOES NOT SUPPORT
+		REDUNDANT CONTROLLER CONFIGURATION
+print_FRU
+
+05  00   1,2	LOGICAL UNIT DOES NOT RESPOND TO SELECTION
+print_FRU
+
+06  00   1,3,4	NO REFERENCE POSITION FOUND
+print_FRU
+
+07  00   1,4	MULTIPLE PERIPHERAL DEVICES SELECTED
+print_FRU
+
+08  00   1,4	LOGICAL UNIT COMMUNICATION FAILURE
+print_FRU
+
+08  01   1,4	LOGICAL UNIT COMMUNICATION TIME-OUT
+print_FRU
+
+08  02   1,4	LOGICAL UNIT COMMUNICATION PARITY ERROR
+print_FRU
+
+09  00   1,4	TRACK FOLLOWING ERROR
+print_FRU
+
+0A  00   1,6	ERROR LOG OVERFLOW
+print_FRU
+
+0C  01   1	WRITE ERROR RECOVERED WITH AUTO REALLOCATION
+print_FRU
+
+0C  02   1,3,4	WRITE ERROR - AUTO REALLOCATION FAILED
+print_FRU
+
+10  00   1,3,4	ID CRC OR ECC ERROR
+print_FRU
+
+11  00   1,3,4	UNRECOVERED READ ERROR
+		The description of this error as being unrecovered may be
+		misleading since a drive reported unrecovered read error
+		can be recovered by the array using parity.  The sense key
+		for this case will be RECOVERED and the recovery actions
+		field in the sense will indicate that parity was used.
+print_FRU
+
+11  01   1,3,4	READ RETRIES EXHAUSTED
+print_FRU
+
+11  02   1,3,4	ERROR TOO LONG TO CORRECT
+print_FRU
+
+11  04   1,3,4	UNRECOVERED READ ERROR - AUTO REALLOCATE FAILED
+print_FRU
+
+11  0A   1,4	MISCORRECTED ERROR
+print_FRU
+
+11  0B   1,3	UNRECOVERED READ ERROR - RECOMMEND REASSIGNMENT
+print_FRU
+
+11  0C   1,3	UNRECOVERED READ ERROR - RECOMMEND REWRITE THE DATA
+print_FRU
+
+12  00   1,3	ADDRESS MARK NOT FOUND FOR ID FIELD
+print_FRU
+
+13  00   1,3	ADDRESS MARK NOT FOUND FOR DATA FIELD
+print_FRU
+
+14  00   1,3	RECORDED ENTITY NOT FOUND
+print_FRU
+
+14  01   1,3	RECORD NOT FOUND
+print_FRU
+
+15  00   1,3,4	RANDOM POSITIONING ERROR
+print_FRU
+
+15  01   1,4	MECHANICAL POSITIONING ERROR
+print_FRU
+
+15  02   1,3,4	POSITIONING ERROR DETECTED BY READ OF MEDIUM
+print_FRU
+
+16  00   1,3,4	DATA SYNCHRONIZATION MARK ERROR
+print_FRU
+
+17  00   1	RECOVERED DATA WITH NO ERROR CORRECTION APPLIED
+print_FRU
+
+17  01   1	RECOVERED DATA WITH RETRIES
+print_FRU
+
+17  02   1	RECOVERED DATA WITH POSITIVE HEAD OFFSET
+print_FRU
+
+17  03   1	RECOVERED DATA WITH NEGATIVE HEAD OFFSET
+print_FRU
+
+17  05   1	RECOVERED DATA USING PREVIOUS SECTOR ID
+print_FRU
+
+17  06   1	RECOVERED DATA WITHOUT ECC - DATA AUTO-REALLOCATED
+print_FRU
+
+17  07   1	RECOVERED DATA WITHOUT ECC - RECOMMEND REASSIGNMENT
+print_FRU
+
+18  00   1	RECOVERED DATA WITH ERROR CORRECTION APPLIED
+print_FRU
+
+18  01   1	RECOVERED DATA WITH ERROR CORRECTION AND RETRIES APPLIED
+print_FRU
+
+18  02   1	RECOVERED DATA - DATA AUTO-REALLOCATED
+print_FRU
+
+18  05   1	RECOVERED DATA - RECOMMEND REASSIGNMENT
+print_FRU
+
+19  00   1,3	DEFECT LIST ERROR
+print_FRU
+
+19  01   1,3	DEFECT LIST NOT AVAILABLE
+print_FRU
+
+19  02   1,3	DEFECT LIST ERROR IN PRIMARY LIST
+print_FRU
+
+19  03   1,3	DEFECT LIST ERROR IN GROWN LIST
+print_FRU
+
+1A  00   1,5	PARAMETER LIST LENGTH ERROR
+print_FRU
+
+1B  00   1,4	SYNCHRONOUS DATA TRANSFER ERROR
+print_FRU
+
+1C  00   0,1,3	DEFECT LIST NOT FOUND
+print_FRU
+
+1C  01   0,1,3	PRIMARY DEFECT LIST NOT FOUND
+print_FRU
+
+1C  02   0,1,3	GROWN DEFECT LIST NOT FOUND
+print_FRU
+
+1D  00   1,E	MISCOMPARE DURING VERIFY OPERATION
+print_FRU
+
+1E  00   1	RECOVERED ID WITH ECC CORRECTION
+print_FRU
+
+20  00   1,5	INVALID COMMAND OPERATION CODE
+print_FRU
+
+21  00   1,5	LOGICAL BLOCK ADDRESS OUT OF RANGE
+print_FRU
+
+22  00   1,5	ILLEGAL FUNCTION
+print_FRU
+
+24  00   1,5	INVALID FIELD IN CDB
+print_FRU
+
+25  00   1,5	LOGICAL UNIT NOT SUPPORTED
+print_FRU
+
+26  00   5	INVALID FIELD IN PARAMETER LIST
+print_FRU
+
+26  01   5	PARAMETER NOT SUPPORTED
+print_FRU
+
+26  02   5	PARAMETER VALUE INVALID
+print_FRU
+
+26  03   5	THRESHOLD PARAMETERS NOT SUPPORTED
+print_FRU
+
+27  00   1,7	WRITE PROTECTED
+print_FRU
+
+28  00   6	NOT READY TO READY TRANSITION (MEDIUM MAY HAVE CHANGED)
+print_FRU
+
+29  00   6	POWER ON, RESET, OR BUS DEVICE RESET OCCURRED
+print_FRU
+
+2A  00   6	PARAMETERS CHANGED
+print_FRU
+
+2A  01   6	MODE PARAMETERS CHANGED
+print_FRU
+
+2A  02   6	LOG PARAMETERS CHANGED
+print_FRU
+
+2C  00   1,4	COMMAND SEQUENCE ERROR
+print_FRU
+
+2F  00   6	COMMANDS CLEARED BY ANOTHER INITIATOR
+print_FRU
+
+30  00   1,3	INCOMPATIBLE MEDIUM INSTALLED
+		(Disk array drives in the rank are not of the same type)
+print_FRU
+
+30  01   1,3	CANNOT READ MEDIUM - UNKNOWN FORMAT
+print_FRU
+
+30  02   1,3	CANNOT READ MEDIUM - INCOMPATIBLE FORMAT
+print_FRU
+
+31  00   1,3	MEDIUM FORMAT CORRUPTED
+print_FRU
+
+31  01   3,4	FORMAT COMMAND FAILED
+print_FRU
+
+31  80   5	FORMAT COMMAND CANNOT EXECUTE BECAUSE OF
+		MULTIPLE LUN ASSIGNMENTS PER PHYSICAL DRIVE
+print_FRU
+
+32  00   3,4	NO DEFECT SPARE LOCATION AVAILABLE
+print_FRU
+
+32  01   3,4	DEFECT LIST UPDATE FAILURE
+print_FRU
+
+37  00   1	ROUNDED PARAMETER
+print_FRU
+
+39  00   5	SAVING PARAMETERS NOT SUPPORTED
+print_FRU
+
+3A  00   1,2	MEDIUM NOT PRESENT
+print_FRU
+
+3D  00   1,5	INVALID BITS IN IDENTIFY MESSAGE
+print_FRU
+
+3E  00   1,2	LOGICAL UNIT HAS NOT SELF-CONFIGURED YET
+print_FRU
+
+3F  00   6	TARGET OPERATING CONDITIONS HAVE CHANGED
+print_FRU
+
+3F  01   6	MICROCODE HAS BEEN CHANGED
+		Returned when new drive microcode has been downloaded
+print_FRU
+
+3F  02   6	CHANGED OPERATING DEFINITION
+print_FRU
+
+3F  03   6	INQUIRY DATA HAS CHANGED
+print_FRU
+
+3F  80   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR ****
+		One or more drives in the disk array has been marked DOWN
+		due to detection of the following error:
+		DRIVE DOWNED BECAUSE OF A FAILED WRITE OPERATION
+		The drive(s) should be replaced as soon as possible to
+		avoid the possibility of data loss or corruption.
+		- This is the result of an error that prevents access to
+		  user data on this drive.  This may result in erroneous
+		  data being read/written.  (ex. An Unrecovered Write
+		  Error)
+		***********************************************************
+print_FRU
+
+3F  81   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR ****
+		One or more drives in the disk array has been marked DOWN
+		due to detection of the following error:
+		AUTOMATIC REALLOCATION OF RECOVERED DRIVE ERROR FAILED
+		The drive(s) should be replaced as soon as possible to
+		avoid the possibility of data loss or corruption.
+		- Either reassign block or recovery of data on the re-
+		  assigned sector failed.
+		***********************************************************
+print_FRU
+
+3F  82   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR ****
+		RECONSTRUCTION FAILED - ERROR ON DRIVE BEING RECONSTRUCTED
+		This condition requires that the drive be replaced as soon
+		as possible.  User data is still available by using parity,
+		but a second failure at this time will result in loss of
+		user data for the entire LUN (RAID 5), or will result in an
+		unrecoverable error (other RAID levels).
+		- The reconstruction operation cannot complete because of
+		  an unrecoverable write error or a failed drive format
+		  (before reconstruction starts) on the drive being recon-
+		  structed.  It must be replaced (again) before the recon-
+		  struction can be retried.
+		***********************************************************
+print_FRU
+
+3F  83   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****
+		RECONSTRUCTION FAILED - ERROR ON DRIVE REQUIRED FOR RECON-
+		STRUCTION.
+		The reconstruction operation cannot complete because of an
+		unrecoverable read error on one of the drives needed for
+		reconstruction.  The array can still be run in degraded
+		mode, but if user data is stored at the address in error
+		it cannot be read.  A back-up of the array should be attemp-
+		ted to recover the remaining data.  To bring the LUN to an
+		optimal state, the failed drive must be replaced, the array
+		must be formatted, and the data must be restored from a
+		back-up (the one just made or a previous successful back-up).
+		*************************************************************
+print_FRU
+
+3F  84   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		DRIVE FAILED DUE TO A HARDWARE COMPONENT DIAGNOSTICS FAILURE
+		This condition requires that the drive be replaced as soon as
+		possible.  User data is still available by using parity, but
+		a second failure at this time (when a drive has been downed)
+		will result in the loss of data for the entire Lun (Raid 5)
+		or will result in an unrecoverable error (other raid levels).
+print_FRU
+
+3F  85   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		DRIVE FAILED BECAUSE IT FAILED A TEST UNIT READY COMMAND
+		(DURING START OF DAY) OR IT FAILED A READ CAPACITY COMMAND
+		(DURING START OF DAY OR DURING A FORMAT OR RECONSTRUCTION
+		OPERATION)
+		This condition requires that the drive be replaced as soon as
+		possible.  User data is still available by using parity, but
+		a second failure at this time (when a drive has been downed)
+		will result in the loss of data for the entire Lun (Raid 5)
+		or will result in an unrecoverable error (other raid levels).
+print_FRU
+
+3F  86   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		DRIVE FAILED BECAUSE IT FAILED A FORMAT UNIT COMMAND
+		This condition requires that the drive be replaced as soon as
+		possible.  User data is still available by using parity, but
+		a second failure at this time (when a drive has been downed)
+		will result in the loss of data for the entire Lun (Raid 5)
+		or will result in an unrecoverable error (other raid levels).
+print_FRU
+
+3F  87   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		DRIVE FAILED BY A HOST MODE SELECT COMMAND
+		This condition requires that the drive be replaced as soon as
+		possible.  User data is still available by using parity, but
+		a second failure at this time (when a drive has been downed)
+		will result in the loss of data for the entire Lun (Raid 5)
+		or will result in an unrecoverable error (other raid levels).
+print_FRU
+
+3F  88   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		DRIVE FAILED BECAUSE OF A DEFERED ERROR REPORTED BY THE DRIVE
+		This condition requires that the drive be replaced as soon as
+		possible.  User data is still available by using parity, but
+		a second failure at this time (when a drive has been downed)
+		will result in the loss of data for the entire Lun (Raid 5)
+		or will result in an unrecoverable error (other raid levels).
+print_FRU
+
+3F  89   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		DRIVE FAILED BY START OF DAY APPLICATION CODE BECAUSE OF A
+		DRIVE REPLACEMENT ERROR
+		This condition requires that the drive be replaced as soon as
+		possible.  User data is still available by using parity, but
+		a second failure at this time (when a drive has been downed)
+		will result in the loss of data for the entire Lun (Raid 5)
+		or will result in an unrecoverable error (other raid levels).
+print_FRU
+
+3F  90   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		UNRECOVERED READ/WRITE ERROR
+		Unrecovered read errors always will cause this condition to
+		be generated.  Unrecovered write errors will cause this if
+		the state of the LUN or the RAID level guarantees that data
+		at other addresses will not be affected by the failed oper-
+		ation and continued access to this drive.
+		A second drive failure or warning condition on another
+		drive may prevent reconstruction of this drive.
+		***********************************************************
+print_FRU
+
+3F  91   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		DRIVE REPORTED DEFERRED ERROR CAUSED DRIVE TO BE PLACED IN
+		WARNING
+		***********************************************************
+print_FRU
+
+3F  A0   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		This is an early drive replacement warning for the disk array.
+		The following error was detected:
+		SINGLE DRIVE ARRAY ASSURANCE ERROR - DRIVE ECC TEST FAILED
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  B0   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		This is an early drive replacement warning for the disk array.
+		The following error was detected:
+		EXCESSIVE MEDIA ERROR RATE
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  B1   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		This is an early drive replacement warning for the disk array.
+		The following error was detected:
+		EXCESSIVE SEEK ERROR RATE
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  B2   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		This is an early drive replacement warning for the disk array.
+		The following error was detected:
+		EXCESSIVE GROWN DEFECTS
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  C0   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		NO RESPONSE FROM ONE OR MORE DRIVES
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  C1   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		COMMUNICATIONS ERROR
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  C2   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		ROM CODE INDICATES NO DRIVE IS PRESENT EVEN THOUGH INFORMATION
+		STORED ON THE DISK INDICATES DRIVE SHOULD BE PRESENT
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  C7   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		SUBSYSTEM COMPONENT FAILURE
+		***********************************************************
+print_FRU
+
+3F  C8   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		AC POWER IS LOST, DC POWER IS BEING SUPPLIED BY A HOLD OVER
+		BATTERY 
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  C9   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		AC POWER IS LOST, DC POWER SUPPLIED FOR A MAXIMUM OF 2 MINUTES.
+		THE HOST SHOULD START ITS SHUTDOWN PROCEDURES.
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  CA   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		AC POWER IS LOST, DC POWER IS EXHAUSTED.
+		THE ARRAY CONTROLLER WILL COMPLETE CURRENTLY EXECUTING DRIVE
+		COMMANDS TO MAINTAIN DATA INTEGRITY.
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  CB   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		AC POWER WAS LOST, BUT IS NOW RESTORED.
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  CC   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		AC POWER IS LOST, DC POWER IS EXHAUSTED.
+		THE ARRAY CONTROLLER WILL COMPLETE CURRENTLY EXECUTING DRIVE
+		COMMANDS TO MAINTAIN DATA INTEGRITY.
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  CD   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		A check of the installation of a drive in the disk array
+		is needed because the following error was detected:
+		AC POWER WAS LOST, BUT IS NOW RESTORED.
+		The drive will still be used until a failed WRITE of user
+		data occurs.
+		***********************************************************
+print_FRU
+
+3F  D0   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		Potential performance degradation of the disk array has
+		been detected.  The indication of this condition is:
+		GREATER THAN 75% OF TRANSFER DELAYS CAUSED BY ONE DRIVE
+		The drive is still being used.
+		***********************************************************
+print_FRU
+
+3F  D1   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		Potential performance degradation of the disk array has
+		been detected.  The indication of this condition is:
+		GREATER THAN 75% OF NON-ALIGNED RESELECTIONS CAUSED BY ONE DRIVE
+		The drive is still being used.
+		***********************************************************
+print_FRU
+
+3F  D2   1,6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		Potential performance degradation of the disk array has
+		been detected.  The indication of this condition is:
+		SYNCHRONOUS TRANSFER VALUE DIFFERENCES BETWEEN DRIVES
+		The drive is still being used.
+		***********************************************************
+print_FRU
+
+3F  D3   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		Potential performance degradation of the disk array has
+		been detected.  The indication of this condition is:
+		SOFTWARE MEASURED PERFORMANCE DEGRADATION
+		The drive is still being used.
+		***********************************************************
+print_FRU
+
+3F  D4   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		Potential performance degradation of the disk array has
+		been detected.  The indication of this condition is:
+		MODE PARAMETER DIFFERENCES BETWEEN DRIVES MAY CAUSE PERFORM-
+		ANCE DEGRADATION
+		The drive is still being used.
+		***********************************************************
+print_FRU
+
+3F  E0   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****
+		LUN DOWNED - COMMAND CANNOT EXECUTE BECAUSE THE LUN HAS BEEN
+		DOWNED
+		Subsequent media access commands to this LUN will not execute,
+		but will return sense information as to the cause.
+		  ASC     ASCQ          Meaning
+		  84      01            Multiple drives have been downed
+		  84      02            Mode parameters for drives don't match
+		  84      03            Drive channel verification failed
+		  84      04            SCSI ID verification failed
+		  84      05            Format in progress
+		  84      06            Awaiting format
+		  84      08            Wrong drive was replaced
+		  84      09            Component failure on multiple channels
+		Attempt a backup of the array.  Replace the failed drives,
+		reformat, and restore data from the last successful backup
+		copy. 
+		**************************************************************
+print_FRU
+ 
+3F  E1   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****
+		MULTIPLE DRIVES HAVE BEEN DOWNED
+		Subsequent media access commands to this LUN will not execute,
+		but will return sense information as to the cause.
+		  ASC     ASCQ          Meaning
+		  84      01            Multiple drives have been downed
+		  84      02            Mode parameters for drives don't match
+		  84      03            Drive channel verification failed
+		  84      04            SCSI ID verification failed
+		  84      05            Format in progress
+		  84      06            Awaiting format
+		  84      08            Wrong drive was replaced
+		  84      09            Component failure on multiple channels
+		Attempt a backup of the array.  Replace the failed drives,
+		reformat, and restore data from the last successful backup
+		copy. 
+print_FRU
+ 
+3F  E2   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****
+		MODE PARAMETERS FOR DRIVES IN LUN DO NOT MATCH
+		Subsequent media access commands to this LUN will not execute,
+		but will return sense information as to the cause.
+		  ASC     ASCQ          Meaning
+		  84      01            Multiple drives have been downed
+		  84      02            Mode parameters for drives don't match
+		  84      03            Drive channel verification failed
+		  84      04            SCSI ID verification failed
+		  84      05            Format in progress
+		  84      06            Awaiting format
+		  84      08            Wrong drive was replaced
+		  84      09            Component failure on multiple channels
+		Attempt a backup of the array.  Replace the failed drives,
+		reformat, and restore data from the last successful backup
+		copy. 
+print_FRU
+ 
+3F  E3   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****
+		DRIVE CHANNEL VERIFICATION FAILED
+		Subsequent media access commands to this LUN will not execute,
+		but will return sense information as to the cause.
+		  ASC     ASCQ          Meaning
+		  84      01            Multiple drives have been downed
+		  84      02            Mode parameters for drives don't match
+		  84      03            Drive channel verification failed
+		  84      04            SCSI ID verification failed
+		  84      05            Format in progress
+		  84      06            Awaiting format
+		  84      08            Wrong drive was replaced
+		  84      09            Component failure on multiple channels
+		Attempt a backup of the array.  Replace the failed drives,
+		reformat, and restore data from the last successful backup
+		copy. 
+print_FRU
+ 
+3F  E4   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****
+		SCSI ID VERIFICATION FAILED
+		Subsequent media access commands to this LUN will not execute,
+		but will return sense information as to the cause.
+		  ASC     ASCQ          Meaning
+		  84      01            Multiple drives have been downed
+		  84      02            Mode parameters for drives don't match
+		  84      03            Drive channel verification failed
+		  84      04            SCSI ID verification failed
+		  84      05            Format in progress
+		  84      06            Awaiting format
+		  84      08            Wrong drive was replaced
+		  84      09            Component failure on multiple channels
+		Attempt a backup of the array.  Replace the failed drives,
+		reformat, and restore data from the last successful backup
+		copy. 
+print_FRU
+ 
+3F  E5   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****
+		WRONG DRIVE WAS REPLACED
+		Subsequent media access commands to this LUN will not execute,
+		but will return sense information as to the cause.
+		  ASC     ASCQ          Meaning
+		  84      01            Multiple drives have been downed
+		  84      02            Mode parameters for drives don't match
+		  84      03            Drive channel verification failed
+		  84      04            SCSI ID verification failed
+		  84      05            Format in progress
+		  84      06            Awaiting format
+		  84      08            Wrong drive was replaced
+		  84      09            Component failure on multiple channels
+		Attempt a backup of the array.  Replace the failed drives,
+		reformat, and restore data from the last successful backup
+		copy. 
+print_FRU
+ 
+3F  E6   6	****  CRITICAL ARRAY ERROR  ****  CRITICAL ARRAY ERROR  ****
+		COMPONENT FAILURE AFFECTING MULTIPLE CHANNELS
+		Subsequent media access commands to this LUN will not execute,
+		but will return sense information as to the cause.
+		  ASC     ASCQ          Meaning
+		  84      01            Multiple drives have been downed
+		  84      02            Mode parameters for drives don't match
+		  84      03            Drive channel verification failed
+		  84      04            SCSI ID verification failed
+		  84      05            Format in progress
+		  84      06            Awaiting format
+		  84      08            Wrong drive was replaced
+		  84      09            Component failure on multiple channels
+		Attempt a backup of the array.  Replace the failed drives,
+		reformat, and restore data from the last successful backup
+		copy. 
+print_FRU
+
+3F  F0   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		EEPROM ERROR
+		The configuration change (drive being marked failed/warning) 
+		could not be saved to EEPROM, but the update of the RAM infor-
+		mation on the board and the DACSTORE information on the disk
+		were successful.  The new configuration information will be used
+		until a board power-up/reset.  At that time, a diagnostic fail-
+		ure will be detected that prevents the board from being used.
+print_FRU
+
+3F  F1   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		EEPROM HARD CHECKSUM ERROR
+		The configuration change (drive being marked failed/warning) 
+		could not be saved to EEPROM, but the update of the RAM info-
+		mation on the board and the DACSTORE information on the disk
+		were successful.  The new configuration information will be used
+		until a board power-up/reset.  At that time, a diagnostic fail-
+		ure will be detected that prevents the board from being used.
+print_FRU
+
+3F  F2   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		MAXIMUM EEPROM WRITE COUNT EXCEEDED
+		The configuration change (drive being marked failed/warning) 
+		could not be saved to EEPROM, but the update of the RAM info-
+		mation on the board and the DACSTORE information on the disk
+		were successful.  The new configuration information will be used
+		until a board power-up/reset.  At that time, a diagnostic fail-
+		ure will be detected that prevents the board from being used.
+print_FRU
+
+3F  F8   6	***  WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ***
+		APPLICATION SOFTWARE COPY TO GREATER THAN ONE DRIVE FAILED
+		ANOTHER DOWNLOAD IS REQUIRED IF THE DRIVE WITH THE CURRENT
+		APPLICATION CODE IS FAILED
+print_FRU
+
+40  00   4	RAM FAILURE
+print_FRU
+
+40  80   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  81   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  82   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  83   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  84   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  85   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  86   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  87   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  88   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  89   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  8A   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  8B   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  8C   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  8D   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  8E   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  8F   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  90   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  91   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  92   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  93   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  94   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  95   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  96   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  97   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  98   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  99   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  9A   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  9B   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  9C   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  9D   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  9E   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  9F   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A0   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A1   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A2   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A3   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A4   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A5   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A6   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A7   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A8   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  A9   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  AA   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  AB   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  AC   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  AD   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  AE   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  AF   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B0   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B1   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B2   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B3   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B4   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B5   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B6   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B7   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B8   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  B9   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  BA   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  BB   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  BC   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  BD   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  BE   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  BF   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C0   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C1   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C2   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C3   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C4   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C5   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C6   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C7   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C8   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  C9   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  CA   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  CB   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  CC   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  CD   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  CE   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  CF   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D0   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D1   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D2   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D3   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D4   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D5   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D6   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D7   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D8   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  D9   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  DA   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  DB   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  DC   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  DD   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  DE   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  DF   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E0   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E1   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E2   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E3   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E4   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E5   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E6   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E7   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E8   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  E9   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  EA   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  EB   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  EC   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  ED   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  EE   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  EF   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F0   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F1   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F2   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F3   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F4   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F5   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F6   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F7   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F8   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  F9   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  FA   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  FB   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  FC   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  FD   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  FE   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+40  FF   4	DIAGNOSTIC FAILURE ON COMPONENT
+print_FRU
+
+41  00   1,4	DATA PATH FAILURE
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+42  00   4	POWER-ON OR SELF-TEST FAILURE
+print_FRU
+
+43  00   1,4	MESSAGE ERROR
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+44  00   1,4	INTERNAL TARGET FAILURE
+print_FRU
+
+45  00   1,4	SELECT/RESELECT FAILURE
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+46  00   4	UNSUCCESSFUL SOFT RESET
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+47  00   1,B	SCSI PARITY ERROR
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+48  00   1,4	INITIATOR DETECTED ERROR MESSAGE RECEIVED
+print_FRU
+
+49  00   1,4	INVALID MESSAGE ERROR
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+4A  00   1,4	COMMAND PHASE ERROR
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+4B  00   4	DATA PHASE ERROR
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+4B  80   4	DATA OVERRUN/UNDERRUN
+print_FRU
+
+4C  00   1,4	LOGICAL UNIT FAILED SELF-CONFIGURATION
+print_FRU
+
+4E  00   1,B	OVERLAPPED COMMANDS ATTEMPTED
+print_FRU
+
+5A  00   6	OPERATOR REQUEST OR STATE CHANGE INPUT
+print_FRU
+
+5A  02   1,7	OPERATOR SELECTED WRITE PROTECT
+print_FRU
+
+5A  03   6	OPERATOR SELECTED WRITE PERMIT
+print_FRU
+
+5B  00   1,6	LOG EXCEPTION
+print_FRU
+
+5B  01   1,6	THRESHOLD CONDITION MET
+print_FRU
+
+5B  02   1,6	LOG COUNTER AT MAXIMUM
+print_FRU
+
+5B  03   1,6	LOG LIST CODES EXHAUSTED
+print_FRU
+
+5C  00   1,6	RPL STATUS CHANGE
+print_FRU
+
+5C  01   1,6	SPINDLES SYNCHRONIZED
+print_FRU
+
+5C  02   1,6	SPINDLES NOT SYNCHRONIZED
+print_FRU
+
+80  00   4	ERROR MANAGER DETECTED ERROR
+print_FRU
+
+80  01   4	THE ERROR MANAGER WAS INVOKED WITHOUT ANY EM_CODE(S) LOADED
+print_FRU
+
+80  02   4	THE ERROR MANAGER WAS PASSED AN OUT OF RANGE CODE
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+80  03   4	THE ERROR MANAGER WAS PASSED A CODE BY THE SCSI DRIVER,
+		BUT NO ERROR HANDLER EXISTED
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+print_FRU
+
+80  04   4	FATAL NULL POINTER
+print_FRU
+
+80  05   6	*** WARNING *** WARNING *** WARNING *** WARNING ****
+		NO AEN CODE (OR INVALID AEN CODE) WAS LOADED BY ARRAY S/W
+		This error is detected when the AEN condition is requested
+		by the command handler (either when the next command for
+		this host/lun is received or when a polled Request Sense
+		is received), not when the AEN condition was detected.  The
+		illegal AEN code is loaded into the error specific infor-
+		mation field in the sense data.
+		**********************************************************
+print_FRU
+
+80  06   4	MAXIMUM NUMBER OF ERRORS FOR THIS I/O EXCEEDED
+print_FRU
+
+80  07   4	DRIVE REPORTED RECOVERED ERROR WITHOUT TRANSFERRING ALL OF DATA
+print_FRU
+
+81  00   4	RECONSTRUCTION SETUP FAILED
+print_FRU
+
+82  00   B	OUT OF HEAP
+print_FRU
+
+82  01   B	NO COMMAND CONTROL STRUCTURES AVAILABLE
+print_FRU
+
+82  02   B	NO DAC APPLICATION CONTROL BLOCKS AVAILABLE
+print_FRU
+
+83  00   B	RESERVATION CONFLICT
+print_FRU
+
+84  00   4	COMMAND CANNOT EXECUTE BECAUSE THE LUN HAS BEEN DOWNED
+print_FRU
+
+84  01   4	MULTIPLE DRIVES HAVE BEEN DOWNED
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+		This error will be returned on every media access command to
+		the downed Lun until the error is corrected.
+print_FRU
+
+84  02   4	MODE PARAMETERS FOR DRIVES IN THE LUN DO NOT MATCH
+		The FRU code in byte 14 of the sense data indicates where
+		the error was detected.
+		This error will be returned on every media access command to
+		the downed Lun until the error is corrected.
+print_FRU
+
+84  03   4	DRIVE CHANNEL VERIFICATION FAILED
+		This error will be returned on every media access command to
+		the downed Lun until the error is corrected.
+		The expected and observed values will be returned on every
+		media access command to the downed Lun until the error is
+		corrected.
+print_FRU
+
+84  04   4	SCSI ID VERIFICATION FAILED
+		This error will be returned on every media access command to
+		the downed Lun until the error is corrected.
+		The expected and observed values will be returned on every
+		media access command to the downed Lun until the error is
+		corrected.
+print_FRU
+
+84  05   4	FORMAT IN PROGRESS
+		This error will be returned on every media access command to
+		the downed Lun until the error is corrected.
+print_FRU
+
+84  06   4	AWAITING FORMAT
+		This error will be returned on every media access command to
+		the downed Lun until the error is corrected.
+print_FRU
+
+84  08   4	WRONG DRIVE WAS REPLACED
+		This error will be returned on every media access command to
+		the downed Lun until the error is corrected.
+print_FRU
+
+84  09   4	COMPONENT FAILURE AFFECTING MULTIPLE CHANNELS
+		This error will be returned on every media access command to
+		the downed Lun until the error is corrected.
+print_FRU
+
+85  00   4	GENERAL APPLICATION CODE COMMAND HANDLER ERROR
+print_FRU
+
+85  01   4	DRIVE ERROR
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  02   4	HOST ERROR
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  03   4	DRIVE TYPE MISMATCH WITHIN LUN
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  04   4	OPERATION NOT ALLOWED DURING RECONSTRUCTION
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  05   4	DATA RETURNED BY DRIVE IS INVALID
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  06   4	NON-FAILED DRIVE UNAVAILABLE FOR OPERATIONS
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  07   4	INSUFFICIENT RANK STRUCTURES AVAILABLE
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  08   4	FULL FORMAT REQUIRED, BUT NOT ALLOWED (SUBLUNS)
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  09   4	DRIVE CANNOT BE MODE SELECTED TO MEET LUN PARAMETERS
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  0A   4	DATA RECOVERY AFTER RE-ASSIGN BLOCK COMMAND FAILED
+		The original CDB field in the array sense data will show the
+		failing command.  Debug information will be shown in the Error
+		Detection Point sense field.
+print_FRU
+
+85  0B   4	DRIVE NOT RETURNING REQUIRED MODE SENSE PAGE(s).
+		DRIVE MUST SUPPORT MODE SENSE PAGES 3 AND 4.
+print_FRU
+
+86  00   4	COMMAND CANNOT EXECUTE BECAUSE THE LUN IS IN A DEGRADED MODE
+print_FRU
+
+87  00   4	CODE DOWNLOAD/UPLOAD ERROR
+print_FRU
+
+87  01   4	PARTIAL DOWNLOAD (MISSING APPLICATION CODE SEGMENT)
+print_FRU
+
+87  02   6	**** WARNING  ***  WARNING  ***  WARNING  ***  WARNING ****
+		DOWNLOADED CODE CANNOT BE SAVED TO THE DISK
+		The previous version of the code will be uploaded on the next
+		power-up/reset.  Be aware that after reset, the code that was
+		downloaded, will be overwritten.
+		*************************************************************
+print_FRU
+
+87  03   4	APPLICATION CODE CRC FAILURE
+		Check is performed on the disk read after the new code is 
+		saved to disk.
+print_FRU
+
+87  04   6	**** WARNING  ***  WARNING  ***  WARNING  ***  WARNING  ****
+		UPLOAD OF LATEST VERSION OF CODE FAILED
+		The latest version of controller code could not be uploaded
+		from a drive.  An older version of controller code has been
+		uploaded.  It is advisable to repeat the download of the new
+		version of array application code.
+print_FRU
+
+87  05   4	NO PACKAGE VERIFICATION PARTITION WAS DOWNLOADED
+print_FRU
+
+87  06   4	ROM PARTITIONS REQUIRED FOR DOWNLOAD OF CODE ARE MISSING
+print_FRU
+
+87  07   4	INCOMPLETE RAM PARTITIONS
+print_FRU
+
+87  08   4	INCOMPATIBLE BOARD TYPE FOR THE CODE DOWNLOADED
+print_FRU
+
+87  09   4	INCOMPATIBLE ROM VERSION FOR SUPPORT OF THE DOWNLOADED CODE
+print_FRU
+
+87  0A   4	DOWNLOAD OF MICROCODE TO A FAILED DISK COMPLETED SUCCESSFULLY
+		The drive will still be unusable until the drive is marked
+		as replaced and has been reconstructed.
+print_FRU
+
+88  00   4	EEPROM COMMAND ERROR
+print_FRU
+
+88  02   4	EEPROM NOT RESPONDING (THERE IS EEPROM ON BOARD)
+print_FRU
+
+88  03   4	EEPROM IS NOT FORMATTED (KEY FIELDS HAVE NOT BEEN SET)
+print_FRU
+
+88  04   4	INVALID EEPROM OFFSET (ATTEMPT TO WRITE TO PROTECTED AREA)
+print_FRU
+
+88  05   4	EEPROM SOFT CHECKSUM ERROR (UPDATE WAS INTERRUPTED)
+print_FRU
+
+88  06   4	EEPROM HARD CHECKSUM ERROR (PART MAY BE GOING BAD)
+print_FRU
+
+88  07   4	MAXIMUM WRITE COUNT WAS EXCEEDED
+print_FRU
+
+88  09   4	EEPROM NOT INITIALIZED
+print_FRU
+
+89  00   4	ERROR ON REQUEST SENSE COMMAND TO A DRIVE
+print_FRU
+
+8A  00   5	ILLEGAL COMMAND FOR PASS-THRU MODE
+		The original CDB field in the array sense data will show
+		the failing command.
+print_FRU
+
+8B  00   B	WRITE BUFFER COMMAND (FOR CODE DOWNLOAD) WAS ATTEMPTED WHILE
+		ANOTHER COMMAND WAS ACTIVE, OR ANOTHER COMMAND WAS RECEIVED
+		WHILE THE DOWNLOAD COMMAND WAS EXECUTING
+print_FRU
+
+8B  01   B	WRITE BUFFER COMMAND (FOR DRIVE MICROCODE DOWNLOAD) ATTEMPTED
+		BUT ANOTHER COMMAND WAS ACTIVE
+print_FRU
+
+8C  00   4	DESTINATION TRANSFER STATE MACHINE ERROR
+print_FRU
+
+8C  01   4	INVALID TRANSFER RELEASE REQUESTOR
+print_FRU
+
+8C  02   4	INVALID TRANSFER REQUESTOR
+print_FRU
+
+8C  03   4	SDP CHIP CONFIGURATION ERROR
+print_FRU
+
+8C  04   4	DATA TRANSFER REQUEST ERROR
+print_FRU
+
+8C  05   4	INVALID TRANSFER PAD REQUESTOR
+print_FRU
+
+8D  00   B,4	DESTINATION DRIVER DATA TRANSFER DID NOT COMPLETE
+print_FRU
+
+8E  00   B	PARITY STRIPE/PARITY GENERATION ASIC ERROR
+print_FRU
+
+8E  01   E	PARITY/DATA MISMATCH
+print_FRU
+
+8E  02   B	DATA UNDERRUN
+print_FRU
+
+8F  00   B	PREMATURE COMPLETION OF A DRIVE COMMAND (EXPECTED DATA
+		TRANSFER AND GOT GOOD STATUS INSTEAD)
+print_FRU
+
+90  00   4	DACSTORE ERROR
+		  DACSTORE Identifier - DACSTORE directory
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  01   4	DACSTORE ERROR
+		  DACSTORE Identifier - Disk Store
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  02   4	DACSTORE ERROR
+		  DACSTORE Identifier - LUN Store
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  03   4	DACSTORE ERROR
+		  DACSTORE Identifier - Controller Store
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  04   4	DACSTORE ERROR
+		  DACSTORE Identifier - Log Store
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  05   4	DACSTORE ERROR
+		  DACSTORE Identifier - High controller serial number store
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  06   4	DACSTORE ERROR
+		  DACSTORE Identifier - Low controller serial number store
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  07   4	DACSTORE ERROR
+		  DACSTORE Identifier - RDAC Common store
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  08   4	DACSTORE ERROR
+		  DACSTORE Identifier - Boot Block Eeprom store
+		  Error Type - Setup Error
+		  Operation Type - Read
+print_FRU
+
+90  10   4	DACSTORE ERROR
+		  DACSTORE Identifier - DACSTORE directory
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  11   4	DACSTORE ERROR
+		  DACSTORE Identifier - Disk Store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  12   4	DACSTORE ERROR
+		  DACSTORE Identifier - LUN Store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  13   4	DACSTORE ERROR
+		  DACSTORE Identifier - Controller Store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  14   4	DACSTORE ERROR
+		  DACSTORE Identifier - Log Store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  15   4	DACSTORE ERROR
+		  DACSTORE Identifier - High controller serial number store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  16   4	DACSTORE ERROR
+		  DACSTORE Identifier - Low controller serial number store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  17   4	DACSTORE ERROR
+		  DACSTORE Identifier - RDAC Common store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  18   4	DACSTORE ERROR
+		  DACSTORE Identifier - Boot Block Eeprom store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Read
+print_FRU
+
+90  20   4	DACSTORE ERROR
+		  DACSTORE Identifier - DACSTORE directory
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  21   4	DACSTORE ERROR
+		  DACSTORE Identifier - Disk Store
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  22   4	DACSTORE ERROR
+		  DACSTORE Identifier - LUN Store
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  23   4	DACSTORE ERROR
+		  DACSTORE Identifier - Controller Store
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  24   4	DACSTORE ERROR
+		  DACSTORE Identifier - Log Store
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  25   4	DACSTORE ERROR
+		  DACSTORE Identifier - High controller serial number store
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  26   4	DACSTORE ERROR
+		  DACSTORE Identifier - Low controller serial number store
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  27   4	DACSTORE ERROR
+		  DACSTORE Identifier - RDAC Common store
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  28   4	DACSTORE ERROR
+		  DACSTORE Identifier - Boot Block Eeprom store
+		  Error Type - Drive Error
+		  Operation Type - Read
+print_FRU
+
+90  30   4	DACSTORE ERROR
+		  DACSTORE Identifier - DACSTORE directory
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  31   4	DACSTORE ERROR
+		  DACSTORE Identifier - Disk Store
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  32   4	DACSTORE ERROR
+		  DACSTORE Identifier - LUN Store
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  33   4	DACSTORE ERROR
+		  DACSTORE Identifier - Controller Store
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  34   4	DACSTORE ERROR
+		  DACSTORE Identifier - Log Store
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  35   4	DACSTORE ERROR
+		  DACSTORE Identifier - High controller serial number store
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  36   4	DACSTORE ERROR
+		  DACSTORE Identifier - Low controller serial number store
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  37   4	DACSTORE ERROR
+		  DACSTORE Identifier - RDAC Common store
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  38   4	DACSTORE ERROR
+		  DACSTORE Identifier - Boot Block Eeprom store
+		  Error Type - Invalid Store Data
+		  Operation Type - Read
+print_FRU
+
+90  80   4	DACSTORE ERROR
+		  DACSTORE Identifier - DACSTORE directory
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  81   4	DACSTORE ERROR
+		  DACSTORE Identifier - Disk Store
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  82   4	DACSTORE ERROR
+		  DACSTORE Identifier - LUN Store
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  83   4	DACSTORE ERROR
+		  DACSTORE Identifier - Controller Store
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  84   4	DACSTORE ERROR
+		  DACSTORE Identifier - Log Store
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  85   4	DACSTORE ERROR
+		  DACSTORE Identifier - High controller serial number store
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  86   4	DACSTORE ERROR
+		  DACSTORE Identifier - Low controller serial number store
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  87   4	DACSTORE ERROR
+		  DACSTORE Identifier - RDAC Common store
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  88   4	DACSTORE ERROR
+		  DACSTORE Identifier - Boot Block Eeprom store
+		  Error Type - Setup Error
+		  Operation Type - Write
+print_FRU
+
+90  90   4	DACSTORE ERROR
+		  DACSTORE Identifier - DACSTORE directory
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  91   4	DACSTORE ERROR
+		  DACSTORE Identifier - Disk Store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  92   4	DACSTORE ERROR
+		  DACSTORE Identifier - LUN Store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  93   4	DACSTORE ERROR
+		  DACSTORE Identifier - Controller Store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  94   4	DACSTORE ERROR
+		  DACSTORE Identifier - Log Store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  95   4	DACSTORE ERROR
+		  DACSTORE Identifier - High controller serial number store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  96   4	DACSTORE ERROR
+		  DACSTORE Identifier - Low controller serial number store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  97   4	DACSTORE ERROR
+		  DACSTORE Identifier - RDAC Common store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  98   4	DACSTORE ERROR
+		  DACSTORE Identifier - Boot Block Eeprom store
+		  Error Type - Invalid Directory Data
+		  Operation Type - Write
+print_FRU
+
+90  A0   4	DACSTORE ERROR
+		  DACSTORE Identifier - DACSTORE directory
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  A1   4	DACSTORE ERROR
+		  DACSTORE Identifier - Disk Store
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  A2   4	DACSTORE ERROR
+		  DACSTORE Identifier - LUN Store
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  A3   4	DACSTORE ERROR
+		  DACSTORE Identifier - Controller Store
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  A4   4	DACSTORE ERROR
+		  DACSTORE Identifier - Log Store
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  A5   4	DACSTORE ERROR
+		  DACSTORE Identifier - High controller serial number store
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  A6   4	DACSTORE ERROR
+		  DACSTORE Identifier - Low controller serial number store
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  A7   4	DACSTORE ERROR
+		  DACSTORE Identifier - RDAC Common store
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  A8   4	DACSTORE ERROR
+		  DACSTORE Identifier - Boot Block Eeprom store
+		  Error Type - Drive Error
+		  Operation Type - Write
+print_FRU
+
+90  B0   4	DACSTORE ERROR
+		  DACSTORE Identifier - DACSTORE directory
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+90  B1   4	DACSTORE ERROR
+		  DACSTORE Identifier - Disk Store
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+90  B2   4	DACSTORE ERROR
+		  DACSTORE Identifier - LUN Store
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+90  B3   4	DACSTORE ERROR
+		  DACSTORE Identifier - Controller Store
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+90  B4   4	DACSTORE ERROR
+		  DACSTORE Identifier - Log Store
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+90  B5   4	DACSTORE ERROR
+		  DACSTORE Identifier - High controller serial number store
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+90  B6   4	DACSTORE ERROR
+		  DACSTORE Identifier - Low controller serial number store
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+90  B7   4	DACSTORE ERROR
+		  DACSTORE Identifier - RDAC Common store
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+90  B8   4	DACSTORE ERROR
+		  DACSTORE Identifier - Boot Block Eeprom store
+		  Error Type - Invalid Store Data
+		  Operation Type - Write
+print_FRU
+
+91  00   5	MODE SELECT ERRORS
+print_FRU
+
+91  01   5	LUN ALREADY EXISTS; CANNOT DO ADD LUN FUNCTION 80
+print_FRU
+
+91  02   5	LUN DOES NOT EXIST; CANNOT DO REPLACE LUN FUNCTION 83
+		OR ANY LOGICAL FUNCTION
+print_FRU
+
+91  03   5	DRIVE ALREADY EXISTS; CANNOT DO ADD DRIVE FUNCTION 80
+print_FRU
+
+91  04   5	DRIVE DOES NOT EXIST; CANNOT DO REQUESTED ACTION FOR IT
+print_FRU
+
+91  05   5	DRIVE CANNOT BE DELETED; IT IS PART OF A LUN
+print_FRU
+
+91  06   5	DRIVE CANNOT BE FAILED; IT IS FORMATTING
+print_FRU
+
+91  07   5	DRIVE CANNOT BE REPLACED; IT IS NOT MARKED AS FAILED OR
+		REPLACED
+print_FRU
+
+91  08   5	INVALID ACTION TO TAKE
+print_FRU
+
+91  09   5	INVALID ACTION WITH MULTIPLE SUB LUNS DEFINED (PROBABLY
+		AN ATTEMPT TO CHANGE PAGE 3 - FORMAT DEVICE PAGE)
+print_FRU
+
+91  0A   5	INVALID RECONSTRUCTION AMOUNT
+print_FRU
+
+91  0B   5	INVALID RECONSTRUCTION FREQUENCY
+print_FRU
+
+91  0C   5	INVALID LUN BLOCK SIZE
+print_FRU
+
+91  0D   5	INVALID LUN TYPE
+print_FRU
+
+91  0E   5	INVALID SEGMENT SIZE
+print_FRU
+
+91  0F   5	INVALID SEGMENT 0 SIZE
+print_FRU
+
+91  10   5	INVALID NUMBER OF DRIVES IN LUN
+print_FRU
+
+91  11   5	INVALID NUMBER OF LUN BLOCKS
+print_FRU
+
+91  12   5	INVALID RAID LEVEL
+print_FRU
+
+91  13   5	INVALID DRIVE SECTOR SIZE
+print_FRU
+
+91  14   5	INVALID LUN BLOCK SIZE/DRIVE SECTOR SIZE MODULO
+print_FRU
+
+91  15   5	NO DISKS DEFINED FOR LUN
+print_FRU
+
+91  16   5	INSUFFICIENT RANK STRUCTURES AVAILABLE TO DEFINE LUN
+print_FRU
+
+91  17   5	DISK DEFINED MULTIPLE TIMES FOR LUN
+print_FRU
+
+91  18   5	SUB LUN DRIVES NOT THE SAME AS THOSE USED BY OTHER SUB
+		LUNS ON THESE DRIVES
+print_FRU
+
+91  19   5	SUB LUN RAID LEVEL MISMATCH
+print_FRU
+
+91  1A   5	FIRST SUB LUN DEFINED FOR THESE DRIVES HAS NOT YET BEEN
+		FORMATTED;  SECOND SUB LUN IS ILLEGAL
+print_FRU
+
+91  1B   5	NON-SUB LUN DRIVE ALREADY OWNED BY ANOTHER LUN
+print_FRU
+
+91  1C   5	SUB LUN DRIVE ALREADY OWNED BY A NON-SUB LUN
+print_FRU
+
+91  1D   5	DRIVE TYPE DOES NOT MATCH THE DRIVE TYPE OF THE OTHER
+		DRIVES IN THE LUN
+print_FRU
+
+91  1E   5	DRIVE CANNOT BE INCLUDED IN RANK BECAUSE RANK IS FULL
+print_FRU
+
+91  1F   5	RANKS HAVE DIFFERENT NUMBER OF DISKS DEFINED
+print_FRU
+
+91  20   5	MULTIPLE DISKS ON SAME CHANNEL WITHIN SAME RANK
+print_FRU
+
+91  21   5	MIRRORED DISKS ON THE SAME CHANNEL
+print_FRU
+
+91  22   5	NO PARITY DISK DEFINED
+print_FRU
+
+91  23   5	NO DATA DISKS DEFINED
+print_FRU
+
+91  24   5	TOO MANY DISKS DEFINED
+print_FRU
+
+91  25   5	NO SPACE AVAILABLE FOR LUN
+		- SUBLUN CANNOT BE DEFINED
+print_FRU
+
+91  26   5	DRIVE STATUS CANNOT BE CHANGED TO GOOD (DRIVE CANNOT BE REVIVED
+		THROUGH MODE SELECT)
+print_FRU
+
+91  27   5	ERROR IN PROCESSING A SUBSYSTEM MODE PAGE
+print_FRU
+
+91  28   5	DRIVE INQUIRY DATA MISMATCH BETWEEN DRIVES IN THE LUN
+print_FRU
+
+91  29   5	DRIVE CAPACITY MISMATCH BETWEEN DRIVES IN THE LUN
+print_FRU
+
+91  2A   5	DRIVE BLOCK SIZE MISMATCH BETWEEN DRIVES IN THE LUN
+print_FRU
+
+91  2B   5	SUPPORT OF TTD/CIOP MESSAGES IS NOT THE SAME FOR ALL DRIVES 
+		IN THE LUN
+print_FRU
+
+91  2C   5	FIRMWARE DOES NOT SUPPORT REDUNDANT CONTROLLER OPTIONS SELECTED
+print_FRU
+
+92  00 	 B	BUSY STATUS FROM DRIVES COULD NOT BE CLEARED BY ARRAY
+		CONTROLLER
+print_FRU
+
+93  00 	 4	DRIVE VENDOR UNIQUE SENSE DATA RETURNED.
+		REFER TO DRIVE SENSE AREA OF ARRAY SENSE FOR THE DRIVE
+		ASC/ASCQ AND SENSE KEY.  REFER TO DRIVE DOCUMENTATION FOR
+		FURTHER DESCRIPTION.	
+print_FRU
+
+94  00 	 5	INVALID REQUEST OF A CONTROLLER IN REDUNDANT CONTROLLER
+		MODE.
+print_FRU
+
+95  00 	 4	A DRIVE CHANNEL WAS RESET (LIKELY CAUSE: REMOVAL/REPLACEMENT
+		OF A DRIVE DURING A HOT SWAP OPERATION).
+print_FRU
+
+95  01	 4	AN EXTENDED DRIVE CHANNEL RESET HAS BEEN DETECTED (LIKELY
+		CAUSE: DRIVE LEFT PARTIALLY EXTRACTED/INSERTED).
+print_FRU
+
+96  00 	 6	REDUNDANT CONTROLLER NOT SUPPORTED BY CURRENT FIRMWARE
+print_FRU
+
+96  01 	 6	ALTERNATE REDUNDANT CONTROLLER NOT SUPPORTED BY CURRENT
+		FIRMWARE, ALTERNATE HAS BEEN DETECTED HOWEVER.
+print_FRU
+
+B0  00   B	COMMAND TIMEOUT
+print_FRU
+
+B0  01   B	WATCHDOG TIMER TIMEOUT
+print_FRU
+
+B0  02   B	SOFTWARE LOOP TIMEOUT
+print_FRU
+
+D0  00   4	SCSI DRIVER TIMEOUT
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D0  01   4	DISCONNECT TIMEOUT
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D0  02   4	CHIP COMMAND TIMEOUT
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D0  03   4	BYTE TRANSFER TIMEOUT
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  00   4	BUS ERRORS
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  01   4	CDB TRANSFER INCOMPLETE
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  02   4	UNEXPECTED BUS PHASE
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  03   4	DISCONNECT EXPECTED
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  04   4	ID MESSAGE NOT SENT
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  05   4	SYNCHRONOUS NEGOTIATION ERROR
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  06   4	TARGET TRANSFER DISABLE (TTD) NEGOTIATION CONFLICT
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  07   4	UNEXPECTED DISCONNECTION
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  08   4	UNEXPECTED MESSAGE
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  09   4	UNEXPECTED TAG MESSAGE
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D1  0A   4	CHANNEL BUSY
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D2  00   4	MISCELLANEOUS SCSI DRIVER ERROR
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D2  01   4	ILLEGAL C96 CHIP COMMAND RECEIVED
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D2  02   4	UNCODED EXECUTION PATH
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D3  00   4	DRIVE SCSI CHIP REPORTED GROSS ERROR
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D4  00   4	NON-SCSI BUS PARITY ERROR
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D5  00   4	MISCELLANEOUS HOST RELATED ERRORS
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D5  01   4	MAXIMUM MESSAGES RECEIVED
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D5  02   4	MESSAGE REJECT RECEIVED ON A VALID MESSAGE
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D6  00   4	SOURCE DRIVER (HOST SIDE) CHIP RELATED ERROR
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D7  00   4	SOURCE DRIVER PROGRAMMING ERROR
+		Byte 14 in the sense data will indicate which SCSI channel the
+		error was detected on.
+print_FRU
+
+D8  00   4	AN ERROR WAS ENCOUNTERED THAT REQUIRED THE DATA POINTERS TO BE
+		RESTORED BUT THE HOST IS NON-DISCONNECTING AND DOES NOT
+		SUPPORT THE RESTORE POINTERS MESSAGE (INDICATED BY AN EEPROM
+		OPTION CONTROL BIT OR BY HOST SELECTION WITHOUT SENDING THE
+		IDENTIFY MESSAGE)
+print_FRU

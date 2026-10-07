@@ -1,0 +1,562 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * Copyright (c) 1991-1995, Locus Computing Corporation
+ * All rights reserved
+ */
+/*
+ * HISTORY
+ * $Log: vs.defs,v $
+ * Revision 1.20  1995/02/01  23:20:18  bolsen
+ *  Reviewer(s): Jerry Toman
+ *  Risk: Medium (lots of files)
+ *  Module(s): Too many to list
+ *  Configurations built: STD, LITE, & RAMDISK
+ *
+ *  Added or Updated the Locus Copyright message.
+ *
+ * Revision 1.19  1994/12/22  02:15:17  nina
+ *  Reviewer:hobbes
+ *  Risk:Medium
+ *  Benefit or PTS #:10356
+ *  Testing:Test case and TCP/IP EATS in various network configs
+ *  Module(s):
+ *
+ * 	net/rtsock.c
+ * 	netinet/in_proto.c
+ * 	vsocket/vs_chouse.h
+ * 	vsocket/vs_chouse.c
+ * 	vsocket/vs.defs
+ * 	vsocket/vs_ipc.c
+ * 	vsocket/vs_subr.c
+ * 	vsocket/vs_netops.c
+ *
+ *   The was only seen in systems with multiple network configurations
+ *   when a user attempted to bind to INADDR_ANY/port 0. In this
+ *   situation, the system is supposed to pick the port number for
+ *   the caller. The problem occurred because the VSOCKET code
+ *   didn't ensure that the primary socket and each secondary socket used
+ *   the same port number.
+ *
+ *   Now, a bind to port 0 results in an RPC to the clearinghouse to
+ *   pick a port number, based on the domain and protocol of the socket.
+ *
+ * Revision 1.18  1994/11/18  20:52:00  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.17  1994/07/28  22:16:53  yazz
+ *  Reviewer: Mike Leibensperger
+ *  Risk: Lo
+ *  Benefit or PTS #: 10421
+ *  Testing: EATs tcp-ip
+ *  Module(s): server/vsocket/vs.defs, .../vs_subr.c, .../vs_ipc.c,
+ *             .../vsocket.h
+ * Unused simpleroutine r_vs_fp_unref_svr() removed.
+ *
+ * Revision 1.16  1994/05/04  22:13:52  mjl
+ * Merge revision 1.15.2.1 from R1_2 branch into main trunk.
+ *
+ *  Reviewer:
+ *  Risk:
+ *  Benefit or PTS #:
+ *  Testing:
+ *  Module(s):
+ *
+ * Revision 1.15.2.1  1994/04/27  23:03:22  yazz
+ *  Reviewer: Charlie Johnson, Bob Yasi
+ *  Risk: Medium
+ *  Benefit or PTS #: #7537 + select rewrite
+ *  Testing: VSX, EATS, bobtest, Eval
+ *  Module(s):
+ * 	server/bsd/subr_select.c
+ * 	server/sys/select.h
+ * 	server/sys/socketvar.h
+ * 	server/sys/user.h
+ * 	server/tnc/un_debug.c
+ * 	server/tnc/un_debug.h
+ * 	server/uxkern/bsd_2.defs
+ * 	server/uxkern/bsd_server_side.c
+ * 	server/uxkern/fsvr.defs
+ * 	server/uxkern/fsvr2_server_side.c
+ * 	server/uxkern/fsvr_port.c
+ * 	server/uxkern/fsvr_subr.c
+ * 	server/uxkern/port_hash.c
+ * 	server/uxkern/port_hash.h
+ * 	server/vsocket/mi_config.c
+ * 	server/vsocket/sys_vsocket.c
+ * 	server/vsocket/two_way_hash.h
+ * 	server/vsocket/vs.defs
+ * 	server/vsocket/vs_chouse.c
+ * 	server/vsocket/vs_debug.c
+ * 	server/vsocket/vs_init.c
+ * 	server/vsocket/vs_ipc.c
+ * 	server/vsocket/vs_netops.c
+ * 	server/vsocket/vs_subr.c
+ * 	server/vsocket/vs_subr.h
+ * 	server/vsocket/vs_types.h
+ * 	server/vsocket/vsocket.h
+ * TNC select rewrite.
+ *  - For r_vs_socreate(): all networking vsockets get S+R rights, so OUT
+ *     socket_port arg in r_vs_socreate() can use default COPY_SEND semantics.
+ *     Also add socket_addr OUT arg, stored in rvs to ease debugging.
+ *  - For r_vs_sodequeue(): use COPY_SEND for OUT sock_port.
+ *  - Combine r_vs_getstate_immed() and r_vs_select_dequeue() since they
+ *     were always called one after the other.
+ *  - For rvs_select_enqueue() and r_vs_select_dequeue: use integer select id
+ *     to identify the select call when enqueueing/dequeueing remotely.
+ *     Use MOVE_SEND so that remote queue entry really holds the file
+ *     svrref send right, and on error return the right as an OUT arg.
+ *  - Add r_vs_scrub_remote_selects() -- when select_wakeup() discovers a
+ *     dead drp, this ensures that a cleanup FOP_SELECT is done in all cases.
+ *  - The r_vs_fp_unref_svr() RPC is never used and is checked in "just in case".
+ *
+ * Revision 1.15  1993/09/20  23:58:31  cfj
+ * Merge R1.1 bug fixes into main stem.
+ *
+ * Revision 1.14.2.1  1993/09/20  23:49:32  cfj
+ * Bug fix for PTS #6663.  The correct netserver is now chosen.
+ *
+ * Revision 1.14  1993/09/01  01:40:30  bolsen
+ * 08-31-93 Locus code drop for multiple netservers.
+ *
+ * Revision 1.13  1993/07/29  21:55:17  cfj
+ * 07-29-93 Locus code drop to fix select() and multiple network server
+ * slowdown.
+ *
+ * Revision 1.12  1993/07/14  18:48:45  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.6  1993/07/01  21:13:28  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.11  1993/05/20  16:04:28  cfj
+ * Merge of 05-18-93 code drop from Locus.
+ *
+ * Revision 3.27  93/08/26  11:02:18  mjl
+ * [LCCbug #0374; #0376 no longer reproducible; maybe fixes #0372]
+ * Replace r_vs_ioctl() RPC's fixed length INOUT array argument with
+ * two variable length array arguments, one IN and one OUT.  Prevents
+ * server addressing exceptions that occured when all N bytes of fixed
+ * arg weren't allocated in server's address space.
+ * 
+ * Revision 3.26  93/08/17  19:29:14  mjl
+ * Add "out" return value for r_vs_socreate().  Add "in" client_node
+ * argument for if_list().
+ * 
+ * Revision 3.25  93/08/16  18:56:23  bhk
+ * Removed remote sleep routines. [# 346]
+ * split remote getstate into synchronouse and asynchronous calls [#346]
+ * Added creds port to close to avoid crash[ #347]
+ * 
+ * Revision 3.24  93/08/11  09:06:22  bhk
+ * Changed soreadable to be a simpleroutine to avoid banging on the remote
+ * network server for read requests
+ * 
+ * Revision 3.23  93/08/09  18:56:11  bhk
+ * Passed the target port over as a port name in r_m_vs_sosleep to
+ * allow the primary virtual socket to identify the secondary which
+ * woke up.  Removed the parent port from r_m_vs_sosleep and used the
+ * cached callback port.  fixes bug 323
+ * 
+ * Revision 3.22  93/08/09  15:52:45  bhk
+ * added callback port to remote socket creation
+ * 
+ * Revision 3.21  93/08/06  17:56:35  bhk
+ * removed transid from multiple sleeps
+ * added lock to remote soreadable
+ * 
+ * Revision 3.20  93/07/28  15:02:56  bhk
+ * Added ipc to remotely unlock a socket.
+ * 
+ * Revision 3.19  93/05/10  14:42:52  bhk
+ * Syncronized state after connection request
+ * 
+ * Revision 3.18  93/05/07  15:22:07  nina
+ * Extended the interface of if_list to return an array
+ * of mach ports.  Extended the interface of 
+ * if_get_nearest_server() to return the node number
+ * of the selected network server.
+ * 
+ * Revision 3.17  93/05/05  22:34:43  mjl
+ * New clearinghouse check-in RPCs for MIv3.  Name all clearinghouse RPCs
+ * consistently (i.e. "if_*").
+ * 
+ * Revision 3.16  93/04/12  15:52:33  nina
+ * Added two RPCs to support single system semantics for
+ * SIOCGIFCONF, SIOCADDRT and SIOCDELRT
+ * 
+ * Revision 3.15  93/04/03  11:53:07  klh
+ * Split select into three parts (check, enqueue, dequeue). (klh for bhk)
+ * 
+ * Revision 3.14  93/03/19  17:31:13  bhk
+ * added the select dequeue call, removed the scanning parameter from
+ * vs_select and changed the lock parameter in getstate from a boolean to
+ * an int
+ * 
+ * Revision 3.13  93/02/10  21:07:56  klh
+ * Additional checkin to sync up RCS comments
+ * 
+ * Revision 3.12  93/02/09  18:14:41  mjl
+ * Henceforth, thou shalt pass thy address families as integers!
+ * 
+ * Revision 3.12  93/02/08  16:53:37  bhk
+ * fixed definition for r_vs_select no to make a sendright but to copy one
+ * 
+ * Revision 3.11  93/01/11  19:16:45  bhk
+ * passed the socket family separately in if_lookup to allow
+ * passing a NULL address.
+ * 
+ * Revision 3.10  93/01/04  20:41:51  bhk
+ * Added transaction ID to remote vsocket calls to allow signals to
+ * be processed correctly
+ * 
+ * Revision 3.9  92/10/27  17:51:47  bhk
+ * replaced pruaddr (the old usrreq virtual operation) with getaddr
+ * (the new virtual operation)
+ * 
+ * Revision 3.8  92/10/07  16:16:33  bhk
+ * added not parameter to if_lookup to allow the return of
+ * MACH_PORT_NULL as a server port which represents the
+ * local network server.
+ * 
+ * Revision 3.7  92/09/24  17:10:11  bhk
+ * fixed select timeout problem, added not to interface regististation with
+ * the clearinghouse
+ * 
+ * Revision 3.6  92/07/26  17:49:26  bhk
+ * addes support for select and getpeername
+ * 
+ * Revision 3.5  92/06/26  14:05:39  chrisp
+ * Change sockaddr_t to sockarg_t so that MIG understands it's a variable
+ * 	length character array for the 860.
+ * 
+ * Revision 3.4  92/06/16  18:44:58  bhk
+ * added return values remote sleep/wakeup and shutdown routines
+ * 
+ * Revision 3.3  92/05/06  16:11:13  bhk
+ * added VSOP_SLEEP inet ipc calls
+ * fixed send_long to return amount of data written
+ * 
+ * Revision 3.2  92/04/22  17:06:55  bhk
+ * added getsockname mig definition.
+ * 
+ * Revision 3.1  92/04/20  21:52:28  klh
+ * 	Fix RCS comments
+ * 
+ * Revision 3.0  92/04/20  17:21:31  bhk
+ * Genesis  Remote Virtual Socket RPC definitions
+ *
+ * $EndLog$
+ */
+subsystem nsrv 199200;
+
+ServerPrefix nsrv_;
+
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types.defs>
+#include <vsocket/vs_types.defs>
+
+/* skip the first five since they are in mi.defs */
+skip;
+
+skip;
+
+skip;
+
+skip;
+
+skip;
+
+/*
+ *  Clearinghouse RPC definitions
+ */
+
+routine	if_addr_update(
+		server_port		: mach_port_t;
+	in	key			: chouse_key_p_t;
+	in	iface_flags		: int;
+	in	command			: int;
+	in	request			: ifreq_p_t;
+	in	netserv_port		: mach_port_t;
+	out	iface_info		: iface_info_p_t;
+	out	rval			: int);
+
+routine	if_confirm_update(
+		server_port		: mach_port_t;
+	in	key			: chouse_key_p_t;
+	in	command			: int;
+	in	request			: ifreq_p_t;
+	out	rval			: int);
+
+routine	if_addr_reset(
+		server_port		: mach_port_t;
+	in	key			: chouse_key_p_t;
+	in	iface_info		: iface_info_p_t;
+	out	rval			: int);
+
+routine if_lookup(
+		server_port		: mach_port_t;
+	in	node			: node_t;
+	in	family			: int;
+	in	address			: sockarg_t;
+	out	hosts			: server_list_t;
+	out	rval			: int);
+
+routine if_list(
+		server_port		: mach_port_t;
+	in	node			: node_t;
+	in	nel			: int;
+	out	numns			: int;
+	out	rel			: int;
+	out	ret_nodes		: node_list_t;
+	out	ret_ports		: port_list_t;
+	out	rval			: int);
+
+routine if_get_nearest_server(
+		server_port		: mach_port_t;
+	in	family			: int;
+	in	node			: node_t;
+	out	server_node		: node_t;
+	out	nsrv_port		: mach_port_t =
+						MACH_MSG_TYPE_COPY_SEND);
+routine if_get_server_by_route(
+		server_port		: mach_port_t;
+	in	node			: node_t;
+	in	address			: sockarg_t;
+	out	ret_node		: node_t;
+	out	ret_port		: mach_port_t =
+						MACH_MSG_TYPE_COPY_SEND);
+
+routine if_assign_port_number(
+		server_port		: mach_port_t;
+	in	domain			: int;
+	in	protocol		: short;
+	out	port			: short;
+	out	rval			: int);
+
+/*
+ *  Network virtual socket RPC definitions
+ */
+
+routine	r_vs_socreate (
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	callback_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	dom			: int;
+	out	socket_port		: mach_port_t;
+	in	sock_type		: int;
+	in	protocol		: int;
+	out	socket_addr		: int;
+	out	rval			: int);
+
+routine r_vs_soclose (
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	out	rval			: int);
+
+routine r_vs_soconnect(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	address			: sockarg_t;
+	out	state			: int;
+	out	rval			: int);
+
+routine r_vs_sosetopt(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	level			: int;
+	in	name			: int;
+	in	value			: vs_optstring_t;
+	out	rval			: int);
+		
+routine r_vs_sobind(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	address			: sockarg_t;
+	out	rval			: int);
+
+routine r_vs_sosend_short(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	vssend_flag		: int;
+	in	address			: sockarg_t;
+	in	flags			: int;
+	in	data			: small_char_array;
+	out	sent			: int;
+	out	rval			: int);
+
+routine r_vs_sosend_long(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	vssend_flag		: int;
+	in	address			: sockarg_t;
+	in	flags			: int;
+	in	data			: char_array;
+	out	sent			: int;
+	out	rval			: int);
+
+routine r_vs_sogetopt(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	level			: int;
+	in	optname			: int;
+	out	mtype			: int;
+	out	addr			: small_char_array;
+	out	rval			: int );
+
+routine r_vs_sorecv(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	len			: int;
+	out	address			: sockarg_t;
+	inout	flags			: int;
+	out	data			: char_array, dealloc;
+	out	rval			: int);
+
+routine r_vs_solisten(
+		server_piort		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	backlog			: int;
+	out	accpet_ok		: boolean_t;
+	out	rval			: int);
+
+routine r_vs_sodequeue(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	callback_port		: mach_port_t;
+	out	sock_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	out	address			: sockarg_t;
+	in	compat_43		: int;
+	out	rval			: int);
+
+routine r_vs_ioctl(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	cmd			: int;
+	in	in_data			: ioctl_data_t;
+	out	out_data		: ioctl_data_t;
+	out	rval			: int);
+
+routine r_vs_global_ioctl(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	cmd			: int;
+	in	len			: int;
+	out	data			: char_array, dealloc;
+	out	rval			: int);
+
+routine r_vs_sogetaddr(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	which			: int;
+	in	compat_43		: int;
+	out	address			: sockarg_t;
+	out	rval			: int);
+
+simpleroutine r_m_vs_wakeup (
+		server_port		: mach_port_t;
+	in	target_socket		: mach_port_t 
+						= MACH_MSG_TYPE_PORT_NAME;
+	in	index			: int;
+	in	cmd			: int;
+	in	state			: int;
+	in	soerror			: int;
+	in	qlen			: int;
+	in	isreadable		: int);
+
+simpleroutine r_vs_getstate_delay(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	target_port		: mach_port_t 
+						= MACH_MSG_TYPE_PORT_NAME;
+	in	index			: int;
+	in	state			: int;
+	in	soerror			: int;
+	in	qlen			: int);
+
+routine r_vs_soshutdown(
+		server_port		: mach_port_t;
+	in	how			: int );
+
+simpleroutine r_vs_soreadable(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	target_port		: mach_port_t 
+						= MACH_MSG_TYPE_PORT_NAME;
+	in	index			: int);
+	
+routine r_vs_soreserve(
+		server_port		: mach_port_t;
+	in	sendcc			: int;
+	in	recvcc			: int;
+	out	result			: int);
+
+routine r_vs_select_dequeue_getstate(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+
+	/* select dequeue related parameters */
+	in	sel_id			: int;
+	in	sel_flags		: int;
+	in	index			: int;
+
+	/* getstate related parameters */
+	out	state			: int;
+	out	soerror			: int;
+	out	qlen			: int;
+	out	isreadable		: int);
+
+routine r_vs_select_check(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	transid			: transaction_id_t;
+	in	events			: short;
+	inout	revents			: short;
+	out	state			: int;
+	out	soerror			: int;
+	out	qlen			: int;
+	out	isreadable		: int);
+
+routine r_vs_select_enqueue(
+		server_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	file_port		: mach_port_t
+						= MACH_MSG_TYPE_MOVE_SEND;
+	in	sel_id			: int;
+	in	transid			: transaction_id_t;
+	in	index			: int;
+	in	events			: int;
+	in	again			: boolean_t;
+	out	ret_file_port		: mach_port_t
+						= MACH_MSG_TYPE_MOVE_SEND);
+
+simpleroutine r_vs_scrub_remote_selects(
+		socket_port		: mach_port_t;
+	in	cred_port		: mach_port_t;
+	in	dead_delay_port_name	: mach_port_t
+						= MACH_MSG_TYPE_PORT_NAME);

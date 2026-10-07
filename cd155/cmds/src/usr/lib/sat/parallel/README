@@ -1,0 +1,7 @@
+Parallel Benchmarks
+
+This directory contains parallel benchmarks. These programs run on
+multiple nodes in a compute partition. They demonstrate compiler capabilities
+as well as the performance of the actual hardware. Results are compared
+against expected performance levels for this system.
+

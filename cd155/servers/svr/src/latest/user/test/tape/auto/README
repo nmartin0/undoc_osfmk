@@ -1,0 +1,140 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+
+			3480 TEST PROCEDURE
+
+			rev 0, Heung-for Cheng
+				9/23/92
+
+			rev 1, Cheng 3/22/93
+				directory change
+
+     The 3480 tape tests consist of 2 sets of tests.  The first set is to test 
+the library converting data from iPSC format to IBM format or vice versa.  The
+second set is to test the tape's read/write/open/close functionalities.  As a 
+result, the first set does NOT require to have tapes and can be run 
+AUTOMATICALLY under T90 tool.  The second set requires maximum of 31 tapes and 
+needs to be run MANUALLY.  The tape must be 3480 compatible with 1/2 inch tape
+cartridge.
+			
+
+3480 conversion library tests (AUTO):
+=====================================
+
+1. directory: /usr/eval/t90/Auto/libc/cfs/tape/3480conv
+
+	            	testcase
+	           	--------
+	      		charperf, chartest,
+			extpperf, extptest,
+			extzperf, extztest,
+			floatprf, floatest,
+			itoiperf, itoitest,
+				  itointst,
+			packperf, packtest,
+			zoneperf, zonetest
+
+   directory: /usr/eval/t90/Auto/libf/cfs/tape/3480conv
+					
+			testcase
+			--------
+	        	ftn1, ftn2
+
+   Note that "charperf", "extpperf", "extzperf", "floatprf", "itoiperf",
+   "packperf", and "zoneperf" are performance tests only.
+
+2. files needed: COMMENTS, Makefile, *.sh, *.c(for libc subdirectory testcases),
+	      	 *.f (for libf subdirectory testcases)
+ 
+3. To run these testcases under T90 tool, follow the steps below:
+	- make directories for copying all these test cases, for example, 
+		"/usr5/eval/hfcheng/Auto/libc/cfs/tape/3480conv"
+		"/usr5/eval/hfcheng/Auto/libf/cfs/tape/3480conv"
+	- change directories to "/usr/eval/t90/Auto/libc/cfs/tape/3480conv"
+	                        "/usr/eval/t90/Auto/libf/cfs/tape/3480conv"
+	- copy the needed files from "/usr/eval/t90/Auto/libc/cfs/tape/3480conv"
+	  to, say, "/usr5/eval/hfcheng/Auto/libc/cfs/tape/3480conv", for example
+
+	    find . -name 'COMMENTS' -print | cpio -pdmv \
+	     /usr5/eval/hfcheng/Auto/libc/cfs/tape/3480conv
+
+	- change directories to "/usr5/eval/hfcheng/Auto/libc/cfs/tape/3480conv"
+	                        "/usr5/eval/hfcheng/Auto/libf/cfs/tape/3480conv"
+	- run T90 tool, for example,
+	
+	    t91 -m /usr/eval/t90/bin/Makefile.860 -r -c 1
+			
+
+
+3480 tape tests (MANUAL):
+=========================
+
+1. directory: /usr/eval/t90/Manual/cfs/tape/3480tape
+
+	subdirectory			testcase
+					col1	col2
+	------------			-------------
+	     C				        test0,             
+					test1,  test2,       
+					test3,  test4,      
+						test5,  
+					test1,	test6,      
+					test7,  test8,      
+					        test9,             
+					test11, test12,    
+					test13, test14a, 
+					test14b,(test14a)
+						test15
+					test21, test22
+					testvsr,testvsw
+
+	FORTRAN					testftn3
+
+   Under "testcase col2" are tests which can be run in any order and do not
+   depend on any other test.  Most of them are "write" test.  However, 
+   "testcase col1" are tests used the tapes with data written by their 
+    counterpart tests on their right under "col2".  For example, "test1" reads
+    data of tapes written by "test2".  "test3" reads data of tapes written by 
+    "test4".  Most of the tests are "read" tests.  "test1" is duplicated because
+    it can be used to read data written by both "test2" and "test6".  "test14a"
+    is duplicated on "col2" to show that both "test13" and "test14b" 
+    depend on it.
+
+2. files needed: COMMENTS, README, makefile.man, *.sh, 
+		 *.c (for both C and FORTRAN subdirectory testcases),
+	      	 *.f (for FORTRAN subdirectory testcases)
+ 
+3. To run these testcases,  follow the following step:                   
+
+	- make a directory for copying all these test cases, for example, 
+		"/usr5/eval/hfcheng/Manual/cfs/tape/3480tape"
+	- change directory to "/usr/eval/t90/Manual/cfs/tape/3480tape"
+	- copy the needed files from "/usr/eval/t90/Manual/cfs/tape/3480tape"
+	  to, say, "/usr5/eval/hfcheng/Manual/cfs/tape/3480tape", for example,
+
+	    find . -name 'COMMENTS' -print | cpio -pdmv \
+	     /usr5/eval/hfcheng/Manual/cfs/tape/3480tape
+
+	- change directory to "/usr5/eval/hfcheng/Manual/cfs/tape/3480tape"
+	- run each testcase.  Please follow the dependency described on "1"
+	  above.  Also, follow the instruction on COMMENTS file of each testcase
+	  to learn how to run the testcase.
+
+	  NOTE: Since "test1" can be used to read data written by both "test2"
+		and "test6", please follow instruction to run "test1" 
+		right after you run "test2" and "test6".  (i.e. you may need to
+		run "test1" twice)  Also save the log/result files every time
+		you run it.  Also, the estimated time to run each test is on
+		each COMMENTS file.
+
+	
+			

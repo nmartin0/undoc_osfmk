@@ -1,0 +1,820 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1989 Carnegie-Mellon University
+# Copyright (c) 1988 Carnegie-Mellon University
+# Copyright (c) 1987 Carnegie-Mellon University
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#  
+#
+# HISTORY
+# $Log: MASTER,v $
+# Revision 1.23  1994/11/18  20:29:07  mtm
+# Copyright additions/changes
+#
+# Revision 1.22  1994/10/07  17:56:50  yazz
+#  Reviewer: Suri Brahmaroutu
+#  Risk: Very Lo
+#  Benefit or PTS #: 11206
+#  Testing: controlc EAT
+#  Module(s): server/conf/MASTER
+#
+# Revision 1.21  1994/07/20  19:03:40  jlitvin
+# Wired threads should not be enabled just because test was selected.
+#
+# Revision 1.20  1994/06/29  15:28:42  johannes
+# new option "paracore" defined and included in STD & LITE
+# in order to enable the parallel core dumping
+#
+#  Initial check-in of parallel core dumping
+#  Reviewer: stefan, jlitvin
+#  Risk: Medium
+#  Benefit or PTS #: OS support for Postmortem Debugging
+#  Testing: developer tests
+#  Module(s):
+# 	svr/server/conf/MASTER
+# 	svr/server/conf/MASTER.i860
+# 	svr/server/conf/files.i860
+# 	svr/server/paracore/allocinfo.c
+# 	svr/server/paracore/core.c
+# 	svr/server/paracore/dump.c
+# 	svr/server/paracore/dvp_pvpcore.c
+# 	svr/server/sys/allocinfo.h
+# 	svr/server/sys/core.h
+# 	svr/server/sys/user.h
+# 	svr/server/nx/nx.defs
+# 	svr/server/nx/nx.c
+# 	svr/server/bsd/kern_exit.c
+# 	svr/server/bsd/kern_fork.c
+# 	svr/server/bsd/kern_sig.c
+# 	svr/server/tnc/dpvproc.h
+# 	svr/server/tnc/dvp_init.c
+# 	svr/server/tnc/dvp_pvpops.c
+# 	svr/server/tnc/pvp.ops
+# 	svr/server/uxkern/fsvr_msg.c
+# 	cmds_libs/src/usr/sbin/allocator/alloc.defs
+# 	cmds_libs/src/usr/sbin/allocator/misc_rpcs.c
+# 	cmds_libs/src/usr/sbin/allocator/Makefile
+# 	cmds_libs/src/usr/include/README.locate
+# 	cmds_libs/src/usr/include/sys/Makefile
+#
+# Revision 1.19  1994/04/28  19:01:29  chrisp
+# Changes to allow non-NX, i386 builds.
+#
+#  Reviewer: dleslie, cfj
+#  Risk: M
+#  Benefit or PTS #: 9188
+#  Testing: Builds, builds, builds.
+#  Module(s): Makefile MASTER Makefile.i386 Makefile.i860
+#             Makefile.template make.template
+#
+# Revision 1.18  1994/03/14  02:01:26  slk
+# Checkpoint Restart Code Drop
+#  Reviewer: Stefan Tritscher
+#  Risk: Medium
+#  Benefit or PTS #: Enhancement
+#  Testing: Locus VSTNC, EATS TCP-IP, Individual Checkpoint/Restart tests.
+#  Module(s):
+#
+# Revision 1.17  1993/09/27  04:28:48  robboy
+# For "tiny," changed maxusers from 2 to 1
+#
+# Revision 1.16  1993/08/05  20:19:13  cfj
+# Added prof to LITE Server configuration.
+#
+# Revision 1.15  1993/07/19  22:58:58  robboy
+# Integrate OSF/Locus Lite server changes
+#
+# Revision 1.14  1993/07/14  17:52:55  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.6  1993/07/01  19:11:13  cfj
+# Adding new code from vendor
+#
+# Revision 1.13  1993/05/27  23:17:44  hobbes
+# Included the files needed to build a HIPPI server.
+#
+# Revision 1.12  1993/05/18  15:35:57  cfj
+# Added a RAMDISK config such that you can build a ramdisk server by just building RAMDISK+WS.
+#
+# Revision 1.11  1993/05/18  15:16:24  cfj
+# Add ramdisk configuration option.
+#
+# Revision 1.10  1993/05/18  04:08:43  cfj
+# Turn on static load leveling by default.
+#
+# Revision 1.9  1993/05/10  15:26:16  cfj
+# Take out FPIO since it is not needed anymore.
+#
+# Revision 1.8  1993/05/06  19:13:15  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.4  1993/05/03  17:26:36  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.7  1993/04/20  14:57:40  cfj
+# Changed default configuration to small.
+#
+# Revision 1.6  1993/04/03  03:05:20  brad
+# Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+# Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+#
+# Revision 1.1.2.3.2.2  1992/12/16  05:59:32  brad
+# Merged trunk (as of the Main_After_Locus_12_1_92_Bugdrop_OK tag)
+# into the PFS branch.
+#
+# Revision 1.1.2.3.2.1  1992/12/14  23:25:12  brad
+# Merged tip of old NX branch with PFS branch.
+#
+# Revision 1.5  1992/12/11  02:55:53  cfj
+# Merged 12-1-92 bug drop from Locus.
+#
+# Revision 1.4  1992/11/30  22:18:41  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.4  1992/11/17  20:20:25  cfj
+# Turn mapped files back on.
+#
+# Revision 1.1.2.3  1992/11/09  17:55:36  cfj
+# Conflict resolution of 11/05/92 bug fix drop from Locus.
+#
+# Revision 1.1.2.2  1992/11/06  18:22:19  dleslie
+# Conflict resolution resulting from merge of November 3 bugdrop from Locus
+# into the NX tree
+#
+# Revision 1.1.2.1  1992/11/05  23:17:46  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 2.31  1992/10/22  15:26:30  dbm
+# Added PFS, turned off mapped files.
+#
+# Revision 2.30  1992/10/16  18:15:04  cfj
+# Modification so that NX programs can run.
+#
+# Revision 2.38  93/07/13  15:58:41  slively
+# The LITE server and full server must both be built with muarea either on
+# or off and with test either on or off, mixing and matching of these two
+# options is a very bad idea.
+#       Revision 2.30  93/06/29  16:16:28  rabii
+#       LITE server and RAMDISK support (rabii)
+#
+# Revision 2.37  93/06/25  11:22:32  slively
+# Backout the LITE server changes, take ufs and fileserver from STD and 
+# remove RAMDISK and LITE.
+# 
+# Revision 2.36  93/06/24  12:41:12  mjl
+# Add missing "options" lines for UFS, LITE_NODE, FILESERVER.  Also add
+# "ufs fileserver" to STD configuration.  (mjl for slively)
+# 
+# Revision 2.35  93/06/22  19:59:06  slively
+# Support for the LITE server.  Definitions for RAMDISK and LITE.
+# 
+# Revision 2.34  93/04/29  13:59:45  klh
+# 	Revision 2.29  93/03/30  16:09:30  roy
+# 		Added VFS_VIO option.  Remove FAST_PATH_IO option.
+# 		[93/02/16            roy]
+#
+# 	Revision 2.28  93/02/25  12:05:37  loverso
+# 		Add BUG_COMPAT to allow page 0 to be mapped readable upon first
+# 		access trap after message on console.  This is done by config
+# 		option page0, which enables the boot config boolean variable
+# 		ALLOW_PAGE_0_ACCESS. (loverso)
+#
+# Revision 2.33  93/03/03  18:18:18  klh
+# Add option TNC to include second, tnc, mi to tnc builds
+# 
+# Revision 2.32  93/02/22  17:08:31  mjl
+# MI interface now supports broadcast; needs only 1 unit.
+# 
+# Revision 2.31  92/11/11  16:52:09  yazz
+# user/test Makefile changes.
+# 
+# Revision 2.30  92/11/01  15:55:14  yazz
+# Turned mapped files back on again.  I860 won't compile with it off.
+# 
+# Revision 2.29  92/10/30  03:52:09  yazz
+# DISABLED MAPPED FILES.
+# 
+# Revision 2.28  92/10/28  14:55:55  roman
+# Get rid of streams from the configuration (str and strdebug).
+# 
+# Revision 2.27  92/10/05  13:37:47  klh
+# 	Revision 2.27  92/08/26  12:10:39  loverso
+# 		Added UFS_NBC_DEBUG.
+# 		[92/08/09            roy]
+# 
+# Revision 2.26  92/08/06  16:41:36  roman
+# Change configuration to match new OSF style.
+# 
+# Revision 2.25  92/07/07  15:13:50  roman
+# Turn on MAPPED_FILES (and, incidently, STREAMS) for the first time.
+# 
+# Revision 2.24  92/06/10  10:10:36  klh
+# 	Revision 2.23  92/06/08  18:18:48  pjg
+# 		Added FPIO (Fast Path IO) configuration and FAST_PATH_IO option (pjg).
+# 
+# Revision 2.23  92/06/05  13:56:49  klh
+# 	Revision 2.22  92/05/24  14:22:01  pjg
+# 		Revision 3.28  92/03/31  15:40:30  emcmanus
+# 		Removed "Doesn't work yet" comment about streams that has 
+#		been false for a long time.
+# 
+# 		Revision 3.27  92/03/23  18:03:01  condict
+# 		Add uniproc attribute, which turns off UNIX_LOCKS and sets 
+#		NCPUS=1, to compile optimally for a uni-processor.
+# 
+# Revision 2.22  92/04/20  17:25:44  bhk
+# Added MI pseudo driver
+# 
+# Revision 2.21  92/04/14  10:15:58  roman
+# Replace rproc with muarea
+# 
+# Revision 2.20  92/04/07  13:42:53  pjg
+# 	Turn <rproc> on by default.
+# 
+# Revision 2.19  92/04/05  16:51:43  pjg
+# 	Enabled MACH_LDEBUG under option <test>.
+# 
+# Revision 2.18  92/03/15  14:38:03  roy
+# 	92/03/03  16:57:28  roy
+# 	ufs_nbc and mapped_files support
+# 
+# Revision 2.17  92/03/09  11:59:31  durriya
+# 	[Revision 3.26  92/01/30  16:05:13  sp]
+# 	Remove IDEBUG, ITRACE, MACH_DEBUG, MACH_NO_KERNEL and SUN_RPC, none
+# 	of which are used
+# 
+# 	[Revision 3.25  92/01/20  10:45:54  bernadat]
+# 	Added XPR_DEBUG option.
+# 
+# 	[Revision 3.24  92/01/07  23:33:28  condict]
+# 	Turn off MACH_LTRACKS in production configuration, for speed.
+# 
+# 	[Revision 3.23  92/01/02  15:20:40  david]
+# 	added SMALL server configuration + fixed bugette.
+# 
+# Revision 2.16  92/02/21  16:15:30  durriya
+# 	turn off map_uarea in the STD configuration
+# 
+# Revision 2.15  92/02/11  22:01:46  pjg
+# 	Change comment on REMOTE_PROC to take into account TNC (roman@locus).
+# 
+# Revision 2.14  92/01/16  17:16:25  roy
+# 	norma_ipc on by default.
+# 
+# Revision 2.13  92/01/14  10:44:35  roy
+# 	REMOTE_PROC option added for remote forking (sjs).
+# 	OSF1_ADFS_UDS obsolete (subsumed by OSF1_ADFS).
+# 
+# Revision 2.12  92/01/09  16:07:34  roy
+# 	Added OSF1_ADFS_UDS option (loverso).
+# 
+# Revision 2.11  92/01/05  19:59:31  roy
+# 	Don't automatically define OSF1_ADFS_DEBUG.
+# 
+# Revision 2.10  92/01/05  18:56:03  roy
+# 	Turn on asserts by default.
+# 
+# Revision 2.9  92/01/02  18:45:09  roy
+# 	1991/10/21  21:03:37  noemi
+# 	Added OSF1_ADFS, OSF1_ADFS_DEBUG, and NORMA_IPC options.
+# 
+# Revision 2.8  91/12/16  14:16:58  roy
+# 	91/12/11  15:11:47  condict
+# 	Get rid of obsolete CONFIG aliases.
+# 
+# 	91/11/15  15:31:30  condict
+# 	Delete obsolete MACH_VFS option.
+# 
+# 	91/11/07  15:15:11  condict
+# 	Deleted obsolete options (CS_* and DLI).  Changed WIRED_THREADS option 
+# 	so that it is turned on with either CONFIG attribute: wthrds, test.
+# 
+# 	91/10/30  17:42:43  bernadat
+# 	Added AFS configuration
+# 
+# 	91/10/17  18:33:01  barbou
+# 	LVM device declaration.
+# 
+# 	91/10/17  15:44:53  condict
+# 	Add option WIRED_THREADS, to wire all server threads for easier 
+# 	debugging.
+# 
+# 	91/10/09  18:35:33  emcmanus
+# 	STREAMS_DEBUG is no longer enabled with the +str CONFIG option.
+# 
+# Revision 2.7  91/12/13  10:08:07  roy
+# 	91/11/12  10:27:11  roy
+# 	Added MAPPED_FILES and UFS_NBC options.
+# 
+# Revision 2.6  91/11/22  15:00:03  rabii
+# 	Locus drop merge
+# 	Add tnc option klh
+# 
+# Revision 2.5  91/11/15  17:07:08  rabii
+# 	Added i860 support
+# 
+# Revision 2.4  91/10/14  20:08:20  roy
+# 	Fix revision history comments.
+# 
+# Revision 2.3  91/10/14  12:11:38  sjs
+# 	91/10/02  10:52:49  condict
+# 	Delete sysv_fs from list of STD attributes 
+#	(it isn't a DEFAULT OSF/1 option).
+#
+# 	91/10/01  14:06:01  condict
+#	Deleted "+second" from default CONFIG 
+#	(is now part of def. of STD).  Also deleted multiple copies of 
+#	options, put rest in alphabetical order.
+# 
+# 	91/09/27  11:57:59  emcmanus
+# 	Added streams and profiling options.
+#
+# Revision 2.2  91/08/31  13:25:52  rabii
+#	Initial V2.0 Checkin
+#
+# Revision 3.12  91/08/05  11:58:37  jose
+# turned ROSE option on
+# 
+# Revision 3.11  91/07/29  16:25:40  barbou
+# SECOND_SERVER now means that the server *may* be used as a second server
+# or standalone, depending on the '-2' run-time flag. A server compiled
+# without SECOND_SERVER can run standalone only.
+# 
+# Revision 3.10  91/07/26  15:51:09  jose
+# Turned on COFF option
+# 
+# Revision 3.9  91/07/05  16:22:31  jose
+# Added nfs option
+# 
+# Revision 3.8  91/07/04  17:51:41  barbou
+# The server is multi-threaded: configure 2 cpus to always have locks compiled.
+# 
+# Revision 3.7  91/06/27  15:48:50  sp
+# Add system V file system
+# 
+# Revision 3.6  91/06/25  17:04:26  condict
+# Install full set of OSF/1 options.  Throw away obsolete BSD server options.
+# Add com pseudo-device for number of communication ttys.
+# 
+# Revision 3.5  91/06/12  09:35:41  condict
+# Turn off MACH_NBC (doesn't work in OSF/1).
+# 
+# Revision 3.4  91/05/29  14:28:56  condict
+# Remove CMUCS_KDB option.  Add UIPC option.
+# 
+# Revision 3.3  91/04/12  13:57:13  condict
+# Eliminate MACH_DIRECTORY option and corresponding "md" config attribute;
+# Add COMPAT_43 option from OSF/1
+# 
+# Revision 3.2  91/03/08  15:52:13  condict
+# Modified to work with the OSF/1 header files
+# 
+# Revision 3.1  91/02/27  16:29:33  condict
+# delete vice attribute and remove VICE from Standard Configurations
+# 
+# Revision 3.0  91/01/17  12:06:32  condict
+# Unchanged copy from Mach 3.0 BSD UNIX server
+# 
+# Revision 2.7  90/09/09  22:31:43  rpd
+# 	Added MAP_ETHER option.
+# 	[90/08/30  17:49:54  af]
+# 
+# Revision 2.6  90/05/29  20:23:53  rwd
+# 	Make nbc+md the default for STD.
+# 	[90/05/22            rwd]
+# 
+# Revision 2.5  90/03/14  21:27:15  rwd
+# 	Add MAP_UAREA option
+# 	[90/01/22            rwd]
+# 
+# Revision 2.4  90/01/23  00:04:17  af
+# 	Added namei @sys/@cpu macros option.
+# 	[90/01/20  23:16:34  af]
+# 
+# Revision 2.3  89/11/29  15:28:08  af
+# 	Added mips, as a sysV_coff.
+# 	[89/11/16  17:13:11  af]
+# 
+# Revision 2.2  89/09/15  15:28:43  rwd
+# 	Added MAP_TIME option
+# 	[89/09/13            rwd]
+# 
+# 	Altered for MACH_NO_KERNEL.  Some features have been backdated...
+# 	we'll fix that when we merge up (from X65 to X90+).
+# 	[89/05/23            dbg]
+# 
+# Revision 2.1  89/08/04  15:24:52  rwd
+# Created.
+# 
+# Revision 2.27  89/05/01  15:22:49  rpd
+# 	Purged MACH_IPC_RCVHACK.
+# 	[89/05/01  13:48:11  rpd]
+# 
+# Revision 2.26  89/04/18  16:42:49  mwyoung
+# 	Add MACH_PAGEMAP (pm).
+# 	[89/04/16            mwyoung]
+# 
+# Revision 2.25  89/03/04  17:11:52  rpd
+# 	at and exl want coff vs bsd a.out
+# 	[89/03/01            rvb]
+# 
+# Revision 2.24  89/02/25  17:37:28  gm0w
+# 	Changes for cleanup.
+# 
+# Revision 2.23  89/01/23  22:10:49  af
+# 	MAXDSIZ is no longer an option.  It has its own parse rule.
+# 	[89/01/09            rvb]
+# 
+# Revision 2.22  89/01/18  00:48:38  jsb
+# 	Place AFS and NFS into the standard configuration.
+# 	[89/01/17  18:04:49  jsb]
+# 	
+# 	Add MACH_{VFS,NFS,AFS}, SUN_RPC options.
+# 	[89/01/17  10:10:44  jsb]
+# 
+# Revision 2.21  89/01/17  02:05:50  rpd
+# 	Removed the "xp" and "xp_fpd" tags.  Now the "mach" tag turns on
+# 	the MACH_XP and MACH_XP_FPD options.
+# 
+# Revision 2.20  89/01/12  07:41:14  rpd
+# 	Changed MACH_COSTATS (tag "costats") to MACH_CO_STATS (tag "co_stats").
+# 	Added MACH_CO_INFO (tag "co_info") and MACH_DEBUG (tag "mdebug").
+# 	[89/01/12  04:30:57  rpd]
+# 
+# Revision 2.19  89/01/10  23:25:09  rpd
+# 	Changed MACH_IPCSTATS to MACH_IPC_STATS.  Changed tag to "ipc_stats".
+# 	Added MACH_IPC_XXXHACK (tag "ipc_xxxhack"); it enables the obsolete
+# 	xxx_port_allocate, etc, kernel calls and the obsolete IPC traps.
+# 	Added ipc_xxxhack to MSTD.
+# 	[89/01/10  22:41:34  rpd]
+# 
+# Revision 2.18  88/12/20  13:47:20  rpd
+# 	Added MACH_IPC_RCVHACK (tag is "ipc_rcvhack")
+# 	and MACH_IPC_SIGHACK (tag is "ipc_sighack").
+# 	Added ipc_sighack to MSTD.
+# 	[88/11/26  21:17:28  rpd]
+# 
+# Revision 2.17  88/12/19  02:40:06  mwyoung
+# 	Remove old MACH_EXCEPTION, MACH_PTRACE, MACH_IPC, and MACH_MACH
+# 	conditionals.  Make MACH_XP and MACH_XP_FPD standard (keyed on "mach").
+# 	[88/12/14            mwyoung]
+# 
+# Revision 2.16  88/10/27  17:30:18  mrt
+# 	27-Oct-88 Mary Thompson (mrt)
+# 	Made STD config to be small.
+# 	maxusers can be patched for machines which need it to be
+# 	larger
+# 	[88/10/27  17:07:06  mrt]
+# 
+# Revision 2.15  88/10/27  10:42:11  rpd
+# 	Added MACH_SCTIMES option, which turns on some "dummy" system
+# 	calls useful for collecting syscall performance numbers.
+# 	Changed MACH_IPCSTATS tag to "ipcstats" from "stats".
+# 	[88/10/26  14:30:27  rpd]
+# 
+# Revision 2.14  88/10/01  21:50:37  rpd
+# 	Changed CS_ASSERT to CMUCS_ASSERT.
+# 	[88/10/01  21:14:17  rpd]
+# 	
+# 	Changed FAST_PAGER_DATA to MACH_XP_FPD.
+# 	[88/09/29  01:05:54  rpd]
+# 
+# Revision 2.13  88/09/25  22:08:19  rpd
+# 	Added new options MACH_IPC_TCACHE (ipc_tcache)
+# 	and MACH_IPC_WWA (ipc_wwa).  Added MSTD combo.
+# 	[88/09/19  23:23:07  rpd]
+# 	
+# 	Added MACH_COSTATS option, with costats tag.
+# 	[88/09/09  04:39:53  rpd]
+# 
+# Revision 2.12  88/08/25  19:15:53  mwyoung
+# 	Eliminate old options.
+# 	[88/08/22            mwyoung]
+# 	
+# 	Eliminate old options.
+# 	[88/08/25  19:23:41  mwyoung]
+# 
+# Revision 2.11  88/08/11  13:28:35  rvb
+# Now mach_emulation can be abbreviated me, and mach_directory - md.
+# define MACHXPE as MACH + md + xp + me
+# 
+# Revision 2.10  88/08/09  17:53:02  rvb
+# make mach_directory option work and rename it "md"
+# 
+# Revision 2.9  88/08/06  18:06:10  rpd
+# Added CMUCS_DEBUG option, turned on by the "test" attribute.
+# 
+# Revision 2.8  88/07/20  16:19:27  rpd
+# Add new tags "test" (turns on cs_assert and mach_ldebug)
+# and "stats" (turns on mach_ipcstats).  The mach_ldebug option
+# only does something when NCPUS == 1.
+# 
+# Revision 2.7  88/07/17  18:49:50  mwyoung
+# Remove bogus history.
+# 
+# Revision 2.6  88/07/17  17:52:18  mwyoung
+# Added FAST_PAGER_DATA option.
+# 
+# Revision 2.5  88/07/16  00:45:44  mwyoung
+# Replace old machine-specific forms for MACH with a new one.
+# In the future, machine-specific changes for all MACH configurations
+# should be placed in the MASTER.<machine>.local file.
+# 
+# 12-May-88  Mike Accetta (mja) at Carnegie-Mellon University
+#	Added MACH_COMPAT option to enable vendor system call
+#	compatibility under "mach" attribute and converted MACH_NET
+#	option to "mach" attribute from "xnet" since the listen
+#	operation is now restricted; renamed DEFAULT => STD and
+#	SPECIAL => OLD.
+#	[ V5.1(XF24) ]
+#
+# $EndLog$
+
+#######################################################################
+#
+#	Master machine independent configuration file.
+#
+#	Specific configuration files are created based on this and
+#	the machine specific master file using the doconf script.
+#
+#	Any changes to the master configuration files will affect all
+#	other configuration files based upon it.
+#
+#######################################################################
+#
+#	To build a configuration, execute "doconf <configuration>."
+#	Configurations are specified in the "Configurations:" section
+#	of the MASTER and MASTER.* files as follows:
+#
+#	<configuration> = [ <attribute0> <attribute1> ... <attributeN> ]
+#
+#	Lines in the MASTER and MASTER.* files are selected based on
+#	the attribute selector list, found in a comment at the end of
+#	the line.  This is a list of attributes separated by commas.
+#	The "!" operator selects the line if none of the attributes are
+#	specified.
+#
+#	For example:
+#
+#	<foo,bar>	selects a line if "foo" or "bar" are specified.
+#	<!foo,bar>	selects a line if neither "foo" nor "bar" is
+#			specified.
+#
+#	Lines with no attributes specified are selected for all
+#	configurations.
+#
+#######################################################################
+#
+#  STANDARD CONFIGURATION OPTIONS (select any combination)
+#  SMALL     = [mach sysv_fs i386 wthrds small svrsmall loop mtime muarea second sl]
+
+#
+#	debug   = extra kernel level debugging support
+#	mach    = Mach support 
+#	unix    = a UNIX perspective on the world
+#
+#  EXPERIMENTAL CONFIGURATION OPTIONS (select any combination, carefully)
+#
+#	nbc     = no buffer cache support
+#
+#  PSEUDO-DEVICES (select any combination)
+#
+#	sl   = Serial line IP support
+#	mi   = Mach IPC pseudo interface driver
+#
+#  MULTI-PROCESSOR CONFIGURATION (select at most one)
+#
+#	multi16 = enable 16 multi-processors
+#	multi32 = enable 32 multi-processors
+#	multi64 = enable 64 multi-processors
+#
+#  SYSTEM SIZE CONFIGURATION (select no more than one)
+#
+#	xlarge = extra large scale system configuration
+#	large  = large scale system configuration
+#	medium = medium scale system configuration
+#	small  = small scale system configuration
+#	xsmall = extra small scale system configuration
+#	bsmall = special extra small scale system configuration for
+#		 (e.g. for boot floppies)
+#
+#######################################################################
+#
+#  DEPRECATED CONFIGURATION OPTIONS (select any combination, reluctantly)
+#
+#	oldfs   = 4.1 file system support
+#	oldipc  = old CMU IPC support
+#
+#  DEPRECATED PSEUDO-DEVICES (select any combination, reluctantly)
+#
+#	fe   = CMU CS Front End terminal support
+#	ild  = INGRES lock device support
+#
+#######################################################################
+#  
+#
+#  Standard Configuration Components:
+#  -------- ------------- ----------
+#
+#  BOOT      = [mach unix       MSTD]
+#  NBC       = [ufs_nbc vfs_vio]
+#  MFILES    = [mapped_files NBC]
+#  DBG       = [test ufs_nbc_debug page0]
+#  NX        = [nx pfs sll rfc_1323]
+#
+#  STD       = [mach unix small MSTD fullserver ufs nfs mtime norma_ipc muarea prof TNC MFILES NX paracore]
+#  RAMDISK   = [mach unix BS MSTD mtime norma_ipc muarea ramdisk ufs fullserver]
+#
+#  LITE       = [mach unix tiny MSTD mtime nx TNC -mi -sll second norma_ipc muarea prof paracore]
+#
+#  TNC       = [tnc mi]
+#  BS	     = [bsmall]
+#  XS        = [xsmall]
+#  S         = [ small]
+#  M         = [medium]
+#  L         = [ large]
+#  XL        = [xlarge]
+#
+#  (Optional for multi-processor configurations)
+#
+#  64        = [multi64]
+#  32        = [multi32]
+#  16        = [multi16]
+#
+#  Options which are almost always turned on when mach is turned on,
+#  but can still be individually selected (eg, "MACH-ipc_tcache"):
+#
+#  MSTD      = [ atsys ]
+#
+#  Some old Mach configuration shorthands... to construct a configuration
+#  for an old name like "MACHRTEMUL" use "MACH+mach_emulation":
+#
+#  MACH          = [ STD ]
+#  MACHXPE       = [ MACH me ]
+#
+#  MACHRT        = [ STD ANY ]
+#  MACHMM        = [ debug mach unix MSTD ANY multi64 xlarge timing simple ]
+#  MACHSQT       = [ debug mach unix MSTD ANY multi32 xlarge db ]
+#
+#  DIR           = [ vmtp np ]
+#
+#  To protect the innocent:
+#
+#  mach_emulation = [ me ]
+#
+#######################################################################
+#
+ident		OSF
+
+options		BSD_A_OUT	# format of load files		# <!mmax>
+options		BUFCACHE_STATS  # <!svrsmall>
+options		BUG_COMPAT  	# enable allow_page_0_access	# <page0>
+options		COMPAT_43	# Compatibility with BSD 4.3
+options		CHKPNT		# TNC checkpoint/restart	# <chkpnt>
+options		FULLSERVER	# Full server support           # <fullserver>
+options		GENERIC		# <!bsmall>
+options		IGMPROTO	# IGMP code			# <ipmcast,vmtp>
+options		INET
+options		INOCACHE_STATS	# <!svrsmall>
+options		MACH		# Standard Mach features	# <mach>
+options		MACH_AFS	# in-kernel andrew file system	# <afs>
+options		MACH_AFS_30	# AFS 3.0 compatibility		# <afs>
+options		MACH_ASSERT	# Compile in assertions		# <test>
+options		MACH_COMPAT	# Vendor syscall compatibility  # <mach>
+options		MACH_DB		# new kernel debugger		# <db>
+options		MACH_FASTLINK
+options		MACH_IPC_STATS	# <!svrsmall>
+options		MACH_IPC_TCACHE
+options		MACH_IPC_WWA
+options		MACH_IPC_XXXHACK
+options		MACH_LDEBUG	# Keep debug info for locks	# <ldebug>
+options         MACH_LTRACKS    # Keep track of lock owner      # <test>
+options		MACH_PAGEMAP
+options		MACH_VMTP	# versatile msg trans. protocol	# <vmtp>
+options		MACH_XP		# external pager support	# <mach>
+options		MACH_XP_FPD	# copy data direct from user	# <mach>
+options		MACH_XP_SC
+options		MAP_ETHER	# Use mapped ethernet		# <map_ether>
+options		MAP_TIME	# Use mapped time from kernel	# <mtime>
+options		MAP_UAREA	# Use shared memory region	# <muarea>
+options		MAPPED_FILES    # Use mapping for Unix file I/O # <mapped_files>
+options		MULTICAST	# Class D addressing		# <ipmcast,vmtp>
+options		MULTICAST_AGENT	# Multicast Agent code		# <ipmcast>
+#options	NAMEI_MACROS	# @sys/@cpu expansion		# <atsys>
+options		NFS		# Network File System		# <nfs>
+options		NORMA_IPC	# Use kernel norma support	# <norma_ipc>
+options		OSF1_ADFS
+options		OSF1_ADFS_DEBUG	# debug output for ADFS code 	# <adfs_debug>
+options		OSF1_SERVER
+options		OSF_MACH_O	# OSF/1 format for exec.	# <i386>
+options		PFS		# Parallel File System		# <pfs>
+options		PROFILING	# User profiling		# <prof,kprof>
+options		QUOTA		# <quota>
+options		REMOTE_PROC	# Non-TNC fork does remote tasks # <rproc>
+options		RFC_1323	# Large Window TCP/IP			# <rfc_1323>
+options		RAMDISK		# To build a small server	# <ramdisk>
+options		SECOND_SERVER	# Usable as second server	# <second>
+options		SER_COMPAT	# handle unparallelized subsyst # <afs>
+options		STACK_LIMIT_CHECK
+options		STAT_TIME
+options		STREAMS		# <str>
+options		STREAMS_DEBUG	# <strdebug>
+options		STRECHO		# <str>
+options		STRNULL		# <str>
+options		STRPASS		# <str>
+options		STRSC		# <str>
+options		STRTMUX		# <str>
+options		SVTT		# <str>
+options		SYSV_COFF	# format of load files		# <mmax,mips,at,exl,i386,i860>
+options		SYSV_FS		# System V file system		# <sysv_fs>
+options		TIMOD		# <str>
+options		TIRDWR		# <str>
+options		TTLCONTROL	# New ioctl to set IP TTL	# <ipmcast,vmtp>
+options		TNC		# tnc support			# <tnc>
+options         UFS             # ufs support                   # <ufs>
+options		UFS_NBC		# nbc for file data (ufs only)	# <ufs_nbc>
+options		UFS_NBC_DEBUG				        # <ufs_nbc_debug>
+options		UIPC
+options		UNIX_LOCKS	#				# <!uniproc>
+options		VAGUE_STATS
+options		VFS_VIO         # vnode layer VIO module	# <vfs_vio>
+options		WIRED_THREADS	# All server threads wired	# <wthrds>
+options		XPR_DEBUG	# kernel tracing		# <test>
+options		XTISO		# <str>
+
+timezone	5 dst
+maxdsiz		33554432	# 32 Megabytes
+maxusers	64		# <xlarge>
+maxusers	50		# <large>
+maxusers	32		# <medium>
+maxusers	16		# <small>
+maxusers	8		# <xsmall>
+maxusers	2		# <bsmall>
+maxusers	1		# <tiny>
+
+#
+#  Multi-processor selection
+#
+pseudo-device	cpus		64	# <multi64>
+pseudo-device	cpus		32	# <multi32>
+pseudo-device	cpus		16	# <multi16>
+pseudo-device	cpus		2	# <!multi64,multi32,multi16,uniproc>
+pseudo-device	cpus		1	# <uniproc>
+#
+#  CMU pseudo terminal service
+#
+#
+# VICE file system support
+#
+pseudo-device	vicefs	3		# <vice>
+#
+#  Ethernet (ARP)
+#
+pseudo-device	ether
+#
+#  CMU Front End service
+#
+pseudo-device	fe	1		# <fe>
+#
+#  INGRES lock device
+#
+pseudo-device	ild			# <ild>
+#
+#   SL-IP
+#
+pseudo-device	sl			# <sl>
+#
+# Mach IPC device
+#
+pseudo-device	mi	1		# <mi>
+#
+#  Network loopback device
+#
+pseudo-device	loop			# <loop>
+#
+# Number of communication ttys:
+#
+pseudo-device	com	2
+#
+#  UCB pseudo terminal service
+#
+pseudo-device	pty	80			# <!bsmall>
+pseudo-device	netthreads	2
+pseudo-device	mbclusters	256
+#
+# Logical Volume Manager
+#
+pseudo-device	lv	2		# <lv>

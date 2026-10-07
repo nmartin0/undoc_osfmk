@@ -1,0 +1,3156 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+/*++ qmgr.hlp - Network Queueing System
+ *
+ * $Source: /afs/ssd/i860/CVS/cmds_libs/src/usr/bin/qmgr/qmgr.hlp,v $
+ *
+ * DESCRIPTION: 
+ *
+ *	NQS Qmgr help file.
+ *
+ *	Author:
+ *	-------
+ *	Brent A. Kingsbury, Sterling Software Incorporated.
+ *	September 9, 1985.
+ *
+ *
+ * STANDARDS VIOLATIONS:
+ *	None.
+ *
+ * REVISION HISTORY: ($Revision: 1.8 $ $Date: 1995/03/01 22:32:42 $ $State: Exp $)
+ * $Log: qmgr.hlp,v $
+# Revision 1.8  1995/03/01  22:32:42  kremenek
+#  Reviewer: davidl
+#  Risk: Low
+#  Benefit or PTS #: 12415
+#  Testing: Developer testing
+#  Module(s): cmds_libs/src/usr/bin/qmgr/qmgr.hlp
+#
+# Revision 1.7  1995/02/24  23:31:49  kremenek
+#  Reviewer: davidl
+#  Risk: low
+#  Benefit or PTS #: 5134
+#  Testing: Developer testing
+#  Module(s):	 ./cmds_libs/src/usr/bin/qmgr/mgr_cmd.c
+# 		./cmds_libs/src/usr/bin/qmgr/mgr_main.c
+# 		./cmds_libs/src/usr/bin/qmgr/mgr_packet.c
+# 		./cmds_libs/src/usr/bin/qmgr/qmgr.hlp
+# 		./cmds_libs/src/usr/ccs/lib/libnqs/listq.c
+# 		./cmds_libs/src/usr/include/nqs/nqspacket.h
+# 		./cmds_libs/src/usr/include/nqs/nqsstruct.h
+# 		./cmds_libs/src/usr/lib/nqs/macs_sched.c
+# 		./cmds_libs/src/usr/lib/nqs/nqs_ldconf.c
+# 		./cmds_libs/src/usr/lib/nqs/nqs_main.c
+# 		./cmds_libs/src/usr/lib/nqs/nqs_nsq.c
+# 		./cmds_libs/src/usr/lib/nqs/nqs_upq.
+#
+# Revision 1.6  1994/12/08  00:15:33  kremenek
+#  Reviewer: davidl
+#  Risk: Low
+#  Benefit or PTS #: 3801
+#  Testing: Developer testing
+#  Module(s): cmds_libs/src/usr/bin/qmgr/mgr_cmd.c
+# 		cmds_libs/src/usr/bin/qmgr/qmgr.hlp
+#
+# Revision 1.5  1994/11/19  01:35:53  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1994/04/06  22:17:01  mwan
+# Update R1_3 to R1_2 WW15
+#
+#  Reviewer: kremenek
+#  Risk: M
+#  Benefit or PTS #: 7738,8087,8346, 8325,8599,8576,8600,8601,8088,8597,8876,8886
+#  Testing:
+#  Module(s): mgr_movset.c qmgr.hlp
+#
+Revision 3.2  91/02/11  16:54:05  root
+Version 2.0 Source
+
+Revision 2.2  87/04/22  14:58:15  hender
+Sterling version 4/22/87
+
+ *
+ */
+
+#HELP
+
+	The available commands are:
+
+	  ABort     ADd       Create    DElete    DIsable   ENable
+	  EXit      Help      Lock      MODify    MOVe      Purge
+	  Remove    SEt       SHOw      SHUtdown  STArt     STOp
+	  Unlock
+
+	To obtain more information about a command, type:
+
+	  Help <command-name>
+
+	Each command keyword will always be shown as a sequence of upper
+	and lowercase letters.  The uppercase prefix at the beginning of
+	each keyword shows the smallest abbreviation acceptable for the
+	command keyword.
+
+	Lengthy commands can be broken across line boundaries by placing
+	a backslash character: "\" at the end of a partial command line.
+	For example:
+
+	  help st\
+	  op
+
+	is equivalent to the command:
+
+	  help stop
+
+#HELP_ABOQUE
+
+	The command:
+
+	  ABort Queue <queue-name> [ <grace-period> ]
+
+	causes a SIGTERM signal to be sent to each process of each request
+	presently running in the named queue.
+
+	SIGKILL signal to all of the remaining processes for each request
+	presently running in the named queue that was running when the
+	ABort Queue command was first received.
+
+	If <grace-period> is not specified, then a default value of
+	twenty (20) seconds is used.
+
+	All requests aborted by this command are lost forever.
+
+	Operator privileges are required to use this command.
+
+#HELP_ADD
+
+	The commands:
+
+	  ADd DEStination <parameters>
+	  ADd DEVice <parameters>
+	  ADd Form <parameters>
+	  ADd Groups <parameters>
+	  ADd Manager <parameters>
+	  ADd Queue <parameters>
+	  ADd Users <parameters>
+
+	are used to respectively add destination(s) to an existing pipe
+	queue destination set, add device(s) to an existing device queue
+	device set, add a form to the device forms list, add group(s) to
+	the access list for a queue, add an account to the NQS manager
+	access list, add queue(s) to a queue complex, or add user(s) to
+	the access list for a queue.
+
+	More information is available:
+
+	  Help ADd DEStination
+	  Help ADd DEVice
+	  Help ADd Form
+	  Help ADd Groups
+	  Help ADd Manager
+	  Help ADd Queues
+	  Help ADd Users
+
+#HELP_ADDDES
+
+	The commands:
+
+	  ADd DEStination = <dest-name> <queue-name>
+	  ADd DEStination = (<dest-name> [,<dest-name>...]) <queue-name>
+
+	are used to respectively add a single destination or several
+	destinations to the existing destination set for the named local
+	pipe queue.
+
+	All machine-names appearing in any queue destination names must
+	be defined in the local system's network host table.
+
+	The syntax of a pipe queue destination (<dest-name>) must conform
+	to one of the following four forms:
+
+	  local_queue_name
+	  local_queue_name@local_machine_name
+	  remote_queue_name@remote_machine_name
+	  remote_queue_name@[remote_machine_mid]
+
+	where the <local_machine_name> or <remote_machine_name> must be
+	defined in the network host table of the local system.
+
+	The destination syntax form:
+
+	  remote_queue_name@[remote_machine_mid]
+
+	allows for the explicit specification of the destination machine
+	by its machine-id, entered as an integer:
+
+	  example_queue_name@[123]
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_ADDDEV
+
+	The commands:
+
+	  ADd DEVice = <device-name> <queue-name>
+	  ADd DEVice = (<device-name> [,<device-name>...]) <queue-name>
+
+	are used to respectively add a single device, or several devices to
+	the existing device set available to the named queue.  All of the
+	specified devices must have been previously defined.
+
+	The <device-name> is not specified as the fully qualified device
+	pathname, but rather as the NQS "shorthand" name assigned to the
+	device by the Create Device command.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_ADDFOR
+
+	The command:
+
+	  ADd Forms <form-name> ...
+
+	is used to add form(s) to the device forms list.
+
+	A <form-name> can contain any printable non-blank character with
+	the exception that a <form-name> cannot start with a decimal
+	digit ['0'..'9'], and it cannot contain any of the Qmgr command
+	punctuation characters of [',', '=', '(', ')'].
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_ADDGID
+
+	The commands:
+	
+	  ADd Groups = <group-name> <queue-name>
+	  ADd Groups = (<group-name> [,<group-name>...]) <queue-name>
+
+	are used to add an entire group or several entire groups to
+	the existing list of those that are allowed access to the
+	named queue.  It is not permitted to add a group when queue
+	access is unrestricted.
+
+	A <group-name> can be specified by using either of the following
+	two formats:	1. group name	2. [group-id]
+
+	For example, if there is a group "archers" on your machine with
+	group-id 10001, you may specify it with "archers" or "[10001]".
+
+	In order for a user to have access to a queue, it is only
+	necessary for ONE of the following to be true:
+	
+	1) Queue access is unlimited. (Help SEt Unrestricted_access)
+	2) His or her login group has access.
+	3) His or her account has access. (Help ADd Users)
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_ADDMAN
+
+	The command:
+
+	  ADd Managers <account-name>:{m,o} ...
+
+	is used to add account(s) to the NQS manager access list.
+
+	An NQS manager <account-name> can be specified by using any of
+	the four following formats:
+
+		1. local_account_name
+		2. [local_user_id]
+		3. [remote_user_id]@remote_machine_name
+		4. [remote_user_id]@[remote_machine_mid]
+
+	Each of the following four examples demonstrates the use of the
+	above four parse constructs for an NQS manager <account-name>.
+
+		1. kingsbur		; Local account of "kingsbur"
+		2. [149]		; Local account (user-id = 149)
+		3. [149]@Hal9000	; Remote account (user-id = 149)
+					; on remote machine: "Hal9000"
+		4. [149]@[9000]		; Remote account (user-id = 149)
+					; on remote machine with machine-
+					; id = 9000.
+
+	A ":m" or ":o" suffix at the end of an <account-name> specified
+	for this command is REQUIRED, and indicates the NQS Qmgr privileges
+	to be assigned to the corresponding account.
+
+	The appearance of a ":m" suffix at the end of an <account-name>
+	indicates that the account should be granted full NQS manager
+	privileges.  The owner of such an account will be able to use all
+	of the NQS Qmgr commands.
+
+	The appearance of a ":o" suffix at the end of an <account-name>
+	indicates that the account will only be granted NQS operator
+	privileges.  Such an account will have the privilege to execute
+	many Qmgr commands, but will NOT have the privilege to create new
+	queues, devices, forms, managers, or to delete any of the same.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_ADDQUE
+
+	The command:
+
+	  ADd Queue = <queue-name> <complex-name>
+	  ADd Queue = (<queue-name> [,<queue-name>...]) <complex-name>
+
+	is used to add one or more queues to a queue complex.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_ADDUID
+
+	The commands:
+	
+	  ADd Users = <user-name> <queue-name>
+	  ADd Users = (<user-name> [,<user-name>...]) <queue-name>
+
+	are used to add a single user or several users to the existing
+	list of those that are allowed access to the named queue.  It
+	is not permitted to add a user when queue access is unrestricted.
+
+	A <user-name> can be specified by using either of the following
+	two formats:	1. user name	2. [user-id]
+
+	For example, if there is a user "robin" on your machine with
+	user-id 1001, you may specify him or her with "robin" or "[1001]".
+
+	In order for a user to have access to a queue, it is only
+	necessary for ONE of the following to be true:
+	
+	1) Queue access is unlimited. (Help SEt Unrestricted_access)
+	2) His or her login group has access. (Help ADd Groups)
+	3) His or her account has access.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_CRE
+
+	The commands:
+
+	  Create Batch_queue <queue-name>
+	  Create Complex <parameters>
+	  Create DEVICE <parameters>
+	  Create DEVICE_queue <parameters>
+	  Create Pipe_queue <parameters>
+
+	are used to respectively create a batch queue, a device, a device
+	queue, or a pipe queue.
+
+	More information is available:
+
+	  Help Create Batch_queue
+	  Help Create Complex
+	  Help Create DEVICE
+	  Help Create DEVICE_queue
+	  Help Create Pipe_queue
+
+#HELP_CREBATQUE
+
+	The command:
+
+	  Create Batch_queue <queue-name> \
+	  PRiority = <queue-priority> \
+	  [ PIpeonly ] \
+	  [ Run_limit = <run-limit> ]
+
+	is used to define a new NQS batch request queue.
+
+	The name given to the queue as the <queue-name> parameter can
+	contain any printable non-blank character with the exception of
+	the '@' character and Qmgr command punctuation characters of
+	[',', '=', '(', ')'], and must not start with a decimal digit
+	['0'..'9'].
+
+	The priority of the queue is defined by the unsigned integer
+	<queue-priority> which must be in the range [0..63].
+
+	If the optional "PIpeonly" attribute is specified, then no user
+	is allowed to submit requests directly to the batch queue.  A
+	queue with the "PIpeonly" attribute can only receive requests
+	submitted from another pipe queue.
+
+	The optional "Run_limit" parameter defines the maximum number of
+	requests that will be allowed to run in the queue at any given
+	time.  If no "Run_limit" parameter is given, then the queue is
+	assigned a default run-limit of one (1).
+
+	The queue is created in a disabled and stopped state, and must be
+	explicitly enabled and started by the:
+
+	  ENable Queue    and
+	  STArt Queue
+
+	commands.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_CRECOM
+
+	The command:
+
+	  Create Complex = <queue-name> <complex-name>
+	  Create Complex = (<queue-name> [,<queue-name>...]) <complex-name>
+
+	is used to create a queue complex.
+
+	The queues given as the <queue-name> parameters must already exist,
+	and can only be batch queues (see Help Create Batch_queue).
+
+	The name given to the queue complex as the <complex-name> parameter
+	can contain any printable non-blank character with the exception of
+	the '@' character and Qmgr command punctuation characters of
+	[',', '=', '(', ')'], and must not start with a decimal digit
+	['0'..'9'].
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_CREDEV
+
+	The command:
+
+	  Create DEVICE <device-name> \
+	  FOrms = <forms-name> \
+	  FUllname = <fully-qualified-device-path-name> \
+	  Server = (<server-command-line-and-server-arguments>)
+
+	is used to define a new NQS device.
+
+	The name given to the device as the <device-name> parameter can
+	contain any printable non-blank character with the exception of
+	the '@' character and Qmgr command punctucation characters of
+	[',', '=', '(', ')'], and must not start with a decimal digit
+	['0'..'9'].
+
+	The forms loaded in the device are specified by the <forms-name>
+	parameter.  If the forms parameter is irrelevant for the device,
+	then the value of "anyforms" should be assigned to the forms
+	parameter.
+
+	The Fullname parameter specifies the fully qualified device path
+	name for the device that is being placed under NQS control.  This
+	name is only used by NQS to perform the appropriate device open
+	operations when necessary.  At all other times, the device is
+	always referred to by the <device-name> parameter.
+
+	The Server parameter specifies the fully qualified pathname of
+	the program that is to be used as the device server for this
+	device and any relevant invocation arguments.
+
+	The device is created in disabled mode as must be explicitly
+	enabled via the ENable Device command.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_CREDEVQUE
+
+	The command:
+
+	  Create DEVICE_queue <queue-name> \
+	  PRiority = <queue-priority> \
+	  [ Device = <device-name> ] \
+	  [ Device = (<device-name> [,<device-name>...]) ] \
+	  [ PIpeonly ]
+
+	is used to define a new NQS device request queue.
+
+	The name given to the queue as the <queue-name> parameter can
+	contain any printable non-blank character with the exception of
+	the '@' character and Qmgr command punctucation characters of
+	[',', '=', '(', ')'], and must not start with a decimal digit
+	['0'..'9'].
+
+	The priority of the queue is defined by the unsigned integer
+	<queue-priority> which must be in the range [0..63].
+
+	A set of devices can be assigned to the device queue at the time
+	of creation using the optional "Device=" parameter.  All
+	devices named in the set must have been previously defined by the
+	Create DEVICE command.
+
+	If the optional "PIpeonly" attribute is specified, then no user
+	is allowed to submit requests directly to the device queue.  A
+	queue with the "PIpeonly" attribute can only receive requests
+	submitted from another pipe queue.
+
+	The queue is created in a disabled and stopped state, and must be
+	explicitly enabled and started by the:
+
+	  ENable Queue    and
+	  STArt Queue
+
+	commands.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_CREPIPQUE
+
+	The command:
+
+	  Create Pipe_queue <queue-name> \
+	  PRiority = <queue-priority> \
+	  Server = (<pipe-queue-server-cmnd-line-and-server-arguments>) \
+	  [ Destination = <dest-name> ] \
+	  [ Destination = (<dest-name> [,<dest-name>...]) ] \
+	  [ PIpeonly ] \
+	  [ Run_limit = <run-limit> ]
+
+	is used to define a new NQS pipe queue.
+
+	The name given to the queue as the <queue-name> parameter can
+	contain any printable non-blank character with the exception of
+	the '@' character and Qmgr command punctucation characters of
+	[',', '=', '(', ')'], and must not start with a decimal digit
+	['0'..'9'].
+
+	The priority of the queue is defined by the unsigned integer
+	<queue-priority> which must be in the range [0..63].
+
+	The name of the server which will be used to transport requests
+	submitted to this queue to one of the destination queues, and the
+	associated server command line arguments are specified within the
+	parentheses of the: "Server=" command keyword.
+
+	A set of destination queues can be assigned to the pipe queue
+	at the time of creation using the optional "DEStination="
+	parameter.
+
+	The syntax of a pipe queue destination (<dest-name>) if specified,
+	must conform to one of the following four forms:
+
+	  local_queue_name
+	  local_queue_name@local_machine_name
+	  remote_queue_name@remote_machine_name
+	  remote_queue_name@[remote_machine_mid]
+
+	where the <local_machine_name> or <remote_machine_name> must be
+	defined in the network host table of the local system.
+
+	The destination syntax form:
+
+	  remote_queue_name@[remote_machine_mid]
+
+	allows for the explicit specification of the destination machine
+	by its machine-id, entered as in integer:
+
+	  example_queue_name@[123]
+
+	If the optional "PIpeonly" attribute is specified, then no user
+	is allowed to submit requests directly to the pipe queue.  A queue
+	with the "PIpeonly" attribute can only receive requests submitted
+	from another pipe queue.
+
+	The optional "Run_limit" parameter defines the maximum number of
+	requests that will be allowed to run in the queue at any given time.
+	If no "Run_limit" parameter is given, then the queue is assigned
+	a default run-limit of one (1).
+
+	The queue is created in a disabled and stopped state, and must be
+	explicitly enabled and started by the:
+
+	  ENable Queue    and
+	  STArt Queue
+
+	commands.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DEL
+
+	The commands:
+
+	  DElete Complex <complex-name>
+	  DElete DEStination <parameters>
+	  DElete DEVice <parameters>
+	  DElete Form <parameters>
+	  DElete Groups <parameters>
+	  DElete Manager <parameters>
+	  DElete Queue <parameters>
+	  DElete Users <parameters>
+
+	are used to respectively delete a queue complex, delete destination(s)
+	for a pipe queue, delete an NQS device or delete device(s) from a
+	queue device set, delete a form from the device forms list, delete
+	group(s) from a queue access list, delete an account from the NQS
+	manager access list, delete an NQS queue, delete request(s) from a
+	queue, or delete user(s) from a queue access list.
+
+	More information is available:
+
+	  Help DElete Complex
+	  Help DElete DEStination
+	  Help DElete DEVice
+	  Help DElete Form
+	  Help DElete Groups
+	  Help DElete Manager
+	  Help DElete Queue
+	  Help DElete Users
+
+#HELP_DELCOM
+
+	The command:
+
+	  DElete Complex <complex-name>
+
+	is used to delete a queue complex.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DELDES
+
+	The commands:
+
+	  DElete DEStination = <dest-name> <queue-name>
+	  DElete DEStination = ( <dest-name> [,<dest-name>...] ) <queue-name>
+
+	respectively delete a single destination, or several destinations
+	from the destination set of a pipe queue.
+
+	Any requests in the named queue that are currently being transferred
+	to a destination that is being deleted by this command are
+	allowed to successfully complete the transfer process.
+
+	If all destinations for a pipe queue are deleted in this manner,
+	then the pipe queue is effectively stopped, though its actual
+	status will remain unchanged.  Thus, the addition of a new
+	destination for a pipe queue that has been effectively stopped in
+	the manner described, will immediately cause the queue to start
+	running again.
+
+	The syntax of a pipe queue destination (<dest-name>) must conform
+	to one of the following four forms:
+
+	  local_queue_name
+	  local_queue_name@local_machine_name
+	  remote_queue_name@remote_machine_name
+	  remote_queue_name@[remote_machine_mid]
+
+	where the <local_machine_name> or <remote_machine_name> must be
+	defined in the network host table of the local system.
+
+	The destination syntax form:
+
+	  remote_queue_name@[remote_machine_mid]
+
+	allows for the explicit specification of the destination machine
+	by its machine-id, entered as an integer:
+
+	  example_queue_name@[123]
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DELDEV
+
+	The commands:
+
+	  DElete DEVice <device-name>
+	  DElete DEVice = <device-name> <queue-name>
+	  DElete DEVice = (<device-name> [,<device-name>...] ) <queue-name>
+
+	respectively delete a device, a single device from a device set
+	owned by a queue, or several devices from a device set owned by
+	a queue.
+
+	The first command deletes an NQS device.  A device cannot be
+	deleted unless the device is disabled via the DIsable Device
+	command.  Similarly, the device cannot be servicing an NQS
+	request if it is to be deleted.  Upon deletion, the device is
+	removed from all queue device mapping sets.
+
+	The second and third forms of the DElete DEVice command are used
+	to remove a device from the device set accessible to queue.  All
+	requests in the named queue running on any on the named device(s)
+	are allowed to complete normally.
+
+	If the device set for any queue becomes the empty set by the
+	invocation of either of the latter two commands, then the
+	corresponding device queue is effectively stopped, since no
+	devices are accessible to handle requests for the affected queue.
+
+	However, the actual queue status remains unchanged for such a
+	queue, so that the first addition of an enabled device to the
+	device set for a queue that was effectively stopped in the manner
+	described, immediately causes the queue to start running again.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DELFOR
+
+	The command:
+
+	  DElete Forms <form-name> ...
+
+	is used to delete form(s) from the device forms list.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DELGID
+
+	The commands:
+	
+	  DElete Groups = <group-name> <queue-name>
+	  DElete Groups = (<group-name> [,<group-name>...]) <queue-name>
+
+	are used to delete an entire group or several entire groups
+	from the existing list of those that are allowed access to the
+	named queue.  This command can only delete groups that have
+	been added with the ADd Groups command.  It is not permitted to
+	delete a group from a queue where access is unrestricted.
+
+	A <group-name> can be specified by using either of the following
+	two formats:	1. group name	2. [group-id]
+
+	For example, if there is a group "archers" on your machine with
+	group-id 10001, you may specify it with "archers" or "[10001]".
+	If the group name does not appear in the system group file,
+	the latter form must be used.
+
+	In order for a user to have access to a queue, it is only
+	necessary for ONE of the following to be true:
+	
+	1) Queue access is unlimited. (Help SEt NO_Access)
+	2) His or her login group has access.
+	3) His or her account has access. (Help DElete Users)
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DELMAN
+
+	The command:
+
+	  DElete Managers <account-name>:{m,o} ...
+
+	is used to delete account(s) from the NQS manager access list.
+
+	Attempts to exclude the system root account from the NQS manager
+	set will be silently ignored.
+
+	An NQS manager <account-name> can be specified by using any of
+	the four following formats:
+
+		1. local_account_name
+		2. [local_user_id]
+		3. [remote_user_id]@remote_machine_name
+		4. [remote_user_id]@[remote_machine_mid]
+
+	Each of the following four examples demonstrates the use of the
+	above four parse constructs for an NQS manager <account-name>.
+
+		1. kingsbur		; Local account of "kingsbur"
+		2. [149]		; Local account (user-id = 149)
+		3. [149]@Hal9000	; Remote account (user-id = 149)
+					; on remote machine: "Hal9000"
+		4. [149]@[9000]		; Remote account (user-id = 149)
+					; on remote machine with machine-
+					; id = 9000.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DELQUE
+
+	The command:
+
+	  DElete Queue <queue-name>
+
+	deletes the named queue.  To delete a queue, no requests can be
+	present in the queue and the queue must be disabled.  All of the
+	queue device set mappings for the deleted queue are also deleted.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DELREQ
+
+	The command:
+
+	  DElete Request <request-id> ...
+
+	is used to delete a request on the local NQS machine.
+
+	If the specified request is running, then it is terminated by
+	the method described in the ABort Queue command.
+
+	If the request is not running, then it is simply removed from
+	its containing queue and discarded.
+
+	Operator privileges are required to use this command.
+
+#HELP_DELUID
+
+	The commands:
+	
+	  DElete Users = <user-name> <queue-name>
+	  DElete Users = (<user-name> [,<user-name>...]) <queue-name>
+
+	are used to delete a single user or several users from the
+	existing list of those that are allowed access to the named
+	queue.  This command can only delete users who have been
+	added with the ADd Users command.  It is not permitted to
+	delete a user from a queue where access is unrestricted.
+
+	A <user-name> can be specified by using either of the following
+	two formats:	1. user name	2. [user-id]
+
+	For example, if there is a user "robin" on your machine with
+	user-id 1001, you may specify him or her with "robin" or "[1001]".
+	If the group name does not appear in the system group file,
+	the latter form must be used.
+
+	In order for a user to have access to a queue, it is only
+	necessary for ONE of the following to be true:
+	
+	1) Queue access is unlimited. (Help SEt NO_Access)
+	2) His or her login group has access. (Help DElete Groups)
+	3) His or her account has access.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_DIS
+
+	The commands:
+
+	  DIsable Device <parameters>
+	  DIsable Queue <parameters>
+
+	are used to respectively disable an NQS device, or NQS queue.
+
+	More information is available:
+
+	  Help DIsable Device
+	  Help DIsable Queue
+
+#HELP_DISDEV
+
+	The command:
+
+	  DIsable Device <device-name>
+
+	disables the named device.  The current request (if any) being
+	handled by the device will be allowed to complete.  After that,
+	the device is prevented from handling any more requests until it
+	is enabled by the ENable Device command.
+
+	If the device disabled by this command was the last enabled device
+	in a device set for a particular queue, then the queue is
+	effectively stopped, since no more enabled devices appear in the
+	device set for the particular queue.
+
+	However, the actual queue status remains unchanged for such a
+	queue, so that the first addition of an enabled device to the
+	device set for a queue that was effectively stopped in the manner
+	described, immediately causes the queue to start running again.
+
+	Operator privileges are required to use this command.
+
+#HELP_DISQUE
+
+	The command:
+
+	  DIsable Queue <queue-name>
+
+	is used to prevent any more requests from being placed in the named
+	queue.
+
+	Operator privileges are required to use this command.
+
+#HELP_ENA
+
+	The commands:
+
+	  ENable Device <parameters>
+	  ENable Queue <parameters>
+
+	are used to respectively enable an NQS device, or NQS queue.
+
+	More information is available:
+
+	  Help ENable Device
+	  Help ENable Queue
+
+#HELP_ENADEV
+
+	The command:
+
+	  ENable Device <device-name>
+
+	is used to enable the named device.  If the device is already
+	enabled, then no operation is performed.  Otherwise, the device
+	becomes available to handle device queue requests.
+
+	Operator privileges are required to use this command.
+
+#HELP_ENAQUE
+
+	The command:
+
+	  ENable Queue <queue-name>
+
+	is used to enable the named queue.  If the queue is already
+	enabled, the no operation is performed.  Otherwise, the queue
+	is enabled to accept new requests.
+
+	Operator privileges are required to use this command.
+
+#HELP_EXI
+
+	The command:
+
+	  EXit
+
+	is used to exit from the NQS manager program.  The NQS manager
+	program is also exited if an end-of-file is encountered on the
+	standard input file.  Thus, typing ^D or EXit will cause the
+	NQS manager program to exit.
+
+#HELP_LOCDAE
+
+	The command:
+	
+	  Lock Local_daemon
+	  
+	is used to lock the NQS local daemon into memory.
+	See plock(2).
+	
+	Operator privileges are required to use this command.
+
+#HELP_MODREQ
+
+	The command:
+	
+	  MODify Request <request-id> \
+			 [ Nice_limit = <nice-value> ] \
+	  		 [ RTime_limit = <tlimit-value> ] \
+	  		 [ RMemory_limit = <mlimit-value> ]
+	  
+	is used to modify the parameters of a request which is already
+	in its final destination queue, but has not started yet.
+
+	Several parameters may be changed.  Nice_limit is the initial nice
+	value of the request, RTime_limit is the per-request time limit
+	for the request, and RMemory_limit is the per-request memory limit
+	for the request.
+	
+	Operator privileges are required to use this command.
+
+#HELP_MOV
+
+	The commands:
+	
+	  MOVe Queue <parameters>
+	  MOVe Request <parameters>
+	  
+	are used to move requests between queues.
+	
+	More information is available:
+
+	  Help MOVe Queue
+	  Help MOVe Request
+
+#HELP_MOVQUE
+
+	The command:
+	
+	  MOVe Queue <from-queue-name> <to-queue-name>
+	  
+	is used to move all requests from the queue specified by
+	<from-queue-name> to the queue specified by <to-queue-name>.
+
+	Operator privileges are required to use this command.
+
+#HELP_MOVREQ
+
+	The commands:
+	
+	  MOVe Request = <request-id> <queue-name>
+	  MOVe Request = (<request-id> [ <request-id> ... ] ) <queue-name>
+	  
+	respectively move one or a number requests from the queue they are
+	currently in to the queue specified by <queue-name>.
+
+	Operator privileges are required to use this command.
+
+#HELP_PURQUE
+
+	The command:
+
+	  Purge Queue <queue-name>
+
+	causes all requests that are not running to be purged (dropped)
+	from the named queue.  The purged requests are irretrievably lost.
+
+	Operator privileges are required to use this command.
+
+#HELP_REMQUE
+
+	The command:
+	
+	  Remove Queue = (<queue-name> [,<queue-name>...]) <complex-name>
+	  
+	is used to remove one or more queues specified by <queue-name>
+	from the queue complex specified by <complex-name>.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SET
+
+	The command:
+
+	  SEt <parameters>
+
+	has many possible forms.  More information is available:
+
+	  Help SEt COMplex		Help SEt CORefile_limit
+	  Help SEt DAta_limit		Help SEt DEBug
+	  Help SEt DEFault		Help SEt DEStination
+	  Help SEt DEVICE		Help SEt DEVICE_server
+	  Help SEt Form			Help SEt Global
+	  Help SEt HARDUlimit		Help SEt LIfetime
+	  Help SEt NODE_Group
+	  Help SEt LOg_file		Help SEt MAIl
+	  Help SEt MANager		Help SEt MAXimum
+	  Help SEt NEtwork		Help SEt NIce_value_limit
+	  Help SEt NO_Access		Help SEt NO_Default
+	  Help SEt NO_Network_daemon	Help SEt Open_wait
+	  Help SEt PER_Process		Help SEt PER_Request
+	  Help SEt PIpe_client		Help SEt PRiority
+	  Help SEt Run_limit		Help SEt SHell_strategy
+	  Help SEt SOFTUlimit
+	  Help SEt STack_limit		Help SEt Unrestricted_access
+	  Help SEt Working_set_limit	Help SEt Queue_request_limit
+
+#HELP_SETCOMRUNLIM
+
+	The command:
+
+	  SEt COMplex Run_limit = <runlimit-value> <complex-name>
+
+	is used to change the run-limit of an NQS queue complex.
+	The queue complex specified by <complex-name> must already exist.
+
+	The run-limit for a queue complex determines the maximum number of
+	requests that will be allowed to run in all the queues in that 
+	queue complex at any given time.
+
+	Operator privileges are required to use this command.
+
+#HELP_SETCOR
+
+	The command:
+
+	  SEt CORefile_limit = (<corefile-size-limit>) <batch-queue-name>
+
+	is used to set the per-process maximum core file size limit
+	(the largest size of a "core" file that can be created for
+	a process) for any batch request subsequently placed in the
+	named batch queue, when the request does not otherwise define
+	an explicit per-process maximum core file size limit (as chosen
+	by the originating user).
+
+	Each batch request when placed in a batch queue, is examined to
+	ensure that any user-specified core file size limit for the
+	request does not exceed the core file size limit (if configured),
+	for the containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for a
+	larger core file size limit than the destination batch queue has
+	defined as allowable, then the request is rejected.
+
+	The maximum core file size limit assigned to a particular batch
+	request is determined at the time that the request is queued.
+	If the core file size limit for the containing batch queue is
+	later reduced, no requests in the batch queue will be affected.
+	However, if the new core file size limit value is less than the
+	core file size limit requested by a previously queued request,
+	then a warning diagnostic is displayed.
+
+	The core file size of ANY process comprising the running batch
+	request cannot exceed the maximum in force when the request
+	was queued.
+
+	A <corefile-size-limit> is specified as a single integer less
+	than 100,000,000 with an optional fractional part, possibly
+	followed by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <corefile-size-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	core file size limits are not supported by the host UNIX
+	operating system, then an appropriate error diagnostic is
+	displayed, upon the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDAT
+
+	The command:
+
+	  SEt DAta_limit = (<data-limit>) <batch-queue-name>
+
+	is used to set the per-process maximum data-segment size limit
+	for any batch request subsequently placed in the named batch
+	queue, when the batch request does not otherwise define an
+	explicit per-process maximum data-segment size limit (as chosen
+	by the originating user).
+
+	Each batch request, when queued, is examined to ensure that any
+	user-specified data-segment size limit for the request does not
+	exceed the data-segment size limit (if configured), for the
+	containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for a
+	larger data-segment size limit than the destination batch queue
+	has defined as allowable, then the request is rejected.
+
+	The maximum data-segment size limit assigned to a particular
+	batch request is determined at the time that the request is
+	queued.  If the data-segment size limit for the containing batch
+	queue is later reduced, no requests in the queue will be affected.
+	However, if the new data-segment size limit value is less than
+	the data-segment size limit requested by a previously queued
+	request, then a warning diagnostic is displayed.
+
+	The data-segment size of ANY process comprising the running batch
+	request cannot exceed the maximum in force when the request was
+	queued.
+
+	A <data-limit> is specified as a single integer less than
+	100,000,000 with an optional fractional part, possibly followed
+	by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <data-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	data-segment size limits are not supported by the host UNIX
+	operating system, then an appropriate error diagnostic is
+	displayed, upon the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEB
+
+	The command:
+
+	  SEt DEBug <integer-debug-level>
+
+	allows an NQS manager to enable or disable NQS debugging output.
+	Currently, only 4 levels of debugging are supported, namely no
+	debugging or debugging enabled.  A debug value of 0 turns off
+	debug information, while a non-zero value enables debugging.
+	A debug value of 0 means only catastrophic failures are reported in the
+        NQS log; the maximum debug level of 3 means even trivial errors
+        are reported, thus greatly increasing the amount of disk space used.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEF
+
+	The commands:
+
+	  SEt DEFault Batch_request <parameters>
+	  SEt DEFault DEStination_retry <parameters>
+	  SEt DEFault DEVice_request <parameters>
+	  SEt DEFault Print_request <parameters>
+
+	are used to set default batch request, default destination,
+	default device request, and default print request characteristics.
+
+	More information is available:
+
+	  Help SEt DEFault Batch_request
+	  Help SEt DEFault DEStination_retry
+	  Help SEt DEFault DEVice_request
+	  Help SEt DEFault Print_request
+
+#HELP_SETDEFBAT
+
+	The commands:
+
+	  SEt DEFault Batch_request Priority <parameters>
+	  SEt DEFault Batch_request Queue <parameters>
+
+	are used to respectively set the default queue to be used for
+	batch request submission, and the default batch request intra-
+	queue priority.
+
+	More information is available:
+
+	  Help SEt DEFault Batch_request Priority
+	  Help SEt DEFault Batch_request Queue
+
+#HELP_SETDEFBATPRI
+
+	The command:
+
+	  SEt DEFault Batch_request Priority <integer-priority>
+
+	is used to set the intra-queue priority for batch requests.
+
+	If a batch request is submitted without a specified intra-queue
+	priority, then a default intra-queue priority is assigned to the
+	request.  This default priority is set by this command.
+
+	The priority selected is termed the "intra-queue priority"
+	because the selected priority determines the relative ordering
+	of requests within the selected batch queue--not the execution-time
+	priority of the request.  This integer priority value must be in the
+	interval [0..63].
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEFBATQUE
+
+	The command:
+
+	  SEt DEFault Batch_request Queue <queue-name> 
+
+	is used to set the default queue to be used for batch requests in
+	the absence of an explicit queue specification.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEFDES
+
+	The commands:
+
+	  SEt DEFault DEStination_retry Time <parameters>
+	  SEt DEFault DEStination_retry Wait <parameters>
+
+	are used to respectively set the default unreachable destination
+	retry tolerance and the default unreachable destination retry wait
+	time.
+
+	More information is available:
+
+	  Help SEt DEFault DEStination_retry Time
+	  Help SEt DEFault DEStination_retry Wait
+
+#HELP_SETDEFDESTIM
+
+	The command:
+
+	  SEt DEFault DEStination_retry Time <elapsed-retry-time-in-hours>
+
+	is used to set the default number of hours that can elapse during
+	which time a pipe queue destination can be unreachable, before
+	being marked as completely failed.
+
+	See also the description of the:
+
+	  SEt DEFault DEStination_retry Wait
+
+	command for more information.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEFDESWAI
+
+	The command:
+
+	  SEt DEFault DEStination_retry Wait <retry-wait-time-in-minutes>
+
+	is used to set the default number of minutes to wait before
+	retrying a pipe queue destination that was unreachable at the
+	time of the last attempt.
+
+	When a pipe queue destination fails to accept a request because
+	of a network failure, or remote server failure, then the request
+	is not transferred, and the destination is disabled for the number
+	of minutes as determined by the <retry-wait-time-in-minutes>
+	parameter.  At the end of this time, the destination is re-enabled,
+	and retried as appropriate.
+
+	To prevent an infinite number of retries, an additional command
+	exists:
+
+	  SEt DEFault DEStination_retry Time <parameter>
+
+	which prevents a pipe queue destination from being endlessly
+	retried forever.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEFDEVPRI
+
+	The command:
+
+	  SEt DEFault DEVice_request Priority <integer-priority>
+
+	is used to set the default intra-queue priority for device requests.
+
+	If a device request is submitted without a specified intra-queue
+	priority, then a default intra-queue priority is assigned to the
+	request.  This default priority is set by this command.
+
+	The priority selected is termed the "intra-queue priority"
+	because the selected priority determines the relative ordering
+	of requests within the selected device queue--not the execution-time
+	priority of the request.  This integer priority value must be in the
+	interval [0..63].
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEFPRI
+
+	The commands:
+
+	  SEt DEFault Print_request Forms <parameters>
+	  SEt DEFault Print_request Queue <parameters>
+
+	are used to respectively set the default forms and default queue
+	to be used for print request submission.
+
+	More information is available:
+
+	  Help SEt DEFault Print_request Forms
+	  Help SEt DEFault Print_request Queue
+
+#HELP_SETDEFPRIFOR
+
+	The command:
+
+	  SEt DEFault Print_request Forms <default-print-forms-name>
+
+	is used to set def default print forms assigned to a print request
+	in the absence of an explicit forms specification.  The default
+	value for the default forms parameter is "anyforms."
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEFPRIQUE
+
+	The command:
+
+	  SEt DEFault Print_request Queue <queue-name>
+
+	is used to set the default queue to be used for print request in
+	the absence of an explicit queue specification.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDES
+
+	The commands:
+
+	  SEt DEStination = <dest-name> <queue-name>
+	  SEt DEStination = (<dest-name> [,<dest-name>...]) <queue-name>
+
+	are used to respectively set the destination set for the named
+	pipe queue to a single destination, or several destinations.
+	All previous destinations in the pipe queue destination set are
+	discarded.
+
+	All machine-names appearing in any queue destination names must
+	be defined in the local system's network host table.
+
+	The syntax of a pipe queue destination (<dest-name>) must conform
+	to one of the following four forms:
+
+	  local_queue_name
+	  local_queue_name@local_machine_name
+	  remote_queue_name@remote_machine_name
+	  remote_queue_name@[remote_machine_mid]
+
+	where the <local_machine_name> or <remote_machine_name> must be
+	defined in the network host table of the local system.
+
+	The destination syntax form:
+
+	  remote_queue_name@[remote_machine_mid]
+
+	allows for the explicit specification of the destination machine
+	by its machine-id, entered as an integer:
+
+	  example_queue_name@[123]
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEV
+
+	The commands:
+
+	  SEt DEVICE = <device-name> <queue-name>
+	  SEt DEVICE = (<device-name> [,<device-name>...]) <queue-name>
+
+	are used to set the device set for the named device queue to a
+	single device, or several devices.
+
+	Use of the SEt DEVICE command causes all previous devices in the
+	device set for the named queue to be discarded.  The device set
+	for the named queue is then set to include only the specified
+	devices.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETDEVSER
+
+	The command:
+
+	  SEt DEVICE_server = (<server-name-and-arguments>) <device-name>
+
+	is used to set the server and related server arguments used by the
+	named device.
+
+	The text within the enclosing parentheses defines the server
+	command line that will be used to execute requests handled by the
+	named device.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETFOR
+
+	The commands:
+
+	  SEt Forms <forms-name> ...
+	  SEt Forms = <forms-name> <device-name>
+
+	respectively set the device forms list to the specified form(s),
+	and set the forms for the named device.
+
+	A <form-name> can contain any printable non-blank character with
+	the exception that a <form-name> cannot start with a decimal
+	digit ['0'..'9'], and it cannot contain any of the Qmgr command
+	punctuation characters of [',', '=', '(', ')'].
+
+	Full NQS manager privileges are required for the use of the
+
+	  SEt Forms <forms-name> ...
+
+	command, while operator privileges will suffice for successful
+	execution of the:
+
+	  SEt Forms = <forms-name> <device-name>
+
+	command.
+
+
+#HELP_SETGBLBATLIM
+
+	The command:
+
+	  SEt Global Batch_limit = <newlimit>
+
+	is used to set the maximum number of batch requests that can RUN
+	in the local host simultaneously.
+
+	The value can be confirmed in the "SHOw Parameters" display.
+
+	Operator privileges are required to use this command.
+
+
+#HELP_SETLIFTIM
+
+	The command:
+
+	  SEt LIfetime <pipe-queue-request-lifetime-in-hours>
+
+	is used to set the lifetime of requests queued in pipe queues.
+
+	This value determines the number of hours that any request can
+	reside within a pipe queue, from the time at which the request
+	was first placed within the queue.  If any request resides within
+	a pipe queue for a duration of time equal to or greater than this
+	limit (for whatever reason: i.e. the pipe queue is stopped), then
+	the request is deleted, and mail is sent informing the owner of
+	the request that the request has been deleted.
+
+	The "LIfetime" parameter exists to prevent requests from filling
+	up all available queue space because of network failures, or other
+	causes that would prevent requests from being delivered to their
+	respective destinations.
+
+	This value should be typically configured so as to describe a
+	fairly long time interval (i.e. 72 hours).
+
+	Alternatively, the "LIfetime" parameter can be assigned a value
+	of 0, which indicates that all requests residing within a pipe
+	queue have an infinite lifetime.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETLOGFIL
+
+	The command:
+
+	  SEt LOg_file <logfile-name>
+
+	is used to change the file being used for NQS error logging.  If
+	the specified file is successfully opened for append, then NQS
+	writes a message on the old logfile stating that a switch is being
+	made to the new logfile.
+
+	Otherwise, an error message is written on the current log file and
+	the current logfile is not changed.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETMAI
+
+	The command:
+
+	  SEt MAIl <account-name>
+
+	is used to set the account name that will appear in the "From:"
+	portion of mail sent by NQS to notify users (when appropriate), of
+	certain events concerning their NQS request(s).
+
+	The mail <account-name> can contain any printable non-blank
+	character with the exception that an <account-name> cannot start
+	with a decimal digit ['0'..'9'], and it cannot contain any of the
+	Qmgr command punctuation characters of [',', '=', '(', ')'].
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETMAN
+
+	The command:
+
+	  SEt MANagers <account-name>:{m,o} ...
+
+	is used to set the NQS manager access list to the specified
+	account(s).
+
+	An NQS manager <account-name> can be specified by using any of
+	the four following formats:
+
+		1. local_account_name
+		2. [local_user_id]
+		3. [remote_user_id]@remote_machine_name
+		4. [remote_user_id]@[remote_machine_mid]
+
+	Each of the following four examples demonstrates the use of the
+	above four parse constructs for an NQS manager <account-name>.
+
+		1. kingsbur		; Local account of "kingsbur"
+		2. [149]		; Local account (user-id = 149)
+		3. [149]@Hal9000	; Remote account (user-id = 149)
+					; on remote machine: "Hal9000"
+		4. [149]@[9000]		; Remote account (user-id = 149)
+					; on remote machine with machine-
+					; id = 9000.
+
+	A ":m" or ":o" suffix at the end of an <account-name> specified
+	for this command is REQUIRED, and indicates the NQS Qmgr privileges
+	to be assigned to the corresponding account.
+
+	The appearance of a ":m" suffix at the end of an <account-name>
+	indicates that the account should be granted full NQS manager
+	privileges.  The owner of such an account will be able to use all
+	of the NQS Qmgr commands.
+
+	The appearance of a ":o" suffix at the end of an <account-name>
+	indicates that the account will only be granted NQS operator
+	privileges.  Such an account will have the privilege to execute
+	many Qmgr commands, but will NOT have the privilege to create new
+	queues, devices, forms, managers, or to delete any of the same.
+
+	Attempts to exclude the system root account from the NQS manager
+	set as a fully privileged manager account (privilege=m), will be
+	silently ignored.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETSOFTULIM
+
+	The command:
+
+	  SEt SOFTUlimit=<number-of-nodes>
+
+	is used to set the soft user_limit. The soft user_limit specifies
+	the total number of nodes a single user may use (in RUN state) at
+	a time. However, this limit can be exceeded if the batch partition
+	is not fully utilized and there are no other requests pending.
+
+	A user can submit as many jobs as he/she wishes, but the number of 
+	nodes that can be in RUN state by a user will be limited by the 
+	soft limits unless the batch partition is not fully utilized. 
+	The rest of the unscheduled jobs will be waiting in the queues.
+ 
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETHARDULIM
+
+	The command:
+
+	  SEt HARDUlimit=<number-of-nodes>
+
+	is used to set the hard user_limit. The hard user_limit specifies
+	the absolute maximum number of nodes a single user may use 
+	(in RUN state) at a time. This limit cannot be exceeded even if 
+	the batch partition is not fully utilized.
+
+	A user can submit as many jobs as he/she wishes, but the number of 
+	nodes that can be in RUN state by a user will be limited by the 
+	hard limits. The rest of the unscheduled jobs will be waiting in 
+	the queues.
+ 
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETMAX
+
+	The commands:
+
+	  SEt MAXimum Copies <parameters>
+	  SEt MAXimum Open_retries <parameters>
+	  SEt MAXimum Print_size <parameters>
+
+	are used to respectively set the maximum number of copies that
+	may be generated by a device request, the maximum number of failed
+	device open retries, and the maximum size of a print file request
+	accepted by NQS.
+
+	More information is available:
+
+	  Help SEt MAXimum Copies
+	  Help SEt MAXimum Open_retries
+	  Help SEt MAXimum Print_size
+
+#HELP_SETMAXCOP
+
+	The command:
+
+	  SEt MAXimum Copies <integer-max-print-copies>
+
+	is used to set the maximum number of copies of a file that can be
+	printed by an NQS print request.  NQS will refuse to print more than
+	this many copies of a print file.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETMAXOPERET
+
+	The command:
+
+	  SEt MAXimum Open_retries <integer-retry-count>
+
+	is used to set the maximum number of times that NQS will try to
+	open a device prior to spawning a device server to handle an NQS
+	device request.  If an error occurs trying to open a device, then
+	this limit prevents NQS from trying open a failed device forever.
+
+	If this limit is exceeded trying to open a device, then the
+	device is marked as failed.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETMAXPRISIZ
+
+	The command:
+
+	  SEt MAXimum Print_size <integer-max-print-file-size>
+
+	is used to set the maximum size of an NQS print file in bytes.
+	NQS will refuse to print files larger than this size.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNDF
+
+	The commands:
+
+	  SEt NO_Default Batch_request Queue
+	  SEt NO_Default Print_request Forms
+	  SEt NO_Default Print_request Queue
+
+	are used to respectively define that no default batch request
+	queue exists, no default print request forms exist, and that no
+	default print request queue exists.
+
+	More information is available:
+
+	  Help SEt NO_Default Batch_request Queue
+	  Help SEt NO_Default Print_request Forms
+	  Help SEt NO_Default Print_request Queue
+
+#HELP_SETNDFBATQUE
+
+	The command:
+
+	  SEt NO_Default Batch_request Queue
+
+	is used to indicate that no default batch request queue is to
+	be defined.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNDFPRI
+
+	The commands:
+
+	  SEt NO_Default Print_request Forms
+	  SEt NO_Default Print_request Queue
+
+	are used to respectively define that no default print request
+	forms exist, and that no default print request queue exists.
+
+	More information is available:
+
+	  Help SEt NO_Default Print_request Forms
+	  Help SEt NO_Default Print_request Queue
+
+#HELP_SETNDFPRIFOR
+
+	The command:
+
+	  SEt NO_Default Print_request Forms
+
+	is used to indicate that no default print request forms are
+	defined for the local NQS system.  Print requests executed
+	on the local system that do not explicitly define any required
+	forms, will run on the first available device for the device
+	queue in which they are entered.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNDFPRIQUE
+
+	The command:
+
+	  SEt NO_Default Print_request Queue
+
+	is used to indicate that no default print request queue is to
+	be defined.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNET
+
+	The commands:
+
+	  SEt NEtwork Client <parameters>
+	  SEt NEtwork Daemon <parameters>
+	  SEt NEtwork Server <parameters>
+
+	are used to respectively define the network client (server
+	for all local network queues), the network daemon, and the
+	network server.
+
+	More information is available:
+
+	  Help SEt NEtwork Client
+	  Help SEt NEtwork Daemon
+	  Help SEt NEtwork Server
+
+#HELP_SETNETCLI
+
+	The command:
+	
+	  SEt NEtwork Client = (<client-name-and-arguments>)
+
+	is used to set and configure the network client and the
+	arguments thereto. The network client stages out batch
+	request output files and empties network queues.
+
+	The text within the enclosing parentheses defines the
+	command line that will be used to execute the client.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNETDAE
+
+	The command:
+	
+	  SEt NEtwork Daemon = (<daemon-name-and-arguments>)
+
+	is used to set and configure the network daemon and the
+	arguments thereto. The network daemon listens for messages
+	from remote clients.
+
+	The text within the enclosing parentheses defines the
+	command line that will be used to execute the daemon.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNETSER
+
+	The command:
+	
+	  SEt NEtwork Server = (<server-name-and-arguments>)
+
+	is used to set and configure the network server and the
+	arguments thereto. The network server processes submission
+	requests from remote pipe clients.
+
+	The text within the enclosing parentheses defines the
+	command line that will be used to execute the server.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNIC
+
+	The command:
+
+	  SEt NIce_value_limit = <nice-value> <batch-queue-name>
+
+	is used to set the per-process UNIX nice-value limit, for any
+	batch request subsequently placed in the named batch queue,
+	when the request does not otherwise define an explicit per-
+	rocess nice-value (as chosen by the originating user).
+
+	Each batch request, when queued, is examined to ensure that any
+	user-specified nice-value for the request does not exceed the
+	nice-value (if configured), for the containing batch queue.
+	That is, the user-specified nice-value cannot be NUMERICALLY
+	LESS than the nice-value as configured for the containing batch
+	queue.
+
+	If an attempt is made to queue a batch request which asks for a
+	nice-value which would assign all processes in the request an
+	execution priority higher than the nice-value chosen by the
+	destination batch queue (request specifies nice-value NUMERICALLY
+	LESS than the nice-value defined for the batch queue), then the
+	request is rejected.
+
+	It must be remembered that nice-values in the range [-20..-1]
+	actually specify a HIGHER execution priority--than the default
+	of 0, while values in the range [1..19] ([1..20] on Berkeley
+	systems), specify a LOWER execution priority than the default
+	value.
+
+	The nice-value assigned to a particular batch request is deter-
+	mined at the time that the request is queued.  If the nice-value
+	limit for the batch queue is later raised (i.e. the new nice-
+	alue is numerically greater than the old nice-value), no requests
+	in the queue will be affected.  However, if the new nice-value
+	limit is numerically greater than the nice-value requested by a
+	previously queued request, then a warning diagnostic is displayed.
+
+	Unless a process of the request is running with an effective
+	user-id of root, it will be unable to lower its nice value
+	(raise its execution priority) from the value determined
+	when the request was queued.
+
+	A <nice-value> is always specified as an integer in the range
+	[-20..20].  On System V based UNIX implementations, a specifi-
+	cation of "20" is silently interpreted as "19", since only
+	Berkeley UNIX implementations are capable of using the highest
+	value of "20".
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNODEGRP
+
+	The command:
+
+	  SEt NODE_Group = <node_group-value> <batch-queue-name>
+
+	is used to set the scheduling node_group value, for any
+	batch request subsequently placed in the named batch queue.
+
+
+	A <node_group-value> is always specified as an integer in the range
+	[0..63].
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETNNEDAE
+
+	The command:
+	
+	  SEt NO_Network_daemon
+	  
+	is used to indicate that no network daemon is to be defined.
+	
+	Full NQS manager privileges are required to use this command.
+	
+#HELP_SETNOACC
+
+	The command:
+
+	  SEt NO_Access <queue-name>
+
+	is used to delete all groups and all users from the access list
+	for the named queue.  Requests in the queue will be allowed
+	to remain there.  In order to enforce access restrictions on
+	a queue where access is currently unrestricted, start with
+	this command and then add groups or users as needed.
+	
+	Root always has access to all enabled queues, even in the
+	absence of the appropriate entries in the access list.
+	If you wish to deny access to root, see DIsable Queue.
+
+	In order for a user to have access to a queue, it is only
+	necessary for ONE of the following to be true:
+	
+	1) Queue access is unlimited.
+	2) His or her login group has access. (Help DElete Groups)
+	3) His or her account has access. (Help DElete Users)
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETOPEWAI
+
+	The command:
+
+	  SEt Open_wait <open-wait-seconds>
+
+	is used to set the number of seconds between failed device
+	open attempts that NQS will wait before trying to open the
+	device again.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETPERPRO
+
+	The commands:
+
+	  SEt PER_Process Cpu_limit <parameters>
+	  SEt PER_Process Memory_limit <parameters>
+	  SEt PER_Process Permfile_limit <parameters>
+	  SEt PER_Process Tempfile_limit <parameters>
+
+	are used to set the PER-PROCESS maximum CPU-time limit, maximum
+	memory consumption limit, maximum permanent-file size limit,
+	and maximum temporary-file size limit, for all batch requests
+	subsequently placed in the named batch queue, in the absence of
+	an explicit corresponding user-specified quota limit.
+
+	Each batch request when placed in a batch queue, is examined
+	to ensure that all of the user-specified quota limits for the
+	request do not exceed the corresponding maximum limit for the
+	containing batch queue (provided that the corresponding queue
+	limit has been configured).
+
+	If an attempt is made to queue a batch request which asks for
+	more of a particular resource than the destination batch queue
+	has defined as allowable, then the request is rejected.
+
+	All possible limits that can be applied to a particular batch
+	request are resolved at the time that the request is queued.
+	If a particular batch queue limit is later reduced, no requests
+	in the queue will be affected.  However, if the new limit value
+	is less than the corresponding limit requested by a previously
+	queued batch request, then a warning diagnostic is displayed.
+
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, some, all, or none of these limits may be configurable.
+	If the named quota limit is not supported by the underlying
+	operating system, then an appropriate error diagnostic is
+	displayed, if an attempt is made to set the unsupported limit.
+
+	More information is available:
+
+	  Help SEt PER_Process Cpu_limit
+	  Help SEt PER_Process Memory_limit
+	  Help SEt PER_Process Permfile_limit
+	  Help SEt PER_Process Tempfile_limit
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETPERPROCPUT
+
+	The command:
+
+	  SEt PER_Process Cpu_limit = (<cpu-time-limit>) <batch-queue-name>
+
+	is used to set the PER-PROCESS maximum CPU-time limit for any
+	batch request subsequently placed in the named batch queue, when
+	the request does not otherwise define an explicit PER-PROCESS
+	maximum CPU-time limit (as chosen by the originating user).
+
+	Each batch request when placed in a batch queue, is examined to
+	ensure that any user-specified CPU-time limit for the request
+	does not exceed the CPU-time limit (if configured), for the
+	containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for
+	more CPU-time than the destination batch queue has defined as
+	allowable, then the request is rejected.
+
+	The maximum CPU-time to be given to a particular batch request
+	at execution time is determined at the time that the request is
+	queued.  If the CPU-time limit for the containing batch queue
+ 	is later reduced, no requests in the queue will be affected.
+	However, if the new CPU-time limit value is less than the
+	CPU-time limit requested by a previously queued request, then
+	a warning diagnostic is displayed.
+
+	The CPU-time consumed by ANY process comprising the running
+	batch request cannot exceed the PER-PROCESS maximum determined
+	when the request was queued.
+
+	A <cpu-time-limit> may be specified as seconds, minutes and
+	seconds, or hours, minutes, and seconds. Milliseconds may
+	be included at the setter's option. Milliseconds may also
+	appear alone. Here are the accepted formats:
+
+		hh:mm:ss.ms	hh:mm:ss
+		mm:ss.ms	mm:ss
+		ss.ms		ss
+		.ms
+	
+	Example valid <cpu-time-limit> specifications are therefore:
+
+		2010		(specifies 2,010 seconds)
+		2010.234	(specifies 2,010 seconds and 234
+				 milliseconds)
+		59:23.21	(specifies 59 minutes, 23 seconds,
+				 and 210 milliseconds)
+		99912:0:0	(specifies 99,912 hours, 0 minutes,
+				 0 seconds, and 0 milliseconds)
+
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	CPU-time limits are not supported by the host UNIX operating
+	system, then an appropriate error diagnostic is displayed,
+	upon the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETPERPROMEM
+
+	The command:
+
+	  SEt PER_Process Memory_limit = (<memory-limit>) <batch-queue-name>
+
+	is used to set the PER-PROCESS maximum memory usage limit for
+	any batch request subsequently placed in the named batch queue,
+	when the request does not otherwise define an explicit PER-
+	PROCESS maximum memory usage limit (as chosen by the origina-
+	ting user).
+
+	Each batch request when placed in a batch queue, is examined
+	to ensure that any user-specified memory usage limit for the
+	request does not exceed the memory usage limit (if configured),
+	for the containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for
+	a larger maximum memory usage limit than the destination batch
+	queue has defined as allowable, then the request is rejected.
+
+	The maximum memory usage limit assigned to a particular batch
+	request is determined at the time that the request is queued.
+	If the memory usage limit for the containing batch queue is later
+	reduced, no requests in the queue will be affected.  However,
+	if the new memory usage limit value is less than the memory
+	usage limit requested by a previously queued request, then a
+	warning diagnostic is displayed.
+
+	The memory consumed by ANY process comprising the running batch
+	request cannot exceed the PER-PROCESS maximum determined when
+	the request was queued.
+
+	A <memory-limit> is specified as a single integer less than
+	100,000,000 with an optional fractional part, possibly followed
+	by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <memory-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	memory usage limits are not supported by the host UNIX operating
+	system, then an appropriate error diagnostic is displayed, upon
+	the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETPERPROPER
+
+	The command:
+
+	  SEt PER_Process Permfile_limit=(<permfile-limit>) <batch-queue-name>
+
+	is used to set the PER-PROCESS permanent-file size limit for any
+	batch request subsequently placed in the named batch queue, when
+	the request does not otherwise define an explicit PER-PROCESS
+	permanent-file size usage limit (as chosen by the originating
+	user).
+
+	Each batch request when placed in a batch queue, is examined
+	to ensure that any user-specified permanent-file size limit for
+	the request does not exceed the permanent-file size limit (if
+	configured), for the containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for
+	a larger permanent-file size limit than the destination batch
+	queue has defined as allowable, then the request is rejected.
+
+	The permanent-file size limit assigned to a particular batch
+	request is determined at the time that the request is queued.
+	If the permanent-file size limit for the containing batch queue
+	is later reduced, no requests in the queue will be affected.
+	However, if the new permanent-file size limit value is less
+	than the permanent-file size usage limit requested by a
+	previously queued request, then a warning diagnostic is displayed.
+
+	The size of any permanent-file created by ANY process comprising
+	the running batch request cannot exceed the PER-PROCESS maximum
+	permanent file size as determined when the request was queued.
+
+	A <permfile-limit> is specified as a single integer less than
+	100,000,000 with an optional fractional part, possibly followed
+	by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <permfile-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	permanent-file size limits are not supported by the host UNIX
+	operating system, then an appropriate error diagnostic is
+	displayed, upon the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+	See also:
+
+	  SEt PER_Request Tempfile_limit <parameters>
+	  SEt PER_Process Tempfile_limit <parameters>
+	  SEt PER_Request Permfile_limit <parameters>
+
+#HELP_SETPERPROTEM
+
+	The command:
+
+	  SEt PER_Process Tempfile_limit=(<tempfile-limit>) <batch-queue-name>
+
+	is used to set the PER-PROCESS temporary-file size limit for any
+	batch request subsequently placed in the named batch queue, when
+	the request does not otherwise define an explicit PER-PROCESS
+	temporary-file size usage limit (as chosen by the originating
+	user).
+
+	Each batch request when placed in a batch queue, is examined to
+	ensure that any user-specified temporary-file size limit for the
+	request does not exceed the temporary-file size limit (if
+	configured), for the containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for a
+	larger temporary-file size limit than the destination batch queue
+	has defined as allowable, then the request is rejected.
+
+	The temporary-file size limit assigned to a particular batch
+	request is determined at the time that the request is queued.
+	If the temporary-file size limit for the containing batch queue
+	is later reduced, no requests in the queue will be affected.
+	However, if the new temporary-file size limit value is less than
+	the temporary-file size usage limit requested by a previously
+	queued request, then a warning diagnostic is displayed.
+
+	The size of any temporary-file created by ANY process comprising
+	the running batch request cannot exceed the PER-PROCESS maximum
+	temporary file size as determined when the request was queued.
+
+	A <tempfile-limit> is specified as a single integer less than
+	100,000,000 with an optional fractional part, possibly followed
+	by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <tempfile-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	temporary-file size limits are not supported by the host UNIX
+	operating system, then an appropriate error diagnostic is
+	displayed, upon the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+	See also:
+
+	  SEt PER_Request Permfile_limit <parameters>
+	  SEt PER_Process Permfile_limit <parameters>
+	  SEt PER_Request Tempfile_limit <parameters>
+
+#HELP_SETPERREQ
+
+	The commands:
+
+	  SEt PER_Request Cpu_limit <parameters>
+	  SEt PER_Request Memory_limit <parameters>
+	  SEt PER_Request Ncpus <parameters>
+	  SEt PER_Request Permfile_limit <parameters>
+	  SEt PER_Request Tempfile_limit <parameters>
+
+	are used to set the PER-REQUEST maximum CPU-time limit, maximum
+	number of cpus (nodes), memory consumption limit, maximum 
+	permanent-file space limit, and maximum temporary-file space 
+	limit, for all batch requests subsequently placed in the named 
+	batch queue, in the absence of an explicit corresponding 
+	user-specified quota limit.
+
+	Each batch request when placed in a batch queue, is examined
+	to ensure that all of the user-specified quota limits for the 
+	request do not exceed the corresponding maximum limit for the
+	containing batch queue (provided that the corresponding queue
+	limit has been configured).
+
+	If an attempt is made to queue a batch request which asks for
+	more of a particular resource than the destination batch queue
+	has defined as allowable, then the request is rejected.
+
+	All possible limits that can be applied to a particular batch
+	request are resolved at the time that the request is queued.
+	If a particular batch queue limit is later reduced, no requests
+	in the queue will be affected.  However, if the new limit value
+	is less than the corresponding limit requested by a previously
+	queued request, then a warning diagnostic is displayed.
+
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, some, all, or none of these limits may be configurable.
+	If the named quota limit is not supported by the underlying
+	operating system, then an appropriate error diagnostic is
+	displayed, if an attempt is made to set the unsupported limit.
+	
+	More information is available:
+
+	  Help SEt PER_Request Cpu_limit
+	  Help SEt PER_Request Memory_limit
+	  Help SEt PER_Request Ncpus
+	  Help SEt PER_Request Permfile_limit
+	  Help SEt PER_Request Tempfile_limit
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETPERREQCPUT
+
+	The command:
+
+	  SEt PER_Request Cpu_limit = (<cpu-time-limit>) <batch-queue-name>
+
+	is used to set the PER-REQUEST maximum CPU-time limit for any
+	batch request subsequently placed in the named batch queue, when
+	the request does not otherwise define an explicit PER-REQUEST
+	maximum CPU-time limit (as chosen by the originating user).
+
+	Each batch request when placed in a batch queue, is examined to
+	ensure that any user-specified CPU-time limit for the request
+	does not exceed the CPU-time limit (if configured), for the
+	containing batch queue.
+
+	If an attempt is made to queue batch request which asks for
+	more CPU-time than the destination batch queue has defined as
+	allowable, then the request is rejected.
+
+	The maximum CPU-time to be given to a particular batch request
+	at execution time is determined at the time that the request is
+	queued.  If the CPU-time limit for the containing batch queue
+	is later reduced, no requests in the queue will be affected.
+	However, if the new CPU-time limit value is less than the
+	CPU-time limit requested by a previously queued request,
+	then a warning diagnostic is displayed.
+
+	The sum of the CPU-time consumed by each process comprising the
+	running batch request cannot exceed the PER-REQUEST maximum
+	determined when the request was queued.
+
+	A <cpu-time-limit> may be specified as seconds, minutes and
+	seconds, or hours, minutes, and seconds. Milliseconds may
+	be included at the setter's option. Milliseconds may also
+	appear alone. Here are the accepted formats:
+
+		hh:mm:ss.ms	hh:mm:ss
+		mm:ss.ms	mm:ss
+		ss.ms		ss
+		.ms
+	
+	Example valid <cpu-time-limit> specifications are therefore:
+
+		2010		(specifies 2,010 seconds)
+		2010.234	(specifies 2,010 seconds and 234
+				 milliseconds)
+		59:23.21	(specifies 59 minutes, 23 seconds,
+				 and 210 milliseconds)
+		99912:0:0	(specifies 99,912 hours, 0 minutes,
+				 0 seconds, and 0 milliseconds)
+
+
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	CPU-time limits are not supported by the host UNIX operating
+	system, then an appropriate error diagnostic is displayed,
+	upon the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETPERREQMEM
+
+	The command:
+
+	  SEt PER_Request Memory_limit = (<memory-limit>) <batch-queue-name>
+
+	is used to set the PER-REQUEST maximum memory usage limit for
+	any batch request subsequently placed in the named batch queue,
+	when the request does not otherwise define an explicit PER-
+	REQUEST maximum memory usage limit (as chosen by the origina-
+	ting user).
+
+	Each batch request when placed in a batch queue, is examined to
+	ensure that any user-specified memory usage limit for the request
+	does not exceed the memory usage limit (if configured), for the
+	containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for
+	a larger maximum memory usage limit than the destination batch
+	queue has defined as allowable, then the request is rejected.
+
+	The maximum memory usage limit assigned to a particular batch
+	request is determined at the time that the request is queued.
+	If the memory usage limit for the containing batch queue is later
+	reduced, no requests in the queue will be affected.  However,
+	if the new memory usage limit value is less than the memory usage
+	limit requested by a previously queued request, then a warning
+	diagnostic is displayed.
+
+	The sum of the memory sizes of each process comprising the
+	running batch request cannot exceed the PER-REQUEST maximum
+	determined when the request was queued.
+
+	A <memory-limit> is specified as a single integer less than
+	100,000,000 with an optional fractional part, possibly followed
+	by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <memory-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	memory usage limits are not supported by the host UNIX operating
+	system, then an appropriate error diagnostic is displayed, upon
+	the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETPERREQNCPUS
+
+	The command:
+
+	  SEt PER_Request Ncpu = <ncpu> <batch-queue-name>
+
+	is used to set the PER-REQUEST number of cpus (nodes) limit for
+	any batch request subsequently placed in the named batch queue.
+
+	If the Ncpus limit for the containing batch queue is later
+	reduced, no requests in the queue will be affected.  However,
+	if the new ncpus usage limit value is less than the ncpus usage
+	limit requested by a previously queued request, then a warning
+	diagnostic is displayed.
+
+	The sum of the cpus used by each process comprising the
+	running batch request cannot exceed the PER-REQUEST maximum
+	determined when the request was queued.
+
+#HELP_SETPERREQPER
+
+	The command:
+
+	  SEt PER_Request Permfile_limit=(<permfile-limit>) <batch-queue-name>
+
+	is used to set the PER-REQUEST permanent-file space usage
+	limit for any batch request subsequently placed in the named
+	batch queue, when the request does not otherwise define an
+	explicit PER-REQUEST permanent-file space usage limit (as
+	chosen by the originating user).
+
+	Each request when placed in a batch queue, is examined to ensure
+	that any user-specified permanent-file space usage limit for the
+	request does not exceed the permanent-file space usage limit (if
+	configured), for the containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for
+	a larger permanent-file space usage limit than the destination
+	batch queue has defined as allowable, then the request is
+	rejected.
+
+	The permanent-file space usage limit assigned to a particular
+	batch request is determined at the time that the request is
+	queued.  If the permanent-file space usage limit for the
+	containing batch queue is later reduced, no requests in the
+	queue will be affected.  However, if the new permanent-file
+	space usage limit value is less than the permanent-file space
+	usage limit requested by a previously queued request, then a
+	warning diagnostic is displayed.
+
+	The sizes of all temporary files created by any process comprising
+	the running batch request, when summed together, cannot exceed the
+	PER-REQUEST maximum determined when the request was queued.
+
+	A <permfile-limit> is specified as a single integer less than
+	100,000,000 with an optional fractional part, possibly followed
+	by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <permfile-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	permanent-file space limits are not supported by the host UNIX
+	operating system, then an appropriate error diagnostic is
+	displayed, upon the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+	See also:
+
+	  SEt PER_Request Tempfile_limit <parameters>
+	  SEt PER_Process Tempfile_limit <parameters>
+	  SEt PER_Process Permfile_limit <parameters>
+
+#HELP_SETPERREQTEM
+
+	The command:
+
+	  SEt PER_Request Tempfile_limit=(<tempfile-limit>) <batch-queue-name>
+
+	is used to set the PER-REQUEST temporary-file space usage
+	limit for any batch request subsequently placed in the named
+	batch queue, when the request does not otherwise define an
+	explicit PER-REQUEST temporary-file space usage limit (as
+	chosen by the originating user).
+
+	Each batch request when placed in a batch queue, is examined
+	to ensure that any user-specified temporary-file space usage
+	limit for the request does not exceed the temporary-file space
+	usage limit (if configured), for the containing batch queue.
+
+	If an attempt is made to queue a batch request which asks for
+	a larger temporary-file space usage limit than the destination
+	batch queue has defined as allowable, then the request is
+	rejected.
+
+	The temporary-file space usage limit assigned to a particular
+	batch request is determined at the time that the request is
+	queued.  If the temporary-file space usage limit for the
+	containing batch queue is later reduced, no requests in the
+	queue will be affected.  However, if the new temporary-file
+	space usage limit value is less than the temporary-file space
+	usage limit requested by a previously queued request, then a
+	warning diagnostic is displayed.
+
+	The sizes of all temporary-files created by any process comprising
+	the batch running request, when summed together, cannot exceed
+	the PER-REQUEST maximum determined when the request was queued.
+
+	A <tempfile-limit> is specified as a single integer less than
+	100,000,000 with an optional fractional part, possibly followed
+	by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <tempfile-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	temporary-file space limits are not supported by the host UNIX
+	operating system, then an appropriate error diagnostic is
+	displayed, upon the use of this command.
+
+	Full NQS manager privileges are required to use this command.
+
+	See also:
+
+		SEt PER_Request Permfile_limit <parameters>
+		SEt PER_Process Permfile_limit <parameters>
+		SEt PER_Process Tempfile_limit <parameters>
+
+#HELP_SETPIPCLI
+
+	The command:
+
+	  SEt PIpe_client = (<client-and-args>) <queue-name>
+
+	allows the client associated with the named pipe queue to be
+	changed if necessary.
+
+	The text placed within the parentheses defines the fully
+	qualified pathname of the client, and client arguments that are
+	to be used as the command line for a pipe queue client
+	invocation by NQS.
+
+	The named queue cannot refer to a batch or device queue.
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETPRI
+
+	The command:
+
+	  SEt PRiority = <priority-level> <queue-name>
+
+	is used to change the inter-queue priority of an NQS queue.  The
+	queue named as a parameter of the command must already exist.
+
+	The priority value assigned to the queue must be in the range:
+	[0..63].
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETRUNLIM
+
+	The command:
+
+	  SEt Run_limit = <run-limit> <queue-name>
+
+	is used to change the run-limit of an NQS batch or pipe queue.
+	The queue named as a parameter of the command must already exist.
+
+	The run-limit for a batch or pipe queue determines the maximum
+	number of requests that will be allowed to run in the queue at any
+	given time.
+
+	A run-limit cannot be applied to a device queue.
+
+	Operator privileges are required to use this command.
+
+#HELP_SETQUEDLIM
+ 
+        The command:
+ 
+          SEt Queue_request_limit = (<queue-request-limit>) <queue-name>
+ 
+        is used to change the maximum number of requests that a single
+        user can have at one time (in any state) in the specified NQS
+        batch queue.  Any attempt to submit additional requests above this
+        limit will be rejected with the  error "Permission denied".
+        The <queue-request-limit> must be an integer greater than zero
+        and less than 32768 or the word "unlimited".  Any word beginning 
+        with 'u' will be accepted as a synonym for "unlimited".
+ 
+        The <queue-name> must be a batch queue that already exists.  
+ 
+        Full NQS manager privileges are required to use this command.
+ 
+#HELP_SETSHS
+
+	The commands:
+
+	  SEt SHell_strategy FIxed <parameters>
+	  SEt SHell_strategy FRee
+	  SEt SHell_strategy Login
+
+	are used to respectively set a fixed, free, or login shell
+	strategy, for the execution of batch requests.
+
+	More information is available:
+
+	  Help SEt SHell_strategy FIxed <parameters>
+	  Help SEt SHell_strategy FRee
+	  Help SEt SHell_strategy Login
+
+#HELP_SETSHSFIX
+
+	The command:
+	
+	  SEt SHell_strategy FIxed = (<shell-pathname>)
+
+	is used to set a "fixed shell strategy", where the pathname of
+	<shell-pathname> identifies the shell that will be used to
+	execute ALL batch requests.
+
+	This command exists for NQS installations that use only
+	one type of shell (e.g. Bourne, C-shell, etc.).
+
+	Full NQS manager privileges are required to use this command.
+
+	See also:
+
+	  SEt SHell_strategy FRee
+	  SEt SHell_strategy Login
+
+#HELP_SETSHSFRE
+
+	The command:
+
+	  SEt SHell_strategy FRee
+
+	is used to set a "free shell strategy".  This means that the
+	user's login shell will be spawned by NQS when a given user's
+	batch request is run, with the feature that the user's login
+	shell will then examine the user's batch request shell script,
+	to determine the type of shell (e.g. C-shell, Bourne shell,
+	etc.), to be used to execute the batch request shell script.
+
+	This will result in an extra shell being spawned for all batch
+	request executions, EXACTLY as would happen if the user were
+	running their batch request script interactively.
+
+	Full NQS manager privileges are required to use this command.
+
+	See also:
+
+	  SEt SHell_strategy FIxed <parameters>
+	  SEt SHell_strategy Login
+
+#HELP_SETSHSLOG
+
+	The command:
+	
+	  SEt SHell_strategy Login
+
+	is used to set a "login shell strategy."  This means that the
+	user's login shell will be spawned to run ALL batch request
+	scripts, without examining the batch shell script to determine
+	which type of script it is.
+
+	Full NQS manager privileges are required to use this command.
+
+	See also:
+
+	  SEt SHell_strategy FIxed <parameters>
+	  SEt SHell_strategy FRee
+
+#HELP_SETSTA
+
+	The command:
+
+	  SEt STack_limit = (<stack-limit>) <queue-name>
+
+	is used to set the per-process maximum stack-segment size limit
+	for any request subsequently placed in the named queue, when
+	the request does not otherwise define an explicit per-process
+	maximum stack-segment size limit (as chosen by the originating
+	user).
+
+	Each request, when queued, is examined to ensure that any user-
+	specified stack-segment size limit for the request does not
+	exceed the stack-segment size limit (if configured), for the
+	containing queue.
+
+	If an attempt is made to queue a request which asks for a larger
+	stack-segment size limit than the destination queue has defined
+	as allowable, then the request is rejected.
+
+	The maximum stack-segment size limit assigned to a particular
+	request is determined at the time that the request is queued.
+	If the stack-segment size limit for the containing queue is
+	later reduced, no requests in the queue will be affected.
+	However, if the new stack-segment size limit value is less than
+	the stack-segment size limit requested by a previously queued
+	request, then a warning diagnostic is displayed.
+
+	The stack-segment size of ANY process comprising the running
+	request cannot exceed the maximum in force when the request
+	was queued.
+
+	A <stack-limit> is specified as a single integer less
+	than 100,000,000 with an optional fractional part, possibly
+	followed by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <stack-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	stack-segment size limits are not supported by the host UNIX
+	operating system, then an appropriate error diagnostic is
+	displayed, upon the use of this command.
+
+	Stack-segment limits cannot be applied to pipe queues.  Any
+	attempt to set a stack-segment limit for a pipe queue will fail,
+	with an appropriate error diagnostic being displayed.
+	
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETUNRACC
+
+	The command:
+
+	  SEt Unrestricted_access <queue-name>
+
+	is used to indicate that all users are to have access to
+	the named queue.  In order to enforce access restrictions
+	on a queue where access is currently unrestricted, see
+	Help SEt NO_Access.
+	
+	In order for a user to have access to a queue, it is only
+	necessary for ONE of the following to be true:
+	
+	1) Queue access is unlimited.
+	2) His or her login group has access. (Help ADd Groups)
+	3) His or her account has access. (Help ADd Users)
+
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SETWOR
+
+	The command:
+
+	  SEt Working_set_limit = (<working-set-limit>) <queue-name>
+
+	is used to set the per-process working-set limit (physical memory
+	quota) for any request subsequently placed in the named queue,
+	when the request does not otherwise define an explicit per-process
+	working-set limit (as chosen by the originating user).
+
+	Each request, when queued, is examined to ensure that any user-
+	specified working-set limit for the request does not exceed the
+	working-set limit (if configured), for the containing queue.
+
+	If an attempt is made to queue a request which asks for a larger
+	working-set limit than the destination queue has defined as
+	allowable, then the request is rejected.
+
+	The working-set limit assigned to a particular request is
+	determined at the time that the request is queued.  If the
+	working-set limit for the containing queue is later reduced,
+	no requests in the queue will be affected.  However, if the new
+	working-set limit is less than the working-set limit requested
+	by a previously queued request, then a warning diagnostic is
+	displayed.
+
+	When physical memory becomes scarce on the supporting machine,
+	the system will prefer to take away physical memory from those
+	processes exceeding their working-set limit.
+
+	A <working-set-limit> is specified as a single integer less
+	than 100,000,000 with an optional fractional part, possibly
+	followed by one of the case insensitive unit names of:
+
+		Unit name:	Meaning:
+
+		 b		 bytes
+		 w		 words
+		 kb		 2 to the 10th bytes
+		 kw		 2 to the 10th words
+		 mb		 2 to the 20th bytes
+		 mw		 2 to the 20th words
+		 gb		 2 to the 30th bytes
+		 gw		 2 to the 30th words
+
+
+	Example valid <working-set-limit> specifications are therefore:
+
+		200000		(specifies 200,000 bytes)
+		200000B		(specifies 200,000 bytes)
+		200 Kw		(specifies 204,800 words)
+		.2 MW		(specifies 209,715 words)
+
+	Internally, qmgr converts the specified value into bytes
+	or words, whichever is more natural for your machine.
+	If the resulting value cannot be represented in a signed
+	long integer, then qmgr gives you the largest value that
+	it can.
+	
+	Depending on the underlying UNIX implementation upon which NQS
+	is running, this limit may, or may not be configurable.  If
+	working-set limits are not supported by the host UNIX operating
+	system, then an appropriate error diagnostic is displayed, upon
+	the use of this command.
+
+	Working-set-limits cannot be applied to pipe queues.  Any attempt
+	to set a working-set-limit for a pipe queue will fail, with an
+	appropriate error diagnostic being displayed.
+	
+	Full NQS manager privileges are required to use this command.
+
+#HELP_SHO
+
+	The commands:
+
+	  SHOw All
+	  SHOw Device <parameters>
+	  SHOw Forms
+	  SHOw LImits_supported
+	  SHOw LOng Queue <parameters>
+	  SHOw Managers
+	  SHOw Parameters
+	  SHOw Queue <parameters>
+
+	are used to display NQS status information.
+
+	More information is available:
+
+	  Help SHOw All
+	  Help SHOw Device
+	  Help SHOw Forms
+	  Help SHOw LImits_supported
+	  Help SHOw LOng Queue
+	  Help SHOw Managers
+	  Help SHOw Parameters
+	  Help SHOw Queue
+
+#HELP_SHOALL
+
+	The command:
+
+	  SHOw All
+
+	displays general status information on all of the NQS devices,
+	forms, limits supported, managers, queues, and the general
+	operating parameters.
+
+#HELP_SHODEV
+
+	The command:
+
+	  SHOw Device [ <device-name> ]
+
+	is used to respectively obtain general status information on all
+	of the NQS devices, or more detailed status information concerning
+	a specific device.
+
+	If no <device-name> is specified, then general status information
+	is displayed for all of the NQS devices.
+
+	If a <device-name> is specified, then status information concerning
+	the named device is displayed including any queue to device
+	mappings for the named device.
+
+#HELP_SHOFOR
+
+	The command:
+
+	  SHOw Forms
+
+	is used to display the forms included in the device forms list.
+
+#HELP_SHOLIM
+
+	The command:
+
+	  SHOw LImits_supported
+
+	is used to display the set of request and process limits enforceable
+	by the host UNIX operating system.  Each of the limits shown here
+	can be configured for individual batch queues from within qmgr.
+
+	For a discussion of the individual limit commands, more information
+	is available:
+
+	  Help SEt Corefile_limit <parameters>
+	  Help SEt DAta_limit <parameters>
+	  Help SEt NIce_value <parameters>
+	  Help SEt PER_Process Cpu_limit <parameters>
+	  Help SEt PER_Process Memory_limit <parameters>
+	  Help SEt PER_Process Permfile_limit <parameters>
+	  Help SEt PER_Process Tempfile_limit <parameters>
+	  Help SEt PER_Request Cpu_limit <parameters>
+	  Help SEt PER_Request Memory_limit <parameters>
+	  Help SEt PER_Request Permfile_limit <parameters>
+	  Help SEt PER_Request Tempfile_limit <parameters>
+	  Help SEt STack_limit <parameters>
+	  Help SEt Working_set_limit <parameters>
+	
+#HELP_SHOLONGQUE
+
+	The command:
+
+	  SHOw LOng Queue [ <queue-name> [ <user-name> ] ]
+
+	is used to display status information about NQS queues in
+	a long format.
+
+	If no queue name is specified, then status information is
+	displayed for all NQS queues.
+
+	If a queue name is specified, then specific status information
+	for the named queue is displayed, including the ordering of requests 
+	within the queue. If a user name is specified, then the requests
+	shown will be limited to those belonging to that user.
+
+#HELP_SHOMAN
+
+	The command:
+
+	  SHOw Managers
+
+	is used to display the accounts included in the NQS manager account
+	access list.
+
+#HELP_SHOPAR
+
+	The command:
+
+	  SHOw Parameters
+
+	is used to display the current values for the general NQS
+	operating parameters
+
+#HELP_SHOQUE
+
+	The command:
+
+	  SHOw Queue [ <queue-name> [ <user-name> ] ]
+
+	is used to display status information about NQS queues in
+	a short format.
+
+	If no queue name is specified, then status information is
+	displayed for all NQS queues.
+
+	If a queue name is specified, then specific status information
+	for the named queue is displayed, including the ordering of requests 
+	within the queue. If a user name is specified, then the requests
+	shown will be limited to those belonging to that user.
+
+#HELP_SHUTDOWN
+
+	The command:
+
+	  SHUtdown [ <grace-period> ]
+
+	is used to shutdown the Network Queueing System on the local
+	supporting host.
+
+	For each queue that is running, the semantic equivalent of the
+	ABort Queue command is performed, with the exception that all requests 
+	terminated as a result of the shutdown command, are requeued for
+	later execution.
+
+	The <grace-period> parameter is optional, and if present, specifies
+	the number of seconds in real time to wait before sending a
+	SIGKILL signal to all of the remaining processes for each remain-
+	ing request still running at the end of the grace-period.
+
+	If <grace-period> is not specified, then a default value of
+	twenty (20) seconds is used.
+
+	Operator privileges are required to use this command.
+
+#HELP_STAQUE
+
+	The command:
+
+	  STArt Queue <queue-name>
+
+	is used to start the named queue.  If the current queue is already
+	started, then no action occurs.  Otherwise, the queue is started,
+	and requests in the named queue become eligible for execution.
+
+	Operator privileges are required to use this command.
+
+#HELP_STOQUE
+
+	The command:
+
+	  STOp Queue <queue-name>
+
+	is used to stop the named queue.  Any requests in the queue that
+	are currently running are allowed to complete execution.  All other
+	requests eligible for execution in the queue are prevented from
+	running.
+
+	A queue which has been stopped, can still accept new requests.
+	However, no requests will be run which reside within the named
+	queue until the queue has been explicitly started again by the:
+
+	  STArt Queue <queue-name>
+
+	command.
+
+	Operator privileges are required to use this command.
+
+#HELP_UNLDAE
+
+	The command:
+
+	  Unlock Local_daemon
+
+	is used to remove a lock that has been keeping the NQS local
+	daemon in memory.  See plock(2).
+
+	Operator privileges are required to use this command.

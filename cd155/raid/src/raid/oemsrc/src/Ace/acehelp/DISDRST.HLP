@@ -1,0 +1,58 @@
+     EXPLANATION OF OPTION
+ 
+     You can always view the current drive statuses in ace because 
+     they are always displayed in the drive matrix.  Note that the 
+     location of the array controller(s) is also displayed in the 
+     drive matrix with a status of 7.
+ 
+     An abbreviated meaning of each drive status is always displayed 
+     in the lower left-hand corner of the drive window and labeled 
+     STATUS.  For descriptions of each drive status, see the table 
+     below.  
+ 
+     ีออออออออออออออออออัออออออออออออออออออออออออออออออออออออออออออออธ
+     ณ  DRIVE STATUS    ณ              DESCRIPTION                   ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 0 - Optimal      ณ The drive is operating at an optimal level.ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 1 - Non-existent ณ No drive is physically connected to the    ณ
+     ณ                  ณ array.                                     ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 2 - Spare        ณ The drive is connected to the array, but   ณ
+     ณ                  ณ not configured into a logical unit.        ณ
+     ิออออออออออออออออออฯออออ (CONTINUED) อออออออออออออออออออออออออออพ
+ 
+     ีออออออออออออออออออัออออออออออออออออออออออออออออออออออออออออออออธ
+     ณ  DRIVE STATUS    ณ              DESCRIPTION                   ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 3 - Failed       ณ The drive was failed by the array          ณ
+     ณ                  ณ controller or by the user and must be      ณ 
+     ณ                  ณ replaced.                                  ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 4 - Replaced     ณ The drive has just been replaced, is       ณ
+     ณ                  ณ being formatted, or is being reconstructed.ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 5 - Warning      ณ An unrecoverable read error occurred which ณ
+     ณ                  ณ requires you to (1) fail the drive, and    ณ
+     ณ                  ณ (2) replace the drive, and (3) restore the ณ 
+     ณ                  ณ logical unit.                              ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 6 - Mismatch     ณ The array controller sensed that the drive ณ
+     ณ                  ณ has either a sector size, capacity, serial ณ
+     ณ                  ณ number, SCSI Channel, or ID different than ณ
+     ณ                  ณ what the array controller expected.        ณ
+     ิออออออออออออออออออฯออออออออออออออออออออออออออออออออออออออออออออพ
+ 
+                                (CONTINUED)
+ 
+     ีออออออออออออออออออัออออออออออออออออออออออออออออออออออออออออออออธ
+     ณ  DRIVE STATUS    ณ              DESCRIPTION                   ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 7 - Controller   ณ This status is NOT a drive status - it     ณ
+     ณ                  ณ indicates the location of the array        ณ
+     ณ                  ณ controller in the array.                   ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 8 - Formatting   ณ The drive is currently being formatted.    ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ 9 - Wrong drive  ณ The wrong drive was replaced.              ณ
+     ิออออออออออออออออออฯออออออออออออออออออออออออออออออออออออออออออออพ

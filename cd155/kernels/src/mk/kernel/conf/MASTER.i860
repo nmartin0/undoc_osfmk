@@ -1,0 +1,521 @@
+#
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+#
+
+#
+# $Id: MASTER.i860,v 2.42 1995/03/14 23:40:24 jerrie Exp $
+#
+
+#
+# Mach Operating System
+# Copyright (c) 1991,1990,1989 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#  
+#
+# HISTORY
+# $Log: MASTER.i860,v $
+# Revision 2.42  1995/03/14  23:40:24  jerrie
+#  Reviewer:         Jerrie Coffman, Vineet Kumar, Richard Griffiths
+#  Risk:             High
+#  Benefit or PTS #: Add SCSI-16 daughter board support.
+#  Testing:          Ran PFS, RAID, fileio, and tape EATs.
+#  Module(s):        Too numerous to mention.  See Jerrie for details.
+#
+# Revision 2.41  1995/02/04  01:19:37  stans
+#  Support remote MK console logging option.
+#  Since PARAGON lost bigpkts make PARAGON_LITE match.
+#
+#  Reviewer:lenb/tnt
+#  Risk:medium
+#  Benefit or PTS #:5249
+#  Testing:WW50 sat
+#  Module(s):
+#
+# Revision 2.40  1995/01/12  00:08:42  joel
+#  Reviewer: lenb
+#  Risk: low
+#  Benefit or PTS #: none: Changing default ASMP to NOT be +bigpkts while
+# 	still +bumpers
+#  Testing:
+#  Module(s):
+#
+# Revision 2.39  1994/11/18  20:27:42  mtm
+# Copyright additions/changes
+#
+# Revision 2.38  1994/07/18  21:12:58  regnier
+# Add VCF message passing protocol. No VCF code is compiled in unless
+# the '+vcf' option is used to build the kernel.
+#
+#  Reviewer: wms
+#  Risk: low
+#  Benefit or PTS #:
+#  Testing: EATS, developer
+#  Module(s): vm/vm_pageout.c  kern/syscall_sw.c   conf/MASTER.i860
+#             conf/files.i860  i860paragon/mcmsg/mcmsg_config.h
+#             i860paragon/mcmsg/mcmsg_config_vcf.h
+#             i860paragon/msgp/msgp_mp.c
+#             i860paragon/vcf/*
+#
+# Revision 2.37  1994/07/12  19:17:02  andyp
+# Merge of the NORMA2 branch back to the mainline.
+#
+# Revision 2.36  1994/06/15  19:37:03  lenb
+#         delete msgtrace from ASMP and SMP kernels (9830)
+#         this options currently comes along with the assert option
+#
+# Revision 2.35  1994/06/08  18:31:34  regnier
+# Make BIGPKTs default for both kernels.
+#
+#  Reviewer: None.
+#  Risk: Medium
+#  Benefit:
+#  Testing: Message and Misc EATs, developer testing.
+#  Module(s): conf/MASTER.i860
+#
+# Revision 2.34  1994/06/08  17:08:18  arlin
+# Initial support for new IPI driver
+#
+# Revision 2.33  1994/06/01  17:40:00  regnier
+# Modify kernel config strings. Major changes are that default kernels are
+# now optimized, debug kernels are generated with +assert switch only,
+# and a new option "+nicb" allows building kernels for boards with B-step
+# NICs.
+#
+#  Reviewer: Agreed upon at kernel meeting.
+#  Risk: Low.
+#  Benefit: Simplify kernel configurations.
+#  Testing: Built and booted and ran following configs:
+#           MCMSG, MCMSG+assert, MCMSG+nicb, MCMSG+nicb+assert
+#  Module(s): kernel/conf/MASTER.i860
+#
+# Revision 2.32  1994/04/20  20:07:58  prp
+#  Reviewer: Regnier
+#  Risk:     Low
+#  Benefit or PTS #: 9029 Add experimental user RDMA message module
+#  Testing:  testrdma, rxrdma, EATS+
+#  Module(s):
+#   conf/MASTER.i860:                       Add +urdma to MCMSG configuration
+#   conf/files.i860:                        Add msgp_urdma.c to list of files
+#   i860paragon/mcmsg/mcmsg_config.h        Configure in URDMA module
+#   i860paragon/msgp/msgp_task.c            Add task destroy hook
+#   i860paragon/msgp/msgp_mp.c              Fix required for low latency
+#   i860paragon/mcmsg/mcmsg_config_urdma.h  New
+#   i860paragon/msgp/msgp_urdma.h           New
+#
+# Revision 2.31  1994/03/19  00:56:44  lenb
+#  Reviewer: sean
+#  Risk: low
+#  Benefit or PTS #: ASMP kernel
+#  Testing: it builds, and so do the old ones
+#
+# Revision 2.30  1994/01/29  00:34:41  lenb
+#  Reviewer: sigmaos
+#  Risk: low
+#  Benefit or PTS #:
+# consolidated MP configurations into SMP, removed some cruft
+#  Module(s): MASTER.i860 files.i860
+#
+# Revision 2.29.2.10  1994/06/27  22:33:12  andyp
+# 	Delete the log.  Add URDMA as an optional mcmsg module.
+#
+# Revision 2.29.2.9  1994/06/20  20:35:38  rkl
+#  Changes for BORG removal.
+#
+# Revision 2.29.2.8  1994/06/20  17:09:32  rkl
+#  Removed BORG capability.
+#
+# Revision 2.29.2.7  1994/03/08  22:18:50  andyp
+# Rearranged the norma2/ directory.  Added additional hooks for gcc860.
+#
+# Revision 2.29.2.6  1994/03/02  18:15:09  andyp
+# Added +bigpkts by default.  Rearranged some compiler options for GCC.
+#
+# Revision 2.29.2.5  1994/02/17  21:33:21  stans
+#  mcmsg_eng time_trace added to MCMSG
+#
+# Revision 2.29.2.4  1994/02/16  18:24:29  rkl
+#  Ooops.  Removed time_trace from NORMA2 configuration.
+#
+# Revision 2.29.2.3  1994/02/16  18:16:19  rkl
+#  Added mcmsg_eng and loopback_eng as configuration options.
+#
+# Revision 2.29.2.2  1994/02/16  00:21:07  andyp
+# Updates from the mainline.
+#
+#	Revision 2.30  1994/01/29  00:34:41  lenb
+#	Reviewer: sigmaos
+#	Risk: low
+#	Benefit or PTS #:
+#	consolidated MP configurations into SMP, removed some cruft
+#	Module(s): MASTER.i860 files.i860
+#
+# Revision 2.29.2.1  1994/01/12  20:36:18  stans
+#  Enable NORMA2 define in cc line; the adventure begins....
+#
+# Revision 2.29  1993/12/14  22:57:09  steved
+# Cleaned up the MP3 configurations and added the tod file.
+#
+# Revision 2.28  1993/11/10  23:03:18  robboy
+# Add puma to MCMSG by default
+#
+#  Reviewer: Paul Pierce
+#  Risk: Low
+#  Benefit or PTS #: Standard kernel supports puma
+#  Testing: Works in R1.1.1 patch
+#  Module(s):
+#
+# Revision 2.27  1993/10/28  00:30:02  regnier
+# Add +bigpkts configuration option.
+#  Add code for packets larger than FIFO size. Initial code, all within
+# #ifdef BIGPKT conditionals.
+#
+#  Reviewer(s): prp
+#  Risk:        Medium
+#  Benefit:     Basis for future work
+#  Testing:     Latency, Bandwidth test + irxnode
+#  Module(s):   msgp_asm.h msgp_hwr1.c msgp_hwr2.c msgp_hws1.c msgp_intr.c
+#               mcmsg_ext.h mcmsg_hw.h mcmsg_mp.c mcmsg_trace.c MASTER.i860
+#
+# Revision 2.26  1993/10/23  00:24:25  prp
+# Reviewer(s): None
+#   Risk:        Low
+#   Benefit:     Add RDMA and "reg" message modules, remove some NX debug code
+#   Testing:     testrdma, irxnode (failed, I don't think its my fault)
+#
+# New modules:
+#
+# i860paragon/mcmsg/mcmsg_config_rdma.h
+# i860paragon/mcmsg/mcmsg_config_reg.h
+# i860paragon/mcmsg/mcmsg_rdma.c
+# i860paragon/mcmsg/mcmsg_rdma.h
+# i860paragon/mcmsg/msgp_rdma.c
+# i860paragon/mcmsg/msgp_reg.c
+#
+#
+# Changed modules:
+#
+# conf/MASTER.i860
+# conf/files.i860
+# i860paragon/mp.h
+# i860paragon/mcmsg/mcmsg_config.h
+# i860paragon/mcmsg/mcmsg_config_rpc.h
+# i860paragon/mcmsg/mcmsg_mp.c
+# i860paragon/msgp/msgp_asm.h
+# i860paragon/msgp/msgp_hwr1.c
+# i860paragon/msgp/msgp_hwr2.c
+# i860paragon/msgp/msgp_hws1.c
+# i860paragon/msgp/msgp_mp.c
+# i860paragon/msgp/msgp_nxdat.c
+# i860paragon/msgp/msgp_task.c
+#
+# Revision 2.25  1993/10/20  15:32:25  rkl
+# Added "NORMA_FAST_OOL" as a standard option for "PARAGON"
+#
+# Revision 2.24  1993/10/15  20:30:12  steved
+# Added 'bumpers' to the default MP3 configuration and added an MP3DOT
+# configuration.
+#
+# Revision 2.23  1993/10/07  22:14:01  stans
+#    rkl's time trace support.
+#
+# Revision 2.22  1993/10/07  19:46:55  prp
+# Add rpc message module.
+#
+# Revision 2.21  1993/10/01  16:58:24  steved
+# Support for MP3
+#
+# Revision 2.20  1993/09/29  23:57:25  prp
+# Propogate bumpers into default configuration (missed during merge)
+#
+# Revision 2.19  1993/09/29  23:07:24  prp
+# Merge in R1.2 branch message passing.
+#
+# Revision 2.8.2.10.2.4  1993/09/23  22:54:24  regnier
+# Add configuration to allow for NIC B steps: "-bumpers".
+#
+# Revision 2.8.2.10.2.2  1993/08/26  00:58:51  prp
+# Add VC message module
+#
+# Revision 2.18  1993/07/22  00:12:43  andyp
+# NORMA needs fixpri scheduling [rwd@osf.org].  Rearranged the _LITE configs
+# (and the hippi device) so that they can be built (improvements are still
+# possible).
+#
+# Revision 2.17  1993/07/01  15:31:12  terry
+# source sync with nmk13.25
+#
+# Revision 2.16  1993/06/30  23:36:57  prp
+# Add PUMA message passing option.
+#
+# Revision 2.15  1993/06/09  01:25:10  terry
+# source sync with OSF
+#
+# Revision 2.14  1993/06/08  16:56:02  SSD
+# changed the library from pgilib.a to libic.a.
+#
+# Revision 2.13  1993/05/27  22:34:11  arlin
+# added Hippi Driver
+#
+# Revision 2.12  1993/05/23  00:22:14  prp
+# Message passing restructuring, NX Configurability.
+#
+# Revision 2.11  1993/05/21  22:51:39  stans
+# CTRAP_HISTORY now defined in ctrap_history.h
+#
+# Revision 2.10  1993/04/27  20:16:38  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 2.9.2.2  1993/04/22  18:16:08  dleslie
+# First R1_0 release
+#
+# Revision 2.9  1993/04/05  02:30:56  andyp
+# Added a new i860paragon/rpm.c file.
+#
+# Revision 2.8  1993/01/09  22:25:49  stans
+# norma13.16 SSD Trans 7 version
+#
+# Revision 2.7.2.3  92/05/27  00:36:49  jeffreyh
+# 	Initial Paragon support.  Removed the unused Oki config lines.
+# 	[92/04/26	andyp@ssd.intel.com]
+# 	Added MCMSG option
+# 	[92/04/26	regnier@ssd.intel.com]
+# 
+# Revision 2.7.2.2  92/04/08  15:42:54  jeffreyh
+# 	Add machine commands; optimize option
+# 	[92/04/08            andyp]
+# 
+# Revision 2.7.2.1  92/02/18  18:37:15  jeffreyh
+# 	Mave RUNTIME from AFS to /usr/i860
+# 	[92/02/18  14:16:17  jeffreyh]
+# 
+# Revision 2.7  91/12/10  16:29:31  jsb
+# 	Fixes from Intel
+# 	[91/12/10  15:31:55  jsb]
+# 
+# Revision 2.6  91/06/19  11:54:38  rvb
+# 	cputypes.h->platforms.h
+# 	[91/06/12  13:44:33  rvb]
+# 
+# Revision 2.5  91/05/14  15:24:55  mrt
+# 	Correcting copyright
+# 
+# Revision 2.4  91/02/05  17:02:12  mrt
+# 	Changed to new copyright
+# 	[91/01/28  14:45:53  mrt]
+# 
+# Revision 2.3  90/12/04  14:45:34  jsb
+# 	Changed iPSC860 config option to iPSC.
+# 	[90/12/04  11:56:09  jsb]
+# 
+# Revision 2.2  90/11/25  17:48:14  jsb
+# 	First checkin.
+# 	[90/11/25  16:58:26  jsb]
+# 
+#
+# Added ghlang support. dfc 9/20/90
+# Added HCC for those portions of code that must be run on host. dfc 90/19/90
+# Modified assembler invocation.  wlb dfc 90/09/13
+# Copied from MASTER.i386 by Don Cameron 90/09/07
+#
+#
+#  Master I860 configuration file (see the master machine independent
+#  configuration file for a description of the file format).
+#
+#	
+#	#####################################################################
+#	
+#	  I860 (PSEUDO-)DEVICES (select any combination)
+#	
+#	  CPU TYPE (select exactly one)
+#	  Paragon	Intel Paragon XP/S
+#	  iPSC		Intel iPSC/860 hypercube
+#	  OKI		Oki i860 Station
+#	
+#	#####################################################################
+#
+#	I860 Devices
+#
+#	for an iPSC/860:
+#
+#		usm
+#		dcm
+#
+#	for an Oki i860 Station:
+#
+#		rtc	real-time clock
+#		wd	SCSI disk
+#		fd	Floppy disk
+#		zs	Zilog serial ports
+#		ie	i82586 LAN controller
+#		kd	Keyboard and display
+#
+#	#####################################################################
+#	
+#	  Standard Configurations:
+#	  -------- ---------------
+#	  PARAGON = [ paragon paragon_mio pgi md hippi newfpe mcmsg_eng console_logging sdb ]
+#	  PARAGON_LITE = [ paragon paragon_mio_lite pgi newfpe mcmsg_eng console_logging sdb_lite ]
+#
+#	  DOT = [ STD NORMA PARAGON ]
+#	  DOT2 = [ DOT multi2 host hw_foot ]
+#	  DOT3 = [ DOT multi3 host hw_foot ]
+#
+#	  MCMSG = [ STD DIPC PARAGON mcmsg nx puma urdma ]
+#	  MCMSG_LITE = [ STD_LITE DIPC PARAGON_LITE mcmsg nx debug ufs_pager ]
+#
+#	  SMP = [ MCMSG multi3 host hw_foot ]
+#	  ASMP = [ MCMSG multi3 host hw_foot asmp ]
+#
+#	  iPSC 	= [ ipsc usm dcm pgi oldfpe ]
+#	  OSF860 = [ STD NORMA ipsc usm pgi mcmsg assert oldfpe ]
+#
+#	#####################################################################
+#
+
+conftype	"i860"		# <paragon,ipsc>
+
+platform	"PARAGON860"	# <paragon>
+platform	"iPSC860"	# <ipsc>
+
+options		"PARAGON860"	# <paragon>
+options		"iPSC860"	# <ipsc>
+
+options		"i860XP"	# <paragon>
+options		NOCACHE		# <nocache>
+options		DB_MACHINE_COMMANDS	# <paragon,ipsc>
+options		"MCMSG"		# <mcmsg>
+options		"NX"		# <nx>
+options		"PUMA"		# <puma>
+options		"URDMA"		# <urdma>
+options		"VC"		# <vc>
+options		"REG"		# <reg>
+options		"VCF"		# <vcf>
+options		"MSGTRACE"	# <msgtrace>
+options		"BUMPERS"	# <!nicb>
+options		"BIGPKTS"	# <nicb,bigpkts>
+options		"MCMSG_ENG"	# <mcmsg_eng>
+
+options 	MACH_LOAD	# 
+
+options		OLDFPE		# <oldfpe>
+options		NEWFPE		# <newfpe>
+options		CTRAP_HISTORY	# <assert>
+options		TIME_TRACE	# <time_trace>
+options		ASMP		# <asmp>
+options		CONSOLE_LOGGING	# <console_logging>
+
+config		mach_kernel	swap generic
+
+#
+# Generic devices
+#
+pseudo-device	bm		0	# <paragon>
+pseudo-device	constty		1	# <paragon>
+
+#
+# Generic compiler settings
+#
+makevariables	VOLATILE=				# <pgi,gcc>
+makevariables	CDEBUGFLAGS=				# <assert>
+
+#
+# Compiler settings for PGI
+#
+options		PGI					# <pgi>
+makevariables	"KCC"="cc860"				# <pgi>
+makevariables	"LIBS"="-lic"				# <pgi>
+
+#
+# Compiler settings for GCC
+#
+# Due to a botch in compiling libgcc.a, we still need -lic
+# to resolve ___mth_i_imod() and ___mth_i_uimod() from PGI's
+# runtime library.  Additionally, .div(), .udiv(), and abort()
+# are needed to resolve all external references.
+#
+options		GCC					# <gcc>
+makevariables	"KCC"="gcc860"				# <gcc>
+makevariables	"LIBS"="-lgcc -lic"			# <gcc>
+
+#
+# Compiler settings for Greenhills
+#
+makevariables	KCC="cc860"	# <greenh>
+
+#
+# Base kernel text address
+#
+#	(if ld860 were a *real* linker, the START_DATA
+#	 nonsense wouldn't be needed)
+#
+makevariables	"START_TEXT"="0xF0080000"	# <paragon>
+makevariables	"START_DATA"="0xF0161000"	# <paragon>
+makevariables	"START_TEXT"="0xF8000000"	# <ipsc>
+makevariables	"START_DATA"="0xF80C8000"	# <ipsc>
+
+#
+#  Devices common to a Paragon w/ MIO or w/ SCSI-16 Daughter Boards
+#
+#	scsi needs to be 2 for both channels on the SCSI-16 daughter board
+#
+pseudo-device	scsi	2	# <paragon_mio,sdb>
+
+#
+#  Devices for a Paragon w/ MIO
+#
+pseudo-device	mio	1	# <paragon_mio,paragon_mio_lite>
+device		com0		# <paragon_mio,paragon_mio_lite>
+device		mioe0		# <paragon_mio>
+device		asc0		# <paragon_mio>
+device		md0		# <md>
+device		rpm0		# <paragon>
+
+#
+#  Devices for a Paragon w/ SCSI-16 Daughter Board
+#
+pseudo-device	sdb	1	# <sdb,sdb_lite>
+device		sdbs0		# <sdb,sdb_lite>
+device		sdbe0		# <sdb>
+device		siop0		# <sdb>
+device		siop1		# <sdb>
+
+#
+#  Devices for a Paragon w/ HIPPI
+#
+device          hippi0          # <hippi>
+device          hdc0            # <hippi>
+pseudo-device   ipi     1       # <hippi>
+
+#
+#  Devices for an iPSC/860
+#
+device		usm0		# <ipsc>
+device		dcm0		# <dcm>
+

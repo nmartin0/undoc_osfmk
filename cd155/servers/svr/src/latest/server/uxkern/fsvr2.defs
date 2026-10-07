@@ -1,0 +1,125 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * Module Function:
+ *      MiG definitions for fast_path_io operations.
+ *
+ * HISTORY
+ * $Log: fsvr2.defs,v $
+ * Revision 1.8  1994/11/18  20:47:53  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.7  1994/01/05  17:18:01  brad
+ * Fixed lint warnings in PFS-related code.
+ *
+ *  Reviewer: None
+ *  Risk: Low
+ *  Benefit or PTS #: Some PFS source now passes lint
+ *  Testing: Ran PFS EATs
+ *  Module(s): emulator/emul_callback.c
+ *             emulator/fsvr_user_side.c
+ *             emulator/pfs2_user_side.c
+ *             emulator/pfs_emath.c
+ *             emulator/pfs_fdt.h
+ *             emulator/pfs_iomode.c
+ *             emulator/pfs_tokenmgt.c
+ *             emulator/pfs_user_side.c
+ *             server/uxkern/fsvr.defs
+ *             server/uxkern/fsvr2.defs
+ *             server/uxkern/fsvr2_server_side.c
+ *             server/uxkern/fsvr_types.defs
+ *             server/uxkern/pfs2.defs
+ *
+ * Revision 1.6  1993/07/19  23:00:13  robboy
+ * Integrate OSF/Locus Lite server changes
+ *
+ * Revision 1.5  1993/07/14  18:41:27  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.3  1993/07/01  21:01:21  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.4  1993/05/06  19:27:26  nandy
+ * ad103+tnc merged with Intel code.
+ *
+ * Revision 1.3  1993/04/03  03:11:39  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ *
+ * Revision 1.2  1992/11/30  22:54:09  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1.2.1  1992/11/26  00:02:04  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.1.2.1  1992/11/05  23:42:58  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ * 
+ * Revision 4.1  1992/11/04  00:52:06  cfj
+ * Bump major revision number.
+ *
+ * Revision 1.1.1.1  1993/05/03  17:51:46  cfj
+ * Initial 1.0.3 code drop
+ *
+ * Revision 2.4  1993/03/30  16:08:29  roy
+ * 	Added fsvr_read_at_offset/fsvr_write_at_offset.  Removed old interfaces.
+ * 	[93/02/16            roy]
+ *
+ * Revision 2.3  92/07/28  20:00:49  rabii
+ * 	Add definition for fsvr_write2 (pjg).
+ * 
+ * Revision 2.2  92/06/08  18:28:03  pjg
+ * 	Created (pjg).
+ * 
+ */
+
+/*
+ * MiG interface definitions for fast path IO.
+ */
+
+subsystem fsvr2 12000;
+
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types.defs>
+#include <uxkern/fsvr_types.defs>
+#if     !defined(_EMULATOR)
+#include <fullserver.h>
+#endif
+
+uimport <uxkern/server_mach_msg.h>;
+
+ServerPrefix	S_ ;
+
+#if	FULLSERVER
+
+routine fsvr_read_at_offset(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	inout	response_id	: unsigned;
+	in	offset		: off_t;
+	in	length		: size_t;
+	out	data		: char_array, dealloc);
+
+routine fsvr_write_at_offset(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	inout	response_id	: unsigned;
+	in	offset		: off_t;
+	in	data		: char_array;
+	out	amount		: size_t);
+
+#else	/* FULLSERVER */
+skip;
+skip;
+#endif	FULLSERVER

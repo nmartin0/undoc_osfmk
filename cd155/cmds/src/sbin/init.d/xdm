@@ -1,0 +1,65 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+
+#
+# Read configuration for display type
+#
+DISPLAYTYPE=none
+if [ -f /etc/rc.config ] ; then
+	. /etc/rc.config
+else
+	echo "ERROR: /etc/rc.config defaults file MISSING"      >/dev/console
+fi
+export DISPLAYTYPE 
+
+#
+# Control X Display Manager
+#
+case $1 in
+'start')
+        if [ -f /usr/bin/X11/xdm -a "$DISPLAYTYPE" != "none" -a -s /usr/lib/X11/xdm/xdm-config.$DISPLAYTYPE ]; then
+                /usr/bin/X11/xdm -config /usr/lib/X11/xdm/xdm-config.$DISPLAYTYPE
+        else
+                echo "WARNING: X Display manager not configured."
+        fi
+        ;;
+'respawn')
+        if [ -f /usr/bin/X11/xdm -a "$DISPLAYTYPE" != "none" -a -s /usr/lib/X11/xdm/xdm-config.$DISPLAYTYPE ]; then
+                exec /usr/bin/X11/xdm -nodaemon -config /usr/lib/X11/xdm/xdm-config.$DISPLAYTYPE
+        else
+                echo "WARNING: X Display manager not configured."
+        fi
+        #
+        # No display or error. Sleep and print message
+        #
+        sleep 120
+        echo "Retrying X display manager."
+        ;;
+'stop')
+        if [ -r /var/run/xdm.pid ]; then
+                kill `cat /var/run/xdm.pid`
+        else
+                echo "ERROR: cannot find /var/run/xdm.pid to kill xdm."
+        fi
+        ;;
+esac
+     

@@ -1,0 +1,245 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1991,1990,1989 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#  
+#
+# HISTORY
+# $Log: Makefile.i386,v $
+# Revision 1.5  1994/11/18  20:27:59  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:19:15  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:17:06  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:16:40  dleslie
+# First R1_0 release
+#
+# Revision 2.8.7.2  92/04/30  11:45:35  bernadat
+# 	Moved AT386 MP boot code to at386/mp/boot, this is now
+# 	used by both Corollary and SystemPro machines
+# 	[92/04/08            bernadat]
+# 
+# Revision 2.8.7.1  92/02/18  18:37:27  jeffreyh
+# 	Added a SYSDEPS rule for the Corollary MP
+# 	[91/09/26  04:36:41  bernadat]
+# 
+#
+# Revision 2.7.3.1  91/08/12  08:58:32  bernadat
+# 	Build slave_boot_code.c for the cbus in the obj directory
+# 	[91/07/04            bernadat]
+# 
+# 	added a SYSDEPS rule for the Corollary MP
+# 	[91/06/25            bernadat]
+# 
+# Revision 2.8  91/07/31  17:27:01  dbg
+# 	Add rules for mach_i386.defs.
+# 	[91/07/30  16:39:42  dbg]
+# 
+# Revision 2.7  91/06/25  10:26:11  rpd
+# 	Fixed makeboot build.
+# 	[91/05/21            rpd]
+# 	Don't play with SYS_RULE_1.  And stub out SYS_RULE{2,3,4}
+# 	to @ to not to have (null command) complaint.
+# 	And, the .s's files should be in $(SOURCE_DIR) not ..
+# 	[90/01/23            rvb]
+# 	SWAPSYS is now coff only.
+# 	[90/01/02  13:55:27  rvb]
+# 
+# 	a.out vs coff now handled by MASTER.i386
+# 	[89/12/21  17:11:24  rvb]
+# 
+# 	md is no longer in /usr/mach/bin
+# 	[89/11/21  12:55:09  rvb]
+# 
+# 	Indicate coff vs a.out
+# 	[89/10/21            rvb]
+# 
+# Revision 2.6  91/05/14  15:27:05  mrt
+# 	Correcting copyright
+# 
+# Revision 2.5  91/05/08  12:21:55  dbg
+# 	Add rules to build makeboot for the Sequent.
+# 	WARNING - CPATH is hardwired to /usr/include, and
+# 	the build line probably won't work if shadowing.
+# 	This will all be fixed if makeboot is used for all kernels.
+# 	[91/04/25            dbg]
+# 
+# 	Don't build locore with special rules.
+# 	[91/03/21            dbg]
+# 
+# Revision 2.4  91/03/16  14:41:57  rpd
+# 	Nullify the VOLATILE macro.
+# 	[91/03/13            rpd]
+# 
+# Revision 2.3  91/02/05  17:02:51  mrt
+# 	Changed to new copyright
+# 	[91/01/28  14:46:50  mrt]
+# 
+# Revision 2.2  90/05/03  15:18:09  dbg
+# 	Fix locore build rule - add space before '-DLOCORE'.
+# 	[90/02/14            dbg]
+# 
+# Revision 2.6.1.5  90/02/01  13:33:48  rvb
+# 	Don't play with SYS_RULE_1.  And stub out SYS_RULE{2,3,4}
+# 	to @ to not to have (null command) complaint.
+# 	And, the .s's files should be in $(SOURCE_DIR) not ..
+# 	[90/01/23            rvb]
+# 
+# Revision 2.6.1.4  90/01/02  13:55:27  rvb
+# 	SWAPSYS is now coff only.
+# 
+# Revision 2.6.1.3  89/12/21  17:11:24  rvb
+# 	a.out vs coff now handled by MASTER.i386
+# 
+# Revision 2.6.1.2  89/11/21  12:55:09  rvb
+# 	md is no longer in /usr/mach/bin
+# 
+# 
+# Revision 2.6.1.1  89/10/22  11:29:04  rvb
+# 	Indicate coff vs a.out
+# 	[89/10/21            rvb]
+# 
+# Revision 2.6  89/09/25  12:20:10  rvb
+# 	uprt.s -> start.s
+# 	[89/09/23            rvb]
+# 
+# Revision 2.5  89/04/07  14:58:25  rvb
+# 	We don't need INCLUDES any more.
+# 	[89/04/07            rvb]
+# 
+# Revision 2.4  89/04/05  12:57:12  rvb
+# 	Some changes for gcc, and locore is a .s
+# 	[89/03/21            rvb]
+# 
+# Revision 2.3  89/02/25  17:39:18  gm0w
+# 	Changes for cleanup.
+# 
+# Revision 2.2  89/01/23  22:15:23  af
+# 	Created.
+# 	[89/01/16  17:11:51  af]
+# 
+
+###############################################################################
+#BEGIN	Machine dependent Makefile fragment for the i386
+###############################################################################
+
+VOLATILE=
+
+#tmp
+
+SYS_RULE_2=-@
+SYS_RULE_3=-@
+SYS_RULE_4=-@
+MD=md
+
+#LIBS_P=-lc_p
+
+LDOBJS_PREFIX= ${ORDERED}
+#
+# Rules to build mach_i386.defs.
+#
+MACH_I386_FILES = mach/mach_i386_server.c
+
+$(MACH_I386_FILES): $(MIGDEPS) $(SOURCE_DIR)/mach/i386/mach_i386.defs
+	-$(MAKE_MACH)
+	$(MIG) -MD $(MIGKSFLAGS) \
+	    -header /dev/null \
+	    -user   /dev/null \
+	    -server mach/mach_i386_server.c \
+		$(SOURCE_DIR)/mach/i386/mach_i386.defs
+
+ioconf.c:
+	@echo The hack below should get fixed sometime.
+	cp /dev/null ioconf.c
+
+#
+# Things dependent on assym.s:
+#
+cswitch.o:	assym.s
+interrupt.o:	assym.s
+locore.o:	assym.s
+start.o:	assym.s
+
+#
+# Rules to build bin/makeboot for the Sequent.  They are invoked only
+# if the configuration puts makeboot in SYSDEPS.
+#
+# the cd command may not work if shadowing is in use!
+#
+
+../bin/makeboot: ../bin ../src ../src/makeboot
+	@echo "[ generating $@ ]"
+	cd $(SOURCE_DIR)/src/makeboot && \
+		CPATH=/usr/include ${MAKE} DDIR=../../bin makeboot.install
+
+../bin ../src ../src/makeboot:
+	mkdir $@
+
+#
+# Rule to build slave_boot_code.c for the Corollary. 
+# It is invoked only
+# if the configuration puts ./slave_boot_code.c in SYSDEPS.
+#
+# the cd command may not work if shadowing is in use!
+#
+
+
+slave_boot_code.c: \
+	$(SOURCE_DIR)/i386at/mp/boot/asm.s \
+	$(SOURCE_DIR)/i386at/mp/boot/table.c \
+	$(SOURCE_DIR)/i386at/mp/boot/start.s \
+	$(SOURCE_DIR)/i386at/mp/boot/btoi.c
+	cd $(SOURCE_DIR)/i386at/mp/boot && ${MAKE}
+	rm -f $@; ln -s ../i386at/mp/boot/$@ $@
+
+../i386at/boot/boot:\
+	$(SOURCE_DIR)/i386at/boot/asm.s \
+	$(SOURCE_DIR)/i386at/boot/bios.s \
+	$(SOURCE_DIR)/i386at/boot/boot.c \
+	$(SOURCE_DIR)/i386at/boot/boot.h \
+	$(SOURCE_DIR)/i386at/boot/boot2.s \
+	$(SOURCE_DIR)/i386at/boot/disk.c \
+	$(SOURCE_DIR)/i386at/boot/io.c \
+	$(SOURCE_DIR)/i386at/boot/start.s \
+	$(SOURCE_DIR)/i386at/boot/sys.c \
+	$(SOURCE_DIR)/i386at/boot/table.c 
+	cd $(SOURCE_DIR)/i386at/boot && ${MAKE}
+
+###############################################################################
+#END	Machine dependent Makefile fragment for the i386
+###############################################################################

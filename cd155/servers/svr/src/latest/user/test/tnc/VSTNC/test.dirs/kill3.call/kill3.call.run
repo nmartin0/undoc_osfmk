@@ -1,0 +1,25 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Run the kill3() call test.
+#
+#
+for testcase in  1 2 3 4 5 6 7 8 
+do
+	echo testcase is $testcase
+	sync
+	kill3.call $testcase
+	sync
+	echo " "
+done
+rm -rf *std*

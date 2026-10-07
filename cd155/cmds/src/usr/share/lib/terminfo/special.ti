@@ -1,0 +1,73 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+# 
+# OSF/1 Release 1.0
+
+#
+# "@(#)$RCSfile: special.ti,v $ $Revision: 1.2 $ (OSF) $Date: 1994/11/19 03:20:53 $"
+#
+# COMPONENT_NAME: (TERMINFO) Termifno
+#
+# FUNCTIONS:    special.ti
+#
+# ORIGINS: 3, 26, 27
+#
+# This module contains IBM CONFIDENTIAL code. -- (IBM
+# Confidential Restricted when combined with the aggregated
+# modules for this product)
+# OBJECT CODE ONLY SOURCE MATERIALS
+# (C) COPYRIGHT International Business Machines Corp. 1985, 1988
+# All Rights Reserved
+# Licensed Material - Property of IBM
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+# special.ti        1.4  com/terminfo,3.1,9013 10/16/89 23:16:37
+
+#
+# NAME:         special (SPECIALS)
+#
+# EXECUTION ENVIRONMENT:
+#
+#       Generic "terminals".  These are used to label tty lines when you
+#       don't know what kind of terminal is on it.  The characteristics of
+#       an unknown terminal are the lowest common denominator - they look
+#       about like a ti 700.
+
+arpanet|network,
+	use=unknown,
+
+bussiplexer,
+	use=unknown,
+
+dialup,
+	use=unknown,
+
+ethernet|network,
+	use=unknown,
+
+plugboard|patch|patchboard,
+	use=unknown,
+
+dumb,
+	am, bel=^G, cols#80, cr=^M, cud1=^J, ind=^J,
+
+unknown,
+	gn, use=dumb,
+
+switch|intelligent switch,
+	use=unknown,

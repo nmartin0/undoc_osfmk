@@ -1,0 +1,327 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to create a logical unit from either spare drives 
+     or drives in an existing drive group.
+ 
+ 
+ 
+     DEFINITIONS
+ 
+     SPARE DRIVE:  A "spare" drive is a drive in the array subsystem 
+     or integrated array that has not yet been configured into a 
+     logical unit.  For more information about spare drives, select 
+     the "Overview ฤ Modifying/Displaying Drive Statuses" option from 
+     the "Help" menu in the drive window.
+ 
+ 
+     DRIVE GROUP:  A "drive group" is comprised of drives that have 
+     been configured into one or more logical units.  All the logical 
+     units in a drive group must have the same RAID level.  A logical 
+     unit can NOT be in more than one drive group.
+ 
+ 
+                                (CONTINUED)
+     SUMMARY ฤ HOW TO CREATE A LOGICAL UNIT FROM SPARE DRIVES  
+ 
+     NOTE:  A procedure for creating a logical unit from spare drives 
+     is included in the help screens following the summaries.
+ 
+     When you create a logical unit from spare drives, you specify the 
+     following in order:
+ 
+          ฤ RAID level
+          ฤ Channel and ID of each spare drive 
+          ฤ Values for the logical unit parameters 
+ 
+     The logical unit parameters include:
+ 
+          ฤ RAID level 
+          ฤ Logical Block Size (bytes)
+          ฤ Logical Unit Size (mb)
+          ฤ Segment Size (blocks)
+          ฤ Segment Zero Size (blocks)
+          ฤ Delay Interval (tenth's of a second)
+          ฤ Blocks Per Delay Interval 
+ 
+                                (CONTINUED)
+     NOTE:  The Array Configuration Editor gives you default 
+            values for the logical unit parameters.  You may modify
+            any value in the logical unit parameter display EXCEPT
+            for RAID level.  To modify the RAID level of a logical
+            unit, you must delete the logical unit and recreate it.
+ 
+            See the User Guide for the acceptable logical unit 
+            parameter values, and the steps to change the RAID level
+            or drive grouping.
+ 
+ 
+     After you create the logical unit, the Array Configuration Editor 
+     automatically formats the logical unit.   When you quit ace, 
+     sysadm prompts you to run mkdtab or mktable (depending on the 
+     version of UNIX V.4 you are using).
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     SUMMARY ฤ HOW TO CREATE A LOGICAL UNIT 
+     FROM SPACE IN AN EXISTING DRIVE GROUP
+ 
+     NOTE:  A procedure for creating a logical unit from space in an 
+            existing drive group is included in the help screens 
+            following the summary.  Remember that you should only 
+            create more than one logical unit in an existing drive 
+            group if creating a logical unit would exceed your 
+            system's capacity.  For more information, see the User 
+            Guide.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     When you select the space remaining row to create a logical unit 
+     from an existing drive group, ace automatically assigns to the 
+     new logical unit all the drives in that drive group, and the same 
+     RAID level that was used for the other logical unit(s) configured 
+     in that drive group.
+ 
+     You must specify the following:
+ 
+          ฤ Values for the logical unit parameters 
+ 
+ 
+     The logical unit parameters include:
+ 
+          ฤ RAID level 
+          ฤ Logical Block Size (bytes)
+          ฤ Logical Unit Size (mb)
+          ฤ Segment Size (blocks)
+          ฤ Segment Zero Size (blocks)
+          ฤ Delay Interval (tenth's of a second)
+          ฤ Blocks Per Delay Interval 
+ 
+ 
+                                (CONTINUED)
+     NOTE:  The Array Configuration Editor gives you default 
+            values for the logical unit parameters.  You may modify
+            any value in the logical unit parameter display EXCEPT
+            for RAID level.  To modify the RAID level of a logical
+            unit, you must delete the logical unit and recreate it.
+ 
+            See the User Guide for the acceptable logical unit 
+            parameter values, and the required steps to change the 
+            RAID level or drive grouping.
+ 
+     After you create the logical unit, the Array Configuration Editor 
+     automatically formats the logical unit.  When you quit ace, 
+     sysadm prompts you to run mkdtab or mktable (depending on the 
+     version of UNIX V.4 you are using).
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     PROCEDURE -- CREATING A LOGICAL UNIT FROM SPARE DRIVES
+ 
+     1.   Select Drive Group 0 with the arrow keys.
+ 
+     2.   Press "c" to create the logical unit.
+ 
+     3.   Specify the RAID level choice.
+ 
+     4.   Enter the Channel and ID of each drive you want in the
+          logical unit using the guidelines given in the next 
+          help screen.
+ 
+     NOTES:  
+           ฤ The drives you can configure into a logical unit are 
+             marked with the status "2" in the drive matrix (see
+             the drive window).
+ 
+           ฤ It is recommended that you use the maximum number
+             of drives allowed when you create a logical unit.
+ 
+ 
+ 
+                                (CONTINUED)
+     ีออออออออออออออัอออออออออออออออออออออออออออออออออออออออออออออออธ
+     ณ  RAID Level  ณ   Guidelines For Configuring Logical Units    ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ      0       ณ ฤ Number of drives allowed per logical        ณ
+     ณ              ณ   unit อ 1 ฤ 10.                              ณ
+     ณ              ณ ฤ Specify a drive only once.                  ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ      1       ณ ฤ Number of drives allowed per logical        ณ
+     ณ              ณ   unit อ 2 ฤ 10 (even numbers).               ณ
+     ณ              ณ ฤ The mirrored pair is created by grouping    ณ
+     ณ              ณ   the first and second drive you enter,       ณ
+     ณ              ณ   third and fourth, etc.                      ณ
+     ณ              ณ ฤ Drives in a mirrored pair can NOT be on     ณ
+     ณ              ณ   the same channel.                           ณ
+     ณ              ณ ฤ Specify a drive only once.                  ณ
+     ิออออออออออออออฯอออออออออออออออออออออออออออออออออออออออออออออออพ
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     ีออออออออออออออัอออออออออออออออออออออออออออออออออออออออออออออออธ
+     ณ  RAID Level  ณ   Guidelines For Configuring Logical Units    ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ      3       ณ ฤ Number of drives allowed per logical        ณ
+     ณ              ณ   unit อ 3 or 5.                              ณ
+     ณ              ณ ฤ Drives must start on SCSI Channel 1.        ณ
+     ณ              ณ ฤ Drives must NOT skip channel numbers.       ณ
+     ณ              ณ ฤ The last drive entered is the parity drive. ณ
+     ณ              ณ ฤ Specify a drive only once.                  ณ
+     รฤฤฤฤฤฤฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+     ณ      5       ณ ฤ Number of drives allowed per logical        ณ
+     ณ              ณ   unit อ 3 ฤ 5.                               ณ
+     ณ              ณ ฤ Specify a drive only once.                  ณ
+     ิออออออออออออออฯอออออออออออออออออออออออออออออออออออออออออออออออพ
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     5.   Press <Return> after entering the drive ID number for the
+          last drive you want in the logical unit.
+ 
+     6.   At the prompt, press "y" if you want to save the logical 
+          unit parameter defaults for this logical unit, press "n" 
+          if you want to modify a value, or press "q" to quit the 
+          logical unit creation.
+ 
+      Did you press "y" to accept the values? 
+ 
+       YES     
+       Go to step 10, and complete the procedure. ฤฤ>
+ 
+       NO
+       Go to step 7, and complete the procedure. ฤฤ>
+ 
+     NOTE:  Press the <Downฤarrow> or <Return> to move the cursor to 
+            each logical unit parameter value that can be modified.
+ 
+     7.   Enter a desired value for the parameter, or select a 
+          parameter value by pressing the <Downฤarrow> or <Return>.
+ 
+                                (CONTINUED)
+     8.   Repeat step 7 until you have modified all the values 
+          you want to modify.
+ 
+     9.   At the prompt, press "y" to save all the logical 
+          unit parameter defaults for this logical unit, press "n" 
+          if you want to modify a value, or press "q" to quit the 
+          logical unit creation.
+ 
+      Did you enter "y" to accept the values? 
+ 
+       YES     
+       Go to step 10, and complete the procedure. ฤฤ>
+ 
+       NO
+       Go back to step 7, and complete the procedure. ฤฤ>
+ 
+     10.  Press <Return>, and the array controller automatically
+          formats the logical unit.
+ 
+     11.  Press "q" to quit ace.
+ 
+ 
+                                (CONTINUED)
+     12.  Press <F3> (CONT) to run mkdtab or mktable.
+ 
+          This will take some time.
+ 
+     13.  Add the logical unit as a device by partitioning and 
+          slicing it, and creating a filesystem(s) on the slice(s)
+          if you want filesystems on the logical unit.
+ 
+ 
+ 
+ 
+     PROCEDURE -- CREATING A LOGICAL UNIT FROM SPACE 
+     IN AN EXISTING DRIVE GROUP
+ 
+     1.   With the arrow keys, select the space remaining row for 
+          the desired drive group.
+ 
+     2.   Press "c" to create the logical unit.
+ 
+     NOTE:  After you select the "Create Logical Unit" option, you
+            are prompted with "Are the values shown OK?"
+ 
+                                (CONTINUED)
+     3.   At the prompt, press "y" to save all the logical 
+          unit parameter defaults for this logical unit, press "n" 
+          if you want to modify a value, or press "q" to quit the 
+          logical unit creation.
+ 
+      Did you press "y" to accept the values? 
+ 
+       YES     
+       Go to step 7, and complete the procedure. ฤฤ>
+ 
+       NO
+       Go to step 4, and complete the procedure. ฤฤ>
+ 
+     NOTE:  Press the <Downฤarrow> or <Return> to move the cursor to 
+            each logical unit parameter value that can be modified.
+ 
+     4.   Enter the desired value for the parameter, or select a 
+          parameter value by pressing the <Downฤarrow> or <Return>.
+ 
+     5.   Repeat step 4 until you have modified all the values 
+          you want to modify.
+ 
+                                (CONTINUED)
+     6.   At the prompt, press "y" to save all the logical 
+          unit parameter defaults for this logical unit, press "n" 
+          if you want to modify a value, or press "q" to quit 
+          creating the logical unit.
+ 
+ 
+      Did you enter "y" to accept the values? 
+ 
+       YES     
+       Go to step 7 and complete the procedure. ฤฤ>
+ 
+       NO
+       Go back to step 4, and complete the procedure. ฤฤ>
+ 
+     7.   Press <Return>, and the array controller automatically
+          formats the logical unit.
+ 
+     8.   Press "q" to quit ace.
+ 
+     9.   Press <F3> (CONT) to run mkdtab or mktable.
+ 
+          This will take some time.
+                                (CONTINUED)
+     10.  Add the logical unit as a device by partitioning and 
+          slicing it, and creating a filesystem(s) on the slice(s)
+          if you want filesystems on the logical unit.
+ 
+ 

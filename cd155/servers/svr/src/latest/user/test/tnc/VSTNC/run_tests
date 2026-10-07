@@ -1,0 +1,135 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+#
+
+echo " "
+if [ "${NODELIST}" = "" ]
+then
+	echo " This test requires an environment variable called NODELIST"
+	echo " to function.  Please set the envirnoment variable NODELIST"
+	echo " to the list of nodes that are configured and run this script"
+	echo " once again."
+	echo " For example, 'NODELIST=0-15; export NODELIST'"
+	echo "           or 'setenv NODELIST 0-15'."
+	exit
+else
+	echo ${NODELIST} | grep "[^-0-9]" > /dev/null 2>&1
+	if [ $? -eq 0 ] ; then
+		echo " Invalid NODELIST value: ${NODELIST}"
+		echo " Please reset the environment variable NODELIST and"
+		echo " run this script once again."
+		echo " For example, 'NODELIST=0-15; export NODELIST'"
+		echo "           or 'setenv NODELIST 0-15'."
+		exit
+	fi
+fi
+
+if [ "${MYNODE}" = "" ]
+then
+	echo " This test requires an environment variable called MYNODE"
+	echo " to function.  Please set the envirnoment variable MYNODE"
+	echo " to the node on which you are starting the VSTNC tests and"
+	echo " run this script once again."
+	echo " For example, 'MYNODE=3; export MYNODE' or 'setenv MYNODE 3'."
+	exit
+else
+	echo ${MYNODE} | grep "[^0-9]" > /dev/null 2>&1
+	if [ $? -eq 0 ] ; then
+		echo " Invalid MYNODE value: ${MYNODE}"
+		echo " Please reset the environment variable MYNODE and"
+		echo " run this script once again."
+		echo " For example, 'MYNODE=3; export MYNODE'"
+		echo "           or 'setenv MYNODE 3'."
+		exit
+	fi
+fi
+
+# Default timezone is Pacific; PATH is completely overridden for the tests.
+if [ "${TZ}" = "" ]
+then
+	TZ=PST8PDT; export TZ
+fi
+
+VSTNCETC=${VSTNCETC:-`pwd`/etc}
+PATH=:${VSTNCETC}:/sbin:/usr/sbin:/bin:/etc:/usr/bin
+
+export PATH VSTNCETC
+
+if [ ! -r config_data ]
+then
+	rm -f config_data
+	echo "Creating file 'config_data:'"
+	echo "MYNODE = $MYNODE and NODELIST = $NODELIST"
+	echo "VSTNCETC = $VSTNCETC"
+	echo "userid2=2" > config_data
+	echo "userid1=1" >> config_data
+	echo "goodnode=1" >> config_data
+	echo "mynode=$MYNODE" >> config_data
+	echo "badnode=99999" >> config_data
+	echo "nodelist=$NODELIST" >> config_data
+	echo "badaddr=0xfffffff" >> config_data
+	echo "TZ=$TZ" >> config_data
+	echo "PATH=$PATH" >> config_data
+fi
+echo "Configuration file 'config_data' contains the following:"
+cat config_data
+
+full_rpt_file=results/full.report
+error_rpt_file=results/error.report
+
+if [ ! -f results/.report_number ]
+then
+	echo "1000" > results/.report_number
+fi
+if [ $# = 0 ]
+then
+	if [ -f $full_rpt_file ]
+	then
+		expr `cat results/.report_number` + 1 > results/tmp
+		mv results/tmp results/.report_number
+		mv $full_rpt_file \
+		$full_rpt_file.`cat results/.report_number`
+	fi
+	report_type='Full'
+	echo 'Full VSTNC report requested.'
+	echo "Report directed to file \"$full_rpt_file\""
+	touch $full_rpt_file
+	run_tests_script $report_type >$full_rpt_file 2>&1
+elif [ $# = 1 -a $1 = "-e" ]
+then
+	if [ -f $error_rpt_file ]
+	then
+		expr `cat results/.report_number` + 1 > results/tmp
+		mv results/tmp results/.report_number
+		mv $error_rpt_file \
+		$error_rpt_file.`cat results/.report_number`
+	fi
+	report_type='Errors-only'
+	echo 'Errors-only VSTNC report requested.'
+	echo "Report directed to file \"$error_rpt_file\""
+	touch $error_rpt_file
+	run_tests_script $report_type >/dev/null 2>$error_rpt_file
+elif [ $# = 1 -a $1 = "-d" ]
+then
+	report_type='Full'
+	echo 'Debugging VSTNC report requested'
+	echo 'Report directed to your terminal'
+	run_tests_script $report_type
+else
+	echo "usage: $0 [ -e | -d ]"
+	exit 1
+fi
+echo ' '
+echo ' '
+echo 'VSTNC COMPLETE'

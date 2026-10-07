@@ -1,0 +1,71 @@
+#!/bin/bsh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+#
+# "@(#)uudemon.poll	1.6  com/cmd/uucp,3.1,9013 1/25/90 19:20:02"
+#
+# COMPONENT_NAME: UUCP uudemon.poll
+#
+# FUNCTIONS:
+#
+# ORIGINS: 10  27  3
+#
+# (C) COPYRIGHT International Business Machines Corp. 1985, 1989
+# All Rights Reserved
+# Licensed Materials - Property of IBM
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+# This shell should be run out of crontab every hour,
+# a little before  uudemon.hour since this one
+# does not start the scheduler.
+#
+
+PATH=/bin:/usr/bin:/etc:/usr/lib/uucp:/usr/lib/uucp
+SPOOL=/usr/spool/uucp
+
+POLLFILE=/usr/lib/uucp/Poll
+# POLLFILE is a list of "system <tab> hour1 hour2 hour3 ..." for polling
+# For example 
+#	raven	2  6  10
+# without the # at the beginning.  Lines starting with # are ignored.
+# NOTE a tab must follow the machine name
+
+umask 022
+set +e
+
+HOUR="`date '+%H'`"
+# HOUR="`date | sed -e 's/:.*//' -e 's/^.*\(..\)$/\1/'"
+HOUR=`expr $HOUR + 0`
+
+cat $POLLFILE  |
+sed -n -e "/^[^#].*[ 	]$HOUR[ 	]/s/	.*//p" -e "/^[^#].*[ 	]$HOUR\$/s/	.*//p" |
+while read site
+do
+	if test ! -d $SPOOL/$site
+	then
+		mkdir $SPOOL/$site
+		chown uucp $SPOOL/$site
+	fi
+
+	j=`expr $site : '\(.\{1,7\}\)'`
+	touch $SPOOL/$site/C.${j}n0000
+	chown uucp $SPOOL/$site/C.${j}n0000
+done

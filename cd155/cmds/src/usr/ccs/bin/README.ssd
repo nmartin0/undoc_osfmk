@@ -1,0 +1,15 @@
+Add
+COFF_SUBDIRS            = odump strings dump as ar icc ftn ld nm size strip
+
+to Makefile.
+
+Stan & Shala
+Wed Mar 25 15:57:56 PST 1992
+
+ARCHIVE_FORMAT is used instead of OBJECT_FORMAT to use COFF_SUBDIRS and
+not MACHO_SUBDIRS in the Makefile.
+Also Makefiles under dump, as, ar, icc, ftn, ld, nm, size, strip are
+modified to fix installing the files correctly.
+
+Shala
+Wed Apr  8 08:31:51 PDT 1992

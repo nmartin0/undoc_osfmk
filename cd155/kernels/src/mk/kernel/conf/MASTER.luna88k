@@ -1,0 +1,154 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1989 Carnegie-Mellon University
+# Copyright (c) 1988 Carnegie-Mellon University
+# Copyright (c) 1987 Carnegie-Mellon University
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#  
+#
+# HISTORY
+# $Log: MASTER.luna88k,v $
+# Revision 1.5  1994/11/18  20:27:45  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:18:58  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:16:44  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:16:15  dleslie
+# First R1_0 release
+#
+# Revision 2.3  91/08/24  11:54:19  af
+# 	Lets build mach_kernel like everyone else.
+# 	[91/08/16            rvb]
+# 	Changed scsi support from sd to scsi.
+# 	[91/07/13            danner]
+# 
+#Revision 2.2.3.1  91/08/19  13:44:59  danner
+#		Lets build mach_kernel like everyone else.
+#	[91/08/16            rvb]
+#	Changed scsi support from sd to scsi.
+#	[91/07/13            danner]
+#
+#Revision 2.2  91/07/09  23:14:14  danner
+#	Created
+#
+#	 Revision 2.2  91/04/05  13:53:25  mbj
+#	 	Stripped out all vax stuff
+#	 	[91/03/17  22:49:26  rvb]
+#	 
+#	 Revision 2.1  91/03/07  12:06:45  rvb
+#	 to 2.1
+#	 
+#
+
+#
+#  CPU TYPE (select exactly one)
+#
+#	luna88k = Luna's MC88K CPU
+#
+#
+#  Production Configuration Components:
+#  ---------- ------------- ----------
+#
+#
+#  GENERIC = [luna88k scsi mach unix small ipc_tcache nfs multi4 host]
+#  GENERIC.NONFS = [luna88k scsi mach unix small ipc_tcache multi4 host]
+#  GENERIC.RFS = [luna88k scsi mach unix small ipc_tcache nfs rfs multi4 host]
+#
+#  STD = [ multi4 medium host ]
+#
+#  MF    =[ ]
+#  MP    =[ ]
+#  BI    =[ ]
+#  WS    =[ luna88k scsi ]
+#  ANY   =[ WS ]
+#
+#  EXTRA =[ ]
+
+conftype	"luna88k"	# <luna88k>
+platform	"LUNA88K"	# <luna88k>
+
+config		mach		root on ra0a 	# <ramdisk>
+#config		vmunix		root on sd0c swap generic 	# <sd>
+config		mach_kernel	root on sd0c 	# <scsi>
+#config		vmunix		swap generic	# <unix>
+
+#
+# Luna 88K Devices
+#
+options		"luna88k"				# <luna88k>
+options		luna					# <luna88k>
+options		RAMDISK					# <ramdisk>
+options		ROM_MAYPUT				# <rom_mayput>
+
+controller	obio 0	at nexus ?			# <luna88k>
+
+controller	SCSI 0	at obio ? vector scintr		# <luna88k>
+disk		scsi 0	at SCSI 0 drive  0 flags 0	# <luna88k>
+disk		scsi 1	at SCSI 0 drive  1 flags 0	# <luna88k>
+tape		st 0	at SCSI 0 drive  8 flags 1	# <luna88k>
+tape		st 1	at SCSI 0 drive  9 flags 1	# <luna88k>
+device		usc 0	at SCSI 0 drive 16 flags 2	# <luna88k>
+device		usc 1	at SCSI 0 drive 17 flags 2	# <luna88k>
+device		usc 2	at SCSI 0 drive 18 flags 2	# <luna88k>
+
+controller      XP 0    at obio ? vector xpintr		# <luna88k>
+device          fd 0     at XP 0 drive 0 flags 0	# <luna88k>
+device          fd 1     at XP 0 drive 1 flags 0	# <luna88k>
+device          fd 2     at XP 0 drive 2 flags 0	# <luna88k>
+device          fd 3     at XP 0 drive 3 flags 0	# <luna88k>
+device          lp 0     at XP 0 drive 4 flags 1	# <luna88k>
+device          ssg 0    at XP 0 drive 5 flags 2	# <luna88k_not_supported>
+device          sio 0    at XP 0 drive 6 flags 3	# <luna88k>
+device          sio 1    at XP 0 drive 7 flags 3	# <luna88k>
+
+controller	AM 0	at obio ? vector amintr		# <luna88k>
+device		am 0	at AM 0 drive 0			# <luna88k>
+
+controller	EX 0	at obio ? vector exintr		# <luna88k_not_supported>
+device		ex 0	at EX 0 drive 0			# <luna88k_not_supported>
+
+controller	CP 0	at obio ? vector cpintr		# <luna88k_not_supported>
+device		cp 0	at CP 0 drive 0			# <luna88k_not_supported>
+
+controller	FB 0	at obio ? vector fbintr		# <luna88k>
+device		fb 0	at FB 0 drive 0			# <luna88k>
+
+controller	RA 0	at obio ? vector raintr		# <luna88k>
+device		ra 0	at RA 0 drive 0			# <luna88k>
+
+controller	EU 0	at obio ? vector euintr		# <luna88k>
+device		eu 0	at EU 0 drive 0			# <luna88k>
+
+controller	ASP 0	at obio ? vector aspintr	# <luna88k>
+device		asp 0	at ASP 0 drive 0 flags 0	# <luna88k>
+device		tasp 0	at ASP 0 drive 1 flags 1	# <luna88k>
+
+pseudo-device	ether					# <luna88k>
+pseudo-device	imp					# <luna88k>
+pseudo-device	loop					# <luna88k>
+pseudo-device	pty 2					# <luna88k>
+pseudo-device	sl 2					# <luna88k>
+pseudo-device	vty					# <luna88k>
+pseudo-device	gs					# <luna88k>
+#pseudo-device	stp					# <luna88k>
+#pseudo-device	sxt					# <luna88k>
+
+options		COMPAT					# <compat>
+options		NET_UDA	# new uda driver from Chris Torek # <!ora>

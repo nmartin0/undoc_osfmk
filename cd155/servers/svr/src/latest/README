@@ -1,0 +1,4134 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+
+Server id number SVR.422			7 Jul 1993 bhk
+-----------------------
+This is a quick patch to detect a deadlock co~v
+~v
+This is a quick patch to detect a deadlock condition on socket and
+fifo migration.  If the deadlock is detected the locks are unwound
+the thread blocks and the locks are retaken before the operation
+is tried again.  This should removed once the condition which causes
+this deadlock is fixed.  (i.e. file locks being held while socket locks are 
+attempted to be obtained)
+
+.............................................................................
+
+Server id number SVR.421			7 Jul 1993 mjl
+-----------------------
+Fix for LCC bug #0314 continued.  It's those last minute "this can't
+possibly go wrong" code changes that really hurt you....
+
+.............................................................................
+
+Server id number SVR.420			7 Jul 1993 mjl
+-----------------------
+This check-in fixes LCC bug #0314, "Some periodic net threads still running
+on compute nodes".
+
+.............................................................................
+
+Server id number SVR.419			29 Jun 1993 bhk
+-----------------------
+Partial upgrade to V1.05b1 of OSF/1 AD to fix select problems in V1.094
+Also fixes bugs 233 and 264
+
+.............................................................................
+
+Server id number SVR.418			29 Jun 1993 nina
+-----------------------
+Fix link errors in the +tnc build.
+
+.............................................................................
+
+Server id number SVR.417			25 Jun 1993 slively
+-----------------------
+Back out all of the recently added LITE server changes.  This includes
+anything marked #if FILESERVER, #if UFS, #if NFS, and #if LITE_NODE.
+The lite server work is being re-worked by OSF and will be added 
+at a later date.
+
+.............................................................................
+
+Server id number SVR.416			24 Jun 1993 mjl
+-----------------------
+This revision was missed in the last o2install due to a stale RCS lock.
+I'm now done with the tree, and you may o2update/o2install at will (i.e.
+back out the lite changes).
+
+.............................................................................
+
+Server id number SVR.415			24 Jun 1993 mjl
+-----------------------
+Fixes for [LCC bug 0229] "Reads from a FIFO hang" and [LCC bug 0301]
+"More missing ux_server_thread_{un,}blocking() calls".
+
+WARNING!!!  Because of a system crash in mid-o2install, not all RCS
+comments are included here---watch for an update mail message with all
+relevant RCS comments.
+
+DOUBLE WARNING!!!  The discussed change to dvp_pvpops.c was not made
+due to an outstanding RCS lock.  Another o2install is needed to fix this.
+
+.............................................................................
+
+Server id number SVR.414			23 Jun 1993 slively
+-----------------------
+Fixed an erroneous comment in rvp_pvpops.c.
+Removed rcsmerge garbage from server/uxkern/block_io.c.
+
+.............................................................................
+
+Server id number SVR.413			22 Jun 1993 slively
+-----------------------
+Support for the LITE server.  Look for UFS, FILESERVER, and LITE_NODE.
+This was merged code from Intel.
+
+.............................................................................
+
+Server id number SVR.412			22 Jun 1993 yazz
+-----------------------
+Several bug fixes involving exiting processes (roman).
+Some new versions of files from Intel.
+Some cosmetic fixes for vi-ability and make output clarity.
+
+WARNING: DO NOT O2UPDATE THIS RELEASE.  ANOTHER FILE MUST BE O2INSTALLED
+TO MAKE IT WORK CORRECTLY (and an rcs error in the middle of o2install
+occurred).  I will send out additional email when the fixup has occurred.
+
+.............................................................................
+
+Server id number SVR.411			20 Jun 1993 yazz
+-----------------------
+Additional changes for the ad1.04 merge.
+
+.............................................................................
+
+Server id number SVR.410			19 Jun 1993 yazz
+-----------------------
+TNC changes required by the ad1.04 merge.
+
+.............................................................................
+
+Server id number SVR.409			14 Jun 1993 paul
+-----------------------
+Changes to support Pipe/FIFO relocation with synchronous close. Major change
+is that the file struct is now shipped across during the relocation so that
+we have access to the f_ counts needed by the sync close code.
+
+.............................................................................
+
+Server id number SVR.408			11 Jun 1993 slively
+-----------------------
+Fixed bogus argument passing to sockaddr_to_string function in
+vs_chouse.c
+Fixed assorted RCS comments.
+
+.............................................................................
+
+Server id number SVR.407			10 Jun 1993 klh
+-----------------------
+Fix from Intel for locking (0x7fffffff to 0x8000000)
+
+.............................................................................
+
+Server id number SVR.406			9 Jun 1993 yazz
+-----------------------
+Sys V IPC bug fixed; all VSTNC tests, including those that use shared
+memory, now pass.
+ 
+VSTNC output regularized across all tests.  Several bugs within the
+tests themselves fixed.
+ 
+Pty initialization skipped if NPTY is 0, as occurs in the "bsmall"
+configuration.
+
+.............................................................................
+
+Server id number SVR.405			3 Jun 1993 yazz
+-----------------------
+Fix two bugs, #0282 (dueling VPOP_EXIT ops on the same vproc causes a
+crash [for Roman]) and #0216, VSTNC set_tnc_port_call() case 4 fails.
+
+.............................................................................
+
+Server id number SVR.404			3 Jun 1993 bhk
+-----------------------
+Fixed bug 274 (dropping of inbound connects with multiple network servers)
+and bug 281 (filtered rip enpoint)
+
+.............................................................................
+
+Server id number SVR.403			2 Jun 1993 yazz
+-----------------------
+First installation of Sys V IPC under TNC code.
+
+.............................................................................
+
+Server id number SVR.402			1 Jun 1993 nina
+-----------------------
+This revision fixes a couple of problems with netstat -i
+(refer to LCC BUG # 272).  The user should no longer see
+the MI ifnet structures.  The netstat command should no
+longer crash.
+
+The revision also incorporates a bug fix that was passed
+on by INTEL.  This effects table set operations for TBL_MAXUPRC.
+
+.............................................................................
+
+Server id number SVR.401			26 May 1993 mjl
+-----------------------
+Fix LCC bug #0277 (
+"ifconfig <0>lo0 up" still loses sometimes).
+
+.............................................................................
+
+Server id number SVR.400			25 May 1993 yazz
+-----------------------
+Changes from OSF via Intel to allow paging to partitions, in a no
+mapped files configuration.
+
+.............................................................................
+
+Server id number SVR.399			25 May 1993 mjl
+-----------------------
+Interim fix for bug #0273: for now, be lenient with EEXIST errors caused
+by adding MI-specific routes.  Also, allow packets sent over the MI to go
+out onto the wire even though neither ipforwarding nor ipgateway is
+enabled---this would have eventually bitten us in configurations with
+more than one IP network.
+
+.............................................................................
+
+Server id number SVR.398			14 May 1993 slively
+-----------------------
+All changes needed to fix the lack of permission checking in the 
+table_node system call, along with fixing a small associated memory
+leak. (Bug #208).
+
+.............................................................................
+
+Server id number SVR.397			13 May 1993 mjl
+-----------------------
+[LCC #0256] Fix assertion failure caused by "ifconfig '<0>lo0' up".
+[LCC #0262] Make sure start_file*_op() routines increment the file port
+sequence number for failure cases.  NB OSF should get this fix!
+Minor futzing with MI debug macros.
+
+.............................................................................
+
+Server id number SVR.396			12 May 1993 yazz
+-----------------------
+Some small changes requested and supplied by Intel, mostly i860
+assembly-language.
+
+.............................................................................
+
+Server id number SVR.395			11 May 1993 mjl
+-----------------------
+Fix for `netstat -r' handling of RTF_INVISIBLE routes, LCC bug #0261.
+
+.............................................................................
+
+Server id number SVR.394			10 May 1993 bhk
+-----------------------
+Fixed a state syncronization problem which caused connection requests which
+were in a half open state to be reported as fully open.
+
+.............................................................................
+
+Server id number SVR.393			10 May 1993 bhk
+-----------------------
+Fixed the freeing free mbuf panic on non-networkserver getpeername  calls
+
+.............................................................................
+
+Server id number SVR.392			7 May 1993 mjl
+-----------------------
+Make many debugging #define's dependent on MACH_ASSERT.  Turn off
+RTF_INVISIBLE flag for now (makes MI routes visible to netstat).
+Make clearinghouse lookups more flexible (don't need address family
+if interface id is known).  Preliminary work for LCC bug #0256 (some
+ifconfig command lines cause assertion failures).
+
+.............................................................................
+
+Server id number SVR.391			7 May 1993 yazz
+-----------------------
+Fixed RCS comments for Intel release.
+
+.............................................................................
+
+Server id number SVR.390			7 May 1993 nina
+-----------------------
+These changes were made to provide single system semantics
+for writes to AF_ROUTE sockets, SIOCSARP and SIOCDARP.
+Major changes were made to some clearinghouse functions
+to support the MIv3 driver.  In addition, changes were
+made to table() code to improve performance and support
+the MIv3 driver.  
+
+In addition, some effort was made to cleanup some
+code and rearrange some functions to make use of
+common code.
+
+.............................................................................
+
+Server id number SVR.389			7 May 1993 bolsen
+-----------------------
+[Bug 252] made VPROC_DEBUG and PVPROC_DEBUG dependant on MACH_ASSERT.
+	MACH_ASSERT is set (equals 1) IF you build with +test.
+	MACH_ASSERT is used to determine whether or not assertions are
+	turned on/off in server/kern/assert.h
+
+.............................................................................
+
+Server id number SVR.388			6 May 1993 mjl
+-----------------------
+Minor cleanup of MI code, plus vsocket state change fixes that fix
+problems with BSD ``r'' commands (even allowing them to work across
+the MI!).
+
+.............................................................................
+
+Server id number SVR.387			6 May 1993 yazz
+-----------------------
+Cause NORMA_VM (server flow control ifdef) to be 0 for the i386.
+
+.............................................................................
+
+Server id number SVR.386			5 May 1993 yazz
+-----------------------
+I860 assembly language and related changes from Intel relating to
+sigreturn.  Also enabled NORMA flow control in the server in the
+case of the Paragon but not the HyperCube.
+
+.............................................................................
+
+Server id number SVR.385			5 May 1993 mjl
+-----------------------
+Alpha quality release of MIv3 code.  Includes some bookkeeping fixes
+for virtual socket operations (bhk).  Known problems: (a) can't use
+BSD rcmds between network server nodes.  (b) assertion failures for
+certain badly-formed invocations of /sbin/ifconfig.  Setup of ip_src
+address for packets routed via the MI is still shakey.
+
+This is in support of multiple network servers.  (Various SPEs.)
+
+.............................................................................
+
+Server id number SVR.384			5 May 1993 bolsen
+-----------------------
+[Bug 239] Fix Hypercube boot problem with i386 I/O nodes.
+
+.............................................................................
+
+Server id number SVR.383			5 May 1993 jpaul
+-----------------------
+Fix VSTNC stuff.
+
+.............................................................................
+
+Server id number SVR.382			4 May 1993 yazz
+-----------------------
+Small changes in the Intel sandbox missing from merge now added.
+
+.............................................................................
+
+Server id number SVR.381			4 May 1993 bhk
+-----------------------
+Removed VSOCKET_DEBUG from DEBUG variable in Makefile.template
+
+.............................................................................
+
+Server id number SVR.380			4 May 1993 bhk
+-----------------------
+Fixed RCS Comments from previous checkin
+
+.............................................................................
+
+Server id number SVR.379			4 May 1993 bolsen
+-----------------------
+Fixed the following:
+[Bug 234] loadlevel start/stop script (from Intel).
+[Bug 235] load_leveld error message misleading (from Intel).
+[Bug 236] continue should be a break in load_leveld.c (from Intel).
+[Bug 237] Load_leveld VSTNC tests not being run.
+[Bug 238] Load_leveld VSTNC key directory not created.
+[SPE 0019] errno should be valid when calling error_fatal (from Intel).
+[SPE 0020] Load_leveld VSTNC test does not check names befor running.
+[SPE 0021] use varibles for report file names in VSTNC tests (run_tests).
+
+.............................................................................
+
+Server id number SVR.378			4 May 1993 bolsen
+-----------------------
+[Bug 240] Fixed vs.c build was a header file problem (sys/table.h).
+	PATH_MAX was undefined but is defined in <sys/syslimits.h>.
+
+.............................................................................
+
+Server id number SVR.377			3 May 1993 yazz
+-----------------------
+Added new table() calls TBL_UNPCB and TBL_PGINFO (part of
+ad1.0.3 merge).
+
+.............................................................................
+
+Server id number SVR.376			3 May 1993 bhk
+-----------------------
+These files contain Brad's latest virtual socket layer bug fixes, which I
+am checking in because I need them right away and Brad is sick today.
+This server boots on the i386 cluster and telnet works OK, both inbound
+and outbound.  Files whose RCS comments should be fixed by Brad are marked
+with the string "<YO BRAD!>".
+
+.............................................................................
+
+Server id number SVR.375			30 Apr 1993 yazz
+-----------------------
+Small change to make tnc use new _NOSIG version of END_VPROCSERVER
+macro.
+
+.............................................................................
+
+Server id number SVR.374			30 Apr 1993 klh
+-----------------------
+Fix from OSF for mount and unmount
+
+.............................................................................
+
+Server id number SVR.373			30 Apr 1993 klh
+-----------------------
+Remove Header so that o2 tools will still work
+Add ifdef for temporary workaround for paragon and i860 builds
+
+.............................................................................
+
+Server id number SVR.372			30 Apr 1993 klh
+-----------------------
+Several fils have $Header and o2 tools no longer work
+
+.............................................................................
+
+Server id number SVR.371			29 Apr 1993 klh
+-----------------------
+Complet 1.0.3 merge.
+
+.............................................................................
+
+Server id number SVR.370			23 Apr 1993 bolsen
+-----------------------
+[SPE 0007] made changes necessary to create a common header file for
+	those structures, variables and macros that are common to both
+	load_leveld and onnode (fast & fastnode).
+Renamed the this_node command to node_self which is used in the VSTNC
+tests.
+
+.............................................................................
+
+Server id number SVR.369			23 Apr 1993 bolsen
+-----------------------
+[Bug 212-4754] released extra send right for rdir_port and cdir_port due
+	to COPY_SEND in cli_rforkmulti(_long) call.  Fixes umount problem
+	after running the multitest program.
+
+.............................................................................
+
+Server id number SVR.368			23 Apr 1993 slively
+-----------------------
+Removed the header files needed for curses specific functions in the
+TNC demo.  These files are still available in the San Diego cell demo
+sandbox, but should not have been checked into the tree.  They will be
+needed for building the demo until an alternate solution is found or the
+demo becomes a true X demo (whichever comes first).
+
+.............................................................................
+
+Server id number SVR.367			23 Apr 1993 roman
+-----------------------
+Minor corrections to make up for ommissions in last submission.
+
+.............................................................................
+
+Server id number SVR.366			22 Apr 1993 roman
+-----------------------
+Fix for fllowinging bugs:
+
+[Bug 222] Waiting for pgid has problems.
+[Bug 223] vproc_dealloc() called with vproc_list_lock already locked.
+[Bug 224] Timing window with vproc_release() where the vproc lists
+	can end up being corrupted.
+[Bug 225] Leak of a page of virtual memory on rforkmulti() with a
+	long enough node list.
+[Bug 225] Port leak of parent's task port on rfork and rforkmulti.
+
+Also some minor typos corrected.
+
+.............................................................................
+
+Server id number SVR.365			17 Apr 1993 klh
+-----------------------
+Delete extraneous files README.locus and o2extract.
+
+.............................................................................
+
+Server id number SVR.364			16 Apr 1993 mjl
+-----------------------
+Fix bug #0220.  By delaying starting pffasttimo and pfslowtimo threads
+until a network interface is configured, we are assured that these
+threads will not bog down compute nodes.  (It may be desirable to also
+delay starting netisr threads, but that is trickier and in any case
+we should wait for ad1.0.3 to do it since there are related code changes.)
+
+.............................................................................
+
+Server id number SVR.363			16 Apr 1993 nina
+-----------------------
+Removed some __i860__ compilation dependencies per request of INTEL.
+Fixed one reference to netserver_node that was erroneously not
+bracketed by #ifdef TNC
+
+.............................................................................
+
+Server id number SVR.362			16 Apr 1993 bhk
+-----------------------
+incorporating bug fixes from work at intel
+
+.............................................................................
+
+Server id number SVR.361			15 Apr 1993 jpaul
+-----------------------
+Get number of nodes from the table call. Use that for
+error checking.
+
+.............................................................................
+
+Server id number SVR.360			14 Apr 1993 slively
+-----------------------
+Pruned extra demo related files from the user subtree.
+
+.............................................................................
+
+Server id number SVR.359			14 Apr 1993 slively
+-----------------------
+Addition of the TNC demo scripts and source.  A set of header files
+and libraries are also included for curses specific parts of the demo.
+These should be removed when the demo goes to an X window system.
+
+.............................................................................
+
+Server id number SVR.358			12 Apr 1993 nina
+-----------------------
+This server fixes a couple of i860 compilation errors.
+It also supports single system semantics for SIOCGIFCONF, SIOCADDRT and
+SIOCDELRT ioctls for AF_INET sockets.  The -C option for the route command
+will force use of AF_INET sockets when manually adding/deleting routes.
+  
+
+.............................................................................
+
+Server id number SVR.357			9 Apr 1993 bolsen
+-----------------------
+removed extra call to m_freem in nsrv_r_vs_sorecv().
+fixes panic: freeing free mbuf on i386 cluster.
+
+.............................................................................
+
+Server id number SVR.356			3 Apr 1993 klh
+-----------------------
+Fixeda locking problem (#211), general problems with select found in rshsoak (183)
+and a mbuf leak (193)
+Restructed select into three parts (check, enqueue, dequeue).
+(klh for bhk)
+
+.............................................................................
+
+Server id number SVR.355			29 Mar 1993 yazz
+-----------------------
+Minor debug code cleanup.
+
+.............................................................................
+
+Server id number SVR.354			27 Mar 1993 yazz
+-----------------------
+Added some more ux_server_thread_blocking/unblocking() calls (after
+checking Every occurrence of All tnc.defs "routine"s (but not
+"simpleroutine"s).
+Added more debug info in panics and ahead of an assertion failure.
+
+.............................................................................
+
+Server id number SVR.353			26 Mar 1993 mjl
+-----------------------
+This bugfix pertains only to MI version 2; when version 3 is implemented
+the force_bind_to_local_socket() routine will go away---but I wanted to
+get this fix in just in case.
+
+.............................................................................
+
+Server id number SVR.352			25 Mar 1993 bhk
+-----------------------
+Fixed a n
+
+
+~v
+Fixed~v
+Fixed an ommision in the previous blocking/unblocking checkin
+
+.............................................................................
+
+Server id number SVR.351			24 Mar 1993 bhk
+-----------------------
+Added ux_server_thread_blocking and ux_server_thread_unblocking
+to remote operations
+
+.............................................................................
+
+Server id number SVR.350			23 Mar 1993 yazz
+-----------------------
+Added ux_server_thread_blocking/unblocking() calls around the remote
+tasking RPCs.  Verified a port/struct ptr is valid before dereferencing.
+
+.............................................................................
+
+Server id number SVR.349			23 Mar 1993 bolsen
+-----------------------
+fixed Bug #184 load_level error_nonfatal() routine now uses varargs.
+
+.............................................................................
+
+Server id number SVR.348			22 Mar 1993 yazz
+-----------------------
+OSF lock changes -- the latest of many such sets of changes -- installed.
+This set has passed Intel's acceptance tests.  This fixes the "printf"
+bug (#167/3740).
+
+.............................................................................
+
+Server id number SVR.347			22 Mar 1993 nina
+-----------------------
+This build fixed some i860 compilation problems that
+were introduced in an earlier build.  Changes were made
+to loop back and slip code to deal with the new network
+interface naming conventions.
+
+.............................................................................
+
+Server id number SVR.346			19 Mar 1993 bhk
+-----------------------
+This fixes a deadlock situation in the virtual socket layer. (bug #206)
+
+.............................................................................
+
+Server id number SVR.345			19 Mar 1993 bhk
+-----------------------
+The select bug is fixed. There is still a deadlock problem that
+will be checked in in the subsequent checkin.  This also fixes
+the mbuf leak, the Unlock socket problem uncovered by Xgalaxy, 
+A port leak in the virtual socket layer and an accept timeing window
+problem.
+
+.............................................................................
+
+Server id number SVR.344			17 Mar 1993 klh
+-----------------------
+Fixed transfer count information for certain error conditions 
+(Intel bug 3397, Locus 163)
+Fixed initialization problem in socket creation to allow operations
+on unbound sockets (Intel bug 4111, 157)
+
+.............................................................................
+
+Server id number SVR.343			17 Mar 1993 jpaul
+-----------------------
+Last install had bad Makefile for onnode.  Also removed 
+debug printfs from VSTNC suite.
+
+.............................................................................
+
+
+Server id number SVR.342			17 Mar 1993 jpaul
+-----------------------
+Fix Bugs 140, 200, and 203.  Shared memory is now created and
+destroyed by common code used by a coople of the tests. The
+configuration data is configured and created on the fly now
+from an environment variable, NODELIST.  
+
+.............................................................................
+
+Server id number SVR.341			15 Mar 1993 roman
+-----------------------
+[Bug 0136] Do not add orphaned child to foster parent list of init -    
+        the child is already on the parent-child-sibling list of init.
+[Bug 0201] Change locking for VPOP_EXIT() to ensure that child reports
+        zombie state to "correct" parent (i.e. make sure that the
+        parent does not change during VPOP_EXIT()).
+
+.............................................................................
+
+Server id number SVR.340			10 Mar 1993 yazz
+-----------------------
+Merge.
+Synchronous close code from Intel (from OSF) merged into LCC source tree.
+Pipe relocation disabled, pending development of synchronous close code
+for vsockets/tnc.
+
+.............................................................................
+
+Server id number SVR.339			6 Mar 1993 klh
+-----------------------
+Previous checkin was incorrect.  len should have been len1
+
+.............................................................................
+
+Server id number SVR.338			6 Mar 1993 klh
+-----------------------
+Bug # 194, receive buffers were not being freed for network receives (klh for bhk)
+
+.............................................................................
+
+Server id number SVR.337			5 Mar 1993 yazz
+-----------------------
+Install correct version of emulator/emul_init.c (one that compiles!).
+
+.............................................................................
+
+Server id number SVR.336			4 Mar 1993 yazz
+-----------------------
+Fix bug #192, emulator won't compile with MAPPED_FILES turned off.
+Allow master Makeconf files to lack definitions for OPTIMIZE_{I386,I860}
+and still default to OPTIMIZE_DEFAULT.
+
+.............................................................................
+
+Server id number SVR.335			4 Mar 1993 klh
+-----------------------
+Fix Makefile.template for 860 builds with mi turned on.
+
+.............................................................................
+
+Server id number SVR.334			3 Mar 1993 klh
+-----------------------
+Change MASTER file so that TNC includes second, tnc, and mi.  You will need to 
+change your Makeconf file if you want to use this.  Makeconf.template
+has also been changed in the latest tree.
+
+.............................................................................
+
+Server id number SVR.333			3 Mar 1993 mjl
+-----------------------
+WARNING! WARNING! This build contains a change to sys/types.h --- you
+should save the ls -l output for your current copy of this file, and
+then use utimes to reset it after o2updating.  Otherwise you'll do
+a full build from scratch, yech.  (All files affected by the change to 
+types.h are also modified in this build, so a scratch build isn't needed.)
+
+This build fixes bugs #0174 "sloppy arg validation in vslo_ioctl()".  The
+real problem was due to vsfindmatch() losing when given a bogus address
+family.  Also, a yet-to-be-numbered bug where ifconfig would cause a
+panic when a bad node number was given in the <x,y>en0 interface name
+is also fixed here.  Lastly, there is now a #define constant INVALID_NODE
+declared along with node_t in <sys/types.h>.
+
+.............................................................................
+
+Server id number SVR.332			2 Mar 1993 bhk
+-----------------------
+Fixed three bugs in the virtual sockets area and added the frame work to handle
+SIOCGIFCONF ioctls with multiple network servers.
+
+.............................................................................
+
+Server id number SVR.331			1 Mar 1993 klh
+-----------------------
+Delete Makeconf.i860 that was installed by mistake.
+
+
+.............................................................................
+
+Server id number SVR.330			1 Mar 1993 jpaul
+-----------------------
+Various fixes for VSTNC test suite, including Bug #154.
+Added new ping test suite.
+
+.............................................................................
+
+Server id number SVR.329			1 Mar 1993 roman
+-----------------------
+[SPE #18]. Speed up rforkmulti() by having children of the spanning
+	tree inherit their virtual memory from the spanning tree
+	pseudo-parent rather than the real parent. This eliminates a
+	paging bottleneck on the parent node, at the cost of
+	page faults being resolved in a cascade fashion.
+
+Found by Intel to have at least a factor of 6 performance improvement.
+
+.............................................................................
+
+Server id number SVR.328			26 Feb 1993 yazz
+------------------------
+
+***************
+ N O T I C E :
+***************
+
+After you o2update this release, you must replace your master Makeconf
+file.  Copy it from ../latest/Makeconf.template and replace "@SANDBOX@"
+with your sandbox name.  (And edit in any personal Makeconf changes.)
+
+Moved last known hard-coded pathnames out of lower level makefiles and
+into the master Makeconf file.
+
+Optionally allowed master Makeconf variables OPTIMIZE_I386, and similar,
+on a per-architecture basis, to override the default OPTIMIZE value.
+
+Fixed i860 compilation problem.
+
+Fixed bug #173/4314 (bad nfds in select() call now yields EINVAL).
+
+Added i860 register change code from Intel, relating to signal delivery.
+
+.............................................................................
+
+Server id number SVR.327			25 Feb 1993 nina
+-----------------------
+This build implements the new network interface naming scheme.  Prefixes
+of the form <dv,ns> are now required in front of all interface names used
+in ifconfig incantations.  If ns is not specified, it defaults to dv, which
+is required.  You must change your /sbin/init.d/inet script (and anywhere
+else that does ifconfig commands).  NB you don't have to use onnode to
+issue ifconfig commands on other nodes, merely specify an ns value.
+(mjl & nina)
+P.S.  The loopback incantation is: "ifconfig '<0>lo0' 127.0.0.1", you only
+need to configure one of these.
+
+.............................................................................
+
+Server id number SVR.326			24 Feb 1993 slively
+-----------------------
+Installation of one-line fixes for bug #170 (ux_server_loop) from Chris Peak
+plus bug #172 (syscall trace on fork) from Bob Yasi.
+
+.............................................................................
+
+Server id number SVR.325			24 Feb 1993 klh
+-----------------------
+Change hardcoded pathname PGILIBS in makefiles for i860 builds.
+
+.............................................................................
+
+Server id number SVR.324			23 Feb 1993 mjl
+-----------------------
+Allow builds without mi driver configured.
+
+.............................................................................
+
+Server id number SVR.323			23 Feb 1993 chrisp
+-----------------------
+Interim fix for bug #146: VSX kill test failure with server built
+with MACH_ASSERT off.
+
+.............................................................................
+
+Server id number SVR.322			23 Feb 1993 mjl
+-----------------------
+Fix a last-minute change to a debug printf that turned out to be bogus.
+
+.............................................................................
+
+Server id number SVR.321			22 Feb 1993 mjl
+-----------------------
+Rewrite MI network interface driver for broadcast rather than point-to-
+point operation.  Added node field to routing related tables.  Preemptive
+merge of John LoVerso's TBL_UNPCB Unix socket table() code.  Support for
+tables with a subtable number packed into the index arg.
+
+.............................................................................
+
+Server id number SVR.320			22 Feb 1993 yazz
+-----------------------
+Several small changes required for the Paragon were made.
+
+.............................................................................
+
+Server id number SVR.319			19 Feb 1993 bhk
+-----------------------
+Fixed bug 164 (oip mismatch hang).
+
+.............................................................................
+
+Server id number SVR.318			11 Feb 1993 bhk
+-----------------------
+The virtual socket layer now correctly identifies the network server
+as being local or remote
+
+.............................................................................
+
+Server id number SVR.315			8 Feb 1993 bhk
+-----------------------
+
+fixed a problem where canceled selects were incrementing the file ports send
+right count, thereby  preventing the socket from closeing.
+
+.............................................................................
+
+Server id number SVR.314			3 Feb 1993 mbarnett
+-----------------------
+Fixed commeFixed comment in history log.
+
+.............................................................................
+
+Server id number SVR.313			3 Feb 1993 mbarnett
+-----------------------
+Modified code so that the owner of the created shared memory region has
+write permissions.  Also, as a result of this change, I added bullet 
+proofing to prevent any user other than root from invoking the load leveler
+daemon.  This resolves SPE #0012.
+
+.............................................................................
+
+Server id number SVR.312			2 Feb 1993 bhk
+-----------------------
+Fixed the getsockname panic and incorporated OSF's sequence counting
+on select
+
+.............................................................................
+
+Server id number SVR.311			26 Jan 1993 yazz
+-----------------------
+Installed better fix for bug #0152 (send sig to bogus pid w/invalid-node-
+of-origin hangs Mach IPC).
+Added bug number to earlier RCS comment.
+
+.............................................................................
+
+Server id number SVR.310			26 Jan 1993 yazz
+-----------------------
+Temporary fix to the 'SIGSTOP during rforkmulti()/rfork()/fork() causes
+hang' bug.  Permanent fix to involve John LoVerso/OSF due to fork()
+involvement.
+
+.............................................................................
+
+Server id number SVR.309			26 Jan 1993 klh
+-----------------------
+Closed memory leak for non-local clients. Closes bug 150
+
+.............................................................................
+
+Server id number SVR.308			20 Jan 1993 yazz
+-----------------------
+Fix for bug #0152:
+In tnc_locate_vproc_pid(), return failure when passed a pid which
+contains an invalid node-of-origin value in its upper half.
+
+.............................................................................
+
+Server id number SVR.307			20 Jan 1993 yazz
+-----------------------
+Fixes bug #0149 -- NODE 127 fast/fastnode/load_leveld failure:
+Corrected computation of proj_id parameter used in ftok() call, so
+that node numbers of the form X*128 - 1 (like 127, 255) will work.
+
+.............................................................................
+
+Server id number SVR.306			15 Jan 1993 chrisp
+-----------------------
+Fix bug #148: ^C bug to remote, stopped process.
+
+.............................................................................
+
+Server id number SVR.305			13 Jan 1993 jpaul
+-----------------------
+Fixed makefile for table.call, add diagnostic messages to table.call,
+remove hardcoded references to TBL_NODEINFO, it needs to be picked up 
+from table.h.
+
+.............................................................................
+
+Server id number SVR.304			13 Jan 1993 bhk
+-----------------------
+Fixed a variable scope problem with the TBL_ARPTAB command of pps_table
+to allow the correct size of the arptab array to be returned
+
+.............................................................................
+
+Server id number SVR.303			12 Jan 1993 roman
+-----------------------
+Add TBL_ARPTAB to TNC table() system call.
+
+.............................................................................
+
+Server id number SVR.302			12 Jan 1993 mjl
+-----------------------
+Fix for bug #0142.  Get rid of extra vrele() call in S_fsvr_unp_vsockread()
+and return correct errno in get_bind_port_from_vnode() if server app died.
+
+.............................................................................
+
+Server id number SVR.301			12 Jan 1993 mjl
+-----------------------
+Fix for bug #0115 (panic on starting remote_fifo_death() RPC), and also
+allow syscall tracing for various TNC non-syscalls.
+
+.............................................................................
+
+Server id number SVR.300			11 Jan 1993 bhk
+-----------------------
+Fixed an optimization where a receive right was never deallocated
+
+.............................................................................
+
+Server id number SVR.299			11 Jan 1993 bhk
+-----------------------
+Added the ability to pass a NULL sockaddr to if_lookup
+
+.............................................................................
+
+Server id number SVR.298			8 Jan 1993 mjl
+-----------------------
+Fix for Bug #0124 (ftp slow or failing on non-network-server nodes).
+There were many problems with propagation of socket options to remote
+sockets on network server nodes.
+Joint brainstorm by mjl & bhk.
+
+.............................................................................
+
+Server id number SVR.297			8 Jan 1993 chrisp
+-----------------------
+Fix job control signaling problem introduced by ad1.0.1.
+
+.............................................................................
+
+Server id number SVR.296			6 Jan 1993 mjl
+-----------------------
+This build fixes problems with rsh on non-network-server nodes.  The
+culprit was the compat_43 handling of struct sockaddr's.  Also, some
+bug fixes for potential server segmentation violations and incorrect
+direct calls made to soo_*() routines.
+
+.............................................................................
+
+Server id number SVR.295			5 Jan 1993 bhk
+-----------------------
+Code Cleanup and 2 accept bugs fixed (by mjl)
+
+.............................................................................
+
+Server id number SVR.294			5 Jan 1993 chrisp
+-----------------------
+Fixes for bugs #137 and #139: vproc port handling and pid generation
+made safe.
+
+.............................................................................
+
+Server id number SVR.293			4 Jan 1993 bhk
+-----------------------
+This fixes signal delivery problems for network vsockets.
+Signals will no be correctly forwarded to the server who
+has an operation in progress.
+
+.............................................................................
+
+Server id number SVR.292			30 Dec 1992 mbarnett
+-----------------------
+SPEs #0008, #0016, and #0017 have been resolved.  Also, bug #0137 has been
+fixed.  In order to fix these SPEs and bugs, changes were made to 
+load_leveld.c, osf1_dep.c, and load_level_types.h.
+
+.............................................................................
+
+Server id number SVR.291			30 Dec 1992 chrisp
+-----------------------
+Corrections for 860 compilations of previous submission of dynamic table
+support.
+
+.............................................................................
+
+Server id number SVR.290			29 Dec 1992 mbarnett
+-----------------------
+onnode.c code was changed so that the keys it uses for the shared memory
+region correspond to the keys used by the load leveler daemon.  This change
+resolves SPE #0015.
+
+.............................................................................
+
+Server id number SVR.289			29 Dec 1992 chrisp
+-----------------------
+Bug #118 (again): the vproc/pvproc table has been made dynamically
+allocated with an unchanged initial allocation. In addition, the
+vnode, file, and cblock tables have been made dynamic; quota/dquot
+tables have been removed from the static allocation in startup()
+since these are not required. zinit()/zalloc() has been used in
+each case.
+
+.............................................................................
+
+Server id number SVR.288			28 Dec 1992 mbarnett
+-----------------------
+Made changes to resolve SPEs #0010(shared memory key files should be in
+own directories), #0013(all error messages should include program name), and
+#0014(node self should be cached locally).
+
+.............................................................................
+
+Server id number SVR.287			22 Dec 1992 mbarnett
+-----------------------
+The variable random_num used in load_leveld.c is now properly decremented
+by underload_ratio.  This fixes bug #0132.  Also, the load leveler daemon
+now becomes a process group leader at initialization time.  This fixes 
+bug #0134.
+
+.............................................................................
+
+Server id number SVR.285			14 Dec 1992 chrisp
+-----------------------
+More fixes to correct problems with exit() - bug #130. These affect
+non-TNC as well as TNC servers.
+
+.............................................................................
+
+Server id number SVR.284			11 Dec 1992 chrisp
+-----------------------
+[As yet temporary] fix for bug #130: exit() and wait() hang.
+
+.............................................................................
+
+Server id number SVR.283			11 Dec 1992 mjl
+-----------------------
+Fixes to SVR281 for non-TNC builds.  Got rid of "vsockcreate" and
+"vsockdestroy" virtual socket ops, they did not really need to be
+virtual (although they virtually need to be real).  Anyway, didn't
+vsocks used to be popular back in the '50's?  Well, back to work....
+
+.............................................................................
+
+Server id number SVR.282			10 Dec 1992 klh
+-----------------------
+Change version.banner to reflect OSF 1.0.1 release
+
+.............................................................................
+
+Server id number SVR.281			10 Dec 1992 mjl
+-----------------------
+This build implements TNC Unix datagram sockets, fixing bugs 87 and 93.
+
+.............................................................................
+
+Server id number SVR.280			8 Dec 1992 chrisp
+-----------------------
+Fix for bug #125: increase size of static arrays node_array etc.
+
+.............................................................................
+
+Server id number SVR.279			4 Dec 1992 chrisp
+-----------------------
+Correct typo's leading to remote_vproc_free panic for "onnode x /etc/passwd"
+
+.............................................................................
+
+Server id number SVR.278			3 Dec 1992 mbarnett
+-----------------------
+Made changes to Load_leveld.cmd.c and "parameters" file in order to fix
+bug #0121.
+
+.............................................................................
+
+Server id number SVR.277			2 Dec 1992 jpaul
+-----------------------
+Makefile changes to remove target files in the object
+directory before copying (All VSTNC tests).  Fix various
+bugs in the VSTNC test suite.
+
+.............................................................................
+
+Server id number SVR.276			2 Dec 1992 mbarnett
+-----------------------
+Fixed bugs #0120(fast/fastnode don't generate correct keys) and
+#0117(unique keys not used for load leveler vstnc test).
+
+
+.............................................................................
+
+Server id number SVR.275			2 Dec 1992 chrisp
+-----------------------
+Changes for bug #118: server panics with no vprocs. The vproc table size
+is now determined by the number of nodes, and the hash table is now
+dynamically allocated with a size to suit the size of the vproc table.
+
+.............................................................................
+
+Server id number SVR.274			1 Dec 1992 chrisp
+-----------------------
+Fixes for bugs #110 (port renaming in error cases) and #111
+(S_intr_delivery can't start op) and for spe #5 (single system
+semantics for the reboot() system call).
+
+.............................................................................
+
+Server id number SVR.273			30 Nov 1992 jpaul
+-----------------------
+Fix for VSTNC makefile.
+
+.............................................................................
+
+Server id number SVR.272			30 Nov 1992 jpaul
+-----------------------
+Fix for VSTNC makefile bombing out, 
+don't die when trying to copy a file onto
+itself.
+
+.............................................................................
+
+Server id number SVR.271			25 Nov 1992 jpaul
+-----------------------
+
+Fixed permissions on run_tests_script in VSTNC directory.
+
+.............................................................................
+
+Server id number SVR.270			25 Nov 1992 mbarnett
+-----------------------
+
+Made code changes for Spe #0001.  Fewer key files are now created and used
+in order to generate unique interprocess communication keys for shared
+memory segments for each node.
+
+.............................................................................
+
+Server id number SVR.269			25 Nov 1992 jpaul
+-----------------------
+Fix VSTNC makefile to reflect new config changes.
+
+.............................................................................
+
+Server id number SVR.268			24 Nov 1992 jpaul
+-----------------------
+Fix for bug #114.  Add machine-specific configuration
+file for the 386 and 860, selected by a uname -m
+command in the run_tests_script in the VSTNC test
+suite.  Also print uname -a information so VSTNC
+reports contain chip type, SVR level, and opsys.
+
+.............................................................................
+Server id number SVR.267			24 Nov 1992 jpaul
+-----------------------
+Fixes for bugs 98 and 112. in onnode.c, change shared
+memory attach to read-only (so non-root users can access
+it).  In the makefile for VSTNC fast.cmd, fix typo so
+fast.cmd.remote file is generated on a make all.  In 
+the fast.cmd.run file, clean out junk left behind from last run
+(*stderr, *stdin, and *stdout files)
+
+.............................................................................
+
+Server id number SVR.266			24 Nov 1992 chrisp
+-----------------------
+AD1.01 merge: includes changes for additional send right for master
+cred port and first round changes for new/changed table() options.
+Note: a rebuilt copy of vs should be installed for use with this build.
+
+.............................................................................
+
+Server id number SVR.265			23 Nov 1992 chrisp
+-----------------------
+Stress test updates.
+
+.............................................................................
+
+Server id number SVR.264			23 Nov 1992 klh
+-----------------------
+Fix file port no-~v
+Fix file port no-more-senders race condition.  Modify TNC end-of-file-op
+hooks accordingly.  FIFO relocation code now uses shared mutex when
+examing sequence numbers of attached file ports.  Emulator changes in 
+preparation for TNC Unis datagram sockets.  Various prototypes to make the 
+i860 compiler happy.  Panic messages in rvp_subr.c now print offending
+return codes.
+This installation was lost when we had to reinstall AFS in San Diego. The
+Latest tree in Boston is OK so no need to o2update there.  Chris needs
+to check in his fixes and we'll be back up to date...
+karen
+
+.............................................................................
+
+Server id number SVR.263			16 Nov 1992 chrisp
+-----------------------
+Back-out fix for bug #100 awaiting OSF's solution.
+
+.............................................................................
+
+Server id number SVR.262			16 Nov 1992 roman
+-----------------------
+[Bug 104] rforkmulti() crashes with > 42 nodes occasionally due to
+	stack overrun.
+Fix pointer types in rforkmulti() to correctly reflect underlying types.
+
+.............................................................................
+
+Server id number SVR.261			14 Nov 1992 yazz
+-----------------------
+Make of the VSTNC subdirectory made dependent on its presence in the
+source tree, so both developer and customer source trees compile
+without manual intervention with the makefiles.
+
+Also added copyrights to VSTNC makefiles.  This has the side-effect of
+allowing an o2update to correct the RCS problem that had inserted
+checkin comments into makefiles without commenting them out -- which
+had created makefile syntax errors.  (Similar things happen with new
+.defs files; see "rcs -c" for info on how to correctly install a new
+RCS file.)
+
+.............................................................................
+
+Server id number SVR.260			13 Nov 1992 chrisp
+-----------------------
+Fix bug #102: Onnode VSTNC testcase 15 hanging.
+
+.............................................................................
+
+Server id number SVR.259			13 Nov 1992 chrisp
+-----------------------
+Fix for bug #103: panic when exiting rexec'd rlogin.
+
+.............................................................................
+
+Server id number SVR.258			12 Nov 1992 mbarnett
+-----------------------
+Inserted fiInserted fixes for bugs #96 and #99.  The load leveler daemon now
+generates a unique key for shared memory segments even when more than
+256 nodes exist.  Also, users other than root can now access the 
+shared memory segment created by the load leveler daemon.
+
+.............................................................................
+
+Server id number SVR.257			12 Nov 1992 chrisp
+-----------------------
+Fix for bug #101: proc port sequence miscounting.
+Correct misbehavior of multitest program: all results not printed and
+	parent not waiting for children to exit.
+
+.............................................................................
+
+Server id number SVR.256			11 Nov 1992 yazz
+-----------------------
+Makefiles in user/test re-grooved to work with CMU/OSF make.
+In particular, VSTNC now builds in the OBJECTDIR directory.
+
+.............................................................................
+
+Server id number SVR.255			10 Nov 1992 chrisp
+-----------------------
+Changes to cleanup 860 compiles. No bug number assigned.
+
+.............................................................................
+
+Server id number SVR.254			9 Nov 1992 chrisp
+-----------------------
+Fix for bug #100: unix_suspend() deadlock
+
+.............................................................................
+
+Server id number SVR.253			9 Nov 1992 roman
+-----------------------
+Fix bug 0097, where calls to rforkmulti() caused system to panic with
+	node list > 84 nodes.
+
+.............................................................................
+
+Server id number SVR.252			6 Nov 1992 mjl
+-----------------------
+Added FIOGETNODE ioctl in support of TNC verification test suite.
+The ioctl returns the node number where the file port receive right
+for a specified file resides.  Also, got rid of some debug printfs
+in un_reloc.c.
+
+The FIOGETNODE code is under #ifdef OSF1_ADFS, since it works properly
+and may prove useful for non-TNC systems as well.  Any thoughts on whether
+it should be #ifdef TNC instead?
+
+.............................................................................
+
+Server id number SVR.251			5 Nov 1992 klh
+-----------------------
+Fix for bug #92, fix so vs.c will compile correctly
+
+.............................................................................
+
+Server id number SVR.250			5 Nov 1992 klh
+-----------------------
+The r29 bug fixes were transmitted from Intel.  We merged them in and
+tested them
+
+.............................................................................
+
+Server id number SVR.249			4 Nov 1992 chrisp
+-----------------------
+Fixes for bug #90 - uptime panics server with FP exception
+          bug #91 - make clean fails
+The former involved ignoring FPU exceptions in the server: a 387 will
+generate under/over-flows regularly when storing values because internally
+the 387 uses extended precision involving more than 64 bits.
+The latter involved breaking the dependency between tnc_type.h and
+tnc_types_gen.h, the header generated only for MIG's advantage.
+
+.............................................................................
+
+Server id number SVR.248			2 Nov 1992 roman
+-----------------------
+Fix bug in loop doing averaging of loads across all nodes.
+Add code dealing with out-of-line versions of rfork, rexecve, and
+	rforkmulti().
+
+Note that the out-of-line memory versions do not work yet, due to bugs
+	in the passing of out-of-line memory. But the code is submitted
+	anyway (with klh's approval) so that OSF and Intel can integrate
+	the changes.
+
+.............................................................................
+
+Server id number SVR.247			29 Oct 1992 bhk
+-----------------------
+Fixed the onnode 1 rlogin problem.
+Made Debug messages more useful.
+
+.............................................................................
+
+Server id number SVR.246			29 Oct 1992 chrisp
+-----------------------
+Fix rvp_subr.c failing to build with MACH_LDEBUG enabled.
+
+.............................................................................
+
+Server id number SVR.245			29 Oct 1992 chrisp
+-----------------------
+Fix makefile and headers so that vs builds with generated header files.
+
+.............................................................................
+
+Server id number SVR.244			28 Oct 1992 roman
+-----------------------
+Add distributed versions of table(), setdomainname(), sethostname(),
+	and sethostid() system calls.
+Change generation of files by makeTNCtables.sh and maketables.sh to
+	allow for better type-checking.
+Change generation of files by makeTNCtables.sh to allow for
+	plentiful "user exits" in generated code.
+Numerous small bug fixes.
+
+Note: At this time the load leveler does not compile due to bugs
+	in the build/make environment.
+
+Note: For all cluster users. If the startup scripts for your cluster
+	do sethostname system calls (as is typical in San Diego, at least),
+	then partial cluster booting is now impossible. The sethostname
+	system call hangs until all cluster members are up. Beware!!!
+
+The ps command now should give information about processes in the
+	whole cluster. And it will hang until the whole cluster comes
+	up!!!!
+
+.............................................................................
+
+Server id number SVR.243			28 Oct 1992 klh
+-----------------------
+Fix definitions in so_defs.h for non TNC build
+
+.............................................................................
+
+Server id number SVR.242			27 Oct 1992 bhk
+-----------------------
+NFS file systems can now be imported on network server nodes.
+The extraction of socket names and peernames was restructured
+to be more modular and follow the upper-half/lowerhalf socket
+architecture.
+There is no longer a need for network protocol dependant socket
+operations.
+
+.............................................................................
+
+Server id number SVR.241			27 Oct 1992 chrisp
+-----------------------
+Fix for bug #88 - setpgid() by parent into pgroup of child hangs.
+
+.............................................................................
+
+Server id number SVR.240			23 Oct 1992 mbarnett
+-----------------------
+I made changes to fix bugs #0078, #0082, #0085.  I also made changes to
+accomodate the requested enhancements(#0077, #0079, #0080, #0081, #0083,
+#0084, #0086) for the load leveler daemon.
+
+.............................................................................
+
+Server id number SVR.239			16 Oct 1992 chrisp
+-----------------------
+Fixes for bugs #66 and #72.
+
+.............................................................................
+
+Server id number SVR.238			14 Oct 1992 chrisp
+-----------------------
+Fixes for bugs #67 and #68.
+
+.............................................................................
+
+Server id number SVR.237			13 Oct 1992 mbarnett
+-----------------------
+Fixed address parameter passed in to vm_region function which is called
+from the server function "shmat".
+
+.............................................................................
+
+Server id number SVR.236			9 Oct 1992 roman
+-----------------------
+Fix to allow i860 compute nodes to participate in TNC.
+
+.............................................................................
+
+Server id number SVR.235			9 Oct 1992 roman
+-----------------------
+Roman's contributions to a cleaner builds.
+Chris's fixes to the scripts that generate procedure prototypes for
+	TNC and non-TNC.
+
+.............................................................................
+
+Server id number SVR.234			8 Oct 1992 chrisp
+-----------------------
+Automatic generation of vproc/pvproc/rpvproc operations tables, wrapper
+	routines, and MIG client/server stubs from type definitions in
+	TNC header files. 
+
+.............................................................................
+
+Server id number SVR.233			8 Oct 1992 mbarnett
+-----------------------
+Made changes to accomodate new configurable parameter "per_process_avg_load".
+Also, put in fixes to correct bugs #61(calculated runtime becoming negative)
+and #62(load leveler executing infinite loop for certain settings of
+"min_underload" parameter).
+
+
+.............................................................................
+
+Server id number SVR.232			8 Oct 1992 roman
+-----------------------
+Changed emulator code for TNC to use the v1.0 interfaces for
+	making sure user threads are in a "safe" state prior to
+	migrate or rexec.
+Changed startup of rexec code completely to allow for
+	traced rexec-ed processes.
+
+.............................................................................
+
+Server id number SVR.231			7 Oct 1992 bhk
+-----------------------
+Fixed two bugs in select() which caused a user process to hang.
+Cleaned up code to reduce compiler warning messages.
+Allowed if_lookup to return MACH_PORT_NULL as a valid server port.
+This inidcates that the virtual socket code should use the local network server.
+
+.............................................................................
+
+Server id number SVR.230			6 Oct 1992 roman
+-----------------------
+First install following the OSF merge of v1.0. Has enough fixes to
+get rexec and migrate limping along.
+
+Please do not do an o2update yet - Karen forgot to BCI one
+file. Hold off until further notification.
+
+.............................................................................
+
+Server id number SVR.229			1 Oct 1992 roman
+-----------------------
+Fix up types for clean compilation under gcc.
+Add logic for foster children to the bvp code to bring it into accord
+	with the dvp code.
+
+.............................................................................
+
+Server id number SVR.228			30 Sep 1992 chrisp
+-----------------------
+Fixes to correct operation of killall().
+
+.............................................................................
+
+Server id number SVR.227			30 Sep 1992 chrisp
+-----------------------
+Please ignore - checkins failed due to outstanding RCS locks,
+
+.............................................................................
+
+Server id number SVR.226			30 Sep 1992 chrisp
+-----------------------
+Fix for bug #59 - defunct processes not reaped.
+	Change VPOP_WAIT() to eliminate race with exiting children.
+
+.............................................................................
+
+Server id number SVR.225			29 Sep 1992 roman
+-----------------------
+Fix minor bug in foster children handling.
+
+.............................................................................
+
+Server id number SVR.224			29 Sep 1992 roman
+-----------------------
+Restructure code to match the implementation spec for vprocs, including:
+	field name changes in vprocs and pvprocs
+	making the locking more portable
+	add concept of foster children
+	add concept of virtual process system operations and then
+		also physical process system operations and
+		private virtual process system operations
+	add concept of process sets (procsets)
+	change names of some vproc ops and pvproc ops
+	delete unused pvproc ops
+Numerous small formatting fixes.
+
+.............................................................................
+
+Server id number SVR.223			28 Sep 1992 klh
+-----------------------
+Inital working implementation of FIFO relocation.  This code was 
+orginally checked in by Mike Leibensperger but was lost due to
+AFS problems.
+
+.............................................................................
+
+Server id number SVR.222			25 Sep 1992 mbarnett
+-----------------------
+Put fixes into the server "shmat" and "shmdt" functions so that the server
+would properly detach shared memory regions when requested by user tasks.
+Also, added retry logic into the emul_shared_init function.
+
+.............................................................................
+
+Server id number SVR.221			24 Sep 1992 bhk
+-----------------------
+Fixed the socket select timout problem,
+Added node information to network server interfaces registration
+with the clearinghouse
+
+.............................................................................
+
+Server id number SVR.220			22 Sep 1992 mbarnett
+-----------------------
+The definition of the macros V_NRPORT and V_FCOUNT were changed in the
+case when UN_FF_DEBUG is defined.  This change allows the server for the
+i860 to be compiled successfully.  This fix is for bug #58.
+
+.............................................................................
+
+Server id number SVR.219			22 Sep 1992 chrisp
+-----------------------
+Fix for bug #59: signaling a process group should return error status
+correctly.
+
+.............................................................................
+
+Server id number SVR.216			19 Aug 1992 klh
+-----------------------
+remove call to debugging macro WATCH_VP
+
+.............................................................................
+
+Server id number SVR.214			17 Aug 1992 mjl
+-----------------------
+This server build contains preliminary FIFO relocation code.  FIFO relocation
+is disabled.  DO NOT o2update yet, however, because of several AFS related
+glitches during the o2install.  These should be fixed shortly....
+
+.............................................................................
+
+Server id number SVR.213			13 Aug 1992 klh
+-----------------------
+Add definitions and includes for non TNC build 
+
+.............................................................................
+
+Server id number SVR.212			12 Aug 1992 klh
+-----------------------
+Remove bogus code in non TNC ifdefed code
+
+.............................................................................
+
+Server id number SVR.211			12 Aug 1992 jdh
+-----------------------
+completed the submission for stream sockets that I did on
+Friday... installed a forgotten file and fixed a syntax
+error (missing curly braces).  -- jdh
+
+.............................................................................
+
+Server id number SVR.210			11 Aug 1992 klh
+-----------------------
+Remove extraneous ifdef notdef
+
+.............................................................................
+
+Server id number SVR.209			11 Aug 1992 chrisp
+-----------------------
+[Bug #46] Non-TNC build doesn't release vprocs.
+
+.............................................................................
+
+Server id number SVR.208			8 Aug 1992 jdh
+-----------------------
+Submitted changes for unix domain stream sockets.
+This stuff is all built on top of the relocation code
+Mike Leibensperger wrote for pipes.  The main components
+are 1) setting up the relationship between a bound socket
+and the vnode it's bound to (a socket port for the socket
+is stored in the vnode), and 2) migrating a socket to
+the server containing the listening socket in order to
+perform a connect [ thereby allowing us to use existing
+code for the connect ].  Once a socket connection is
+complete (which is done by an accept() completing), the
+connected socket pair will follow the first reader
+around when it moves.
+
+--jdh
+
+.............................................................................
+
+Server id number SVR.207			6 Aug 1992 roman
+-----------------------
+Fix up stuff so that v0.9.3 merge from OSF works.
+
+.............................................................................
+
+Server id number SVR.206			30 Jul 1992 chrisp
+-----------------------
+Fixes for interactions between user and ISC threads during migration
+	and rexec including FDT locking over fork/rfork/migrate/rexec.
+Port sequence counting extended to vproc freeing to ensure a vproc
+	is not deallocated with pending received (but not porcessed)
+	messages.
+Bugs #41, #42 and #43.
+
+.............................................................................
+
+Server id number SVR.205			28 Jul 1992 chrisp
+-----------------------
+VSTNC bug fixes for tnc_get_port() and removal of emulator error message
+issued for SIGMIGRATE with a bad node number.
+
+.............................................................................
+
+Server id number SVR.204			26 Jul 1992 bhk
+-----------------------
+Added support for selects on remote sockets
+added support for getpeername
+cleaned up debug
+
+.............................................................................
+
+Server id number SVR.203			22 Jul 1992 jpaul
+-----------------------
+Checked code for fast{node} load levelling using shared
+memory rather that files, initial checkin of VSTNC test suite.
+
+.............................................................................
+
+Server id number SVR.202			21 Jul 1992 chrisp
+-----------------------
+Release stress tests.
+
+.............................................................................
+
+Server id number SVR.201			17 Jul 1992 roman
+-----------------------
+Fix bug in get_tnc_port() where bad address caused emulator to fail.
+Fix bug in rforkmulti() where sequences of bad node numbers caused
+	server to panic.
+
+.............................................................................
+
+Server id number SVR.200			17 Jul 1992 chrisp
+-----------------------
+Add initialization of the lock_is_free condition in share_lock
+to prevent server hangs waiting for bsd_share_wakeup().
+
+.............................................................................
+
+Server id number SVR.199			14 Jul 1992 roman
+-----------------------
+Fix i860 version of bug where bad values passed into user_rcheck() and
+	user_rwcheck() were ignored.
+Fix minor bug in e_write.
+
+.............................................................................
+
+Server id number SVR.198			13 Jul 1992 chrisp
+-----------------------
+Fix bug whose symptom is the failure of a migrated or rexec'd process
+to receive signals if the process had an active issig_psig thread
+at the time it was migrated.
+
+.............................................................................
+
+Server id number SVR.197			10 Jul 1992 mbarnett
+-----------------------
+Modified emulator routines user_rcheck and user_rwcheck to do memory checks
+on large addresses such as 0xffffffff.  Also, fixed a comment in load_leveld
+and made changes in osf1_dep.c to log errors using syslog instead of printf.
+
+.............................................................................
+
+Server id number SVR.196			10 Jul 1992 chrisp
+-----------------------
+Implement proc/vproc message sequence counting and prevention of
+migration until no operation is outstanding.
+Change the shared signal lock logic not to use the master mutex.
+Restore referenced bit fix in emulator lost in the previous merge.
+
+.............................................................................
+
+Server id number SVR.195			9 Jul 1992 roman
+-----------------------
+Oops. When I did the v0.9.2 update in the last submission, I forgot to
+update version.banner to the correct version number.
+
+.............................................................................
+
+Server id number SVR.194			9 Jul 1992 roman
+-----------------------
+Complete v0.9.2 update from OSF.
+
+Fix bug where emulator exception addresses were not set up on nodes
+other than node 0.
+
+.............................................................................
+
+Server id number SVR.193			8 Jul 1992 roman
+-----------------------
+Changed strategy for creating and registering TNC server port to use
+	the nameserver. This is in preparation for NMK12.
+
+Fix mapped files code to work after migration and remote execution.
+
+Get rid of tnc_mynode variable and use this_node instead.
+
+Change node numbers to use node_t rather than int.
+
+NOTE: Something I forgot to mention last time - when you do an
+	o2update for the first time after v0.9.1, you should wipe
+	out ALL of your .o files. This is because of the way the
+	mapped file code gets #define'd in. This includes wiping
+	out all the emulator .o files.
+
+NOTE: It is permissible to do o2updates and o2installs again
+
+.............................................................................
+
+Server id number SVR.192			7 Jul 1992 roman
+-----------------------
+Submission with v0.9.1 changes from OSF integrated.
+
+Not extensively tested yet, but most of the basic stuff seems to work well.
+
+This release will not work on the Hypercube. Wait for v0.9.2 submission.
+
+This server is NOT backwards compatible with the old emulator - and
+the emulator is NOT backwards compatible with the old server - so be
+careful to make sure you always use compatible versions.
+
+v0.9.2 is expected to be ready later this week.
+
+.............................................................................
+
+Server id number SVR.189			26 Jun 1992 mjl
+-----------------------
+Bug fixes for pipe relocation.  UNIX domain protocol numbers now select
+among various virtual socket op sets.  New naming convention for AF_UNIX
+virtual socket ops.
+
+.............................................................................
+
+Server id number SVR.188			26 Jun 1992 chrisp
+-----------------------
+Files missed on last installation due to RCS locks held.
+This version also contains fixes to make the i860 build to complete.
+
+.............................................................................
+
+Server id number SVR.187			26 Jun 1992 chrisp
+-----------------------
+Fixes for:
+[Bug #27] Job control ceases to work after foreground process is migrated.
+[Bug #30] Vproc tracing gets address exception.
+[Bug #35] Zombie or stopped children not reaped by init if orphaned.
+
+*** Don't take this version, wait for the next because 2 files were not
+*** installed due to outstanding RCS locks!!
+
+
+.............................................................................
+
+Server id number SVR.186			24 Jun 1992 mbarnett
+-----------------------
+replace call to printf with call to nonfatal_error.  Also, fixed parameters
+passed to getopt function.
+
+.............................................................................
+
+Server id number SVR.185			23 Jun 1992 chrisp
+-----------------------
+Fix for bug #32: select() loops preventing the server reaching
+multi-user mode.
+Note: server build level 184 is null, thanks to o2install failing.
+
+.............................................................................
+
+Server id number SVR.183			22 Jun 1992 bhk
+-----------------------
+Fixed Numerous bugs in multi-server configurations
+corrected error returns
+
+.............................................................................
+
+Server id number SVR.182			19 Jun 1992 chrisp
+-----------------------
+Fix for bug #28.
+Fix for bsd_shared_wakeup() panic under stress.
+Fix failure to remove migrated procs which have issig_psig threads active.
+
+.............................................................................
+
+Server id number SVR.181			19 Jun 1992 klh
+-----------------------
+Delete bsd/mach_init.c.  This file is no longer used.
+
+.............................................................................
+
+Server id number SVR.180			18 Jun 1992 roman
+-----------------------
+Minor bug fixes.
+1) isspace() changed to ANSI C definition. Uses of isspace() changed to
+	account for fact that isspace returns true for 'n'.
+2) migration prevented for multi-threaded processes.
+
+.............................................................................
+
+Server id number SVR.179			17 Jun 1992 roman
+-----------------------
+Restore kern_fork.c change that was lost during v0.9 merge.
+
+.............................................................................
+
+Server id number SVR.178			17 Jun 1992 roman
+-----------------------
+Fix bug 0026, task_by_pid() and pid_by_task() not working for TNC.
+
+.............................................................................
+
+Server id number SVR.177			16 Jun 1992 chrisp
+-----------------------
+Bug fix for #25 - ptrace not generating SIGCHLD to parent on PT_CONTINUE.
+Bug fix for failure to deliver signals to user-defined handlers after
+	migration.
+
+
+.............................................................................
+
+Server id number SVR.176			15 Jun 1992 jpaul
+-----------------------
+Used large positive initialiaztion load value for
+fastest node, avoiding complicated logic testing
+for negative loads.
+
+.............................................................................
+
+Server id number SVR.175			15 Jun 1992 roman
+-----------------------
+First install after v0.90b (latest version of OSF/1 AD v0.90).
+Also fix emulator to inherit the callback port rather than allocating
+	it from scratch always.
+
+.............................................................................
+
+Server id number SVR.174			15 Jun 1992 mbarnett
+-----------------------
+Modified the load leveler daemon to use shared memory and added addition al
+configuration parameters.  Also, the re-dispatching of processes was further
+optimized.  In addition the load_leveld restart utility was done away with
+and replaced with a SIGTERM signal handler in the load leveler daemon.  More
+fine tuning was also done on separating the OS dependent code from the OS
+independent code.
+
+.............................................................................
+
+Server id number SVR.172			10 Jun 1992 roman
+-----------------------
+Minor post-v0.9 environmental fixes. No real "bugs" fixed.
+
+.............................................................................
+
+Server id number SVR.171			10 Jun 1992 chrisp
+-----------------------
+Fixes for bugs #22 and #24, plus amendment of vproc macros for i860
+compiler.
+
+.............................................................................
+
+Server id number SVR.170			10 Jun 1992 roman
+-----------------------
+Update to v0.9 release. Please do not actually do o2install's or
+o2update's until mail from roman or klh.
+
+.............................................................................
+
+Server id number SVR.169			7 Jun 1992 klh
+-----------------------
+Add missing comment and syntax errors inadvertantly added in previous
+check-in.
+
+.............................................................................
+
+Server id number SVR.168			5 Jun 1992 roman
+-----------------------
+Really for truly finished integration of OSF AD v0.89.
+
+.............................................................................
+
+Server id number SVR.167			5 Jun 1992 roman
+-----------------------
+Integration of changes necessary to get v0.89 code working.
+
+Feel free to do o2updates and o2installs now...
+
+.............................................................................
+
+Server id number SVR.166			2 Jun 1992 chrisp
+-----------------------
+[Bugs #20 and #21] Compute-bound processes built without explicit signal
+	handling (i.e. using the emulator's default SIGMIGRATE handler)
+	are not restarted correctly after migration. bsd_isig_psig()
+	was clearing the high-order bit of the sigreturn address.
+
+.............................................................................
+
+Server id number SVR.165			29 May 1992 jpaul
+-----------------------
+Added shared memory support for load levelling.
+Added undocumented option '-K' for specifying
+a desired key string for ftok.
+
+.............................................................................
+
+Server id number SVR.164			29 May 1992 chrisp
+-----------------------
+Fix for bug #18 - panic with getty to remote console.
+Fixes identified by OSF for POSIX setpgrp() compiliance failures.
+
+.............................................................................
+
+Server id number SVR.163			22 May 1992 jpaul
+-----------------------
+Fixed errors found by vstnc suite and VSX suite, namely
+fflush error for stdout and various error messages that
+disagreed with the VSTNC tests.
+
+
+.............................................................................
+
+Server id number SVR.162			22 May 1992 chrisp
+-----------------------
+[Bug #17] getpriority(PRIO_PGRP,) always returning ESRCH due to error
+	in dpvpop_pgrp_nice().
+
+.............................................................................
+
+Server id number SVR.161			20 May 1992 chrisp
+-----------------------
+[Bug #16] Emulation of the umask() system call via the shared RW uarea
+	fails to inform the credentials service of changes. Hence, this
+	function must always be performed in the server and the cmask
+	field has been removed from the shared area.
+*** NB: This change involves an emulator upgrade.
+
+.............................................................................
+
+Server id number SVR.160			19 May 1992 mbarnett
+-----------------------
+Added comments to README, fixed comments in the parameters file, and 
+removed two debug "printf" statements from load_leveld.c
+
+.............................................................................
+
+Server id number SVR.159			18 May 1992 mbarnett
+-----------------------
+Made changes to load_leveld.c to improve efficiency of re-dispatching code.
+Also, added two new parameters "minimum_underload" and "minimum_overload".
+
+.............................................................................
+
+Server id number SVR.158			18 May 1992 chrisp
+-----------------------
+Fixes for:
+	[Bug #13]: fast now defaults to local node if load info unavailable.
+	[Bug #14]: VSX ANSI.os/genuts hangs.
+
+.............................................................................
+
+Server id number SVR.157			13 May 1992 mbarnett
+-----------------------
+Made change to log a message but not exit if the load array size passed in
+by mig does not correspond to the load vector size read in by the load 
+leveler from the parameters file.
+
+.............................................................................
+
+Server id number SVR.156			13 May 1992 mbarnett
+-----------------------
+Fixed history log for load_level_types.h by removing duplicate log.
+
+.............................................................................
+
+Server id number SVR.155			13 May 1992 mbarnett
+-----------------------
+Re-checkin of code due to previous incomplete check-in due to file being
+locked.
+
+.............................................................................
+
+Server id number SVR.154			13 May 1992 mbarnett
+-----------------------
+Restructured load leveler into os dependent and os independent parts.  Also
+added re-dispatching code to load_leveld and created load_leveld_restart
+utility.
+
+.............................................................................
+
+Server id number SVR.153			7 May 1992 yazz
+-----------------------
+Comment corrected.
+
+.............................................................................
+
+Server id number SVR.152			7 May 1992 chrisp
+-----------------------
+[Bug #10] Optimize delivery of signal pairs
+[Bug #11] Prevent reap before exit complete
+
+.............................................................................
+
+Server id number SVR.151			6 May 1992 bhk
+-----------------------
+Added VSOP_SLEEP define to allow non-tnc compilation
+
+.............................................................................
+
+Server id number SVR.150			6 May 1992 roman
+-----------------------
+Change set_tnc_port() and get_tnc_port() to match the man pages.
+
+.............................................................................
+
+Server id number SVR.149			6 May 1992 chrisp
+-----------------------
+Fix for bug #9: cttynode field transferred on rexec()/migrate().
+
+.............................................................................
+
+Server id number SVR.148			6 May 1992 bhk
+-----------------------
+accept now works for remote nodes.
+write now returns the number of bytes written.
+writes of > 8K now work
+the deadlock problem on close is now fixed
+
+.............................................................................
+
+Server id number SVR.147			6 May 1992 chrisp
+-----------------------
+[Bug #0008]
+Change set_state() to use pvp_lock mutex and fixup all cases
+where the pvproc field pvp_flag is updated to be guarded by
+calls to new macros VPROC_[UN]LOCK_FLAG.
+
+.............................................................................
+
+Server id number SVR.146			5 May 1992 yazz
+-----------------------
+FIXES BUG #5.
+FIXES BUG #7.
+Bugs found by VSTNC in rexecvp() PATH processing and kill3 command
+argument parsing and error message text.
+
+.............................................................................
+
+Server id number SVR.145			1 May 1992 yazz
+-----------------------
+Added -I to lib/tnc build.
+
+.............................................................................
+
+Server id number SVR.144			1 May 1992 yazz
+-----------------------
+The user sub-tree now builds for both i386 and i860 .
+
+.............................................................................
+
+Server id number SVR.143			1 May 1992 roman
+-----------------------
+Two bugs exposed by load leveling fixed:
+1. Timing window causing "get_attr MIG failure" error message fixed.
+2. Assertion failure in server caused by expiring timers in process that
+	migrates away fixed.
+
+.............................................................................
+
+Server id number SVR.142			1 May 1992 klh
+-----------------------
+move declaration of port_to_fileserver_port for i860 compilation.
+
+.............................................................................
+
+Server id number SVR.141			1 May 1992 roman
+-----------------------
+Fix bug where u_comm field was incorrect after rfork() or migrate().
+
+[mjl - you can pull over the RCS tree if you like now]
+
+.............................................................................
+
+Server id number SVR.140			1 May 1992 roman
+-----------------------
+Fix problem where file writes to a file after a migrate or rexec fail.
+Fix problem where u.u_comm is not set up after exec of a remote file.
+
+.............................................................................
+
+Server id number SVR.139			30 Apr 1992 chrisp
+-----------------------
+[Bug #3] PVPOP_REAP() now takes an additional parameter requiring a reaped
+	process belong to a specified pgid (if not WAIT_ANY); error ESRCH
+	is returned if this is not the case and the process is not reaped.
+	This avoids VPOP_WAIT() using PVPOP_GETATTR() for each child's pgid.
+
+.............................................................................
+
+Server id number SVR.138			29 Apr 1992 chrisp
+-----------------------
+Add support for migration of outstanding realtime timers and for restarting
+sigsuspend() calls interrupted by SIGMIGRATE.
+
+.............................................................................
+
+Server id number SVR.137			28 Apr 1992 klh
+-----------------------
+PGILIBS now points to /usr1/i860/lib/pgi/libpgi.a for Locus' environment
+
+.............................................................................
+
+Server id number SVR.136			28 Apr 1992 chrisp
+-----------------------
+Fix emulator memory leak across fork()s. Fix SIGMIGRATE signal arg to
+be correctly passed to compute bound processes. Improve panic
+message in ux_server_loop() to include message id and to print
+kernel error code in hex.
+
+.............................................................................
+
+Server id number SVR.135			28 Apr 1992 klh
+-----------------------
+CPATH and LPATH are needed for 860 builds
+
+.............................................................................
+
+Server id number SVR.134			27 Apr 1992 roman
+-----------------------
+Fix waitpid() to work when waiting for a specific pid for TNC single node
+case. Bug exposed by VSX.
+
+.............................................................................
+
+Server id number SVR.133			24 Apr 1992 roman
+-----------------------
+Minor fixes to bring up rexecve() up to latest execve() code.
+
+.............................................................................
+
+Server id number SVR.132			22 Apr 1992 bhk
+-----------------------
+This fixes the panic when syscalltrace is enabled. It
+also allows support for getsockname system call.
+
+.............................................................................
+
+Server id number SVR.131			22 Apr 1992 yazz
+-----------------------
+user Makefile regroove.
+
+.............................................................................
+
+Server id number SVR.130			22 Apr 1992 mbarnett
+-----------------------
+Added default 
+
+Added default target to Makefile for load_leveld.
+
+.............................................................................
+
+Server id number SVR.129			22 Apr 1992 chrisp
+-----------------------
+Session vproc existence rule change now (finally) checked-in.
+Let o2update's commence.
+
+.............................................................................
+
+Server id number SVR.128			22 Apr 1992 chrisp
+-----------------------
+Null build  level. Please wait for the next install.
+
+.............................................................................
+
+Server id number SVR.127			22 Apr 1992 chrisp
+-----------------------
+Warning! this checkin is incomplete due to the AFS server system crashing.
+
+.............................................................................
+
+Server id number SVR.126			22 Apr 1992 mbarnett
+-----------------------
+Explicitly set LPATH variable and removed unnecessary option -L/lib from Makefile.
+
+.............................................................................
+
+Server id number SVR.125			22 Apr 1992 roman
+-----------------------
+Minor fix to make Intel ANSI C compiler happy.
+
+.............................................................................
+
+Server id number SVR.124			22 Apr 1992 chrisp
+-----------------------
+Add vproc and master locking to rfork/migrate/rexec server code.
+
+.............................................................................
+
+Server id number SVR.123			21 Apr 1992 klh
+-----------------------
+Changed fast to allow multiple -v option.
+
+.............................................................................
+
+Server id number SVR.122			21 Apr 1992 chrisp
+-----------------------
+Third attempt to checkin a fix failing because of an erroneous, outstanding
+rcs lock. Argghh.
+
+.............................................................................
+
+Server id number SVR.121			21 Apr 1992 chrisp
+-----------------------
+Fix for shared_unlock < 0 panic on "init 3".
+
+.............................................................................
+
+Server id number SVR.120			21 Apr 1992 roman
+-----------------------
+Minor fixes to make i860 compilers happy.
+
+.............................................................................
+
+Server id number SVR.119			21 Apr 1992 klh
+-----------------------
+Add ifdef MI for call to mi_server.
+
+.............................................................................
+
+Server id number SVR.118			20 Apr 1992 bhk
+-----------------------
+This installation provides the first release of remote virtual sockets for
+the Internet suite
+This is alpha quality code. Only 1 network server is supported in this release
+To have a functional network servers (inetd syslogd ...) should be started
+on the network server.  They do work on other nodes but with less
+reliability.
+As a result the Mi driver is not very usefull.
+
+.............................................................................
+
+Server id number SVR.117			20 Apr 1992 chrisp
+-----------------------
+Corrections for vproc port handling exhibiting itself as a panic when
+attempting a second SIGMIGRATE on a csh (among other ways). Also added
+-m option to vs tool to print mach port ref counts for vprocs.
+
+.............................................................................
+
+Server id number SVR.116			17 Apr 1992 chrisp
+-----------------------
+Default sigmigrate handling now functional.
+
+.............................................................................
+
+Server id number SVR.115			16 Apr 1992 yazz
+-----------------------
+Library libtnc.a machine-specific Makefile changes & move of i386 .s
+files into their own i386 source subdirectory.
+
+.............................................................................
+
+Server id number SVR.114			16 Apr 1992 jpaul
+-----------------------
+Fixed another pointer problem with onnode (fast).
+
+.............................................................................
+
+Server id number SVR.113			16 Apr 1992 jpaul
+-----------------------
+Fixed pointer bug on onnode() routine in onnode.c.
+
+.............................................................................
+
+Server id number SVR.112			16 Apr 1992 hao
+-----------------------
+Added changes to make onnode.
+
+.............................................................................
+
+Server id number SVR.111			15 Apr 1992 mbarnett
+-----------------------
+Added another -I option and set macro _NLCTYPE_H_.
+
+.............................................................................
+
+Server id number SVR.110			15 Apr 1992 chrisp
+-----------------------
+Remove the irritating need for makesyscalls.sh to have execute permissions
+and correct a bug in the kill3() libc routine.
+
+.............................................................................
+
+Server id number SVR.109			14 Apr 1992 mbarnett
+-----------------------
+Added -ltnc option to Makefile for load_leveld in order to pick up objects
+from libtnc library.
+
+.............................................................................
+
+Server id number SVR.108			14 Apr 1992 yazz
+-----------------------
+Rexec family calls that do $PATH processing (rexecvp() and rexeclp())
+will now handle command names that contain slashes to conform with
+the behavior of the plain exec() family calls.
+
+.............................................................................
+
+Server id number SVR.107			14 Apr 1992 klh
+-----------------------
+$Log was missing from the /user/test/tnc and /user/lib/tnc files.
+
+.............................................................................
+
+Server id number SVR.106			14 Apr 1992 roman
+-----------------------
+"Final" 8.5.2 submission with TNC. Everything checked in correctly.
+
+Everyone should start using this release - problems in prior releases
+	will now be ignored :-)
+
+It is recommended that you start with an o2makebox when setting up
+	your sandbox for this release.
+
+.............................................................................
+
+Server id number SVR.105			14 Apr 1992 roman
+-----------------------
+First v0.8.5.2 TNC submission. TNC fully functional (as functional
+	as it ever has been?).
+Due to tokens expiring during this submission, do not yet attempt
+	to do either an o2makebox or an o2install until further
+	notice.
+
+.............................................................................
+
+Server id number SVR.104			6 Apr 1992 chrisp
+-----------------------
+Parallelize system calls using vprocs in the TNC case and add explicit
+master locking at the pproc level. Note: signaling (especially
+in tty handling) has yet to be corrected in this respect.
+Correct invalid node number handling in rforkmulti().
+Fix reference counting problem when reassigning orphaned chilren to init.
+
+.............................................................................
+
+Server id number SVR.103			6 Apr 1992 klh
+-----------------------
+Add VSOP_CONNECT2 to so_defs.h for non TNC compatibility
+
+.............................................................................
+
+Server id number SVR.102			6 Apr 1992 mjl
+-----------------------
+Changes to server/vsocket/vsocket.h that got missed in the last o2install
+due to a bogus RCS lock.
+
+.............................................................................
+
+Server id number SVR.101			6 Apr 1992 mjl
+-----------------------
+This code "prepares to relocate" a connected AF_UNIX socket pair.  The
+related file ports are removed from the server port set and we wait for
+all outstanding operations to complete (then we reconnect them---since
+the code to actually relocate them is still on the way).
+
+.............................................................................
+
+Server id number SVR.100			3 Apr 1992 chrisp
+-----------------------
+Make use of new macros in bsd_server_side.c for TNC calls.
+
+.............................................................................
+
+Server id number SVR.99			2 Apr 1992 mbarnett
+-----------------------
+Added code to check for errors from get_tnc_port & set_tnc_port.
+Added macro to Makefile for C library.
+
+.............................................................................
+
+Server id number SVR.98			2 Apr 1992 roman
+-----------------------
+Change user interface to rforkmulti() to return (-2) for partial successes.
+Fix ushared.h according to Michael Condict's mail.
+
+Note: New emulator is required for this server.
+
+.............................................................................
+
+Server id number SVR.97			2 Apr 1992 chrisp
+-----------------------
+Set user tasks to use the exception port serviced by the local server
+on rfork/migrate/rexec.
+
+.............................................................................
+
+Server id number SVR.96			1 Apr 1992 roman
+-----------------------
+Add support for the rforkmulti() system call.
+
+.............................................................................
+
+Server id number SVR.95			31 Mar 1992 mbarnett
+-----------------------
+Replaced calls to signal and sigsetmask with calls to sigaction & sigprocmask
+Also, added calls to new signal routines sigemptyset and sigaddset.
+
+.............................................................................
+
+Server id number SVR.88			30 Mar 1992 chrisp
+-----------------------
+Correction for init's reference count on node of reassigned child.
+
+.............................................................................
+
+Server id number SVR.87			30 Mar 1992 mbarnett
+-----------------------
+Initial check-in of load leveler daemon source files and other associated 
+files was done.
+
+.............................................................................
+
+Server id number SVR.86			28 Mar 1992 chrisp
+-----------------------
+Initialization changed so that common root clustering only is supported
+and separate machines with individual root filesystems can no longer be
+configured.
+
+.............................................................................
+
+Server id number SVR.85			28 Mar 1992 chrisp
+-----------------------
+checkin to pick up socketvar.h that was munged by existing lock in previous
+install.
+
+.............................................................................
+
+Server id number SVR.84			28 Mar 1992 chrisp
+-----------------------
+Merge in vsocket and migration notification from Boston tree.
+
+.............................................................................
+
+Server id number SVR.83			27 Mar 1992 roman
+-----------------------
+Fixes that get migrate() and rexecve() to be at least sort-of working
+	(there are now no known problems).
+Optimize the obtaining of the current node number in the emulator
+	even further.
+
+.............................................................................
+
+Server id number SVR.82			27 Mar 1992 roman
+-----------------------
+Merge with OSF/1 AD v0.8.5.1.
+
+Note. migrate() and rexec() do not work with this release. Stand by....
+
+
+.............................................................................
+
+Server id number SVR.120			20 Mar 1992 chrisp
+-----------------------
+Missing vproc magic.
+
+.............................................................................
+
+Server id number SVR.119			19 Mar 1992 chrisp
+-----------------------
+Check-in of bvp_vpops.c which failed to be included in the previous
+install due to the rcs file having a lock outstanding.
+
+.............................................................................
+
+Server id number SVR.118			19 Mar 1992 chrisp
+-----------------------
+The non-TNC (bvp) vproc code is brought into line with the latest TNC
+improvements - in particular, for orphan pgrp handling.
+Bug fix included for setpgid in the TNC case, also.
+
+.............................................................................
+
+Server id number SVR.117			18 Mar 1992 roman
+-----------------------
+Very minor changes for the sake of correcting RCS logs.
+
+.............................................................................
+
+Server id number SVR.116			18 Mar 1992 roman
+-----------------------
+Changes to support locking, because the server is multi-threaded and
+pre-emptable.
+
+.............................................................................
+
+Server id number SVR.115			12 Mar 1992 roman
+-----------------------
+Vproc reference counting mutex added.
+Deferred remote signalling via local tnc server added for
+non-blocking case.
+Restructured the tracking of orphan pgrps for the TNC case.
+Restructured port right handling for vprocs to always preserve a send
+right to the vproc on a node.
+Numerous small optimizations and bug fixes in preparation for
+adding locks for multithreading the TNC server code.
+
+.............................................................................
+Server id number SVR.114			6 Mar 1992 yazz
+-----------------------
+Node_self() and rtask-to-your-own node all handled within emulator.
+
+.............................................................................
+
+Server id number SVR.113			3 Mar 1992 chrisp
+-----------------------
+Support for caching of pid/sctty pairs in session vprocs on the node on
+controlling terminals to avoid remote getattr operations during character
+i/o operations on fileserver nodes remote from the calling proc.
+Enhance the vpoptrace/dpvpoptrace/vprefcnt flags to function like
+syscalltrace - i.e. to be pid-specific if required.
+Add support and special handling for single copy init architecture.
+
+.............................................................................
+
+Server id number SVR.112			26 Feb 1992 roman
+-----------------------
+Fixed RCS comments on Intel-integrated files.
+
+.............................................................................
+
+Server id number SVR.111			26 Feb 1992 roman
+-----------------------
+Integrate changes from Charlie Johnson and Stan Smith for i860 support.
+Add new system calls set_tnc_port() and get_tnc_port().
+Fix a vref() bug in rfork().
+Support the BOOT_NODE_LIST host configuration parameter to get a
+complete list of nodes in the cluster.
+
+.............................................................................
+
+Server id number SVR.110			20 Feb 1992 roman
+-----------------------
+Fixes to get migrate() and rexec() to work correctly again.
+
+.............................................................................
+
+Server id number SVR.109			14 Feb 1992 roman
+-----------------------
+Numerous minor fixes. Including:
+(a) Use symbolic constant for size of vproc lists past on migrate and rexec.
+(b) Allow double-hop rfork/migrate/rexec.
+(c) Allow rexec to fail with bad file name and not panic the servers.
+
+.............................................................................
+
+Server id number SVR.108			10 Feb 1992 chrisp
+-----------------------
+Fix rpvpop_resign_pgrp MiG failure (cause by previous rpvpop_reap fix!).
+
+.............................................................................
+
+Server id number SVR.107			10 Feb 1992 chrisp
+-----------------------
+Fix the rpvpop_reap() MiG failure.
+
+.............................................................................
+
+Server id number SVR.106			7 Feb 1992 chrisp
+-----------------------
+Merge errors corrected in kern_fork.c.
+
+.............................................................................
+
+Server id number SVR.105			30 Jan 1992 roman
+-----------------------
+v0.8 merge with rfork(), migrate(), rexec() working, and with
+isc_init() call actually being performed.
+
+.............................................................................
+
+Server id number SVR.104			30 Jan 1992 chrisp
+-----------------------
+ptrace support added. Release of parent vproc on child site corrected in
+the case of parent exiting before child.
+
+.............................................................................
+
+Server id number SVR.103			28 Jan 1992 roman
+-----------------------
+Update v0.8 mach_signal.c for TNC fixes.
+
+.............................................................................
+
+Server id number SVR.102			28 Jan 1992 roman
+-----------------------
+Update to v0.8. Notes:
+rexec() does not work yet. Awaiting fixes from Paulo.
+bsd/mach_signal.c needs to be re-installed. Do not attempt
+to run until this is done.
+
+.............................................................................
+
+Server id number SVR.101			17 Jan 1992 chrisp
+-----------------------
+Remove superfluous session use-counting on member (ie pgrp leader) site.
+Release TBL_VPROCINFO option in table() system call.
+
+.............................................................................
+
+Server id number SVR.100			16 Jan 1992 chrisp
+-----------------------
+Correct a rash of vproc reference counting inconsistences.
+
+.............................................................................
+
+Server id number SVR.99			15 Jan 1992 roman
+-----------------------
+Numerous minor fixes to the server.
+Restructure the emulator to truly integrate into the new 0.74
+release file descriptor manipulation.
+
+.............................................................................
+
+Server id number SVR.98			15 Jan 1992 chrisp
+-----------------------
+Implement origin site vproc freeing when vproc is destroyed on a remote site.
+
+.............................................................................
+
+Server id number SVR.97			14 Jan 1992 yazz
+-----------------------
+Credentials and remote tasking are now fully integrated with each other.
+
+.............................................................................
+
+Server id number SVR.96			10 Jan 1992 yazz
+-----------------------
+
+.............................................................................
+
+Server id number SVR.95			10 Jan 1992 yazz
+-----------------------
+
+.............................................................................
+
+Server id number SVR.94			10 Jan 1992 yazz
+-----------------------
+The full credentials mechanism has been integrated.
+Failures of remote tasking operations can now be tolerated and humpty-
+dumpty can be put back together again on the originating node.
+Some task-to-task and node-to-node transfers of port rights were
+replaced by the passing of mere port names, for greater efficiency.
+Panic can now take printf-style arguments.
+Some panic and optional-debug strings had inaccurate routine names
+corrected.
+
+.............................................................................
+
+Server id number SVR.93			10 Jan 1992 roman
+-----------------------
+Assorted cleanup of the rexec/migrate/rfork code.
+
+.............................................................................
+
+Server id number SVR.92			8 Jan 1992 chrisp
+-----------------------
+System setup changes for credentials of proc 0 and proc 1.
+
+.............................................................................
+
+Server id number SVR.91			7 Jan 1992 roman
+-----------------------
+Get rexec to work (it really does work this time, unlike last time).
+Change auxv declarations to some form of understandability and sanity.
+
+.............................................................................
+
+Server id number SVR.90			7 Jan 1992 chrisp
+-----------------------
+Missed syscall_subr.c from controlling tty change requested by OSF.
+
+.............................................................................
+
+Server id number SVR.89			7 Jan 1992 chrisp
+-----------------------
+Bug fixes for ref. count debugging. Controlling tty PPROC_CTTY_SETUP
+changed to cope with distributed (non-TNC) cases.
+
+.............................................................................
+
+Server id number SVR.88			6 Jan 1992 roman
+-----------------------
+rexec() and migrate() work correctly for the first time since the
+OSF 0.74 integration.
+
+.............................................................................
+
+Server id number SVR.87			3 Jan 1992 chrisp
+-----------------------
+Merged pending fixes concerning remote exec'ed csh. Moved machine independent
+code for SIGMIGRATE out of emul_machdep.
+
+.............................................................................
+
+Server id number SVR.86			2 Jan 1992 roman
+-----------------------
+Fixed a couple of more $Header's in the afs source.
+
+.............................................................................
+
+Server id number SVR.85			2 Jan 1992 roman
+-----------------------
+Update the tree to V0.74 from OSF. It is advisable for everyone
+to do a o2makebox rather than an o2update due to assorted
+weirdnesses in the way the merge was done.
+
+
+.............................................................................
+
+Server id number SVR.84			24 Dec 1991 roman
+-----------------------
+Change the whole way send rights to vprocs are passed around for
+remote tasking operations to fix all potential timing problems and
+vproc port renaming problems that existed in the current
+implementation.
+
+.............................................................................
+
+Server id number SVR.83			20 Dec 1991 chrisp
+-----------------------
+Orphan pgrp handling restructured. Many other fixes and clean-ups added.
+
+.............................................................................
+
+Server id number SVR.82			19 Dec 1991 chrisp
+-----------------------
+SIGMIGRATE support.
+
+.............................................................................
+
+Server id number SVR.81			18 Dec 1991 roman
+-----------------------
+Remove debugging code and fix minor formatting. Get rexec to correctly
+pass in argc, argv, envp.
+
+.............................................................................
+
+Server id number SVR.80			16 Dec 1991 roman
+-----------------------
+Chnages to get rexec to work for the first time.
+
+.............................................................................
+
+Server id number SVR.79			13 Dec 1991 roman
+-----------------------
+Add file accidently left out last time.
+
+.............................................................................
+
+Server id number SVR.78			13 Dec 1991 roman
+-----------------------
+First pass at supporting rfork/rexec/migrate in latest tree.
+
+.............................................................................
+
+Server id number SVR.77			5 Dec 1991 chrisp
+-----------------------
+Reference counting fix - missing VPROC_RELEASEs in rvp_server ops using
+LOCATE_VPROC_PID.
+
+.............................................................................
+
+Server id number SVR.76			5 Dec 1991 chrisp
+-----------------------
+Fix for 0 address exception crash seen randomly at LCC but consistently at
+OSF -- caused by final (implied) close of terminal files on exit attempting
+to access an unknown (null) vproc context.
+
+.............................................................................
+
+Server id number SVR.75			4 Dec 1991 chrisp
+-----------------------
+Bug fixes (predominantly controlling tty related) and support for remote
+controlling tty sites (but without controlling site session leader vprocs).
+
+.............................................................................
+
+Server id number SVR.74			27 Nov 1991 chrisp
+-----------------------
+Correct VPOP_WAIT to handle remote children when process group id specified.
+
+.............................................................................
+
+Server id number SVR.72			26 Nov 1991 chrisp
+-----------------------
+Errors in bvpop_sigproc, bvpop_setpgid, bvpop_exit corrected.
+Erroors in dpvpop_sigproc and dvpop_exit corrected.
+pvpop added for setsid and comments expanded in dvp_pvpops.c.
+
+.............................................................................
+
+Server id number SVR.71			22 Nov 1991 chrisp
+-----------------------
+SET_STOP_STATE generalized to SET_STATE, and vproc reference counting extended
+and corrected.
+
+.............................................................................
+
+Server id number SVR.70			21 Nov 1991 chrisp
+-----------------------
+Fixed login failure with password problem.
+
+.............................................................................
+
+Server id number SVR.69			20 Nov 1991 chrisp
+-----------------------
+Correction to prevent vproc locate panic in start_fileserver_op_nocred.
+
+.............................................................................
+
+Server id number SVR.68			19 Nov 1991 chrisp
+-----------------------
+pproc functions declarartions added to vproc.h - no functional change.
+
+
+.............................................................................
+
+Server id number SVR.67			19 Nov 1991 chrisp
+-----------------------
+Minor correction to the integration of controlling terminal changes into
+TNC. Note that this is the first phase of integration only -- remote ctty
+operations are yet to be added.
+
+.............................................................................
+
+Server id number SVR.66			18 Nov 1991 chrisp
+-----------------------
+Re-sync tnc with bvp.
+
+.............................................................................
+
+Server id number SVR.65			15 Nov 1991 chrisp
+-----------------------
+Minor changes in user.h and bvp_vpops.c.
+
+.............................................................................
+
+Server id number SVR.64			14 Nov 1991 chrisp
+-----------------------
+Controlling terminal handling fixed.
+
+.............................................................................
+
+Server id number SVR.53			11 Nov 1991 klh
+-----------------------
+Fixed the include files for TNC distribution in uxkern/syscall_subr.c
+
+.............................................................................
+
+Server id number SVR.52			10 Nov 1991 klh
+-----------------------
+added a flag in second_tty_open in second_cons.c
+add call to invoke TNC server in ux_server_loop
+
+.............................................................................
+
+Server id number SVR.51			4 Nov 1991 roman
+-----------------------
+Minor bug fixes to get remote pvproc ops working.
+
+.............................................................................
+
+Server id number SVR.50			1 Nov 1991 root
+-----------------------
+Minor bug fixes to allow TNC and non-TNC vproc stuff to work.
+
+.............................................................................
+
+Server id number SVR.39			30 Oct 1991 roman
+-----------------------
+Changes to tnc directory that did not get checked in last time due
+to incorrect permissions in the RCS tree.
+
+.............................................................................
+
+Server id number SVR.34			30 Oct 1991 roman
+-----------------------
+Numerous small bug fixes to vproc stuff.
+
+.............................................................................
+
+Server id number SVR.12			25 Oct 1991 root
+-----------------------
+First submission that works (sort of) for distributed pvproc operations.
+
+.............................................................................
+
+Server id number SVR.11			21 Oct 1991 roman
+-----------------------
+Added all routines necessary for TNC initialization. Uses 
+ifdef TNC when necessary.
+
+.............................................................................
+
+Server id number SVR.10			21 Oct 1991 klh
+-----------------------
+Minor changes for tnc builds
+
+.............................................................................
+
+Server id number SVR.9			21 Oct 1991 klh
+-----------------------
+Modified build files to incorporate TNC for the first time.
+
+.............................................................................
+
+Server id number SVR.8			18 Oct 1991 chrisp
+-----------------------
+Proper (now cheating) PVPOP operations implemented. More informative
+debugging messages added. New operation function naming scheme.
+
+.............................................................................
+
+Server id number SVR7.
+----------------------
+
+New Features:
+
+o 1.0.2 upgrade complete
+
+o Upgrade of relevant files from UX22 to UX26
+
+o Upgrade to run on MK60
+
+o Kernel printf in stand-alone mode fixed.
+
+o Compilation warnings, including the "ASSERT redefined" message
+  from gcc version 37, eliminated.
+
+o Kernel loading of statically bound COFF and ROSE supported
+
+o The server can deliver signals to processes in "user space" (as opposed to
+  the emulator space).
+
+o Server fully pageable
+
+Notes:
+
+This version of the server CANNOT be run on kernels before MK59
+because of the interface change from vm-pageable to vm_wire and a bug
+in vm_map in the kernel.
+
+Virtually every file has been altered to a greater or lesser extent.
+Many have the trivial change of having the change history added at
+the start of the file.
+Server id number SVR.223			28 Sep 1992 klh
+-----------------------
+Inital working implementation of FIFO relocation.  This code was 
+orginally checked in by Mike Leibensperger but was lost due to
+AFS problems.
+
+.............................................................................
+
+Server id number SVR.222			25 Sep 1992 mbarnett
+-----------------------
+Put fixes into the server "shmat" and "shmdt" functions so that the server
+would properly detach shared memory regions when requested by user tasks.
+Also, added retry logic into the emul_shared_init function.
+
+.............................................................................
+
+Server id number SVR.221			24 Sep 1992 bhk
+-----------------------
+Fixed the socket select timout problem,
+Added node information to network server interfaces registration
+with the clearinghouse
+
+.............................................................................
+
+Server id number SVR.220			22 Sep 1992 mbarnett
+-----------------------
+The definition of the macros V_NRPORT and V_FCOUNT were changed in the
+case when UN_FF_DEBUG is defined.  This change allows the server for the
+i860 to be compiled successfully.  This fix is for bug #58.
+
+.............................................................................
+
+Server id number SVR.219			22 Sep 1992 chrisp
+-----------------------
+Fix for bug #59: signaling a process group should return error status
+correctly.
+
+.............................................................................
+
+Server id number SVR.216			19 Aug 1992 klh
+-----------------------
+remove call to debugging macro WATCH_VP
+
+.............................................................................
+
+Server id number SVR.214			17 Aug 1992 mjl
+-----------------------
+This server build contains preliminary FIFO relocation code.  FIFO relocation
+is disabled.  DO NOT o2update yet, however, because of several AFS related
+glitches during the o2install.  These should be fixed shortly....
+
+.............................................................................
+
+Server id number SVR.213			13 Aug 1992 klh
+-----------------------
+Add definitions and includes for non TNC build 
+
+.............................................................................
+
+Server id number SVR.212			12 Aug 1992 klh
+-----------------------
+Remove bogus code in non TNC ifdefed code
+
+.............................................................................
+
+Server id number SVR.211			12 Aug 1992 jdh
+-----------------------
+completed the submission for stream sockets that I did on
+Friday... installed a forgotten file and fixed a syntax
+error (missing curly braces).  -- jdh
+
+.............................................................................
+
+Server id number SVR.210			11 Aug 1992 klh
+-----------------------
+Remove extraneous ifdef notdef
+
+.............................................................................
+
+Server id number SVR.209			11 Aug 1992 chrisp
+-----------------------
+[Bug #46] Non-TNC build doesn't release vprocs.
+
+.............................................................................
+
+Server id number SVR.208			8 Aug 1992 jdh
+-----------------------
+Submitted changes for unix domain stream sockets.
+This stuff is all built on top of the relocation code
+Mike Leibensperger wrote for pipes.  The main components
+are 1) setting up the relationship between a bound socket
+and the vnode it's bound to (a socket port for the socket
+is stored in the vnode), and 2) migrating a socket to
+the server containing the listening socket in order to
+perform a connect [ thereby allowing us to use existing
+code for the connect ].  Once a socket connection is
+complete (which is done by an accept() completing), the
+connected socket pair will follow the first reader
+around when it moves.
+
+--jdh
+
+.............................................................................
+
+Server id number SVR.207			6 Aug 1992 roman
+-----------------------
+Fix up stuff so that v0.9.3 merge from OSF works.
+
+.............................................................................
+
+Server id number SVR.206			30 Jul 1992 chrisp
+-----------------------
+Fixes for interactions between user and ISC threads during migration
+	and rexec including FDT locking over fork/rfork/migrate/rexec.
+Port sequence counting extended to vproc freeing to ensure a vproc
+	is not deallocated with pending received (but not porcessed)
+	messages.
+Bugs #41, #42 and #43.
+
+.............................................................................
+
+Server id number SVR.205			28 Jul 1992 chrisp
+-----------------------
+VSTNC bug fixes for tnc_get_port() and removal of emulator error message
+issued for SIGMIGRATE with a bad node number.
+
+.............................................................................
+
+Server id number SVR.204			26 Jul 1992 bhk
+-----------------------
+Added support for selects on remote sockets
+added support for getpeername
+cleaned up debug
+
+.............................................................................
+
+Server id number SVR.203			22 Jul 1992 jpaul
+-----------------------
+Checked code for fast{node} load levelling using shared
+memory rather that files, initial checkin of VSTNC test suite.
+
+.............................................................................
+
+Server id number SVR.202			21 Jul 1992 chrisp
+-----------------------
+Release stress tests.
+
+.............................................................................
+
+Server id number SVR.201			17 Jul 1992 roman
+-----------------------
+Fix bug in get_tnc_port() where bad address caused emulator to fail.
+Fix bug in rforkmulti() where sequences of bad node numbers caused
+	server to panic.
+
+.............................................................................
+
+Server id number SVR.200			17 Jul 1992 chrisp
+-----------------------
+Add initialization of the lock_is_free condition in share_lock
+to prevent server hangs waiting for bsd_share_wakeup().
+
+.............................................................................
+
+Server id number SVR.199			14 Jul 1992 roman
+-----------------------
+Fix i860 version of bug where bad values passed into user_rcheck() and
+	user_rwcheck() were ignored.
+Fix minor bug in e_write.
+
+.............................................................................
+
+Server id number SVR.198			13 Jul 1992 chrisp
+-----------------------
+Fix bug whose symptom is the failure of a migrated or rexec'd process
+to receive signals if the process had an active issig_psig thread
+at the time it was migrated.
+
+.............................................................................
+
+Server id number SVR.197			10 Jul 1992 mbarnett
+-----------------------
+Modified emulator routines user_rcheck and user_rwcheck to do memory checks
+on large addresses such as 0xffffffff.  Also, fixed a comment in load_leveld
+and made changes in osf1_dep.c to log errors using syslog instead of printf.
+
+.............................................................................
+
+Server id number SVR.196			10 Jul 1992 chrisp
+-----------------------
+Implement proc/vproc message sequence counting and prevention of
+migration until no operation is outstanding.
+Change the shared signal lock logic not to use the master mutex.
+Restore referenced bit fix in emulator lost in the previous merge.
+
+.............................................................................
+
+Server id number SVR.195			9 Jul 1992 roman
+-----------------------
+Oops. When I did the v0.9.2 update in the last submission, I forgot to
+update version.banner to the correct version number.
+
+.............................................................................
+
+Server id number SVR.194			9 Jul 1992 roman
+-----------------------
+Complete v0.9.2 update from OSF.
+
+Fix bug where emulator exception addresses were not set up on nodes
+other than node 0.
+
+.............................................................................
+
+Server id number SVR.193			8 Jul 1992 roman
+-----------------------
+Changed strategy for creating and registering TNC server port to use
+	the nameserver. This is in preparation for NMK12.
+
+Fix mapped files code to work after migration and remote execution.
+
+Get rid of tnc_mynode variable and use this_node instead.
+
+Change node numbers to use node_t rather than int.
+
+NOTE: Something I forgot to mention last time - when you do an
+	o2update for the first time after v0.9.1, you should wipe
+	out ALL of your .o files. This is because of the way the
+	mapped file code gets #define'd in. This includes wiping
+	out all the emulator .o files.
+
+NOTE: It is permissible to do o2updates and o2installs again
+
+.............................................................................
+
+Server id number SVR.192			7 Jul 1992 roman
+-----------------------
+Submission with v0.9.1 changes from OSF integrated.
+
+Not extensively tested yet, but most of the basic stuff seems to work well.
+
+This release will not work on the Hypercube. Wait for v0.9.2 submission.
+
+This server is NOT backwards compatible with the old emulator - and
+the emulator is NOT backwards compatible with the old server - so be
+careful to make sure you always use compatible versions.
+
+v0.9.2 is expected to be ready later this week.
+
+.............................................................................
+
+Server id number SVR.189			26 Jun 1992 mjl
+-----------------------
+Bug fixes for pipe relocation.  UNIX domain protocol numbers now select
+among various virtual socket op sets.  New naming convention for AF_UNIX
+virtual socket ops.
+
+.............................................................................
+
+Server id number SVR.188			26 Jun 1992 chrisp
+-----------------------
+Files missed on last installation due to RCS locks held.
+This version also contains fixes to make the i860 build to complete.
+
+.............................................................................
+
+Server id number SVR.187			26 Jun 1992 chrisp
+-----------------------
+Fixes for:
+[Bug #27] Job control ceases to work after foreground process is migrated.
+[Bug #30] Vproc tracing gets address exception.
+[Bug #35] Zombie or stopped children not reaped by init if orphaned.
+
+*** Don't take this version, wait for the next because 2 files were not
+*** installed due to outstanding RCS locks!!
+
+
+.............................................................................
+
+Server id number SVR.186			24 Jun 1992 mbarnett
+-----------------------
+replace call to printf with call to nonfatal_error.  Also, fixed parameters
+passed to getopt function.
+
+.............................................................................
+
+Server id number SVR.185			23 Jun 1992 chrisp
+-----------------------
+Fix for bug #32: select() loops preventing the server reaching
+multi-user mode.
+Note: server build level 184 is null, thanks to o2install failing.
+
+.............................................................................
+
+Server id number SVR.183			22 Jun 1992 bhk
+-----------------------
+Fixed Numerous bugs in multi-server configurations
+corrected error returns
+
+.............................................................................
+
+Server id number SVR.182			19 Jun 1992 chrisp
+-----------------------
+Fix for bug #28.
+Fix for bsd_shared_wakeup() panic under stress.
+Fix failure to remove migrated procs which have issig_psig threads active.
+
+.............................................................................
+
+Server id number SVR.181			19 Jun 1992 klh
+-----------------------
+Delete bsd/mach_init.c.  This file is no longer used.
+
+.............................................................................
+
+Server id number SVR.180			18 Jun 1992 roman
+-----------------------
+Minor bug fixes.
+1) isspace() changed to ANSI C definition. Uses of isspace() changed to
+	account for fact that isspace returns true for 'n'.
+2) migration prevented for multi-threaded processes.
+
+.............................................................................
+
+Server id number SVR.179			17 Jun 1992 roman
+-----------------------
+Restore kern_fork.c change that was lost during v0.9 merge.
+
+.............................................................................
+
+Server id number SVR.178			17 Jun 1992 roman
+-----------------------
+Fix bug 0026, task_by_pid() and pid_by_task() not working for TNC.
+
+.............................................................................
+
+Server id number SVR.177			16 Jun 1992 chrisp
+-----------------------
+Bug fix for #25 - ptrace not generating SIGCHLD to parent on PT_CONTINUE.
+Bug fix for failure to deliver signals to user-defined handlers after
+	migration.
+
+
+.............................................................................
+
+Server id number SVR.176			15 Jun 1992 jpaul
+-----------------------
+Used large positive initialiaztion load value for
+fastest node, avoiding complicated logic testing
+for negative loads.
+
+.............................................................................
+
+Server id number SVR.175			15 Jun 1992 roman
+-----------------------
+First install after v0.90b (latest version of OSF/1 AD v0.90).
+Also fix emulator to inherit the callback port rather than allocating
+	it from scratch always.
+
+.............................................................................
+
+Server id number SVR.174			15 Jun 1992 mbarnett
+-----------------------
+Modified the load leveler daemon to use shared memory and added addition al
+configuration parameters.  Also, the re-dispatching of processes was further
+optimized.  In addition the load_leveld restart utility was done away with
+and replaced with a SIGTERM signal handler in the load leveler daemon.  More
+fine tuning was also done on separating the OS dependent code from the OS
+independent code.
+
+.............................................................................
+
+Server id number SVR.172			10 Jun 1992 roman
+-----------------------
+Minor post-v0.9 environmental fixes. No real "bugs" fixed.
+
+.............................................................................
+
+Server id number SVR.171			10 Jun 1992 chrisp
+-----------------------
+Fixes for bugs #22 and #24, plus amendment of vproc macros for i860
+compiler.
+
+.............................................................................
+
+Server id number SVR.170			10 Jun 1992 roman
+-----------------------
+Update to v0.9 release. Please do not actually do o2install's or
+o2update's until mail from roman or klh.
+
+.............................................................................
+
+Server id number SVR.169			7 Jun 1992 klh
+-----------------------
+Add missing comment and syntax errors inadvertantly added in previous
+check-in.
+
+.............................................................................
+
+Server id number SVR.168			5 Jun 1992 roman
+-----------------------
+Really for truly finished integration of OSF AD v0.89.
+
+.............................................................................
+
+Server id number SVR.167			5 Jun 1992 roman
+-----------------------
+Integration of changes necessary to get v0.89 code working.
+
+Feel free to do o2updates and o2installs now...
+
+.............................................................................
+
+Server id number SVR.166			2 Jun 1992 chrisp
+-----------------------
+[Bugs #20 and #21] Compute-bound processes built without explicit signal
+	handling (i.e. using the emulator's default SIGMIGRATE handler)
+	are not restarted correctly after migration. bsd_isig_psig()
+	was clearing the high-order bit of the sigreturn address.
+
+.............................................................................
+
+Server id number SVR.165			29 May 1992 jpaul
+-----------------------
+Added shared memory support for load levelling.
+Added undocumented option '-K' for specifying
+a desired key string for ftok.
+
+.............................................................................
+
+Server id number SVR.164			29 May 1992 chrisp
+-----------------------
+Fix for bug #18 - panic with getty to remote console.
+Fixes identified by OSF for POSIX setpgrp() compiliance failures.
+
+.............................................................................
+
+Server id number SVR.163			22 May 1992 jpaul
+-----------------------
+Fixed errors found by vstnc suite and VSX suite, namely
+fflush error for stdout and various error messages that
+disagreed with the VSTNC tests.
+
+
+.............................................................................
+
+Server id number SVR.162			22 May 1992 chrisp
+-----------------------
+[Bug #17] getpriority(PRIO_PGRP,) always returning ESRCH due to error
+	in dpvpop_pgrp_nice().
+
+.............................................................................
+
+Server id number SVR.161			20 May 1992 chrisp
+-----------------------
+[Bug #16] Emulation of the umask() system call via the shared RW uarea
+	fails to inform the credentials service of changes. Hence, this
+	function must always be performed in the server and the cmask
+	field has been removed from the shared area.
+*** NB: This change involves an emulator upgrade.
+
+.............................................................................
+
+Server id number SVR.160			19 May 1992 mbarnett
+-----------------------
+Added comments to README, fixed comments in the parameters file, and 
+removed two debug "printf" statements from load_leveld.c
+
+.............................................................................
+
+Server id number SVR.159			18 May 1992 mbarnett
+-----------------------
+Made changes to load_leveld.c to improve efficiency of re-dispatching code.
+Also, added two new parameters "minimum_underload" and "minimum_overload".
+
+.............................................................................
+
+Server id number SVR.158			18 May 1992 chrisp
+-----------------------
+Fixes for:
+	[Bug #13]: fast now defaults to local node if load info unavailable.
+	[Bug #14]: VSX ANSI.os/genuts hangs.
+
+.............................................................................
+
+Server id number SVR.157			13 May 1992 mbarnett
+-----------------------
+Made change to log a message but not exit if the load array size passed in
+by mig does not correspond to the load vector size read in by the load 
+leveler from the parameters file.
+
+.............................................................................
+
+Server id number SVR.156			13 May 1992 mbarnett
+-----------------------
+Fixed history log for load_level_types.h by removing duplicate log.
+
+.............................................................................
+
+Server id number SVR.155			13 May 1992 mbarnett
+-----------------------
+Re-checkin of code due to previous incomplete check-in due to file being
+locked.
+
+.............................................................................
+
+Server id number SVR.154			13 May 1992 mbarnett
+-----------------------
+Restructured load leveler into os dependent and os independent parts.  Also
+added re-dispatching code to load_leveld and created load_leveld_restart
+utility.
+
+.............................................................................
+
+Server id number SVR.153			7 May 1992 yazz
+-----------------------
+Comment corrected.
+
+.............................................................................
+
+Server id number SVR.152			7 May 1992 chrisp
+-----------------------
+[Bug #10] Optimize delivery of signal pairs
+[Bug #11] Prevent reap before exit complete
+
+.............................................................................
+
+Server id number SVR.151			6 May 1992 bhk
+-----------------------
+Added VSOP_SLEEP define to allow non-tnc compilation
+
+.............................................................................
+
+Server id number SVR.150			6 May 1992 roman
+-----------------------
+Change set_tnc_port() and get_tnc_port() to match the man pages.
+
+.............................................................................
+
+Server id number SVR.149			6 May 1992 chrisp
+-----------------------
+Fix for bug #9: cttynode field transferred on rexec()/migrate().
+
+.............................................................................
+
+Server id number SVR.148			6 May 1992 bhk
+-----------------------
+accept now works for remote nodes.
+write now returns the number of bytes written.
+writes of > 8K now work
+the deadlock problem on close is now fixed
+
+.............................................................................
+
+Server id number SVR.147			6 May 1992 chrisp
+-----------------------
+[Bug #0008]
+Change set_state() to use pvp_lock mutex and fixup all cases
+where the pvproc field pvp_flag is updated to be guarded by
+calls to new macros VPROC_[UN]LOCK_FLAG.
+
+.............................................................................
+
+Server id number SVR.146			5 May 1992 yazz
+-----------------------
+FIXES BUG #5.
+FIXES BUG #7.
+Bugs found by VSTNC in rexecvp() PATH processing and kill3 command
+argument parsing and error message text.
+
+.............................................................................
+
+Server id number SVR.145			1 May 1992 yazz
+-----------------------
+Added -I to lib/tnc build.
+
+.............................................................................
+
+Server id number SVR.144			1 May 1992 yazz
+-----------------------
+The user sub-tree now builds for both i386 and i860 .
+
+.............................................................................
+
+Server id number SVR.143			1 May 1992 roman
+-----------------------
+Two bugs exposed by load leveling fixed:
+1. Timing window causing "get_attr MIG failure" error message fixed.
+2. Assertion failure in server caused by expiring timers in process that
+	migrates away fixed.
+
+.............................................................................
+
+Server id number SVR.142			1 May 1992 klh
+-----------------------
+move declaration of port_to_fileserver_port for i860 compilation.
+
+.............................................................................
+
+Server id number SVR.141			1 May 1992 roman
+-----------------------
+Fix bug where u_comm field was incorrect after rfork() or migrate().
+
+[mjl - you can pull over the RCS tree if you like now]
+
+.............................................................................
+
+Server id number SVR.140			1 May 1992 roman
+-----------------------
+Fix problem where file writes to a file after a migrate or rexec fail.
+Fix problem where u.u_comm is not set up after exec of a remote file.
+
+.............................................................................
+
+Server id number SVR.139			30 Apr 1992 chrisp
+-----------------------
+[Bug #3] PVPOP_REAP() now takes an additional parameter requiring a reaped
+	process belong to a specified pgid (if not WAIT_ANY); error ESRCH
+	is returned if this is not the case and the process is not reaped.
+	This avoids VPOP_WAIT() using PVPOP_GETATTR() for each child's pgid.
+
+.............................................................................
+
+Server id number SVR.138			29 Apr 1992 chrisp
+-----------------------
+Add support for migration of outstanding realtime timers and for restarting
+sigsuspend() calls interrupted by SIGMIGRATE.
+
+.............................................................................
+
+Server id number SVR.137			28 Apr 1992 klh
+-----------------------
+PGILIBS now points to /usr1/i860/lib/pgi/libpgi.a for Locus' environment
+
+.............................................................................
+
+Server id number SVR.136			28 Apr 1992 chrisp
+-----------------------
+Fix emulator memory leak across fork()s. Fix SIGMIGRATE signal arg to
+be correctly passed to compute bound processes. Improve panic
+message in ux_server_loop() to include message id and to print
+kernel error code in hex.
+
+.............................................................................
+
+Server id number SVR.135			28 Apr 1992 klh
+-----------------------
+CPATH and LPATH are needed for 860 builds
+
+.............................................................................
+
+Server id number SVR.134			27 Apr 1992 roman
+-----------------------
+Fix waitpid() to work when waiting for a specific pid for TNC single node
+case. Bug exposed by VSX.
+
+.............................................................................
+
+Server id number SVR.133			24 Apr 1992 roman
+-----------------------
+Minor fixes to bring up rexecve() up to latest execve() code.
+
+.............................................................................
+
+Server id number SVR.132			22 Apr 1992 bhk
+-----------------------
+This fixes the panic when syscalltrace is enabled. It
+also allows support for getsockname system call.
+
+.............................................................................
+
+Server id number SVR.131			22 Apr 1992 yazz
+-----------------------
+user Makefile regroove.
+
+.............................................................................
+
+Server id number SVR.130			22 Apr 1992 mbarnett
+-----------------------
+Added default 
+
+Added default target to Makefile for load_leveld.
+
+.............................................................................
+
+Server id number SVR.129			22 Apr 1992 chrisp
+-----------------------
+Session vproc existence rule change now (finally) checked-in.
+Let o2update's commence.
+
+.............................................................................
+
+Server id number SVR.128			22 Apr 1992 chrisp
+-----------------------
+Null build  level. Please wait for the next install.
+
+.............................................................................
+
+Server id number SVR.127			22 Apr 1992 chrisp
+-----------------------
+Warning! this checkin is incomplete due to the AFS server system crashing.
+
+.............................................................................
+
+Server id number SVR.126			22 Apr 1992 mbarnett
+-----------------------
+Explicitly set LPATH variable and removed unnecessary option -L/lib from Makefile.
+
+.............................................................................
+
+Server id number SVR.125			22 Apr 1992 roman
+-----------------------
+Minor fix to make Intel ANSI C compiler happy.
+
+.............................................................................
+
+Server id number SVR.124			22 Apr 1992 chrisp
+-----------------------
+Add vproc and master locking to rfork/migrate/rexec server code.
+
+.............................................................................
+
+Server id number SVR.123			21 Apr 1992 klh
+-----------------------
+Changed fast to allow multiple -v option.
+
+.............................................................................
+
+Server id number SVR.122			21 Apr 1992 chrisp
+-----------------------
+Third attempt to checkin a fix failing because of an erroneous, outstanding
+rcs lock. Argghh.
+
+.............................................................................
+
+Server id number SVR.121			21 Apr 1992 chrisp
+-----------------------
+Fix for shared_unlock < 0 panic on "init 3".
+
+.............................................................................
+
+Server id number SVR.120			21 Apr 1992 roman
+-----------------------
+Minor fixes to make i860 compilers happy.
+
+.............................................................................
+
+Server id number SVR.119			21 Apr 1992 klh
+-----------------------
+Add ifdef MI for call to mi_server.
+
+.............................................................................
+
+Server id number SVR.118			20 Apr 1992 bhk
+-----------------------
+This installation provides the first release of remote virtual sockets for
+the Internet suite
+This is alpha quality code. Only 1 network server is supported in this release
+To have a functional network servers (inetd syslogd ...) should be started
+on the network server.  They do work on other nodes but with less
+reliability.
+As a result the Mi driver is not very usefull.
+
+.............................................................................
+
+Server id number SVR.117			20 Apr 1992 chrisp
+-----------------------
+Corrections for vproc port handling exhibiting itself as a panic when
+attempting a second SIGMIGRATE on a csh (among other ways). Also added
+-m option to vs tool to print mach port ref counts for vprocs.
+
+.............................................................................
+
+Server id number SVR.116			17 Apr 1992 chrisp
+-----------------------
+Default sigmigrate handling now functional.
+
+.............................................................................
+
+Server id number SVR.115			16 Apr 1992 yazz
+-----------------------
+Library libtnc.a machine-specific Makefile changes & move of i386 .s
+files into their own i386 source subdirectory.
+
+.............................................................................
+
+Server id number SVR.114			16 Apr 1992 jpaul
+-----------------------
+Fixed another pointer problem with onnode (fast).
+
+.............................................................................
+
+Server id number SVR.113			16 Apr 1992 jpaul
+-----------------------
+Fixed pointer bug on onnode() routine in onnode.c.
+
+.............................................................................
+
+Server id number SVR.112			16 Apr 1992 hao
+-----------------------
+Added changes to make onnode.
+
+.............................................................................
+
+Server id number SVR.111			15 Apr 1992 mbarnett
+-----------------------
+Added another -I option and set macro _NLCTYPE_H_.
+
+.............................................................................
+
+Server id number SVR.110			15 Apr 1992 chrisp
+-----------------------
+Remove the irritating need for makesyscalls.sh to have execute permissions
+and correct a bug in the kill3() libc routine.
+
+.............................................................................
+
+Server id number SVR.109			14 Apr 1992 mbarnett
+-----------------------
+Added -ltnc option to Makefile for load_leveld in order to pick up objects
+from libtnc library.
+
+.............................................................................
+
+Server id number SVR.108			14 Apr 1992 yazz
+-----------------------
+Rexec family calls that do $PATH processing (rexecvp() and rexeclp())
+will now handle command names that contain slashes to conform with
+the behavior of the plain exec() family calls.
+
+.............................................................................
+
+Server id number SVR.107			14 Apr 1992 klh
+-----------------------
+$Log was missing from the /user/test/tnc and /user/lib/tnc files.
+
+.............................................................................
+
+Server id number SVR.106			14 Apr 1992 roman
+-----------------------
+"Final" 8.5.2 submission with TNC. Everything checked in correctly.
+
+Everyone should start using this release - problems in prior releases
+	will now be ignored :-)
+
+It is recommended that you start with an o2makebox when setting up
+	your sandbox for this release.
+
+.............................................................................
+
+Server id number SVR.105			14 Apr 1992 roman
+-----------------------
+First v0.8.5.2 TNC submission. TNC fully functional (as functional
+	as it ever has been?).
+Due to tokens expiring during this submission, do not yet attempt
+	to do either an o2makebox or an o2install until further
+	notice.
+
+.............................................................................
+
+Server id number SVR.104			6 Apr 1992 chrisp
+-----------------------
+Parallelize system calls using vprocs in the TNC case and add explicit
+master locking at the pproc level. Note: signaling (especially
+in tty handling) has yet to be corrected in this respect.
+Correct invalid node number handling in rforkmulti().
+Fix reference counting problem when reassigning orphaned chilren to init.
+
+.............................................................................
+
+Server id number SVR.103			6 Apr 1992 klh
+-----------------------
+Add VSOP_CONNECT2 to so_defs.h for non TNC compatibility
+
+.............................................................................
+
+Server id number SVR.102			6 Apr 1992 mjl
+-----------------------
+Changes to server/vsocket/vsocket.h that got missed in the last o2install
+due to a bogus RCS lock.
+
+.............................................................................
+
+Server id number SVR.101			6 Apr 1992 mjl
+-----------------------
+This code "prepares to relocate" a connected AF_UNIX socket pair.  The
+related file ports are removed from the server port set and we wait for
+all outstanding operations to complete (then we reconnect them---since
+the code to actually relocate them is still on the way).
+
+.............................................................................
+
+Server id number SVR.100			3 Apr 1992 chrisp
+-----------------------
+Make use of new macros in bsd_server_side.c for TNC calls.
+
+.............................................................................
+
+Server id number SVR.99			2 Apr 1992 mbarnett
+-----------------------
+Added code to check for errors from get_tnc_port & set_tnc_port.
+Added macro to Makefile for C library.
+
+.............................................................................
+
+Server id number SVR.98			2 Apr 1992 roman
+-----------------------
+Change user interface to rforkmulti() to return (-2) for partial successes.
+Fix ushared.h according to Michael Condict's mail.
+
+Note: New emulator is required for this server.
+
+.............................................................................
+
+Server id number SVR.97			2 Apr 1992 chrisp
+-----------------------
+Set user tasks to use the exception port serviced by the local server
+on rfork/migrate/rexec.
+
+.............................................................................
+
+Server id number SVR.96			1 Apr 1992 roman
+-----------------------
+Add support for the rforkmulti() system call.
+
+.............................................................................
+
+Server id number SVR.95			31 Mar 1992 mbarnett
+-----------------------
+Replaced calls to signal and sigsetmask with calls to sigaction & sigprocmask
+Also, added calls to new signal routines sigemptyset and sigaddset.
+
+.............................................................................
+
+Server id number SVR.88			30 Mar 1992 chrisp
+-----------------------
+Correction for init's reference count on node of reassigned child.
+
+.............................................................................
+
+Server id number SVR.87			30 Mar 1992 mbarnett
+-----------------------
+Initial check-in of load leveler daemon source files and other associated 
+files was done.
+
+.............................................................................
+
+Server id number SVR.86			28 Mar 1992 chrisp
+-----------------------
+Initialization changed so that common root clustering only is supported
+and separate machines with individual root filesystems can no longer be
+configured.
+
+.............................................................................
+
+Server id number SVR.85			28 Mar 1992 chrisp
+-----------------------
+checkin to pick up socketvar.h that was munged by existing lock in previous
+install.
+
+.............................................................................
+
+Server id number SVR.84			28 Mar 1992 chrisp
+-----------------------
+Merge in vsocket and migration notification from Boston tree.
+
+.............................................................................
+
+Server id number SVR.83			27 Mar 1992 roman
+-----------------------
+Fixes that get migrate() and rexecve() to be at least sort-of working
+	(there are now no known problems).
+Optimize the obtaining of the current node number in the emulator
+	even further.
+
+.............................................................................
+
+Server id number SVR.82			27 Mar 1992 roman
+-----------------------
+Merge with OSF/1 AD v0.8.5.1.
+
+Note. migrate() and rexec() do not work with this release. Stand by....
+
+
+.............................................................................
+
+Server id number SVR.120			20 Mar 1992 chrisp
+-----------------------
+Missing vproc magic.
+
+.............................................................................
+
+Server id number SVR.119			19 Mar 1992 chrisp
+-----------------------
+Check-in of bvp_vpops.c which failed to be included in the previous
+install due to the rcs file having a lock outstanding.
+
+.............................................................................
+
+Server id number SVR.118			19 Mar 1992 chrisp
+-----------------------
+The non-TNC (bvp) vproc code is brought into line with the latest TNC
+improvements - in particular, for orphan pgrp handling.
+Bug fix included for setpgid in the TNC case, also.
+
+.............................................................................
+
+Server id number SVR.117			18 Mar 1992 roman
+-----------------------
+Very minor changes for the sake of correcting RCS logs.
+
+.............................................................................
+
+Server id number SVR.116			18 Mar 1992 roman
+-----------------------
+Changes to support locking, because the server is multi-threaded and
+pre-emptable.
+
+.............................................................................
+
+Server id number SVR.115			12 Mar 1992 roman
+-----------------------
+Vproc reference counting mutex added.
+Deferred remote signalling via local tnc server added for
+non-blocking case.
+Restructured the tracking of orphan pgrps for the TNC case.
+Restructured port right handling for vprocs to always preserve a send
+right to the vproc on a node.
+Numerous small optimizations and bug fixes in preparation for
+adding locks for multithreading the TNC server code.
+
+.............................................................................
+Server id number SVR.114			6 Mar 1992 yazz
+-----------------------
+Node_self() and rtask-to-your-own node all handled within emulator.
+
+.............................................................................
+
+Server id number SVR.113			3 Mar 1992 chrisp
+-----------------------
+Support for caching of pid/sctty pairs in session vprocs on the node on
+controlling terminals to avoid remote getattr operations during character
+i/o operations on fileserver nodes remote from the calling proc.
+Enhance the vpoptrace/dpvpoptrace/vprefcnt flags to function like
+syscalltrace - i.e. to be pid-specific if required.
+Add support and special handling for single copy init architecture.
+
+.............................................................................
+
+Server id number SVR.112			26 Feb 1992 roman
+-----------------------
+Fixed RCS comments on Intel-integrated files.
+

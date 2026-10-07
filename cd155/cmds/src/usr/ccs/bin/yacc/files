@@ -1,0 +1,55 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994, 1995  Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * (c) Copyright 1990, 1991, 1992 OPEN SOFTWARE FOUNDATION, INC. 
+ * ALL RIGHTS RESERVED 
+ */
+/*
+ * OSF/1 1.1
+ */
+/* @(#)$RCSfile: files,v $ $Revision: 1.3 $ (OSF) $Date: 1994/11/19 01:55:55 $ */
+/*
+ * COMPONENT_NAME: (CMDLANG) Language Utilities
+ *
+ * FUNCTIONS: 
+ *
+ *
+ * (C) COPYRIGHT International Business Machines Corp. 1985, 1989
+ * All Rights Reserved
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ * 
+ * 1.3  com/cmd/lang/yacc/files, 9121320k, bos320 6/15/90 21:49:27
+ */
+
+/* This file has the location of the parser, and the size of the */
+/* program desired.  It may also contain definitions to override */
+/* various defaults, for example, WORD32 tells yacc that there   */
+/* are at least 32 bits per integer.                             */
+
+/* AT&T: On some systems, notably IBM, the names for the output */
+/*       files and tempfiles must also be changed.              */
+
+#define WORD32
+
+/* location of the parser text file */
+#define PARSER "/usr/ccs/lib/yaccpar"
+
+/* basic size of the Yacc implementation */
+#ifdef WORD32
+#	define HUGE
+#else
+#	define MEDIUM
+#endif

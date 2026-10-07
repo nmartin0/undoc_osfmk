@@ -1,0 +1,158 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * @OSF_COPYRIGHT@
+ */
+/*
+ * HISTORY
+ * $Log: emul_call.defs,v $
+ * Revision 1.6  1994/11/18  20:47:43  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.5  1993/07/16  03:08:04  dbm
+ * Added token optimization functionality.
+ *
+ * Revision 1.4  1993/07/14  18:41:04  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.3  1993/07/01  21:00:37  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.3  1993/04/03  03:11:28  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ *
+ * Revision 1.2  1992/11/30  22:53:54  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1.2.1  1992/11/26  00:01:53  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.1.2.1  1992/11/05  23:42:46  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ * 
+ * Revision 4.1  1992/11/04  00:51:42  cfj
+ * Bump major revision number.
+ *
+ * Revision 2.10  93/06/16  13:47:56  klh
+ * 	Revision 2.10  93/05/16  20:58:45  loverso
+ * 		Pass "intr" parameter in forward_signal().
+ * 
+ * 	Revision 2.9  93/05/13  16:45:29  roy
+ * 		Remove token_get_size.
+ * 		[93/05/04            roy]
+ * 
+ * Revision 2.9  92/10/08  11:32:58  roman
+ * Get rid of the emulator thread to callback thread MiG calls for
+ * 	performing migrate and rexec - the emulator thread now
+ * 	directly interacts with the server.
+ *
+ * Revision 2.8  92/10/06  12:17:33  roman
+ * Fix RCS comments.
+ * 
+ * Revision 2.7  92/10/05  14:00:36  klh
+ * 	Revision 2.7  92/09/24  16:51:22  rabii
+ * 		Don't include emulator->emulator messages in server code.
+ * 
+ * 	Revision 2.6  92/08/26  12:12:54  loverso
+ * 		Add release_state (server->emulator).
+ * 		Add at_barrier (emulator->emulator).
+ * 		Also, created emul_call_reply.defs, for async reply messages.
+ * 		It MUST track this file.  (loverso)
+ * 
+ * Revision 2.6  92/08/17  13:22:21  mjl
+ * Get rid of request_migrate_notification() emulator RPC; the same thing
+ * is now accomplished using the VIO_REQNOTIFY iomode.
+ * 
+ * Revision 2.5  92/07/30  16:20:14  chrisp
+ * Add RPCs isc_migrate() and isc_rexecve() for use by other emulator threads
+ * 	to have bsd_migrate() and bsd_rexecve() called by the ISC thread.
+ * 	This ensures that no other ISC operation is outstanding at the time.
+ * 
+ * Revision 2.4  92/06/05  17:47:49  klh
+ * 	Revision 2.4  92/05/18  12:26:16  roy
+ * 		Revision 2.2.1.2  92/05/08  12:03:30  roy
+ * 		Changed token_port arg to token_get_size to be inout.
+ * 		[92/04/22            roy]
+ * 
+ * 		Revision 2.2.1.1  92/04/22  09:57:21  roy
+ * 		Added token_revoke and token_get_size.
+ * 		[92/03/31            roy]
+ * 
+ * Revision 2.3  92/03/28  10:54:44  chrisp
+ * Added request_migrate_notification() RPC, used by server to inform
+ * 	emulator that a newly opened file is a FIFO and should
+ * 	receive migrate notification.
+ * 
+ * 
+ * $EndLog$
+ */
+
+/*
+ * IPC interface for selected emulator calls
+ */
+subsystem emul 		105000;
+
+UserPrefix	uemul_;
+ServerPrefix	semul_;
+
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types.defs>
+
+type reply_port_t = MACH_MSG_TYPE_MAKE_SEND_ONCE | polymorphic
+	ctype: mach_port_t;
+
+
+simpleroutine forward_signal(
+        	callback_port	: mach_port_t;
+	in	intr		: boolean_t);
+
+simpleroutine token_revoke(
+                revoke_port  	: mach_port_t;
+        in      token_port      : mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine release_state(
+		callback_port	: mach_port_t;
+	sreplyport reply_port	: reply_port_t;
+	in	intr		: boolean_t;
+	in	is_exit		: boolean_t);
+
+#ifdef PFS
+routine token_acquire(
+                revoke_port     : mach_port_t;
+	in 	fdte_ref	: int;
+	in	node		: int;
+	out	offset		: esize_t;
+	out	length		: esize_t);
+
+simpleroutine token_release(
+		revoke_port	: mach_port_t;
+	in	fdte_ref	: int;
+	in	node		: int;
+	in	accessed	: int;
+	in	modified	: int;
+	in	offset		: esize_t;
+	in	length		: esize_t);
+#endif
+
+#ifdef _EMULATOR
+/*
+ * This is emulator-to-emulator only
+ */
+routine at_barrier(
+		callback_port	: mach_port_t = MACH_MSG_TYPE_MAKE_SEND;
+	in	last_thread	: thread_t = MACH_MSG_TYPE_PORT_NAME);
+#else
+skip;
+#endif

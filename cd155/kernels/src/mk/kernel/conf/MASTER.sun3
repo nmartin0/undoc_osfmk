@@ -1,0 +1,278 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1991,1990,1989,1988,1987,1986 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#  
+#
+# HISTORY
+# $Log: MASTER.sun3,v $
+# Revision 1.5  1994/11/18  20:27:55  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:19:07  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:16:58  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:16:29  dleslie
+# First R1_0 release
+#
+# Revision 2.12  91/08/28  11:10:13  jsb
+# 	Added support for lineno build option.
+# 	[91/08/27  18:04:54  jsb]
+# 
+# Revision 2.11  91/08/01  14:47:56  dbg
+# 	Make GCC build standard.
+# 	[91/08/01            dbg]
+# 
+# Revision 2.10  91/07/31  17:26:01  dbg
+# 	Add rules for GCC.
+# 	[91/07/19            dbg]
+# 
+# Revision 2.9  91/06/19  11:54:44  rvb
+# 	cputypes.h->platforms.h
+# 	[91/06/12  13:44:29  rvb]
+# 
+# Revision 2.8  91/05/14  15:26:09  mrt
+# 	Correcting copyright
+# 
+# Revision 2.7  91/02/05  17:02:34  mrt
+# 	Changed to new copyright
+# 	[91/01/28  14:46:21  mrt]
+# 
+# Revision 2.6  90/11/05  14:25:19  rpd
+# 	Added BWS.
+# 	[90/10/26  17:01:06  rwd]
+# 
+# Revision 2.5  90/06/02  14:46:08  rpd
+# 	Cleaned up.  Replaced RWD with SWS.
+# 	[90/03/26  21:36:09  rpd]
+# 
+# Revision 2.4  89/08/05  16:04:26  rwd
+# 	Fixed for MACH_KERNEL
+# 	[89/06/06            rwd]
+# 
+# Revision 2.14  89/03/09  05:46:39  rpd
+# 	Added UNTESTED set, for devices/options that weren't in ANY.
+# 	Added pseudo-device entries for those devices.
+# 
+
+#
+#  Master SUN configuration file (see the master machine independent
+#  configuration file for a description of the file format).
+#
+#  Always build with GCC.
+#
+#  STD = [ gcc ]
+#
+#
+#  SUN (PSEUDO-)DEVICES (select any combination)
+#
+#
+#  CPU TYPE (select exactly one)
+#
+#	sun = any SUN CPU
+#
+#  
+#  Devices both on Vme bus and onBoard:
+#
+#  si = [ siV siB st]
+#  ie = [ ieV ieB ]
+#
+#  Standard CMU CS/RI Production Configurations:
+#  -------- --- -- -- ---------- --------------
+#
+#  ANY = [ sun xt xy sc si     ie  le zs mti color bw debug fpa ]
+#  MF  = [ sun xt xy sc siB st ieB le zs           bw debug fpa ]
+#  WS  = [ sun       sc siB st ieB le zs     color bw debug fpa ]
+#  SWS = [ sun       sc siB        le zs     color bw debug     ]
+#  BWS = [ sun    xy sc siB    ie  le zs     color bw debug     ]
+#
+#  (any SUN-3 cpu model)
+#  ("mainframe" SUN3 cpu configurations: machine rooms)
+#  ("work-station" SUN3 cpu configurations: offices)
+#
+#  EXTRA = [ ]
+#
+#  ("one-of-a-kind" devices)
+#
+#  UNTESTED = [ ar bwone cgone dbx des ec en gpone ip pi ropc sf sky sw mt tod vp vpc zss ]
+#
+#  (we've got code for these guys, but who knows)
+
+conftype	"sun3"		# <sun>
+platform	"SUN3_160"	# <sun>
+platform	"SUN3_50"	# <sun>
+platform	"SUN3_260"	# <sun>
+platform	"SUN3_110"	# <sun>
+platform	"SUN3_60"	# <sun>
+
+config		mach_kernel	swap generic	# <!unix>
+config		vmunix		swap generic	# <unix>
+
+#
+#  Mach/4.3 on the SUN-3
+#
+controller      obio 1 at nexus ?			# <ieB,le,zs>
+controller	obio 2 at nexus ?			# <ieB,le,zs>
+controller	obio 3 at nexus ?			# <ieB,le,zs>
+controller	obio 4 at nexus ?			# <ieB,le,zs>
+controller	obio 7 at nexus ?			# <ieB,le,zs>
+
+controller      obmem 1 at nexus ?			# <bw>
+controller	obmem 2 at nexus ?			# <bw>
+controller	obmem 3 at nexus ?			# <bw>
+controller	obmem 4 at nexus ?			# <bw>
+controller	obmem 7 at nexus ?			# <bw>
+
+controller      virtual 1 at nexus ?
+controller	virtual 2 at nexus ?
+controller	virtual 3 at nexus ?
+controller	virtual 4 at nexus ?
+controller	virtual 7 at nexus ?
+
+controller      vme16d16 1 at nexus ?			# <xy,mti>
+controller	vme16d32 1 at nexus ?			# <NOTUSED>
+controller      vme24d16 1 at nexus ?			# <sc,siV,ieV,color>
+controller	vme24d32 1 at nexus ?			# <NOTUSED>
+controller	vme32d16 1 at nexus ?			# <NOTUSED>
+controller	vme32d32 1 at nexus ?			# <NOTUSED>
+controller	vme16d16 3 at nexus ?			# <xy,mti>
+controller	vme24d16 3 at nexus ?			# <sc,siV,ieV,color>
+controller	vme32d16 3 at nexus ?			# <NOTUSED>
+controller	vme16d32 3 at nexus ?			# <NOTUSED>
+controller	vme24d32 3 at nexus ?			# <NOTUSED>
+controller	vme32d32 3 at nexus ?			# <NOTUSED>
+controller	vme16d16 4 at nexus ?			# <xy,mti>
+controller	vme24d16 4 at nexus ?			# <sc,siV,ieV,color>
+controller	vme32d16 4 at nexus ?			# <NOTUSED>
+controller	vme16d32 4 at nexus ?			# <NOTUSED>
+controller	vme24d32 4 at nexus ?			# <NOTUSED>
+controller	vme32d32 4 at nexus ?			# <NOTUSED>
+
+controller	xyc0 at vme16d16 ? csr 0xee40 		# <xy>
+		        priority 2 vector xyintr 0x48 	# <xy>
+controller	xyc1 at vme16d16 ? csr 0xee48		# <xy>
+			priority 2 vector xyintr 0x49 	# <xy>
+disk		xy0 at xyc0 drive 0			# <xy>
+disk		xy1 at xyc0 drive 1			# <xy>
+disk		xy2 at xyc0 drive 2			# <xy>
+disk		xy3 at xyc0 drive 3			# <xy>
+disk		xy4 at xyc1 drive 0			# <xy>
+disk		xy5 at xyc1 drive 1			# <xy>
+disk		xy6 at xyc1 drive 2			# <xy>
+disk		xy7 at xyc1 drive 3			# <xy>
+
+controller	sc0 at vme24d16 ? csr 0x200000		# <sc>
+			priority 2 vector scintr 0x40	# <sc>
+
+disk		sd0 at sc0 drive 0 flags 0		# <sc>
+disk		sd1 at sc0 drive 1 flags 0		# <sc>
+disk		sd2 at sc0 drive 8 flags 0		# <sc>
+disk		sd3 at sc0 drive 9 flags 0		# <sc>
+
+tape		st0 at sc0 drive 32 flags 1		# <st>
+
+controller	si0 at vme24d16 ? csr 0x200000		# <siV>
+			priority 2 vector siintr 0x40	# <siV>
+controller	si0 at obio ? csr 0x140000 priority 2	# <siB>
+
+disk		sd0 at si0 drive 0 flags 0		# <siV,siB>
+disk		sd1 at si0 drive 1 flags 0		# <siV,siB>
+disk		sd2 at si0 drive 8 flags 0		# <siV,siB>
+disk		sd3 at si0 drive 9 flags 0		# <siV,siB>
+disk		sd4 at si0 drive 16 flags 0		# <siV,siB>
+disk		sd5 at si0 drive 17 flags 0		# <siV,siB>
+
+tape		st0 at si0 drive 32 flags 1		# <st>
+
+controller	xtc0 at vme16d16 ? csr 0xee60 		# <xt>
+			priority 3 vector xtintr 0x64	# <xt>
+controller	xtc1 at vme16d16 ? csr 0xee68		# <xt>
+			priority 3 vector xtintr 0x65	# <xt>
+tape		xt0 at xtc0 drive 0 flags 1		# <xt>
+tape		xt1 at xtc1 drive 0 flags 1		# <xt>
+
+device		ie0 at obio ? csr 0xc0000 priority 3	# <ieB>
+device		ie1 at vme24d16 ? csr 0xe88000		# <ieV>
+			priority 3 vector ieintr 0x75	# <ieV>
+
+device		le0 at obio ? csr 0x120000 priority 3	# <le>
+
+device		zs0 at obio ? csr 0x20000 flags 3 priority 3		# <zs>
+device		zs1 at obio ? csr 0x00000 flags 0x103 priority 3	# <zs>
+
+device		mti0 at vme16d16 ? csr 0x620 flags 0xffff priority 4	# <mti>
+		vector mtiintr 0x88					# <mti>
+
+device		bwtwo0 at obmem 1 csr 0xff000000 priority 4	# <bw>
+device		bwtwo0 at obmem 2 csr 0x100000 priority 4	# <bw>
+device		bwtwo0 at obmem 3 csr 0xff000000 priority 4	# <bw>
+device          bwtwo0 at obmem 4 csr 0xff000000		# <bw>
+device          bwtwo0 at obmem 7 csr 0xff000000 priority 4	# <bw>
+device          bwtwo1 at obmem 7 csr 0xff400000		# <bw>
+device          gpone0 at vme24d16 ? csr 0x210000		# <gp1>
+			priority 4 vector gponeintr 0xac	# <gp1>
+device		cgtwo0 at vme24d16 ? csr 0x400000		# <color>
+			priority 4 vector cgtwointr 0xa8	# <color>
+device          cgfour0 at obmem 4 csr 0xff000000 priority 4	# <color> 
+device          cgfour0 at obmem 7 csr 0xff400000 priority 4	# <color>
+
+device          fpa0 at virtual ? csr 0xe0000000		# <fpa>
+
+#
+#	PSEUDO DEVICES
+#
+pseudo-device   ms3
+pseudo-device	kb3
+
+
+#
+#	OVERRIDES for GCC
+#
+
+makevariables	KCC="gcc -m68020"				# <gcc>
+
+makevariables	VOLATILE=					# <gcc>
+makevariables	FORCE_VOLATILE="-fvolatile "			# <gcc>
+makevariables	"C_RULE_1A"="${KCC} -c ${CFLAGS} "		# <gcc>
+makevariables	"C_RULE_1B"="$*.c"				# <gcc>
+makevariables	"C_RULE_2"=					# <gcc>
+makevariables	"C_RULE_3"=					# <gcc>
+makevariables	"C_RULE_4"=					# <gcc>
+makevariables	"C_RULE_1A_D"="${C_RULE_1A}"			# <gcc>
+makevariables	"C_RULE_1B_D"="${C_RULE_1B}"			# <gcc>
+
+makevariables	CLINENO="-g"					# <lineno>

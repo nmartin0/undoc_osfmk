@@ -1,0 +1,109 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+
+#
+# Mach Operating System
+# Copyright (c) 1990 Carnegie-Mellon University
+# Copyright (c) 1989 Carnegie-Mellon University
+# Copyright (c) 1988 Carnegie-Mellon University
+# Copyright (c) 1987 Carnegie-Mellon University
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#  
+#
+# HISTORY
+# $Log: MASTER.i860.local,v $
+# Revision 1.7  1994/11/18  20:29:16  mtm
+# Copyright additions/changes
+#
+# Revision 1.6  1994/01/18  15:47:30  cfj
+# Merge of R1_2 change.
+#
+#  Reviewer:
+#  Risk:
+#  Benefit or PTS #:
+#  Testing:
+#  Module(s):
+#
+# Revision 1.5.2.1  1994/01/18  15:24:13  cfj
+# Add the "dashg" configuration option which allows you to have
+# a "debug" server build separately from your normal server.
+#
+#  Reviewer:
+#  Risk:
+#  Benefit or PTS #:
+#  Testing:
+#  Module(s):
+#
+# Revision 1.5  1993/11/10  17:17:38  cfj
+# Add an opt4 option which allows us to build servers with optimize level
+# 4 in a separate object directory.
+#
+#  Reviewer:none
+#  Risk:L
+#  Benefit or PTS #:
+#  Testing:
+#  Module(s):
+#
+# Revision 1.4  1993/07/14  17:53:08  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.3  1993/07/01  19:11:34  cfj
+# Adding new code from vendor
+#
+# Revision 1.3  1993/05/06  19:13:37  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.1  1993/05/03  17:26:47  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.2  1992/11/30  22:18:51  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:17:56  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 2.2  1991/11/15  17:04:18  rabii
+# 	Initial check-in
+#
+#Revision 1.1  91/09/12  13:26:15  stans
+#	Initial V2.0 Checkin, started life as a copyy of MASTER.i386.local
+#
+######################################################################
+#
+#  Master i860 configuration file (see the master machine independent
+#  configuration file for a description of the file format) for local
+#  site modification.
+#
+######################################################################
+#  
+#  CMU CS/RI Facilities Production Configurations:
+#  --- ----- ---------- ---------- ---------------
+#
+#  MACH    = [ ANY L 16 ]
+#
+#  Mach Private Names
+#  ---- ---------
+#
+#  SQT     = [ sqt ]
+#
+######################################################################
+#
+
+options		COMPAT		# <compat>
+
+options		SEQUENT		# <sqt>
+
+makevariables	"OPTIMIZE_I860"="-O4"   #<opt4>
+
+makevariables	"OPTIMIZE_I860"="-g"   #<dashg>

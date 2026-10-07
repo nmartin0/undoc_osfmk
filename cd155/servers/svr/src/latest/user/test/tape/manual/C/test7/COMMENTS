@@ -1,0 +1,31 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test7" COMMENTS
+================
+
+******************* Step to run this test *******************************
+
+1. make -f makefile.man all
+
+2. test7.sh 
+
+    the result will be on "test7.SRr0".  The log will be on "test7.SLr0"
+    The test will require the user to prepare the 8 tapes that
+    have been written by "test8".  The user will need to put the tapes 
+    TEST01-TEST04 on the drive related to "/cfs/ctape0" and load the first
+    tape; also use tapes TEST11-TEST14 on the drive related to "/cfs/ctape1
+    and load the first tape onto the drive.  Then the user
+    will need to hit the return.  
+
+
+   THE TEST TAKES ~30 MINUTES TO RUN; 
+

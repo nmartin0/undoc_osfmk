@@ -1,0 +1,334 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+#   	MAKEDEV <node>
+#
+# Make tape and disk device entries for all the IO nodes.
+# If a node number is given, then it only builds device 
+# entries for that node. 
+#
+# I.e. if desire node is 7, MAKEDEV can be invoked as:
+#
+#	MAKEDEV 7
+#
+# In this case only devices for that node will be
+# built.
+#
+
+#
+# IO nodes (root partition node numbering)
+#
+if [ -z "$1" ]; then
+	disklist=`getmagic -w BOOT_DISK_NODE_LIST`
+	tapelist=`getmagic -w BOOT_DAT_NODE_LIST`
+else
+        disklist=$1
+        tapelist=$1
+fi
+
+#
+# device nomneclature
+#
+disk=rz
+tape=rmt
+passthru=scsi
+diskid=`echo 0 1 2 3 4 5 6`
+tapeid=`echo 0 1 2 3 4 5 6`
+channel=`echo 0 1`
+
+for node in $disklist 
+do
+
+echo
+foundit=`/usr/bin/grep -c "^${node}$" /etc/nx/.badnodes`
+if [ $foundit -ne 0 ]
+then
+	echo "Warning: Skipping disks for non-operational node $node"
+else
+	echo "Checking for disk devices on node $node..."
+	ionode=`/sbin/mkdevtab $node`
+	for ch in $channel
+	do
+	    for id in $diskid
+	    do
+		/dev/makedevnode $node $ch $passthru${id} > /dev/null 2>&1
+		chmod 644 /dev/io${ionode}/ch${ch}/$passthru${id} > /dev/null 2>&1
+		/sbin/inquire /dev/io${ionode}/ch${ch}/$passthru${id} > /dev/null 2>&1
+		if [ "$?" -ne 0 ]; then
+			if [ $ionode -ge 0 ]; then
+				if [ -d /dev/io${ionode} ]; then
+				    if [ $ch -eq 0 ]; then
+					rm -f /dev/io${ionode}/$passthru${id}
+					fn=/dev/io${ionode}/*rz${id}[a,c-o]
+					ls $fn > /dev/null 2>&1
+                                        if [ "$?" -ne 0 ]; then
+						rm -f /dev/io${ionode}/*rz${id}b
+					fi
+					filenames=/dev/io${ionode}/*rz${id}[a-o]
+					ls $filenames > /dev/null 2>&1
+					if [ "$?" -eq 0 ]; then
+						echo
+						echo "There are unneccessary disk devices for scsi id $id in /dev/io${ionode}"
+						echo "Would you like to cleanup those devices? (y/n)[y] \c"
+				                read ans
+                				if [ -z "$ans" ]; then
+                        				ans="Y"
+                				fi
+                				if [ $ans != "y" -a $ans != "Y" ]; then
+							echo
+							echo "Unused disk devices for scsi id $id left in /dev/io${ionode} directory."
+						else
+							rm -f /dev/io${ionode}/*rz${id}*
+                				fi
+					fi
+					filenames=/dev/io${ionode}/*rmt*${id}
+					ls $filenames > /dev/null 2>&1
+					if [ "$?" -eq 0 ]; then
+						echo
+						echo "There are unneccessary tape devices for scsi id $id in /dev/io${ionode}"
+						echo "Would you like to cleanup those devices? (y/n)[y] \c"
+				                read ans
+                				if [ -z "$ans" ]; then
+                        				ans="Y"
+                				fi
+                				if [ $ans != "y" -a $ans != "Y" ]; then
+							echo
+							echo "Unused tape devices for scsi id $id left in /dev/io${ionode} directory."
+						else
+							rm -f /dev/io${ionode}/*rmt*${id}
+                				fi
+					fi
+				    fi
+				fi
+			fi
+			if [ -d /dev/io${ionode}/ch${ch} ]; then
+				rm -f /dev/io${ionode}/ch${ch}/$passthru${id}
+				fn=/dev/io${ionode}/ch${ch}/*rz${id}[a,c-o]
+				ls $fn > /dev/null 2>&1
+				if [ "$?" -ne 0 ]; then
+					rm -f /dev/io${ionode}/ch${ch}/*rz${id}b
+				fi
+				filenames=/dev/io${ionode}/ch${ch}/*rz${id}[a-o]
+				ls $filenames > /dev/null 2>&1
+				if [ "$?" -eq 0 ]; then
+					echo
+					echo "There are unneccessary disk devices for scsi id $id in /dev/io${ionode}/ch${ch}"
+					echo "Would you like to cleanup those devices? (y/n)[y] \c"
+			                read ans
+               				if [ -z "$ans" ]; then
+                       				ans="Y"
+               				fi
+               				if [ $ans != "y" -a $ans != "Y" ]; then
+						echo
+						echo "Unused disk devices for scsi id $id left in /dev/io${ionode}/ch${ch} directory."
+					else
+						rm -f /dev/io${ionode}/ch${ch}/*rz${id}*
+               				fi
+				fi
+				filenames=/dev/io${ionode}/ch${ch}/*rmt*${id}
+				ls $filenames > /dev/null 2>&1
+				if [ "$?" -eq 0 ]; then
+					echo
+					echo "There are unneccessary tape devices for scsi id $id in /dev/io${ionode}/ch${ch}"
+					echo "Would you like to cleanup those devices? (y/n)[y] \c"
+			                read ans
+               				if [ -z "$ans" ]; then
+                       				ans="Y"
+               				fi
+               				if [ $ans != "y" -a $ans != "Y" ]; then
+						echo
+						echo "Unused tape devices for scsi id $id left in /dev/io${ionode}/ch${ch} directory."
+					else
+						rm -f /dev/io${ionode}/ch${ch}/*rmt*${id}
+               				fi
+				fi
+			fi
+		else
+			label=`/sbin/inquire /dev/io${ionode}/ch${ch}/$passthru${id}`
+			echo $label | grep "disk" > /dev/null 2>&1
+			if [ $? -eq 0 ]; then
+				echo "Making disk devices for id $id on node $node channel $ch..."
+				/dev/makedevnode $node $ch $disk${id} > /dev/null 2>&1
+				chmod 644 /dev/io${ionode}/ch${ch}/*rz${id}[a-o] > /dev/null 2>&1
+			else
+				echo
+				echo "No disks available on channel $ch scsi id $id"
+			fi
+		fi
+	    done
+	done
+fi
+
+done
+
+for node in $tapelist
+do
+
+echo
+foundit=`grep -c "^${node}$" /etc/nx/.badnodes`
+if [ $foundit -ne 0 ]
+then
+	echo "Warning: Skipping tapes for non-operational node $node"
+else
+	echo "Checking for tape devices on node $node..."
+	ionode=`mkdevtab $node`
+	for ch in $channel
+	do
+            for id in $tapeid
+            do
+		/dev/makedevnode $node $ch $passthru${id} > /dev/null 2>&1
+		chmod 644 /dev/io${ionode}/ch${ch}/$passthru${id} > /dev/null 2>&1
+		/sbin/inquire /dev/io${ionode}/ch${ch}/$passthru${id} > /dev/null 2>&1
+        	if [ "$?" -ne 0 ]; then
+			if [ $ionode -ge 0 ]; then
+				if [ -d /dev/io${ionode} ]; then
+				    if [ $ch -eq 0 ]; then
+					rm -f /dev/io${ionode}/$passthru${id}
+					filenames=/dev/io${ionode}/*rmt*${id}
+					ls $filenames > /dev/null 2>&1
+					if [ "$?" -eq 0 ]; then
+						echo
+						echo "There are unneccessary tape devices for scsi id $id in /dev/io${ionode}"
+						echo "Would you like to cleanup those devices? (y/n)[y] \c"
+				                read ans
+                				if [ -z "$ans" ]; then
+                        				ans="Y"
+                				fi
+                				if [ $ans != "y" -a $ans != "Y" ]; then
+							echo
+							echo "Unused tape devices for scsi id $id left in /dev/io${ionode} directory."
+						else
+							rm -f /dev/io${ionode}/*rmt*${id}
+                				fi
+					fi
+                                        fn=/dev/io${ionode}/*rz${id}[a,c-o]
+					ls $fn > /dev/null 2>&1
+                                        if [ "$?" -ne 0 ]; then
+                                                rm -f /dev/io${ionode}/*rz${id}b
+                                        fi
+					filenames=/dev/io${ionode}/*rz${id}[a-o]
+					ls $filenames > /dev/null 2>&1
+					if [ "$?" -eq 0 ]; then
+						echo
+						echo "There are unneccessary disk devices for scsi id $id in /dev/io${ionode}"
+						echo "Would you like to cleanup those devices? (y/n)[y] \c"
+				                read ans
+                				if [ -z "$ans" ]; then
+                        				ans="Y"
+                				fi
+                				if [ $ans != "y" -a $ans != "Y" ]; then
+							echo
+							echo "Unused disk devices for scsi id $id left in /dev/io${ionode} directory."
+						else
+							rm -f /dev/io${ionode}/*rz${id}[a-o]
+                				fi
+					fi
+				    fi
+				fi
+			fi
+			if [ -d /dev/io${ionode}/ch${ch} ]; then
+				rm -f /dev/io${ionode}/ch${ch}/$passthru${id}
+				filenames=/dev/io${ionode}/ch${ch}/*rmt*${id}
+				ls $filenames > /dev/null 2>&1
+				if [ "$?" -eq 0 ]; then
+					echo
+					echo "There are unneccessary tape devices for scsi id $id in /dev/io${ionode}/ch${ch}"
+					echo "Would you like to cleanup those devices? (y/n)[y] \c"
+			                read ans
+               				if [ -z "$ans" ]; then
+                       				ans="Y"
+               				fi
+               				if [ $ans != "y" -a $ans != "Y" ]; then
+						echo
+						echo "Unused tape devices for scsi id $id left in /dev/io${ionode}/ch${ch} directory."
+					else
+						rm -f /dev/io${ionode}/ch${ch}*rmt*${id}
+               				fi
+				fi
+				fn=/dev/io${ionode}/ch${ch}/*rz${id}[a,c-o]
+				ls $fn > /dev/null 2>&1
+				if [ "$?" -ne 0 ]; then
+					rm -f /dev/io${ionode}/ch${ch}/*rz${id}b
+				fi
+				filenames=/dev/io${ionode}/ch${ch}/*rz${id}[a-o]
+				ls $filenames > /dev/null 2>&1
+				if [ "$?" -eq 0 ]; then
+					echo
+					echo "There are unneccessary disk devices for scsi id $id in /dev/io${ionode}/ch${ch}"
+					echo "Would you like to cleanup those devices? (y/n)[y] \c"
+			                read ans
+               				if [ -z "$ans" ]; then
+                       				ans="Y"
+               				fi
+               				if [ $ans != "y" -a $ans != "Y" ]; then
+						echo
+						echo "Unused disk devices for scsi id $id left in /dev/io${ionode}/ch${ch} directory."
+					else
+						rm -f /dev/io${ionode}/ch${ch}/*rz${id}[a-o]
+               				fi
+				fi
+			fi
+		else
+			label=`/sbin/inquire /dev/io${ionode}/ch${ch}/$passthru${id}`
+			echo $label | grep "tape" > /dev/null 2>&1
+			if [ $? -eq 0 ]; then
+				echo "Making tape devices for id $id on node $node channel $ch..."
+				/dev/makedevnode $node $ch $tape${id} > /dev/null 2>&1
+				chmod 666 /dev/io${ionode}/ch${ch}/*rmt*${id} > /dev/null 2>&1
+			else
+				echo
+				echo "No tapes available on channel $ch scsi id $id"
+			fi
+		fi
+	    done
+	done
+fi
+
+done
+
+for node in $disklist
+do
+
+echo
+foundit=`grep -c "^${node}$" /etc/nx/.badnodes`
+if [ $foundit -ne 0 ]
+then
+        echo "Warning: Skipping disks for non-operational node $node"
+else
+       	echo "Checking for RAIDS on node $node..."
+	for ch in $channel
+	do
+		for id in $diskid
+		do
+       		 	/dev/checkraidlevel $node $ch $id
+		done
+	done
+fi
+done
+
+#
+# Special case for devices on channel 0
+# Move channel 0 devices to the io* directory
+#
+
+echo
+ch0_dirs=`find /dev/io* -type d -name "ch0" -print`
+for dir in $ch0_dirs
+do
+	cd ${dir}/..
+	parent=`pwd`
+	echo "Moving devices from $dir to $parent... \c"
+	mv -f ${dir}/* $parent
+	echo "removing $dir"
+	rm -rf ch0
+done

@@ -1,0 +1,2 @@
+        integer nmax, nxmax, nymax
+	PARAMETER (NMAX = 6000, NXMAX = 700, NYMAX = 700)

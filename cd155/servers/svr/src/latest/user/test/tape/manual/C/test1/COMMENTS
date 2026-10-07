@@ -1,0 +1,55 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test1" COMMENTS
+================
+
+******************* Step to run this test *******************************
+
+1. TO READ THE DATA WRITTEN BY "test2"
+
+	make -f makefile.man all2
+
+   TO READ THE DATA WRITTEN BY "test6"
+
+	make -f makefile.man all6
+
+2. if run all the script, type
+
+	test1.sh 
+
+    and the result will be on "test1.SRr0".  The log will be on "test1a.SLr0",
+    "test1b.SLr0" and "test1c.SLr0"
+
+
+
+3. if run only one script, type
+
+	test1a.sh 
+   or
+	test1b.sh
+   or 
+	test1c.sh
+
+    and the result will be on "test1a.SRr0", "test1b.SRr0" or 
+    "test1c.SRr0" accordingly.  
+    The log will be on "test1a.SLr0", "test1b.SLr0" or 
+    "test1c.SLr0" accordingly.
+
+
+    "test1a.sh" TAKES ~3 MINUTES TO RUN FOR READING "test2" DATA;
+    "test1b.sh" TAKES ~6 MINUTES TO RUN FOR READING "test2" DATA;
+    "test1c.sh" TAKES ~6 MINUTES TO RUN FOR READING "test2" DATA
+
+    "test1a.sh" TAKES ~2 MINUTES TO RUN FOR READING "test6" DATA;
+    "test1b.sh" TAKES ~4 MINUTES TO RUN FOR READING "test6" DATA;
+    "test1c.sh" TAKES ~5 MINUTES TO RUN FOR READING "test6" DATA
+

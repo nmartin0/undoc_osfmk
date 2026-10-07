@@ -1,0 +1,59 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+# Start Mach 3.0 services
+#
+
+PATH=/mach_servers:/sbin:/usr/sbin:/usr/bin
+export PATH
+
+case "$1" in
+'start')
+        set `who -r`
+        if [ $9 = "S" ]; then
+                  nohup snames > /var/adm/syslog/snames.log 2>&1&
+		  /sbin/waitfor netname
+                  nohup machid > /var/adm/syslog/machid.log 2>&1&
+                  nohup envmgr > /var/adm/syslog/envmgr.log 2>&1&
+		  /sbin/waitfor envmgr
+	          echo "Mach services started: snames machid envmgr."
+        fi
+        ;;
+'stop')
+	pid=`ps -e | grep envmgr | grep -v grep | sed -e 's/^  *//' -e 's/ .*//' | head -1`
+	if [ "X$pid" != "X" ]
+	then
+		/bin/kill $pid
+	fi
+	pid=`ps -e | grep machid | grep -v grep | sed -e 's/^  *//' -e 's/ .*//' | head -1`
+	if [ "X$pid" != "X" ]
+	then
+		/bin/kill $pid
+	fi
+	pid=`ps -e | grep snames | grep -v grep | sed -e 's/^  *//' -e 's/ .*//' | head -1`
+	if [ "X$pid" != "X" ]
+	then
+		kill $pid
+	fi
+	echo "envmgr, machid and snames stopped."
+	;;
+*)
+        echo "usage: $0 {start|stop}"
+        ;;
+esac

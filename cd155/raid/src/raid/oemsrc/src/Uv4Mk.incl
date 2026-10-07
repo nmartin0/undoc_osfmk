@@ -1,0 +1,28 @@
+# $Copyright
+# Copyright 1992, 1993, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+#CC		= /bin/cc
+CC		= icc -I../../../../include -I../../include \
+			-I../../../include -DPARAGON860 -DASCII 
+			# -DDEBUG_ON
+AR		= ar860
+LD		= ld860
+CFLAGS =
+#DEFS		= -DNO_IO -DIO_TEST -DRDAC_TESTWARE
+
+ACF		= acf
+# (name of acf program is system-dependent)
+
+SWITCHES	= -g
+LIBRARIES	= ../../lib/Uv4/libio.a
+
+COMPILE.c= $(CC) $(CFLAGS) $(CPPFLAGS)  -c
+.c.o:
+	$(COMPILE.c)  $<
+
+

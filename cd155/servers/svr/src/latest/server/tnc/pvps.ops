@@ -1,0 +1,682 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * Copyright (c) 1993-1995, Locus Computing Corporation
+ * All rights reserved
+ *
+ * HISTORY
+ * $Log: pvps.ops,v $
+ * Revision 1.10  1995/02/28  23:13:26  yazz
+ *  Reviewer: Chris Peak, John Litvin
+ *  Risk: Lo
+ *  Benefit or PTS #: #11366 C-0
+ *  Testing: EATs controlc, os_interfaces
+ *  Module(s): server/tnc/pvps.ops
+ * If a requested vproc send right comes back as MACH_PORT_DEAD, return
+ * an error, not success, to caller of PVPSOP_GET_VPROC_PORT().
+ *
+ * Revision 1.9  1995/02/01  21:46:09  bolsen
+ *  Reviewer(s): Jerry Toman
+ *  Risk: Medium (lots of files)
+ *  Module(s): Too many to list
+ *  Configurations built: STD, LITE, & RAMDISK
+ *
+ *  Added or Updated the Locus Copyright message.
+ *
+ * Revision 1.8  1994/11/18  20:43:35  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.7  1994/08/31  22:47:14  mtm
+ *    This commit is part of the R1_3 branch -> mainline collapse. This
+ *    action was approved by the R1.X meeting participants.
+ *
+ *    Reviewer:        None
+ *    Risk:            Something didn't get merged properly, or something
+ *                     left on the mainline that wasn't approved for RTI
+ *                     (this is VERY unlikely)
+ *    Benefit or PTS#: All R1.3 work can now proceed on the mainline and
+ *                     developers will not have to make sure their
+ *                     changes get onto two separate branches.
+ *    Testing:         R1_3 branch will be compared (diff'd) with the new
+ *                     main. (Various tags have been set incase we have to
+ *                     back up)
+ *    Modules:         Too numerous to list.
+ *
+ * Revision 1.5.2.1  1994/08/03  14:06:20  chrisp
+ * Remove changes for PTS-9688, tncgen skip facility.
+ * Modified Files: dvp_pvpsops.c gen_mig.sh pvps.ops
+ *
+ * Revision 1.5  1994/07/27  18:43:23  chrisp
+ * Implement a skip facility in tncgen. Without SLL (for LITE server),
+ * table_set is skipped.
+ *
+ *  Reviewer: yazz@locus.com
+ *  Risk: M
+ *  Benefit or PTS #: 9688
+ *  Testing: Built and run for STD and LITE servers
+ *  Module(s): dvp_pvpsops.c gen_mig.sh pvps.ops
+ *
+ * Revision 1.4  1994/07/27  16:44:45  johannes
+ * extended TNC definitions for rforkmulti()
+ *
+ *  Reviewer: Nandini
+ *  Risk: H
+ *  Benefit or PTS #: information for absolute exec path in core files
+ *  Testing: developer
+ *  Module(s): server/sys: user.h
+ *             server/bsd: kern_exec.c, kern_exit.c, kern_fork.c
+ *             server/tnc: pvps.ops, tnc.defs, rtask_server.c
+ *                         rtask_cli_pproc.c, rtask_cli_vproc.c
+ *                         rtask_svr_pproc.c, rtask_svr_vproc.c
+ *                         chkpnt_vproc.c
+ *             server/paracore: core.c
+ *
+ * Revision 1.3  1994/06/02  22:28:43  chrisp
+ * In dpvpop_reap(), perform PVPOP_RMV_PGRP_LIST() for zombie child
+ * only if child's pgrp leader is not its parent; return child pgid.
+ * In dvpop_wait(), analyze pgid returned for zombie child and call
+ * PVPOP_RMV_PGRP_LIST() if this is the parent pid.
+ *
+ * Support added for waitmulti() - viz: elder reporting and reap multi
+ * operation (refer to rtask_cli_vproc.c).
+ *
+ *  Reviewer: cfj
+ *  Risk: M
+ *  Benefit or PTS #: 6463
+ *  Testing:
+ *  Module(s): dpvproc.h dvp_pvpops.c dvp_vpops.c pvp.ops pvps.ops rtask.h
+ * 	    rtask_cli_vproc.c rtask_server.c rtask_svr_vproc.c
+ * 	    spanning_tree.c tnc_async.defs tnc_server_side.c
+ * 	    tnc_types.defs tnc_types.h tnc_types_gen.c
+ *
+ * Revision 1.2  1994/05/13  19:55:51  cfj
+ * Remove the #ifdef SLL around the table_set RPC so that
+ * we don't have a message id mismatch between LITE and
+ * HEAVY servers.
+ *
+ *  Reviewer:
+ *  Risk:
+ *  Benefit or PTS #:
+ *  Testing:
+ *  Module(s):
+ *
+ * Revision 1.1  1994/04/28  19:14:39  chrisp
+ * tncgen: autugenerated code now derived from *.ops definition files
+ * and processed by tncgen and associated gen*.sh scripts. #ifdefs
+ * introduced where previously they were ignored.
+ *
+ *  Reviewer: dleslie, cfj
+ *  Risk: M
+ *  Benefit or PTS #: 9188
+ *  Testing: Builds, builds, builds.
+ *  Module(s):
+ *      Modified Files:
+ *  	dpvproc.h dvp_pvpsops.c dvp_vpops.c rvp_pvpops.c
+ *  	rvp_pvpops_server.c rvp_pvpsops.c rvp_pvpsops_server.c
+ *  	tnc.defs tnc_mig.c
+ *      Added Files:
+ *  	gen_client_stubs.sh gen_mig.sh gen_migrate_wrappers.sh
+ *  	gen_server_stubs.sh pvp.ops pvps.ops tncgen.mk
+ *      Removed Files:
+ *  	dpvproc_struct.h makeTNCtables.sh
+ *
+ * $EndLog$
+ *
+ */
+
+/*
+ * This file defines the TNC private virtual process system operations.
+ * It is used as input to the tncgen script for automatic generation
+ * of *_gen* source files.
+ *
+ * The format of each operation definition is (loosely):
+ *	operation <op_name> [<op_attribute>]* {
+ *		parameter <parm_attribute><parm_rpc> <parm_type> <parm_name>
+ *		[parameter <parm_attribute><parm_rpc> <parm_type> <parm_name>]*
+ *		[escape <escape_type>
+ *			<escape_code>
+ *		escape_end]*
+ *	}
+ * where:
+ *	<op_name> ::= identifier
+ *	<op_attribute> ::= ASYNC | NOREPLY
+ *	<parm_attribute> ::= IN | OUT | INOUT
+ *	<parm_rpc> ::= _RPC_VAR_ARRAY |_RPC_VAR_ARRAY_OUT_OF_LINE | 
+ *		       _RPC_VAR_ARRAY_LENGTH
+ *	<parm_name> ::= identifier
+ *	<escape_type> ::= CLIENT_ENTRY | CLIENT_PRE-RPC | CLIENT_POST-RPC |
+ *			  SERVER_PRE-OP | SERVER_POST-OP
+ *	<escape_code> := <C-statement> 
+ *
+ * Operation attribute ASYNC requests generation of _SEND and _RECEIVE
+ * variant support for an operation. Attribute NOREPLY indicates that
+ * no reply message (and thus no return value) is expected.
+ *
+ * Parameter attributes IN, OUT and INOUT are self-explanatory.
+ *
+ * Parameter RPC attributes are concatenated to the parameter attribute.
+ * _RPC_VAR_ARRAY signals a variable length in-line array for which the
+ * following parameter must have attribute _RPC_VAR_ARRAY_LENGTH. This is
+ * required to assist MIG interface definitions in which the length parameter
+ * is implicit. _RPC_VAR_ARRAY_OUT_OF_LINE signals a variable array passed
+ * out-of-line (i.e. in virtual memory seperate from the message body).
+ *
+ * Escapes allow special-purpose code to be inserted into key points of
+ * RPC stubs. CLIENT_ENTRY is immediately on entry into a client RPC stub;
+ * CLIENT_PRE-RPC is immediately before the RPC call is issued in the client
+ * stub and CLIENT_POST-RPC is immediately on return from the RPC.
+ * SERVER_PRE-OP is immediately before calling the (local) operation on
+ * the server-side of the RPC and SERVER_POST-OP is immediately upon return
+ * from the operation.
+ *
+ * This file is pre-processed by the C pre-processor as a preliminary step
+ * in the generation process. Hence, C comments and conditional compilation
+ * directives (including macros) may be used.
+ */
+operation sigprocset {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN struct procset *ps	/* set of processes to be signalled */
+	parameter IN int signo		/* signal to be sent */
+	parameter IN int arg		/* argument (for SIGMIGRATE) */
+	parameter IN uid_t effuid	/* effective id of sending process */
+	parameter IN uid_t realuid	/* real id of sending process */
+	parameter IN pid_t pid		/* sender's pid id */
+	parameter IN pid_t sid		/* sender's session id */
+	parameter OUT int *nproc	/* number of processes signaled */
+	parameter IN int flag		/* can have VPROC_HAS_PRIV set */
+}
+operation procset_nice {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN struct procset *ps	/* set of processes changed/queried */
+	parameter INOUT int *nice	/* nice value */
+	parameter IN uid_t effuid	/* effective id of calling process */
+	parameter IN uid_t realuid	/* real id of calling process */
+	parameter IN int flag		/* VPROC_SET VPROC_GET, HAS_PRIV */
+}
+operation pid_from_task {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN task_t task	/* task port to which pid refers to */
+	parameter OUT pid_t *pid	/* pid of process using task */
+	parameter OUT_RPC_VAR_ARRAY command_t comm /* command name for pid */
+	parameter INOUT_RPC_VAR_ARRAY_LENGTH u_int *commlen /* length of comm */
+}
+operation table_size {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN int id		/* id of action to take */
+	parameter IN int index		/* table index (with subtable id) */
+	parameter OUT int *retval	/* returned value */
+	escape SERVER_PRE-OP
+		/*
+		 * This deals with uarea setup necessary for the table_size
+		 * pvpsop.
+		 */
+		start_rpvpsop_dummy_setup();
+		unix_master();
+	end_escape
+	escape SERVER_POST-OP
+		unix_release();
+		end_rpvpsop_dummy_setup();
+	end_escape
+}
+operation table_get {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN int id		/* id of action to take */
+	parameter IN int index		/* index into table */
+	parameter OUT_RPC_VAR_ARRAY_OUT_OF_LINE char_array *buffer
+					/* address of address of buffer used */
+	parameter INOUT_RPC_VAR_ARRAY_LENGTH u_int *bufferlen
+					/* buffer length */
+	parameter IN int nel		/* number of elements in buffer */
+	parameter IN u_int lel		/* length of each element in buffer */
+	parameter OUT int *retval	/* returned value */
+	/*
+	 * These escapes are special-case code to deal with
+	 * the out-of-line memory that is passed in and the uarea setup
+	 * that is necessary for the table_get() pvpsop.
+	 */
+	escape CLIENT_PRE-RPC
+		{
+			char *uaddr;
+			uaddr = *(buffer);
+	end_escape
+	escape CLIENT_POST-RPC
+			if (_rval == ESUCCESS) {
+				_rval = copyout(*(buffer), uaddr, *(bufferlen));
+				(void) vm_deallocate(mach_task_self(),
+						     (vm_address_t) *(buffer),
+						     *(bufferlen));
+			}
+			*(buffer) = uaddr;
+		}
+	end_escape
+	escape SERVER_PRE-OP
+		{
+			kern_return_t ret;
+			ret = vm_allocate(mach_task_self(),
+					  (vm_address_t *) buffer,
+					  (unsigned int) (nel * lel),
+					  TRUE);
+			if (ret != KERN_SUCCESS) {
+				*buffer = NULL;
+				*bufferlen = 0;
+				RET = EAGAIN;
+				return(KERN_SUCCESS);
+			}
+			start_rpvpsop_dummy_setup();
+			unix_master();
+	end_escape
+	escape SERVER_POST-OP
+			unix_release();
+			end_rpvpsop_dummy_setup();
+			if (_error != ESUCCESS) {
+				(void) vm_deallocate(mach_task_self(),
+						     (vm_address_t) *buffer,
+						     (unsigned int) (nel*lel));
+				*buffer = NULL;
+				*bufferlen = 0;
+			} else
+				*bufferlen = nel * lel;
+		}
+	end_escape
+}
+operation sethostid {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN long new_hostid	/* hostid to be set */
+}
+operation sethostid_multi ASYNC {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN long new_hostid
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE long_node_array_t full_node_array
+	parameter IN_RPC_VAR_ARRAY_LENGTH int full_array_count
+	parameter IN int full_array_index
+	parameter INOUT msg_handle_t *h /* message reference handle */
+	escape SERVER_POST-OP
+		/*
+		 * This escape frees the out-of-line memory containing the
+		 * node array in the sethostid_multi() pvpsop.
+		 */
+		(void) vm_deallocate(mach_task_self(),
+			     (vm_address_t) full_node_array,
+			     (unsigned int) (full_array_count*sizeof(node_t)));
+	end_escape
+}
+operation sethostname {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN hostname_t new_hostname	/* hostname to be set */
+	parameter IN u_int new_hostnamelen /* hostname length */
+}
+operation sethostname_multi ASYNC {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN hostname_t new_hostname	/* hostname to be set */
+	parameter IN u_int new_hostnamelen /* hostname length */
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE long_node_array_t full_node_array
+	parameter IN_RPC_VAR_ARRAY_LENGTH int full_array_count
+	parameter IN int full_array_index
+	parameter INOUT msg_handle_t *h /* message reference handle */
+	escape SERVER_POST-OP
+		/*
+		 * This escape frees the out-of-line memory containing the
+		 * node array in the sethostname_multi() pvpsop.
+		 */
+		(void) vm_deallocate(mach_task_self(),
+			     (vm_address_t) full_node_array,
+			     (unsigned int) (full_array_count*sizeof(node_t)));
+	end_escape
+}
+operation setdomainname {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN domainname_t new_domainname /* domainname to be set */
+	parameter IN u_int new_domainnamelen /* domainname length */
+}
+operation setdomainname_multi ASYNC {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN domainname_t new_domainname /* domainname to be set */
+	parameter IN u_int new_domainnamelen /* domainname length */
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE long_node_array_t full_node_array
+	parameter IN_RPC_VAR_ARRAY_LENGTH int full_array_count
+	parameter IN int full_array_index
+	parameter INOUT msg_handle_t *h /* message reference handle */
+	escape SERVER_POST-OP
+		/*
+		 * This escape frees the out-of-line memory containing the
+		 * node array in the setdomainname_multi() pvpsop.
+		 */
+		(void) vm_deallocate(mach_task_self(),
+			     (vm_address_t) full_node_array,
+			     (unsigned int) (full_array_count*sizeof(node_t)));
+	end_escape
+}
+#ifdef	ipsc860
+operation rpmoffset {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN u_int rpmlow
+	parameter IN u_int rpmhigh	/* Amount to skew RPM counter */
+}
+operation rpmoffset_multi ASYNC {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN u_int rpmlow
+	parameter IN u_int rpmhigh	/* Amount to skew RPM counter */
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE long_node_array_t full_node_array
+	parameter IN_RPC_VAR_ARRAY_LENGTH int full_array_count
+	parameter IN int full_array_index
+	parameter INOUT msg_handle_t *h /* message reference handle */
+	escape SERVER_POST-OP
+		/*
+		 * This escape frees the out-of-line memory containing the
+		 * node array in the rpmoffset_multi() pvpsop.
+		 */
+		(void) vm_deallocate(mach_task_self(),
+			     (vm_address_t) full_node_array,
+			     (unsigned int) (full_array_count*sizeof(node_t)));
+	end_escape
+}
+#endif
+operation settimezone {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN struct timezone tzp /* new timezone to set */
+}
+operation settimezone_multi ASYNC {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN struct timezone tzp /* new timezone to set */
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE long_node_array_t full_node_array
+	parameter IN_RPC_VAR_ARRAY_LENGTH int full_array_count
+	parameter IN int full_array_index
+	parameter INOUT msg_handle_t *h /* message reference handle */
+	escape SERVER_POST-OP
+		/*
+		 * This escape frees the out-of-line memory containing the
+		 * node array in the settimezone_multi() pvpsop.
+		 */
+		(void) vm_deallocate(mach_task_self(),
+			     (vm_address_t) full_node_array,
+			     (unsigned int) (full_array_count*sizeof(node_t)));
+	end_escape
+}
+operation remote_vproc_free {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN struct vproc *vp	/* vproc to be freed */
+}
+operation ctty_getattr {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN struct vproc *vs	/* session being queried */
+	parameter OUT pid_t *pgid	/* foreground pgrp of session */
+	parameter OUT dev_t *dev	/* major/minor of controlling tty */
+}
+operation release_ctty {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN struct vproc *vs	/* session with controlling tty */
+	parameter OUT pid_t *t_pgid	/* current foreground pgrp */
+	escape SERVER_PRE-OP
+		/*
+		 * These escapes deal with the uarea setup.
+		 */
+		start_rpvpsop_dummy_setup();
+	end_escape
+	escape SERVER_POST-OP
+		end_rpvpsop_dummy_setup();
+	end_escape
+}
+operation get_vproc_port {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN struct vproc *vp	/* vproc whose port is to be obtained */
+	parameter OUT mach_port_move_send_t *vproc_port /* vproc port */
+	escape SERVER_POST-OP
+		/*
+		 * This provides special-case code to deal with passing back
+		 * a vproc port send right. We need to bump our reference
+		 * (before the vproc is released) so that the extra right
+		 * is moved back to the reply message.
+		 */
+		if (_error == ESUCCESS) {
+			(void) mach_port_mod_refs(mach_task_self(),
+						  *vproc_port,
+						  MACH_PORT_RIGHT_SEND,
+						  +1);
+		} else
+			*vproc_port = MACH_PORT_NULL;
+	end_escape
+	escape CLIENT_POST-RPC
+		if (_rval == ESUCCESS && !MACH_PORT_VALID(*vproc_port)) {
+			*vproc_port = MACH_PORT_NULL;
+			_rval = ESRCH;	/* for MACH_PORT_DEAD & _NULL */
+		}
+	end_escape
+}
+operation reboot {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN int flags		/* indicates whether panicking */
+	parameter IN int options	/* options applying to reboot */
+	escape SERVER_PRE-OP
+		/*
+		 * These escapes deal with the uarea setup.
+		 */
+		start_rpvpsop_dummy_setup();
+	end_escape
+	escape SERVER_POST-OP
+		end_rpvpsop_dummy_setup();
+	end_escape
+}
+operation boot NO_REPLY {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN int flags		/* indicates whether panicking */
+	parameter IN int options	/* options applying to reboot */
+	escape SERVER_PRE-OP
+		/*
+		 * The boot() operation takes the master lock and since
+		 * it doesn't return this lock is not released.
+		 */
+		unix_master();
+	end_escape
+}
+operation remote_vproc_allocate {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN pid_t pid		/* pid to be allocated */
+}
+#ifdef	NX
+operation reset_boot_node_list {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE char_array nodelist
+					/* new nodelist */
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int nodelistlen /*nodelist length*/
+}
+
+operation table_set {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN int id		/* id of action to take */
+	parameter IN int index		/* index into table */
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE char_array buffer
+					/* address of buffer used */
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int bufferlen /* buffer length */
+	parameter IN int nel		/* numvber of elements in buffer */
+	parameter IN u_int lel		/* length of each element in buffer */
+	parameter OUT int *retval	/* returned value */
+	/*
+	 * These escapes deal with the special-case code for
+	 * the out-of-line memory that is passed in and the uarea setup
+	 * that is necessary for the table_set() pvpsop.
+	 */
+	escape SERVER_PRE-OP
+		start_rpvpsop_dummy_setup();
+		unix_master();
+	end_escape
+	escape SERVER_POST-OP
+		unix_release();
+		end_rpvpsop_dummy_setup();
+		(void) vm_deallocate(mach_task_self(),
+					(vm_address_t) buffer,
+					(unsigned int) (-nel*lel));
+	end_escape
+}
+
+#endif	/* NX */
+operation rforkmulti ASYNC {
+	parameter IN node_t node	/* destination node of op */
+	parameter IN int forkfamily	/* forkfamily() or rforkmulti() */
+	parameter IN_RPC_VAR_ARRAY multi_int_array_t np_array
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int np_array_len
+	parameter IN int np_idx
+	parameter IN int base_idx
+	parameter IN int proc_count
+	parameter OUT_RPC_VAR_ARRAY multi_int_array_t rval_array
+	parameter OUT_RPC_VAR_ARRAY_LENGTH u_int *rval_array_len
+	parameter IN mach_port_copy_send_t pp_vproc_port
+	parameter IN mach_port_copy_send_t pgrp_vproc_port
+	parameter IN mach_port_copy_send_t rdir_port
+	parameter IN mach_port_copy_send_t cdir_port
+	parameter IN task_t pp_task
+	parameter OUT_RPC_VAR_ARRAY multi_vproc_array_t ch_vproc_port_array
+	parameter OUT_RPC_VAR_ARRAY_LENGTH u_int *ch_vproc_port_array_len
+	parameter OUT_RPC_VAR_ARRAY multi_pid_array_t ch_pidp_array
+	parameter OUT_RPC_VAR_ARRAY_LENGTH u_int *ch_pidp_array_len
+	parameter IN_RPC_VAR_ARRAY multi_name_array_t fp_name
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int fp_name_len
+	parameter IN_RPC_VAR_ARRAY multi_port_array_t fp_right
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int fp_right_len
+	parameter IN_RPC_VAR_ARRAY thread_state_t ch_state
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int ch_state_len
+	parameter IN mach_port_name_t vproc_port_name
+	parameter IN mach_port_name_t cred_port_name
+	parameter IN rf_data_t rf_data
+	parameter IN_RPC_VAR_ARRAY mmap_struct_array_t mmap_structs
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int mmap_structs_len
+	parameter IN_RPC_VAR_ARRAY mmap_port_array_t mmap_pagers
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int mmap_pagers_len
+#ifdef	BUG_FIX_PTS_#_10149
+	parameter IN command_name_t command_name
+	parameter IN logname_t logname
+#ifdef	NX
+	parameter IN APPLINFO_T info
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE LP_MAP_T nodes
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int nodescnt
+#endif	/* NX */
+#ifdef	PARACORE
+	parameter IN mach_port_copy_send_t exec_rdir_port
+	parameter IN mach_port_copy_send_t exec_cdir_port
+	parameter IN_RPC_VAR_ARRAY path_name_t exec_prg_name
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int exec_prg_name_len
+#endif	/* PARACORE */
+#else	/* BUG_FIX_PTS_#_10149 */
+	parameter IN command_name_t c
+	parameter IN logname_t l
+#ifdef	NX
+	parameter IN APPLINFO_T i
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE LP_MAP_T n
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int n_c
+#endif	/* NX */
+#ifdef	PARACORE
+	parameter IN mach_port_copy_send_t x_r
+	parameter IN mach_port_copy_send_t x_c
+	parameter IN_RPC_VAR_ARRAY path_name_t p
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int p_l
+#endif	/* PARACORE */
+#endif	/* BUG_FIX_PTS_#_10149 */
+	parameter INOUT msg_handle_t *h /* message reference handle */
+	/*
+	 * The following escapes ensure that uarea/proc environment
+	 * is fully initialized during the operation.
+	 */
+	escape SERVER_PRE-OP
+		#include <sys/syscall.h>
+		extern  mach_port_t	this_node_tnc_server_port;
+		start_tncserver_op(this_node_tnc_server_port,
+#ifdef CHKPNT
+				   forkfamily? SYS_forkfamily : SYS_rforkmulti);
+#else
+				   SYS_rforkmulti);
+#endif
+	end_escape
+	escape SERVER_POST-OP
+		end_tncserver_op(_error);
+	end_escape
+}
+operation rforkmulti_long ASYNC
+	parameter IN node_t node	/* destination node of op */
+	parameter IN int forkfamily	/* forkfamily() or rforkmulti() */
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE long_multi_int_array_t np_array
+	parameter IN_RPC_VAR_ARRAY_LENGTH int np_array_len
+	parameter IN int np_idx
+	parameter IN int base_idx
+	parameter IN int proc__count
+	parameter OUT_RPC_VAR_ARRAY_OUT_OF_LINE long_multi_int_array_t *rval_array
+	parameter OUT_RPC_VAR_ARRAY_LENGTH u_int *rval_array_len
+	parameter IN mach_port_copy_send_t pp_vproc_port
+	parameter IN mach_port_copy_send_t pgrp_vproc_port
+	parameter IN mach_port_copy_send_t rdir_port
+	parameter IN mach_port_copy_send_t cdir_port
+	parameter IN task_t pp_task
+	parameter OUT_RPC_VAR_ARRAY_OUT_OF_LINE long_multi_vproc_array_t *ch_vproc_port_array
+	parameter OUT_RPC_VAR_ARRAY_LENGTH u_int *ch_vproc_port_array_len
+	parameter OUT_RPC_VAR_ARRAY_OUT_OF_LINE long_multi_pid_array_t *ch_pidp_array
+	parameter OUT_RPC_VAR_ARRAY_LENGTH u_int *ch_pidp_array_len
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE long_multi_name_array_t fp_name
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int fp_name_len
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE long_multi_port_array_t fp_right
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int fp_right_len
+	parameter IN_RPC_VAR_ARRAY thread_state_t ch_state
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int ch_state_len
+	parameter IN mach_port_name_t vproc_port_name
+	parameter IN mach_port_name_t cred_port_name
+	parameter IN rf_data_t rf_data
+	parameter IN_RPC_VAR_ARRAY mmap_struct_array_t mmap_structs
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int mmap_structs_len
+	parameter IN_RPC_VAR_ARRAY mmap_port_array_t mmap_pagers
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int mmap_pagers_len
+#ifdef	BUG_FIX_PTS_#_10149
+	parameter IN command_name_t command_name
+	parameter IN logname_t logname
+#ifdef	NX
+	parameter IN APPLINFO_T info
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE LP_MAP_T nodes
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int nodescnt
+#endif	/* NX */
+#ifdef	PARACORE
+	parameter IN mach_port_copy_send_t exec_rdir_port
+	parameter IN mach_port_copy_send_t exec_cdir_port
+	parameter IN_RPC_VAR_ARRAY path_name_t exec_prg_name
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int exec_prg_name_len
+#endif	/* PARACORE */
+#else	/* BUG_FIX_PTS_#_10149 */
+	parameter IN command_name_t c
+	parameter IN logname_t l
+#ifdef	NX
+	parameter IN APPLINFO_T i
+	parameter IN_RPC_VAR_ARRAY_OUT_OF_LINE LP_MAP_T n
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int n_c
+#endif	/* NX */
+#ifdef	PARACORE
+	parameter IN mach_port_copy_send_t x_r
+	parameter IN mach_port_copy_send_t x_c
+	parameter IN_RPC_VAR_ARRAY path_name_t p
+	parameter IN_RPC_VAR_ARRAY_LENGTH u_int p_l
+#endif	/* PARACORE */
+#endif	/* BUG_FIX_PTS_#_10149 */
+	parameter INOUT msg_handle_t *h /* message reference handle */
+	/*
+	 * The following escapes ensure that uarea/proc environment
+	 * is fully initialized during the operation.
+	 */
+	escape SERVER_PRE-OP
+		#include <sys/syscall.h>
+		extern  mach_port_t	this_node_tnc_server_port;
+		start_tncserver_op(this_node_tnc_server_port,
+#ifdef CHKPNT
+				   forkfamily? SYS_forkfamily : SYS_rforkmulti);
+#else
+				   SYS_rforkmulti);
+#endif
+	end_escape
+	escape SERVER_POST-OP
+		end_tncserver_op(_error);
+	end_escape
+}

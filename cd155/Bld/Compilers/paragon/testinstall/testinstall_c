@@ -1,0 +1,25 @@
+#!/bin/csh -f
+# 
+#  testinstall_c
+#  Release 5.0
+#
+#  This script verifies that the C application compiler has been installed
+#  properly.  
+#
+if (-e testinstall_c.out) then
+   rm -f testinstall_c.out
+endif
+icc -Mreloc_libs -lvect vect-test.c  -o vect_test_c >& testinstall_c.out
+if ($#argv < 1) then
+   ./vect_test_c >>& testinstall_c.out
+else
+   rcp vect_test_c $1\:/tmp
+   (rsh $1 /tmp/vect_test_c) >>& testinstall_c.out
+endif
+set x = `diff testinstall_c.out testinstall_c.exp | wc -l`
+if ($x == '0') then
+   echo "Installation successful"
+else
+   echo "testinstall_c.out differs from testinstall_c.exp"
+   echo "Installation unsuccessful"
+endif

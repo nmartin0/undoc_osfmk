@@ -1,0 +1,155 @@
+# 
+# $Copyright
+# Copyright 1991, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1992 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon 
+# the rights to redistribute these changes.
+#  
+# HISTORY
+# $Log: Makefile-subdirs,v $
+# Revision 1.6  1994/11/18  20:23:58  mtm
+# Copyright additions/changes
+#
+# Revision 1.5  1994/06/22  22:54:15  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: remove dependence on setting CPATH and LPATH to
+# 	local paths for Sun cross builds (PTS #9090)
+#  Testing: built microkernel on Sun and Mach X86 platforms
+#  Module(s):
+#         Makeconf
+#         Makefile
+#         Makefile-subdirs
+#         kernel/src/mig/Makefile
+#         kernel/src/config/Makefile
+#
+# Revision 1.4  1993/06/30  22:15:23  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:12:54  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.1.10.2  1993/04/22  18:11:47  dleslie
+# First R1_0 release
+#
+# Revision 2.3.4.1  92/03/28  10:00:59  jeffreyh
+# 	From MK71
+# 	[92/03/26  11:31:27  jeffreyh]
+# 
+# Revision 2.3  92/03/05  22:45:43  rpd
+# 	Fixed RECURSE_TEMPLATE.
+# 	Added TARGET_MACHINE to MVARIABLES.
+# 	[92/02/28            rpd]
+# 
+# Revision 2.2  92/02/20  13:35:07  elf
+# 	Changed the RECURSE_TEMPLATE rule to not ignore the return code
+# 	of the recursive make. This required wrapping the wh invocation
+# 	in a shell and feeding its output to wc.
+# 	[92/02/20            danner]
+# 
+# 	Changed RECURSE_TEMPLATE to print informative messages.
+# 	[92/02/16            rpd]
+# 
+# 	Created from Makefile-common.
+# 	[92/02/10            rpd]
+# 
+
+# Makefile-subdirs has definitions and rules useful to Makefiles
+# which must to recurse into subdirectories.  For example,
+#
+#	include ${MAKETOP}Makefile-common
+#	include ${MAKETOP}Makefile-subdirs
+#
+#	DIRS = foo bar baz
+#	RECURSE = ${RECURSE_TEMPLATE/RECURSE_DIRS/${DIRS}}
+#
+#	install ::
+#		+${RECURSE/RECURSE_TARGET/install}
+#
+#	clean ::
+#		+${RECURSE/RECURSE_TARGET/clean}
+#
+# The '+' is optional, but its presence will cause make
+# to execute the rule & recurse when doing a 'make -n'.
+
+
+# Recursive makes should pass down the following variables:
+
+MVARIABLES = INSTALLDIR FRELEASEDIR TRELEASEDIR PATH CPATH LPATH \
+	 TARGET_MACHINE cpu atsys
+LOC_MVARIABLES = HCPATH HLPATH INSTALLDIR FRELEASEDIR TRELEASEDIR PATH \
+	TARGET_MACHINE cpu atsys
+
+MFLAGS = ${MVARIABLES/.*/&="${&}"}
+LOC_MFLAGS = ${LOC_MVARIABLES/.*/&="${&}"}
+
+# For each subdirectory, we want to
+#	1) echo "cd dir && make target"
+#	2) cd dir && ${MAKE} ${MFLAGS} target
+#
+# However, we only want to visit subdirectories that contain a
+# Makefile.  Some directories might not be checked-out, or might not
+# have Makefiles at all.
+#
+# We use wh to check for a Makefile somewhere on MAKEPSD,
+# in case there is shadowing.
+#
+# Making this work is tricky.  We want make to stop
+# if there is an error, which means no "-", which means make
+# gives the shell "-e", which means "if" doesn't work, which
+# means we need "sh -c" to lose the "-e", which means we
+# need to check for failed submakes explicitly.
+#
+# We also create subdirectories in the object directory.
+# (So that they exist before we try to cd into them.)
+# We do this whether or not they contain a Makefile.
+# For example, if RECURSE_DIRS is "bin bin/foo bin/bar",
+# we must "mkdir bin" before "mkdir bin/foo" even if
+# bin/Makefile doesn't exist.
+
+RECURSE_TEMPLATE = @sh -c 'for dir in RECURSE_DIRS; do \
+	[ -d $$dir ] || mkdir $$dir; \
+	if ${WH} -p MAKEPSD $$dir/Makefile > /dev/null 2>&1; then \
+	  echo "cd $$dir && make RECURSE_TARGET"; \
+	  if (cd $$dir && ${MAKE} ${MFLAGS} RECURSE_TARGET); then continue; \
+	  else exit; fi \
+	fi; done; true'
+
+# Basically a copy of the above, with some changes to get HCPATH and
+# HLPATH set from here.
+LOCAL_RECURSE_TEMPLATE = @sh -c 'for dir in RECURSE_DIRS; do \
+	[ -d $$dir ] || mkdir $$dir; \
+	if ${WH} -p MAKEPSD $$dir/Makefile > /dev/null 2>&1; then \
+	  echo "cd $$dir && make RECURSE_TARGET"; \
+	  if (cd $$dir && ${MAKE} ${LOC_MFLAGS} RECURSE_TARGET); then continue; \
+	  else exit; fi \
+	fi; done; true'

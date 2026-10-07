@@ -1,0 +1,80 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994, 1995  Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+ * ALL RIGHTS RESERVED
+ */
+/* 
+ * Mach Operating System
+ * Copyright (c) 1989 Carnegie-Mellon University
+ * Copyright (c) 1988 Carnegie-Mellon University
+ * Copyright (c) 1987 Carnegie-Mellon University
+ * All rights reserved.  The CMU software License Agreement specifies
+ * the terms and conditions for use and redistribution.
+ */
+/*
+ * OSF/1 Release 1.0
+ */
+/*
+ * logstat.defs
+ *
+ * $Header: /afs/ssd/i860/CVS/cmds_libs/src/usr/sbin/netmsgserver/server/logstat.defs,v 1.2 1994/11/19 03:11:24 mtm Exp $
+ *
+ */
+
+/*
+ * Mig specifications for the log/statistics mechanism.
+ */
+
+
+subsystem logstat 1200;
+
+type port_t		= MSG_TYPE_PORT;
+type int		= MSG_TYPE_INTEGER_32;
+type stat_ptr_t		= ^array[] of MSG_TYPE_INTEGER_32;
+type debug_ptr_t	= ^array[] of MSG_TYPE_INTEGER_32;
+type param_ptr_t	= ^array[] of MSG_TYPE_INTEGER_32;
+type log_ptr_t		= ^array[] of (MSG_TYPE_UNSTRUCTURED, 32);
+
+type mem_class_ptr_t	= ^array[] of MSG_TYPE_INTEGER_32;
+type mem_nam_ptr_t	= ^array[] of MSG_TYPE_CHAR;
+type mem_bucket_ptr_t	= ^array[] of MSG_TYPE_INTEGER_32;
+
+import "ls_defs.h";
+
+
+routine ls_sendlog(server_port : port_t; out old_log_ptr: log_ptr_t; out cur_log_ptr: log_ptr_t);
+
+routine ls_resetlog(server_port : port_t);
+
+routine ls_writelog(server_port : port_t);
+
+routine ls_sendstat(server_port : port_t; out stat_ptr: stat_ptr_t);
+
+routine ls_resetstat(server_port : port_t);
+
+routine ls_senddebug(server_port : port_t; out debug_ptr: debug_ptr_t);
+
+routine ls_setdebug(server_port : port_t; in debug_ptr: debug_ptr_t);
+
+routine ls_sendparam(server_port : port_t; out param_ptr: param_ptr_t);
+
+routine ls_setparam(server_port : port_t; in param_ptr: param_ptr_t);
+
+routine ls_sendportstat(server_port : port_t; out port_stat_ptr : log_ptr_t);
+
+routine ls_mem_list(server_port : port_t;
+			out class_ptr : mem_class_ptr_t;
+			out nam_ptr : mem_nam_ptr_t;
+			out bucket_ptr : mem_bucket_ptr_t);

@@ -1,0 +1,185 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+/*
+ * @OSF_COPYRIGHT@
+ */
+/*
+ * HISTORY
+ * $Log: awk.def,v $
+# Revision 1.2  1994/11/19  01:31:25  mtm
+# Copyright additions/changes
+#
+# Revision 1.1  1993/06/18  14:46:24  shala
+# Files for new version of awk command.
+#
+ * Revision 2.6  90/12/06  14:09:49  devrcs
+ * 	Fixed up comment headers.
+ * 	[90/12/03  13:30:48  gm]
+ * 
+ * Revision 2.5  90/09/13  12:11:12  devrcs
+ * 	Cleanup, RCS header, NLS, MSG
+ * 	[90/08/29  09:56:08  knight]
+ * 
+ * Revision 2.4  90/07/05  23:25:28  devrcs
+ * 	Use AIX source
+ * 	[90/06/29  21:49:23  lehotsky]
+ * 
+ * $EndLog$
+ */
+
+/* 
+ * @(#)$RCSfile: awk.def,v $ $Revision: 1.2 $ (OSF) $Date: 1994/11/19 01:31:25 $
+ */
+
+#
+# IBM CONFIDENTIAL
+# Copyright International Business Machines Corp. 1989
+# Unpublished Work
+# All Rights Reserved
+# Licensed Material - Property of IBM
+#
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+# 
+# awk.def	1.1  com/cmd/edit/awk,3.1,9021 3/7/89 07:33:33
+
+#include <NLchar.h>
+
+#define	AWKFLOAT	double
+/* the above was a float */
+#define	xfree(a)	{ if(a!=NULL) yfree(a); a=NULL;}
+#define yfree free
+#ifdef	DEBUG
+#	define	dprintf	if(dbg)printf
+#else
+#	define	dprintf(x1, x2, x3, x4)
+#endif
+typedef	AWKFLOAT	awkfloat;
+
+extern char	**FS;
+extern char	**RS;
+extern char	**ORS;
+extern char	**OFS;
+extern char	**OFMT;
+extern awkfloat *NR;
+extern awkfloat *NF;
+extern char	**FILENAME;
+
+extern char	record[];
+extern int	dbg;
+extern int	lineno;
+extern int	errorflag;
+extern int	donefld;	/* 1 if record broken into fields */
+extern int	donerec;	/* 1 if record is valid (no fld has changed */
+
+typedef struct val {	/* general value during processing */
+	char	*nval;	/* name, for variables only */
+	char	*sval;	/* string value */
+	awkfloat	fval;	/* value as number */
+	unsigned	tval;	/* type info */
+	struct val	*nextval;	/* ptr to next if chained */
+} cell;
+extern cell *symtab[];
+cell	*setsymtab(), *lookup(), **makesymtab();
+
+extern cell	*recloc;	/* location of input record */
+extern cell	*nrloc;		/* NR */
+extern cell	*nfloc;		/* NF */
+
+#define	STR	01	/* string value is valid */
+#define	NUM	02	/* number value is valid */
+#define FLD	04	/* FLD means don't free string space */
+#define	CON	010	/* this is a constant */
+#define	ARR	020	/* this is an array */
+
+awkfloat setfval(), getfval();
+char	*setsval(), *getsval();
+char	*tostring(), *tokname(), *malloc();
+/* double	log(), sqrt(), exp(), atof(); */
+
+/* function types */
+#define	FLENGTH	1
+#define	FSQRT	2
+#define	FEXP	3
+#define	FLOG	4
+#define	FINT	5
+
+typedef struct {
+	char otype;
+	char osub;
+	cell *optr;
+} obj;
+
+#define BOTCH	1
+struct nd {
+	char ntype;
+	char subtype;
+	struct nd *nnext;
+	int nobj;
+	struct nd *narg[BOTCH];	/* C won't take a zero length array */
+};
+typedef struct nd node;
+extern node	*winner;
+extern node	*nullstat;
+
+/* otypes */
+#define OCELL	0
+#define OEXPR	1
+#define OBOOL	2
+#define OJUMP	3
+
+/* cell subtypes */
+#define CTEMP	4
+#define CNAME	3 
+#define CVAR	2
+#define CFLD	1
+#define CCON	0
+
+/* bool subtypes */
+#define BTRUE	1
+#define BFALSE	2
+
+/* jump subtypes */
+#define JEXIT	1
+#define JNEXT	2
+#define	JBREAK	3
+#define	JCONT	4
+
+/* node types */
+#define NVALUE	1
+#define NSTAT	2
+#define NEXPR	3
+#define NPA2	4
+
+extern obj	(*proctab[])();
+extern obj	true, false;
+extern int	pairstack[], paircnt;
+
+#define cantexec(n)	(n->ntype == NVALUE)
+#define notlegal(n)	(n <= FIRSTTOKEN || n >= LASTTOKEN || proctab[n-FIRSTTOKEN]== nullproc)
+#define isexpr(n)	(n->ntype == NEXPR)
+#define isjump(n)	(n.otype == OJUMP)
+#define isexit(n)	(n.otype == OJUMP && n.osub == JEXIT)
+#define	isbreak(n)	(n.otype == OJUMP && n.osub == JBREAK)
+#define	iscont(n)	(n.otype == OJUMP && n.osub == JCONT)
+#define	isnext(n)	(n.otype == OJUMP && n.osub == JNEXT)
+#define isstr(n)	(n.optr->tval & STR)
+#define istrue(n)	(n.otype == OBOOL && n.osub == BTRUE)
+#define istemp(n)	(n.otype == OCELL && n.osub == CTEMP)
+#define isfld(n)	(!donefld && n.osub==CFLD && n.otype==OCELL && n.optr->nval==0)
+#define isrec(n)	(donefld && n.osub==CFLD && n.otype==OCELL && n.optr->nval!=0)
+obj	nullproc();
+obj	relop();
+
+#define MAXSYM	50
+#define	HAT	NLCHARMAX	/* matches ^ in regular expr */

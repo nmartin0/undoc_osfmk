@@ -1,0 +1,29 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test14b" README
+==============
+
+Source: node.c errexit.c
+
+Desc:	test to add 2nd dataset after EOV mark
+
+Invoke:	load [0] node.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use tape TEST01 written by "test14a"
+	* log is on "test14b.SLr0"
+	* result is on "test14b.SRr0"
+	* tape will not be unloaded automatically
+
+Algo:	* tapealloc 
+	* tdsopen for write
+	* catch the negative return value from tdsopen
+	* tapedealloc

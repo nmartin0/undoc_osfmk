@@ -1,0 +1,137 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#
+#
+# HISTORY
+# $Log: files.sun3,v $
+# Revision 1.5  1994/11/18  20:28:33  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:19:51  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:17:43  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:17:35  dleslie
+# First R1_0 release
+#
+# Revision 2.4  91/05/14  15:30:35  mrt
+# 	Correcting copyright
+# 
+# Revision 2.3  91/02/04  18:30:51  mrt
+# 	Moved /device/subr_rmap.c here from files.
+# 	[91/02/04            mrt]
+# 
+# Revision 2.2.1.1  91/01/28  14:47:54  mrt
+# 	Changed to new copyright
+# 
+# Revision 2.2  90/08/27  21:47:53  dbg
+# 	Switch to new kernel debugger.
+# 	[90/07/23            dbg]
+# 
+# 	Remove heap_kmem.
+# 	[90/07/17            dbg]
+# 
+# 	Edited for MACH_KERNEL.
+# 	[89/03/22            dbg]
+# 
+# Revision 2.1  89/08/03  17:36:56  rwd
+# Created.
+# 
+# Revision 2.8  89/03/09  05:45:33  rpd
+# 	Added entries for sundev/sw.c, sundev/zs_sdlc.c.  Removed entry
+# 	for sundev/kg.c.  Moved entries for UNTESTED devices to the end.
+# 
+#	Sun debuggers.
+#
+
+./mbglue.s		standard
+device/subr_rmap.c	standard
+sun/conf.c		standard
+sun/cons.c		standard
+#sun/dkbad.c		standard
+sun/exec.c		standard
+sun/probe.c		standard
+#sun3/addupc.s		standard
+sun3/autoconf.c		standard device-driver
+sun3/clock.c		standard device-driver
+sun3/cswtch.s		standard
+sun3/db_disasm.c	optional mach_kdb
+sun3/db_interface.c	optional mach_kdb
+sun3/db_trace.c		optional mach_kdb
+sun3/locore.s		standard ordered
+#sun3/kprof.s		optional profiling-routine
+sun3/map.s		standard
+sun3/model_dep.c	standard
+sun3/movc.s		standard
+sun3/pcb.c		standard
+sun3/pmap.c		standard
+sun3/scb.s		standard
+sun3/setjmp.s		standard
+sun3/setroot.c		standard
+sun3/softint.c		standard
+sun3/sun_init.c		standard
+sun3/sun3_exception.c	optional mach_exception
+sun3/trap.c		standard
+sundev/bwtwo.c		optional bwtwo device-driver
+sundev/cgtwo.c		optional cgtwo device-driver
+sundev/cgfour.c		optional cgfour device-driver
+sundev/fbutil.c		standard device-driver
+sundev/fpa.c		optional fpa device-driver
+sundev/kbd.c		optional kb
+sundev/keytables.c	optional kb
+sundev/mb.c		standard device-driver |${FORCE_VOLATILE}
+#sundev/ms.c		optional ms 
+sundev/mti.c		optional mti device-driver |${FORCE_VOLATILE}
+sundev/sc.c		optional sc device-driver |${VOLATILE}${FORCE_VOLATILE}
+sundev/sc_conf.c	standard device-driver |${VOLATILE}${FORCE_VOLATILE}
+sundev/sd.c		optional sd device-driver |${VOLATILE}
+sundev/si.c		optional si device-driver |${VOLATILE}
+sundev/st.c		optional st device-driver |${VOLATILE}${FORCE_VOLATILE}
+sundev/vuid_queue.c	optional kb
+sundev/xt.c		optional xt device-driver |${FORCE_VOLATILE}
+sundev/xy.c		optional xy device-driver |${FORCE_VOLATILE}
+sundev/xy_conf.c	optional xy device-driver |${FORCE_VOLATILE}
+sundev/zs_asm.s		optional zs device-driver
+sundev/zs_async.c	optional zs device-driver |${VOLATILE}
+sundev/zs_common.c	optional zs device-driver |${VOLATILE}
+sundev/zs_proto.c	optional zs device-driver |${VOLATILE}
+sunif/if_ie.c		optional ie device-driver |${FORCE_VOLATILE}
+sunif/if_le.c		optional le device-driver |${VOLATILE}
+sunif/if_subr.c		optional ie device-driver
+sunif/if_subr.c		optional le device-driver
+

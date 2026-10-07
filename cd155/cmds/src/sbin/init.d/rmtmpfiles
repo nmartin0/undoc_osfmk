@@ -1,0 +1,40 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+#
+# Cleanup any temporary files
+#
+set `who -r`
+if [ $9 != "S" ]
+then
+        exit
+fi
+
+echo "Clearing temporary files"
+(cd /tmp && find . -depth \( \( -type f -o -type s -o -type c -o -type b \) -atime +3 -exec rm -f {} \; \) -o \( -type d ! -name '.' -exec rmdir {} \; \) ) > /dev/null 2>&1
+(cd /var/tmp && find . -depth \( \( -type f -o -type s -o -type c -o -type b \) -atime +3 -exec rm -f {} \; \) -o \( -type d ! -name '.' -exec rmdir {} \; \) ) > /dev/null 2>&1
+
+chmod 1777 /tmp /var/tmp
+
+#
+# Unlock ptys
+#
+echo "Unlocking ptys"
+chmod 666 /dev/tty[pqrst]*
+

@@ -1,0 +1,90 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+/*
+ * @OSF_FREE_COPYRIGHT@
+ */
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991,1990,1989 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS 
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie the
+ * rights to redistribute these changes.
+ */
+/*
+ * HISTORY
+ * $Log: service.defs,v $
+# Revision 1.2  1994/11/19  02:43:09  mtm
+# Copyright additions/changes
+#
+# Revision 1.1  1993/04/19  20:47:00  stans
+# Initial revision
+#
+ * Revision 1.2  1992/05/12  14:58:10  devrcs
+ * 	Created for OSF/1 MK
+ * 	[1992/05/04  22:08:24  condict]
+ *
+ * Revision 2.2  92/01/22  23:16:45  rpd
+ * 	Moved to lib/libservice/.
+ * 
+ * Revision 2.3  91/08/29  15:50:52  rpd
+ * 	Added service_waitfor.
+ * 	[91/08/23            rpd]
+ * 
+ * Revision 2.2  91/03/27  15:41:40  mrt
+ * 	First checkin
+ * 
+ * $EndLog$
+ */
+
+/*
+ *	File: 	service.defs
+ *	Author:	Michael Young, Carnegie Mellon University
+ *	Date:	1988
+ *
+ *	Service server, creates and distributes ports for the
+ *	Netnameserver, envmgr_server and itself.
+ *	Installed as /mach_servers/mach_init.
+ */
+
+subsystem service 400;
+#include <mach/std_types.defs>
+
+ServerPrefix do_;
+
+skip;	/* old service_checkin */
+
+routine service_checkin(
+		service_request	: mach_port_t;
+		service_desired	: mach_port_t;
+	out	service_granted	: mach_port_move_receive_t);
+
+routine service_waitfor(
+		service_request : mach_port_t;
+		service_desired : mach_port_t);

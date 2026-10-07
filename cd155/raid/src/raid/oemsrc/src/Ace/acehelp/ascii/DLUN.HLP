@@ -1,0 +1,81 @@
+     EXPLANATION OF OPTION
+ 
+     Use the "Delete" logical unit option to delete a logical unit to 
+     complete one of the following tasks:
+ 
+          - Changing the RAID level of a logical unit
+          - Changing the drives in a logical unit
+          - Deleting a drive from the array.
+ 
+     If you are deleting a factory-configured logical unit, FIRST 
+     determine the size of one drive in your array subsystem (or 
+     integrated array).  You will need this information when you 
+     create a logical unit or modify logical unit parameters. See 
+     the User Guide for more information.
+ 
+     CAUTION: Copy the data on a logical unit to back-up media 
+              file-by-file BEFORE deleting the logical unit.  
+              Once the logical unit is deleted, you can NOT access 
+              the logical unit - the data is lost.
+ 
+ 
+                                (CONTINUED)
+     IMPORTANT NOTE:  You must always have a LUN 0 to access ANY 
+		      logical unit.  This means if you delete LUN 0, 
+		      you must recreate a LUN 0 before quitting ace.
+ 
+     NOTE:  The procedures for changing the RAID level or drive 
+            grouping include a number of OS tasks. 
+
+
+
+ 
+     PROCEDURE -- DELETING A LOGICAL UNIT 
+ 
+     1.   Back-up the data on the logical unit you want to delete 
+          by copying it file-by-file to the back-up media (if 
+          necessary).
+ 
+     2.   Select the desired logical unit with the arrow keys.  If you 
+          plan to delete LUN 0, select LUN 0 NOW.
+
+ 
+     3.   Press "d" to delete the logical unit.
+                                (CONTINUED)
+     4.   Press "c" to confirm that you want to continue with the 
+          logical unit deletion, or press "q" to quit the deletion.
+ 
+      Are you changing the RAID level or drive grouping for the
+      logical unit, AND deleted LUN 0?
+ 
+       YES
+       Create LUN 0 NOW, then go to step 6. -->
+ 
+       NO 
+       Go to step 5. -->
+ 
+     5.   Repeat steps 3 - 4 until you have deleted all the logical 
+          units you want to delete.
+ 
+     6.   Press "q" to quit ace.
+ 
+     7.   Run disklabel and newfs.
+ 
+          This will take some time.
+ 
+                                (CONTINUED)
+      Are you changing the RAID level or drive grouping for the
+      logical unit, AND deleted LUN 0?
+ 
+       YES
+       Go to step 5, and complete the procedure. -->
+ 
+       NO 
+       Go to step 8. -->
+ 
+     8.   Delete the drive you want to delete, or recreate the logical
+          unit with the new RAID level or drive grouping.
+
+
+
+ 

@@ -1,0 +1,85 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994, 1995  Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+ * ALL RIGHTS RESERVED
+ */
+/*
+ * OSF/1 Release 1.0
+ */
+/*
+ * Copyright (c) 1983 Regents of the University of California.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the above copyright notice and this paragraph are
+ * duplicated in all such forms and that any documentation,
+ * advertising materials, and other materials related to such
+ * distribution and use acknowledge that the software was developed
+ * by the University of California, Berkeley.  The name of the
+ * University may not be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+ * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ */
+
+#ifndef lint
+char copyright[] =
+"@(#) Copyright (c) 1983 Regents of the University of California.\n\
+ All rights reserved.\n";
+#endif /* not lint */
+
+#ifndef lint
+static char sccsid[] = "@(#)necf.c	5.4 (Berkeley) 6/30/88";
+#endif /* not lint */
+
+#include <stdio.h>
+#include <sgtty.h>
+
+#define PAGESIZE	66
+
+main()
+{
+	extern char *rindex();
+	char line[256];
+	register char c, *cp;
+	register lnumber;
+
+#ifdef SHEETFEEDER
+	printf("\033=\033\033\033O\f");
+#else
+	printf("\033=");
+#endif
+	lnumber = 0;
+	while (fgets(line, sizeof(line), stdin) != NULL) {
+#ifdef SHEETFEEDER
+		if (lnumber == PAGESIZE-1) {
+			putchar('\f');
+			lnumber = 0;
+		}
+		if (lnumber >= 2) {
+#endif
+#ifdef TTY
+			if ((cp = rindex(line, '\n')) != NULL)
+				*cp = '\r';
+#endif
+			printf("%s", line);
+#ifdef SHEETFEEDER
+		}
+		lnumber++;
+#endif
+	}
+	fflush (stdout);
+}

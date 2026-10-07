@@ -1,0 +1,282 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+/*
+ * @OSF_COPYRIGHT@
+ */
+/*
+ * HISTORY
+ * $Log: math-hdr,v $
+# Revision 1.3  1994/11/18  21:10:24  mtm
+# Copyright additions/changes
+#
+# Revision 1.2  1992/11/30  23:15:51  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:58:40  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 4.1  1992/11/04  01:17:11  cfj
+# Bump major revision number.
+#
+# Revision 1.1  1992/07/20  16:19:46  nandy
+# Initial revision
+#
+# Revision 1.3  92/04/13  14:37:27  stans
+# "OSF-distribution-ad8.5.2"
+# 
+ * Revision 1.3  90/10/07  20:31:16  devrcs
+ * 	Added EndLog Marker.
+ * 	[90/09/28  20:51:04  gm]
+ * 
+ * Revision 1.2  90/08/24  13:53:06  devrcs
+ * 	Fixed up comment leader and history section.
+ * 	[90/08/18  10:06:21  gm]
+ * 
+ * 	Moved up to usr/include, and removed machine-dependent values which
+ * 	will remain in usr/include/${MACHINE}/math.h
+ * 
+ * 	Also cure bug 656 - viz. fmod, gamma and isnan not declared in math.h
+ * 	[90/08/16  21:58:43  lehotsky]
+ * 
+ * Revision 1.5  90/04/27  23:06:02  devrcs
+ * 	Updated to latest AIX code.
+ * 	[90/04/16  13:46:05  tom]
+ * 
+ * Revision 1.4  90/03/13  21:20:41  mbrown
+ * 	AIX merge first cut.
+ * 	[90/02/13  17:14:39  tom]
+ * 
+ * Revision 1.3  90/01/02  19:15:26  gm
+ * 	Fixes for first snapshot.
+ * 
+ * Revision 1.2  89/12/26  10:08:17  gm
+ * 	Current version from CMU.
+ * 	[89/12/23            gm]
+ * 
+ * 	Added Multimax math.h declarations.  Corrected declaration
+ * 	of complex.
+ * 	[89/08/08  13:27:51  mbj]
+ * 
+ * 	Added function prototype declarations.
+ * 	[89/06/30  11:57:32  bww]
+ * 
+ * $EndLog$
+ */
+/* @(#)math.h   1.25  com/inc,3.1,9013 3/13/90 11:37:37 */
+/*
+ * COMPONENT_NAME: (math.h) math header file
+ *
+ * ORIGINS: 27
+ *
+ * (C) COPYRIGHT International Business Machines Corp. 1985, 1988, 1989
+ * All Rights Reserved
+ * Licensed Materials - Property of IBM
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ */
+
+#ifndef  _MATH_H_
+#define  _MATH_H_
+#include <standards.h>
+
+/*
+ *      The ANSI standard requires that certain values be in math.h.
+ *      It also requires that if _ANSI_C_SOURCE is defined then ONLY these
+ *      values are present.
+ *
+ *      This header includes all the ANSI required entries. In addition
+ *      other entries for the XIX system are included.
+ *
+ */
+
+/*
+ *      ANSI required entries in math.h
+ *
+ */
+#ifdef _ANSI_C_SOURCE
+
+#ifdef _NO_PROTO
+
+  double acos();
+  double asin();
+  double atan();
+  double atan2();
+  double ceil();
+  double cos();
+  double cosh();
+  double exp();
+  double fabs();
+  double floor();
+  double fmod();
+  double frexp();
+  double ldexp();
+  double log();
+  double log10();
+  double modf();
+  double pow();
+  double sin();
+  double sinh();
+  double sqrt();
+  double tan();
+  double tanh();
+
+#else  /*_NO_PROTO */			/* Use ANSI C required prototyping */
+
+  double acos(double );
+  double asin(double );
+  double atan(double );
+  double atan2(double ,double );
+  double ceil(double );
+  double cos(double );
+  double cosh(double );
+  double exp(double );
+  double fabs(double );
+  double floor(double );
+  double fmod(double , double );
+  double frexp(double , int *);
+  double ldexp(double , int );
+  double log(double );
+  double log10(double );
+  double modf(double , double *);
+  double pow(double , double );
+  double sin(double );
+  double sinh(double );
+  double sqrt(double );
+  double tan(double );
+  double tanh(double );
+
+#endif /*_NO_PROTO */
+#endif /*_ANSI_C_SOURCE */
+
+/*
+ *
+ * The following function prototypes define functions available in the
+ * XIX system but not required by the ANSI standard. They will not be
+ * included in _ANSI_C_SOURCE is defined (strict ANSI conformance).
+ *
+ */
+
+#ifdef _XOPEN_SOURCE
+
+extern int signgam;
+
+
+#ifdef _NO_PROTO
+     double   erf();
+     double   erfc();
+     double   gamma();
+     double   hypot();
+     int      isnan();
+     double   j0();
+     double   j1();
+     double   jn();
+     double   lgamma();
+     double   y0();
+     double   y1();
+     double   yn();
+
+#else
+     double   erf(double );
+     double   erfc(double );
+     double   gamma(double );
+     double   hypot(double ,double );
+     int      isnan(double );
+     double   j0(double );
+     double   j1(double );
+     double   jn(int n, double );
+     double   lgamma(double );
+     double   y0(double );
+     double   y1(double );
+     double   yn(int , double );
+
+#endif /* _NO_PROTO */
+
+#endif /* _XOPEN_SOURCE */
+
+#ifdef _OSF_SOURCE
+
+#include <stdlib.h>
+
+#ifdef _NO_PROTO
+
+     double   acosh();
+     double   asinh();
+     double   atanh();
+     double   cabs();
+     double   cbrt();
+     double   copysign ();
+     double   drem();
+     double   expm1();
+     double   log1p();
+     double   logb();
+     double   rint();
+     double   scalb();
+     int      finite();
+
+#else /* _NO_PROTO */			/* Use ANSI C required prototyping */
+
+     typedef struct { double r, i; } complex;
+
+     double   acosh(double );
+     double   asinh(double );
+     double   atanh(double );
+     double   cabs(complex);
+     double   cbrt(double );
+     double   copysign (double , double );
+     double   drem(double , double );
+     double   expm1(double );
+     double   log1p(double );
+     double   logb();
+     double   rint(double );
+     double   scalb(double , int );
+     int      finite();
+
+
+#endif /* _NO_PROTO */
+
+#define _ABS(x) ((x) < 0 ? -(x) : (x))
+#define _REDUCE(TYPE, X, XN, C1, C2)    { \
+        double x1 = (double)(TYPE)X, x2 = X - x1; \
+        X = x1 - (XN) * (C1); X += x2; X -= (XN) * (C2); }
+#define _POLY1(x, c)    ((c)[0] * (x) + (c)[1])
+#define _POLY2(x, c)    (_POLY1((x), (c)) * (x) + (c)[2])
+#define _POLY3(x, c)    (_POLY2((x), (c)) * (x) + (c)[3])
+#define _POLY4(x, c)    (_POLY3((x), (c)) * (x) + (c)[4])
+#define _POLY5(x, c)    (_POLY4((x), (c)) * (x) + (c)[5])
+#define _POLY6(x, c)    (_POLY5((x), (c)) * (x) + (c)[6])
+#define _POLY7(x, c)    (_POLY6((x), (c)) * (x) + (c)[7])
+#define _POLY8(x, c)    (_POLY7((x), (c)) * (x) + (c)[8])
+#define _POLY9(x, c)    (_POLY8((x), (c)) * (x) + (c)[9])
+
+
+struct exception {
+	int type;
+	char *name;
+	double arg1;
+	double arg2;
+	double retval;
+};
+
+#define 	DOMAIN		01
+#define		SING		02
+#define		OVERFLOW	03
+#define		UNDERFLOW	04
+#define		TLOSS		05
+#define		PLOSS		06
+
+#endif /* _OSF_SOURCE */
+
+/* N.B.  This FILE must be catenated with a machine-dependent file  ${MACHINE}/math.h
+   with ends with #endif for _MATH_H_ feature-test
+*/
+

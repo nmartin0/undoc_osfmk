@@ -1,0 +1,64 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1992, Intel Corporation.
+# ALL RIGHTS RESERVED
+#
+#
+# -tile is now controlled through the allocator configuration file
+# in /etc/nx/allocator.config. Control of MACS is also through this
+# file. 
+# The variables are (THEY MUST BE UPPER CASE!):
+#	SPACE_SHARE=<0,1>	1 ==> Space share machine (same as -tile)
+#				0 ==> Allow gang scheduling (no -tile)
+#				The absence of this variable is the
+#				same as setting it to 0
+#	USE_MACS=<0,1>		1 ==> MACS is required
+#				0 ==> MACS is not required.
+#				Again the absence of this variable 
+#				is the same as setting it to 0.
+
+
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+
+case "$1" in
+'start')
+        set `who -r`
+        if [ $9 = "S" ]; then
+		  cp /etc/nx/allocator.log /etc/nx/allocator.log.last > /dev/null 2>&1
+		  nohup /usr/sbin/allocator > /etc/nx/allocator.log 2>&1&
+		  sleep 5
+                  pid=`/bin/ps -e | grep /usr/sbin/allocator | grep -v grep | sed -e 's/^  *//' -e 's/ .*//' | head -1`
+                  if [ "X$pid" = "X" ]
+                  then
+                        echo "Cannot provide Partition services."
+                        echo "Please check /etc/nx/allocator.log file."
+                  else
+                        echo "Partition services provided."
+                  fi
+
+        fi
+        ;;
+'stop')
+	pid=`/bin/ps -e | grep /usr/sbin/allocator | grep -v grep | sed -e 's/^  *//' -e 's/ .*//' `
+	if [ "X$pid" != "X" ]
+	then
+		/bin/kill -9 $pid > /dev/null 2>&1
+	fi
+	;;
+*)
+        echo "usage: $0 {start|stop}"
+        ;;
+esac
+

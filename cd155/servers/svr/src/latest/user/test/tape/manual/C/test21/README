@@ -1,0 +1,37 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test21" README
+===============
+
+Source: node.c errexit.c
+
+Desc:	"node.c" tests the reading of 31 empty datasets in random order;
+
+Invoke:	load [0] node.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use tape that is created by "test22"
+	* "test21.sh" calls "node.rx" 
+	* log is on "test21.SLr0" 
+	* result is on "test21.SRr0" 
+	* tape will not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+
+Algo:   * read valid datasets in random order
+	* read datasets with invalid setting to verify to have read error
+	* read datasets with wrong dataset seqeunce numbers to verify error    
+	* the total number of empty datasets is 31
+	* JMAX = 2 and IMAX = 101
+	  UEXITRET = 1 (value to return when user exit is called) 
+ 	  VERIFY = 1   (set verification to TRUE so that the dataset being
+			read is verified)
+	  ZEROREAD = 1 (set to check the length of empty dataset to be zero)	
+

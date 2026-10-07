@@ -1,0 +1,81 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to determine what help is available in the 
+     drive window and how to quit in ace.
+ 
+     NOTE:  A procedure to access help about the options in the 
+            drive window is included in the help screens following 
+            the explanation of this option.
+ 
+     ABOUT THE HELP
+ 
+     Help information is provided for each option in the drive window.  
+     This help may include the following information:
+ 
+          - An explanation of the option
+          - Examples
+          - Procedures
+          - References for more information
+ 
+     Remember, see the User Guide for more information about the 
+     option.
+                                (CONTINUED)
+     PROCEDURE -- ACCESSING HELP IN THE LOGICAL UNIT WINDOW
+ 
+     1.   Press "h" to access help for the options in the logical unit
+          window.
+ 
+     2.   Press a key corresponding to one of the options in the
+          help menu.  For example, press "c" for information
+          about creating a logical unit.
+ 
+ 
+     ABOUT UPDATING/REFRESHING ACE
+ 
+     To update/refresh the Array Configuration Editor, press <U> at 
+     any time.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     ABOUT QUITTING IN ACE
+ 
+     To quit operations while using the Array Configuration Editor, 
+     press the "q" key.  You may quit the following:
+ 
+          - "Popboxes" (messages displayed in boxes)
+          - An operation in either the drive or drive window
+          - The "Help" menu
+          - A "Help" option
+ 
+     Note that once you actually initiate an operation, you can NOT 
+     quit the operation by pressing the "q" key.  For example, once 
+     you press "d" to delete a drive, the array controller deletes the 
+     drive you specified.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     Also note that the Array Configuration Editor may display a 
+     popbox with the option to continue or quit an operation before it 
+     actually initiates the operation.  This gives you an opportunity 
+     to reconsider, before initiating the operation.  For example, 
+     after you press "f" to fail a drive, the following popbox is 
+     displayed:
+ 
+          +============= < Information > ==========+
+          |                                        |
+          | If you fail a drive, you may lose data |
+          | redundancy.                            |
+          |                                        |
+          | Press 'c' to continue,                 |
+          | or press 'q' to quit.                  |
+          +========================================+

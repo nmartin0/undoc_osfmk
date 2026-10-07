@@ -1,0 +1,248 @@
+# 
+# $Copyright
+# Copyright 1991, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1992 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon 
+# the rights to redistribute these changes.
+#  
+# HISTORY
+# $Log: Makeconf,v $
+# Revision 1.12  1994/11/18  20:23:49  mtm
+# Copyright additions/changes
+#
+# Revision 1.11  1994/07/07  20:12:25  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: changed the way INSTALLDIR, I860_HCPATH, and I860_LPATH
+# 	variables are set so that builds in sandbox directories containing
+# 	the '+' character (like 'mk+dleslie') will work.
+#  Testing: built on Sun and Mach 486 boxes
+#  Module(s): Makeconf
+#
+# Revision 1.10  1994/06/22  22:53:55  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: remove dependence on setting CPATH and LPATH to
+# 	local paths for Sun cross builds (PTS #9090)
+#  Testing: built microkernel on Sun and Mach X86 platforms
+#  Module(s):
+#         Makeconf
+#         Makefile
+#         Makefile-subdirs
+#         kernel/src/mig/Makefile
+#         kernel/src/config/Makefile
+#
+# Revision 1.9  1994/06/15  19:36:30  lenb
+#         Change default kernel config from MCMSG to ASMP (9830)
+#
+# Revision 1.8  1994/06/07  19:05:39  dleslie
+#  Reviewer: Frank Berry
+#  Risk: low
+#  Benefit or PTS #: Fix 9748 -- need to be able to compile ANSI C headers
+# 	to build genassym on the Suns.  Added a new variable GENASSYM_CC,
+# 	set to a build platform dependent value, to compile genassym with.
+#  Testing: built genassym on Sun and Mach 486
+#  Module(s): Makeconf, kernel/conf/Makefile.template
+#
+# Revision 1.7  1994/04/13  18:37:00  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: allows instrumenting of copying of header files to
+# 	the release tree, so that we can later determine where all the
+# 	headers built in the cmds usr/include build actually come from.
+#  Testing: tested with instrumentation on and off
+#  Module(s): Makeconf, Makefile-common
+#
+# Revision 1.6  1993/12/01  18:27:00  dleslie
+#  Reviewer:none
+#  Risk: low
+#  Benefit or PTS #: export CONFIG and I860_CONFIG so a "make CONFIG=foo"
+# 	at the top level will correctly pass it down to the kernel level
+#  Testing: tested on Sun with 'make -n'
+#  Module(s): Makeconf
+#
+# Revision 1.5  1993/10/25  16:56:48  dleslie
+# Changed hardwired 'mk' path component to $SBOX,  which defaults to 'mk', but
+# is set to the value of $SRCTOP (current working directory) by running
+# SetupKernel.  Thus you can now build in a directory named something other
+# than 'mk' simply by using cvs checkout then running SetupKernel.
+#
+# Revision 1.4  1993/10/11  16:35:51  dleslie
+# Many changes for more portable and generic builds
+#
+# Revision 1.7  1993/07/12  20:09:32  dleslie
+# Remove stuff specific to Terry's sandbox
+#
+# Revision 1.5  1993/06/30  22:15:05  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.4  1993/04/27  20:12:43  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.6.1  1993/03/23  19:51:07  dleslie
+# Sources for T9 build
+#
+# Revision 2.1.2.2  92/04/08  15:42:31  jeffreyh
+# 	Export HCPATH
+# 	[92/04/06            jeffreyh]
+# 
+# Revision 2.1.2.1  92/03/28  09:58:52  jeffreyh
+# 	Update AT386 to use reflect scsi disk changes in MASTER.i386
+# 	[92/03/27            jeffreyh]
+# 	Added I860_CONFIG and I386iPSC_CONFIG for xmm.i860 script
+# 	Added HLPATH and HCPATH as a host LPATH and CPATH
+# 	to use when building genassm and other programs that run 
+# 	on a host other then target
+# 	[92/03/10            jeffreyh]
+# 
+# Revision 2.2  92/01/23  15:19:26  rpd
+# 	Created.
+# 	[92/01/14            rpd]
+# 
+
+# Cross-compilation support:
+ATSYS=${ATSYS?${ATSYS}:i860_mach}
+atsys=${ATSYS}
+
+TARGET_MACHINE=${TARGET_MACHINE?${TARGET_MACHINE}:I860}
+target_machine=${target_machine?${target_machine}:i860}
+
+SBOX=${SRCTOP?${SRCTOP}:mk}
+# Where objects get made:
+OBJECTDIR=${OBJECTDIR?${OBJECTDIR}:../../obj/${atsys}/${SBOX}}
+
+# Where stuff gets installed:
+MK_SRC_TOP=${MAKECONF;/Makeconf;}
+INSTALLDIR=${MK_SRC_TOP}/../../release/${atsys}
+
+# Where stuff gets released (copied from FRELEASEDIR to TRELEASEDIR):
+# These are default values that one often overrides for a 'make release'.
+FRELEASEDIR=${INSTALLDIR}
+TRELEASEDIR=/usr/mach3
+
+#
+# Add in CONFIG information until kernel uses new make files
+#
+VAX_CONFIG=STD+VAX6bb
+SUN3_CONFIG=STD+SWS
+PMAX_CONFIG=STD+ANY
+I386_CONFIG=STD+WS+assert+lineno+NORMA+norma_ether
+#AT386_CONFIG=STD+WS
+AT386_CONFIG=STD+NORMA+iPSC+assert+osflocal
+#I860_CONFIG=STD+NORMA+iPSC+PGI+assert+osflocal
+LUNA88K_CONFIG=STD+ANY
+
+CONFIG=$(${TARGET_MACHINE}_CONFIG)
+REG_EXP=.*
+
+# This variable determines what cross build environment we're in.
+# Currently supported values are sparc, X86, and i860.
+# Default is X86
+BUILD_HOST=${BUILD_HOST?${BUILD_HOST}:X86}
+
+# This is the host compiler used to create mig and config.  
+# For some reason gcc on the sparc won't create a migcom that doesn't
+# crash in vfprintf.  When that's fixed, sparc_HOST_CC can change to gcc.
+sparc_HOST_CC=cc
+i860_HOST_CC=cc
+X86_HOST_CC=gcc
+HOST_CC=${${BUILD_HOST}_HOST_CC}
+
+# This is the host compiler used to create genassym.  It must understand
+# ANSI C, thus the native SunOS 4.1.X cc won't work.
+sparc_GENASSYM_CC=gcc
+i860_GENASSYM_CC=${i860_HOST_CC}
+X86_GENASSYM_CC=${X86_HOST_CC}
+GENASSYM_CC=${${BUILD_HOST}_GENASSYM_CC}
+
+# This is the C preprocessor used primarily to munge .s files before the
+# assembler grabs them.  
+sparc_I860_CPP=cpp860
+i860_I860_CPP=cpp860
+X86_I860_CPP=/lib/cpp
+I860_CPP=${${BUILD_HOST}_I860_CPP}
+
+# Complete command line for I860_CPP
+sparc_KCPP=cpp860
+i860_KCPP=cpp860
+X86_KCPP=/lib/cpp -E -MD -Di860 -Ui386 -U__i386__
+KCPP=${${BUILD_HOST}_KCPP}
+
+# Change these if not building for i860
+CPUTYPE=${CPUTYPE?${CPUTYPE}:I860}
+cputype=${cputype?${cputype}:i860}
+
+# This is here to set things up for capturing output when we copy
+# headers to the release tree.  This output can later be used to
+# determine where headers which the cmds/libs build copies from the
+# kernel build actually live in the kernel source tree.
+# Set INSTRUMENT_HDRS to turn this all on.
+#INSTRUMENT_HDRS=1
+CP=${INSTRUMENT_HDRS?capture_cp:cp -p}
+# This is the name of the file in which to capture output from capture_cp.
+CAPTURE_OUT=${CAPTURE_MK_OUT?${CAPTURE_MK_OUT}:/tmp/KernelHdrOutput}
+
+.EXPORT: CP CAPTURE_OUT
+
+
+
+# Adjust paths so we find our own stuff:
+# Recursive makes should pass down PATH, CPATH, and LPATH
+# to override the definitions here.  This prevents
+# the paths from being adjusted again in the submake.
+# HLPATH is the LPATH to use for cross compilation
+
+I860_HLPATH=${INSTALLDIR}/lib:/usr/lib:/lib:${BUILD_XDEV}/lib
+I860_HCPATH=${INSTALLDIR}/include:/usr/include
+
+PATH=${INSTALLDIR}/bin:${PATH}
+CPATH=${INSTALLDIR}/include:${CPATH}
+HCPATH =${${TARGET_MACHINE}_HCPATH?${${TARGET_MACHINE}_HCPATH}:${CPATH}}
+
+# Add some smarts so ld860 knows where to find libic.a.
+sparc_LIBIC=${PARAGON_XDEV}/paragon/lib-coff
+i860_LIBIC=/usr/ccs/lib
+X86_LIBIC=/usr/ccs/lib
+LIBIC=${${BUILD_HOST}_LIBIC}
+LPATH=${INSTALLDIR}/lib:${LPATH}:${LIBIC}
+
+HLPATH =${${TARGET_MACHINE}_HLPATH?${${TARGET_MACHINE}_HLPATH}:${LPATH}}
+
+I386_CONFIG=STD+NORMA+iPSC+assert+mcmsg
+I860_CONFIG=${I860_CONFIG?${I860_CONFIG}:ASMP}
+
+#I860_CONFIG=MCMSG
+
+.EXPORT:	PATH CPATH LPATH HLPATH HCPATH KCPP I860_CPP HOST_CC ATSYS
+.EXPORT:	CPUTYPE cputype TARGET_MACHINE target_machine
+.EXPORT:	CONFIG I860_CONFIG GENASSYM_CC
+SRCTOP=mk

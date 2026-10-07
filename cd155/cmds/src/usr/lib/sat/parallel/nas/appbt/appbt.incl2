@@ -1,0 +1,16 @@
+C******************************************************************************C
+C******************************************************************************C
+
+	common/block20/aa(5,5,isizmax,isizmax_row)
+	
+	common/block21/bb(5,5,isizmax,isizmax_row)
+
+	common/block22/cc(5,5,isizmax,isizmax_row)
+
+        common/block23/fjac1(isizmax,5),fjac2(isizmax,5),
+     &       fjac3(isizmax,5),fjac4(isizmax,5),fjac5(isizmax,5),
+     &       djac1(isizmax,5),djac2(isizmax,5),djac3(isizmax,5),
+     &       djac4(isizmax,5),djac5(isizmax,5)
+
+C******************************************************************************C
+C******************************************************************************C

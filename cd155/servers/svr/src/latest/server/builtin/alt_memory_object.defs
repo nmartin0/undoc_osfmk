@@ -1,0 +1,148 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+/*
+ * HISTORY
+ * $Log: alt_memory_object.defs,v $
+# Revision 1.2  1995/01/05  10:01:08  johannes
+# Forward the memory_object_terminate request and the vnode_pager_no_senders
+# call to the alternate thread to ensure handling the corresponding messages
+# in the right order.
+#
+#  Reviewer: Nandini
+#  Risk: medium
+#  Benefit or PTS #: 11816 (regression caused by fix of 11105)
+#  Testing: developer testing, VSE test suite (on MP and GP)
+#  Module(s): server/builtin/alt_memory_object.defs
+#             server/builtin/inode_pager.c
+#
+# Revision 1.1  1994/11/21  18:48:19  johannes
+# new file with definition of the MIG routines for forwarding the memory object
+# requests init, data_request and data_unlock to the alternate thread
+#
+#  Reviewer: Nanadini
+#  Risk: High
+#  Benefit or PTS #: 11105
+#  Testing: developer testing, IPI-3 EATs with a memory leaking server
+#  Module(s): server/builtin/inode_pager.c
+# 	    server/conf/Makefile.template
+# 	    server/builtin/alt_memory_object.defs
+#
+ */
+/*
+ * File:	alt_memory_object.defs
+ *
+ * Abstract:
+ *	Forwarding of possibly blocking requests to alternate thread.
+ */
+
+subsystem alt_memory_object 2250;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+userprefix do_;
+
+#if	SEQNOS
+serverprefix seqnos_;
+serverdemux seqnos_alt_memory_object_server;
+#endif	SEQNOS
+
+
+/*
+ *	Forward request to original init routine.
+ */
+simpleroutine	alt_memory_object_init(
+		alt_port		: mach_port_t;
+		memory_object		: memory_object_t = 
+						MACH_MSG_TYPE_INTEGER_32;
+		/* not sent to same task as port to avoid rights checking */
+#if	SEQNOS
+	msgseqno seqno			: mach_port_seqno_t;
+#endif	SEQNOS
+		memory_control		: memory_object_control_t =
+						MACH_MSG_TYPE_INTEGER_32
+						ctype: mach_port_t;
+		/* not sent to same task as port to avoid rights checking */
+		memory_object_name	: memory_object_name_t =
+						MACH_MSG_TYPE_INTEGER_32
+						ctype: mach_port_t;
+		/* not sent to same task as port to avoid rights checking */
+		memory_object_page_size	: vm_size_t);
+
+/*
+ *	Forward request to original terminate routine.
+ */
+simpleroutine	alt_memory_object_terminate(
+		alt_port		: mach_port_t;
+		memory_object		: memory_object_t = 
+						MACH_MSG_TYPE_INTEGER_32;
+		/* not sent to same task as port to avoid rights checking */
+#if	SEQNOS
+	msgseqno seqno			: mach_port_seqno_t;
+#endif	SEQNOS
+		memory_control		: memory_object_control_t =
+						MACH_MSG_TYPE_INTEGER_32
+						ctype: mach_port_t;
+		/* not sent to same task as port to avoid rights checking */
+		memory_object_name	: memory_object_name_t =
+						MACH_MSG_TYPE_INTEGER_32
+						ctype: mach_port_t);
+		/* not sent to same task as port to avoid rights checking */
+
+/*
+ *	Forward request to original data_request routine.
+ */
+simpleroutine	alt_memory_object_data_request(
+		alt_port		: mach_port_t;
+		memory_object		: memory_object_t = 
+						MACH_MSG_TYPE_INTEGER_32;
+		/* not sent to same task as port to avoid rights checking */
+#if	SEQNOS
+	msgseqno seqno			: mach_port_seqno_t;
+#endif	SEQNOS
+		memory_control		: memory_object_control_t =
+						MACH_MSG_TYPE_INTEGER_32
+						ctype: mach_port_t;
+		/* not sent to same task as port to avoid rights checking */
+		offset			: vm_offset_t;
+		length			: vm_size_t;
+		desired_access		: vm_prot_t);
+
+/*
+ *	Forward request to original data_unlock routine.
+ */
+simpleroutine	alt_memory_object_data_unlock(
+		alt_port		: mach_port_t;
+		memory_object		: memory_object_t = 
+						MACH_MSG_TYPE_INTEGER_32;
+		/* not sent to same task as port to avoid rights checking */
+#if	SEQNOS
+	msgseqno seqno			: mach_port_seqno_t;
+#endif	SEQNOS
+		memory_control		: memory_object_control_t =
+						MACH_MSG_TYPE_INTEGER_32
+						ctype: mach_port_t;
+		/* not sent to same task as port to avoid rights checking */
+		offset			: vm_offset_t;
+		length			: vm_size_t;
+		desired_access		: vm_prot_t);
+
+/*
+ *	Forward request to original vnode_pager_no_senders routine.
+ */
+simpleroutine	alt_vnode_pager_no_senders(
+		alt_port		: mach_port_t;
+		pager			: memory_object_t = 
+						MACH_MSG_TYPE_INTEGER_32;
+		/* not sent to same task as port to avoid rights checking */
+		mscount			: mach_port_mscount_t);

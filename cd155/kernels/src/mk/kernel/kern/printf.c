@@ -1,0 +1,731 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1991 , 1994, 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+/*
+ * HISTORY
+ * $Log: printf.c,v $
+ * Revision 1.11  1995/03/28  03:02:12  stans
+ *  Removed unused external declaration.
+ *
+ *  Reviewer: lenb
+ *  Risk: medium-high
+ *  Benefit or PTS #: 12734
+ *  Testing:
+ *         Installed & booted kernel on systems: 'a5', XPS150 and testjig.
+ *         WW10 sats
+ *         Developer tests:
+ *                 Verified console logging works for kernel printf()'s at
+ *                 interrupt and non-interrupt levels.
+ *
+ * Revision 1.10  1995/02/24  18:16:05  lenb
+ * sploff around printf_lock (10439)
+ *
+ * Revision 1.9  1995/02/04  01:24:55  stans
+ *  Support remote MK console logging option: call buffering version of cnputc().
+ *
+ *  Reviewer:lenb/tnt
+ *  Risk:medium
+ *  Benefit or PTS #:5249
+ *  Testing:WW50 sat
+ *  Module(s):
+ *
+ * Revision 1.8  1994/11/18  20:52:26  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.7  1994/07/12  19:23:29  andyp
+ * Merge of the NORMA2 branch back to the mainline.
+ *
+ * Revision 1.6  1994/03/19  01:24:04  lenb
+ * Benefit: SIMPLE_LOCK(&printf_lock)
+ * Testing: SAT
+ * Reviewer: sean
+ *
+ * Revision 1.5.8.3  1994/03/15  00:13:42  rkl
+ *  Made sprintf() null terminate the output buffer.
+ *
+ * Revision 1.5.8.2  1994/03/11  22:49:05  andyp
+ * Moved the simple_lock() in sprintf up where it should be.
+ *
+ * Revision 1.5.8.1  1994/03/11  22:47:32  andyp
+ * Added a simple sprintf().  Changed printf() to use va_alist portably.
+ *
+ * Revision 1.5  1993/06/30  22:45:19  dleslie
+ * Adding copyright notices required by legal folks
+ *
+ * Revision 1.4  1993/04/27  20:36:13  dleslie
+ * Copy of R1.0 sources onto main trunk
+ *
+ * Revision 1.2.6.2  1993/04/22  18:36:38  dleslie
+ * First R1_0 release
+ *
+ * Revision 2.9.8.2  92/09/15  17:21:39  jeffreyh
+ * 	Use print_lock for MBUS as well, unused only for SYMMETRY.
+ * 	[92/07/17            bernadat]
+ * 
+ * Revision 2.9.8.1  92/02/18  19:09:25  jeffreyh
+ * 	Use printf_lock only for CBUS. Does not work with Sequent
+ * 	[91/12/11            bernadat]
+ * 
+ * Revision 2.9.3.1  91/09/26  04:47:46  bernadat
+ * 	Support for Corollary MP
+ * 	Use a printf_lock and print cpu number
+ * 	[91/06/25            bernadat]
+ * 
+ * Revision 2.9  91/06/06  17:07:22  jsb
+ * 	Added gets (derived from boot_gets).
+ * 	[91/05/14  09:18:50  jsb]
+ * 
+ * Revision 2.8  91/05/14  16:44:59  mrt
+ * 	Correcting copyright
+ * 
+ * Revision 2.7  91/02/05  17:28:14  mrt
+ * 	Changed to new Mach copyright
+ * 	[91/02/01  16:15:41  mrt]
+ * 
+ * Revision 2.6  90/10/25  14:45:18  rwd
+ * 	Purged uprintf.
+ * 	[90/10/21            rpd]
+ * 
+ * Revision 2.5  90/08/27  22:03:08  dbg
+ * 	Add extra formats to printf: '#- ' prefixes, %z (signed hex),
+ * 	%r and %n (signed and unsigned, current radix).
+ * 	[90/08/20            dbg]
+ * 
+ * Revision 2.4  90/01/11  11:43:44  dbg
+ * 	De-linted.
+ * 	[90/01/03            dbg]
+ * 
+ * Revision 2.3  89/11/29  14:09:06  af
+ * 	Ooops, a typo.
+ * 	[89/10/29  09:34:26  af]
+ * 
+ * 	Changed the case for %c to load ints and not chars. Or
+ * 	else it is byte-order dependent since C passes char as ints.
+ * 	[89/10/13            af]
+ * 
+ * 	Turned the unused 'file descriptor' field for _doprnt and putchar
+ * 	into a more useful pointer to an (optional) specialized putchar
+ * 	routine.  This can be used, for instance, to divert debugging
+ * 	printouts to some specialized interface or IOP.
+ * 	[89/10/09            af]
+ * 
+ * Revision 2.2  89/09/25  11:00:58  rwd
+ * 	Added case 'X' same as 'x' for now.
+ * 	[89/09/20            rwd]
+ * 
+ * Revision 2.1  89/08/03  15:51:14  rwd
+ * Created.
+ * 
+ *  8-Aug-88  David Golub (dbg) at Carnegie-Mellon University
+ *	Converted for MACH kernel use.  Removed %r, %R, %b; added %b
+ *	from Berkeley's kernel to print bit fields in device registers;
+ *	changed to use varargs.
+ *
+ */
+
+/*
+ *  Common code for printf et al.
+ *
+ *  The calling routine typically takes a variable number of arguments,
+ *  and passes the address of the first one.  This implementation
+ *  assumes a straightforward, stack implementation, aligned to the
+ *  machine's wordsize.  Increasing addresses are assumed to point to
+ *  successive arguments (left-to-right), as is the case for a machine
+ *  with a downward-growing stack with arguments pushed right-to-left.
+ *
+ *  To write, for example, fprintf() using this routine, the code
+ *
+ *	fprintf(fd, format, args)
+ *	FILE *fd;
+ *	char *format;
+ *	{
+ *	_doprnt(format, &args, fd);
+ *	}
+ *
+ *  would suffice.  (This example does not handle the fprintf's "return
+ *  value" correctly, but who looks at the return value of fprintf
+ *  anyway?)
+ *
+ *  This version implements the following printf features:
+ *
+ *	%d	decimal conversion
+ *	%u	unsigned conversion
+ *	%x	hexadecimal conversion
+ *	%X	hexadecimal conversion with capital letters
+ *	%o	octal conversion
+ *	%c	character
+ *	%s	string
+ *	%m.n	field width, precision
+ *	%-m.n	left adjustment
+ *	%0m.n	zero-padding
+ *	%*.*	width and precision taken from arguments
+ *
+ *  This version does not implement %f, %e, or %g.  It accepts, but
+ *  ignores, an `l' as in %ld, %lo, %lx, and %lu, and therefore will not
+ *  work correctly on machines for which sizeof(long) != sizeof(int).
+ *  It does not even parse %D, %O, or %U; you should be using %ld, %o and
+ *  %lu if you mean long conversion.
+ *
+ *  As mentioned, this version does not return any reasonable value.
+ *
+ *  Permission is granted to use, modify, or propagate this code as
+ *  long as this notice is incorporated.
+ *
+ *  Steve Summit 3/25/87
+ */
+
+/*
+ * Added formats for decoding device registers:
+ *
+ * printf("reg = %b", regval, "<base><arg>*")
+ *
+ * where <base> is the output base expressed as a control character:
+ * i.e. '\10' gives octal, '\20' gives hex.  Each <arg> is a sequence of
+ * characters, the first of which gives the bit number to be inspected
+ * (origin 1), and the rest (up to a control character (<= 32)) give the
+ * name of the register.  Thus
+ *	printf("reg = %b\n", 3, "\10\2BITTWO\1BITONE")
+ * would produce
+ *	reg = 3<BITTWO,BITONE>
+ *
+ * If the second character in <arg> is also a control character, it
+ * indicates the last bit of a bit field.  In this case, printf will extract
+ * bits <1> to <2> and print it.  Characters following the second control
+ * character are printed before the bit field.
+ *	printf("reg = %b\n", 0xb, "\10\4\3FIELD1=\2BITTWO\1BITONE")
+ * would produce
+ *	reg = b<FIELD1=2,BITONE>
+ */
+/*
+ * Added for general use:
+ *	#	prefix for alternate format:
+ *		0x (0X) for hex
+ *		leading 0 for octal
+ *	+	print '+' if positive
+ *	blank	print ' ' if positive
+ *
+ *	z	signed hexadecimal
+ *	r	signed, 'radix'
+ *	n	unsigned, 'radix'
+ *
+ *	D,U,O,Z	same as corresponding lower-case versions
+ *		(compatibility)
+ */
+
+#include "platforms.h"
+#include "console_logging.h"
+
+#include <mach/boolean.h>
+#include <sys/varargs.h>
+#include <cpus.h>
+#include <kern/cpu_number.h>
+#include <kern/lock.h>
+#include <kern/thread.h>
+
+#define isdigit(d) ((d) >= '0' && (d) <= '9')
+#define Ctod(c) ((c) - '0')
+
+#define MAXBUF (sizeof(long int) * 8)		 /* enough for binary */
+
+printnum(u, base, putc)
+	register unsigned int	u;	/* number to print */
+	register int		base;
+	int			(*putc)();
+{
+	char	buf[MAXBUF];	/* build number here */
+	register char *	p = &buf[MAXBUF-1];
+	static char digs[] = "0123456789abcdef";
+
+	do {
+	    *p-- = digs[u % base];
+	    u /= base;
+	} while (u != 0);
+
+	while (++p != &buf[MAXBUF])
+	    (*putc)(*p);
+
+}
+
+_doprnt(fmt, argp, putc, radix)
+	register char	*fmt;
+	va_list		*argp;
+ 	int		(*putc)();	/* character output */
+	int		radix;		/* default radix - for '%r' */
+{
+	int		length;
+	int		prec;
+	boolean_t	ladjust;
+	char		padc;
+	int		n;
+	unsigned int	u;
+	int		plus_sign;
+	int		sign_char;
+	boolean_t	altfmt;
+	int		base;
+	char		c;
+
+	while (*fmt != '\0') {
+	    if (*fmt != '%') {
+		(*putc)(*fmt++);
+		continue;
+	    }
+
+	    fmt++;
+
+	    length = 0;
+	    prec = -1;
+	    ladjust = FALSE;
+	    padc = ' ';
+	    plus_sign = 0;
+	    sign_char = 0;
+	    altfmt = FALSE;
+
+	    while (TRUE) {
+		if (*fmt == '#') {
+		    altfmt = TRUE;
+		    fmt++;
+		}
+		else if (*fmt == '-') {
+		    ladjust = TRUE;
+		    fmt++;
+		}
+		else if (*fmt == '+') {
+		    plus_sign = '+';
+		    fmt++;
+		}
+		else if (*fmt == ' ') {
+		    if (plus_sign == 0)
+			plus_sign = ' ';
+		    fmt++;
+		}
+		else
+		    break;
+	    }
+
+	    if (*fmt == '0') {
+		padc = '0';
+		fmt++;
+	    }
+
+	    if (isdigit(*fmt)) {
+		while(isdigit(*fmt))
+		    length = 10 * length + Ctod(*fmt++);
+	    }
+	    else if (*fmt == '*') {
+		length = va_arg(*argp, int);
+		fmt++;
+		if (length < 0) {
+		    ladjust = !ladjust;
+		    length = -length;
+		}
+	    }
+
+	    if (*fmt == '.') {
+		fmt++;
+		if (isdigit(*fmt)) {
+		    prec = 0;
+		    while(isdigit(*fmt))
+			prec = 10 * prec + Ctod(*fmt++);
+		}
+		else if (*fmt == '*') {
+		    prec = va_arg(*argp, int);
+		    fmt++;
+		}
+	    }
+
+	    if (*fmt == 'l')
+		fmt++;	/* need it if sizeof(int) < sizeof(long) */
+
+	    switch(*fmt) {
+		case 'b':
+		case 'B':
+		{
+		    register char *p;
+		    boolean_t	  any;
+		    register int  i;
+
+		    u = va_arg(*argp, unsigned int);
+		    p = va_arg(*argp, char *);
+		    base = *p++;
+		    printnum(u, base, putc);
+
+		    if (u == 0)
+			break;
+
+		    any = FALSE;
+		    while (i = *p++) {
+			if (*p <= 32) {
+			    /*
+			     * Bit field
+			     */
+			    register int j;
+			    if (any)
+				(*putc)(',');
+			    else {
+				(*putc)('<');
+				any = TRUE;
+			    }
+			    j = *p++;
+			    for (; (c = *p) > 32; p++)
+				(*putc)(c);
+			    printnum((unsigned)( (u>>(j-1)) & ((2<<(i-j))-1)),
+					base, putc);
+			}
+			else if (u & (1<<(i-1))) {
+			    if (any)
+				(*putc)(',');
+			    else {
+				(*putc)('<');
+				any = TRUE;
+			    }
+			    for (; (c = *p) > 32; p++)
+				(*putc)(c);
+			}
+			else {
+			    for (; *p > 32; p++)
+				continue;
+			}
+		    }
+		    if (any)
+			(*putc)('>');
+		    break;
+		}
+
+		case 'c':
+		    c = va_arg(*argp, int);
+		    (*putc)(c);
+		    break;
+
+		case 's':
+		{
+		    register char *p;
+		    register char *p2;
+
+		    if (prec == -1)
+			prec = 0x7fffffff;	/* MAXINT */
+
+		    p = va_arg(*argp, char *);
+
+		    if (p == (char *)0)
+			p = "";
+
+		    if (length > 0 && !ladjust) {
+			n = 0;
+			p2 = p;
+
+			for (; *p != '\0' && n < prec; p++)
+			    n++;
+
+			p = p2;
+
+			while (n < length) {
+			    (*putc)(' ');
+			    n++;
+			}
+		    }
+
+		    n = 0;
+
+		    while (*p != '\0') {
+			if (++n > prec)
+			    break;
+
+			(*putc)(*p++);
+		    }
+
+		    if (n < length && ladjust) {
+			while (n < length) {
+			    (*putc)(' ');
+			    n++;
+			}
+		    }
+
+		    break;
+		}
+
+		case 'o':
+		case 'O':
+		    base = 8;
+		    goto print_unsigned;
+
+		case 'd':
+		case 'D':
+		    base = 10;
+		    goto print_signed;
+
+		case 'u':
+		case 'U':
+		    base = 10;
+		    goto print_unsigned;
+
+		case 'x':
+		case 'X':
+		    base = 16;
+		    goto print_unsigned;
+
+		case 'z':
+		case 'Z':
+		    base = 16;
+		    goto print_signed;
+
+		case 'r':
+		case 'R':
+		    base = radix;
+		    goto print_signed;
+
+		case 'n':
+		    base = radix;
+		    goto print_unsigned;
+
+		print_signed:
+		    n = va_arg(*argp, int);
+		    if (n >= 0) {
+			u = n;
+			sign_char = plus_sign;
+		    }
+		    else {
+			u = -n;
+			sign_char = '-';
+		    }
+		    goto print_num;
+
+		print_unsigned:
+		    u = va_arg(*argp, unsigned int);
+		    goto print_num;
+
+		print_num:
+		{
+		    char	buf[MAXBUF];	/* build number here */
+		    register char *	p = &buf[MAXBUF-1];
+		    static char digits[] = "0123456789abcdef";
+		    char *prefix = 0;
+
+		    if (u != 0 && altfmt) {
+			if (base == 8)
+			    prefix = "0";
+			else if (base == 16)
+			    prefix = "0x";
+		    }
+
+		    do {
+			*p-- = digits[u % base];
+			u /= base;
+		    } while (u != 0);
+
+		    length -= (&buf[MAXBUF-1] - p);
+		    if (sign_char)
+			length--;
+		    if (prefix)
+			length -= strlen(prefix);
+
+		    if (padc == ' ' && !ladjust) {
+			/* blank padding goes before prefix */
+			while (--length >= 0)
+			    (*putc)(' ');
+		    }
+		    if (sign_char)
+			(*putc)(sign_char);
+		    if (prefix)
+			while (*prefix)
+			    (*putc)(*prefix++);
+		    if (padc == '0') {
+			/* zero padding goes after sign and prefix */
+			while (--length >= 0)
+			    (*putc)('0');
+		    }
+		    while (++p != &buf[MAXBUF])
+			(*putc)(*p);
+
+		    if (ladjust) {
+			while (--length >= 0)
+			    (*putc)(' ');
+		    }
+		    break;
+		}
+
+		case '\0':
+		    fmt--;
+		    break;
+
+		default:
+		    (*putc)(*fmt);
+	    }
+	fmt++;
+	}
+}
+
+#if	NCPUS > 1
+simple_lock_data_t printf_lock = {0};
+boolean_t	new_printf_cpu_number = FALSE;
+boolean_t	printf_cpu_number_prefix = TRUE; /* used during booting */
+#endif	NCPUS > 1
+
+/*
+ * Printing (to a string)
+ */
+
+static char *sprintf_buf;
+
+static void sputc(c)
+int c;
+{
+	*sprintf_buf++ = c;
+}
+
+sprintf(va_alist)
+	va_dcl
+{
+	va_list listp;
+	char    *fmt;
+
+	va_start(listp);
+#if	NCPUS > 1
+	simple_lock(&printf_lock);
+#endif	/* NCPUS > 1 */
+	sprintf_buf = va_arg(listp, char *);
+	fmt = va_arg(listp, char *);
+	_doprnt(fmt, &listp, sputc, 16);
+	*sprintf_buf = 0;	/* null terminate the string */
+#if	NCPUS > 1
+	simple_unlock(&printf_lock);
+#endif	/* NCPUS > 1 */
+	va_end(listp);
+}
+
+
+/*
+ * Printing (to console)
+ */
+extern int	cnputc();
+
+#if	CONSOLE_LOGGING
+/* logging MK console output? */
+extern int	cnputc_logged();
+#endif	/* CONSOLE_LOGGING */
+
+
+/*VARARGS1*/
+printf(va_alist)
+	va_dcl
+{
+	va_list	listp;
+	char *fmt;
+
+	va_start(listp);
+	fmt = va_arg(listp, char *);
+#if	NCPUS > 1 
+	if (active_threads[master_cpu]) {
+		int s = sploff();
+		SIMPLE_LOCK(&printf_lock);
+		if (cpu_number() != master_cpu)
+			new_printf_cpu_number = TRUE;
+		if (new_printf_cpu_number && printf_cpu_number_prefix) {
+			cnputc('{');
+			cnputc('0'+ cpu_number());
+			cnputc('}');
+			cnputc(' ');
+		}
+#if	CONSOLE_LOGGING
+		_doprnt(fmt, &listp, cnputc_logged, 16);
+#else	/* CONSOLE_LOGGING */
+		_doprnt(fmt, &listp, cnputc, 16);
+#endif /* CONSOLE_LOGGING */
+		SIMPLE_UNLOCK(&printf_lock);
+		splon(s);
+      } else 
+#endif	NCPUS > 1
+
+#if	CONSOLE_LOGGING
+	_doprnt(fmt, &listp, cnputc_logged, 16);
+#else	/* CONSOLE_LOGGING */
+	_doprnt(fmt, &listp, cnputc, 16);
+#endif	/* CONSOLE_LOGGING */
+	va_end(listp);
+
+#if	CONSOLE_LOGGING
+	wakeup_conslog_thread();
+#endif	/* CONSOLE_LOGGING */
+}
+
+/* derived from boot_gets */
+gets(str, maxlen)
+	char *str;
+	int  maxlen;
+{
+	register char *lp;
+	register int c;
+	char *strmax = str + maxlen - 1; /* allow space for trailing 0 */
+
+	lp = str;
+	for (;;) {
+		c = cngetc();
+		switch (c) {
+		case '\n':
+		case '\r':
+			printf("\n");
+			*lp++ = 0;
+			return;
+			
+		case '\b':
+		case '#':
+		case '\177':
+			if (lp > str) {
+				printf("\b \b");
+				lp--;
+			}
+			continue;
+
+		case '@':
+		case 'u'&037:
+			lp = str;
+			printf("\n\r");
+			continue;
+
+		default:
+			if (c >= ' ' && c < '\177') {
+				if (lp < strmax) {
+					*lp++ = c;
+					printf("%c", c);
+				}
+				else {
+					printf("%c", '\007'); /* beep */
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,138 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1991,1990,1989 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#
+# HISTORY
+# $Log: Makefile.mips,v $
+# Revision 1.5  1994/11/18  20:28:08  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:19:24  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:17:14  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:16:50  dleslie
+# First R1_0 release
+#
+# Revision 2.8  91/10/09  15:56:00  af
+# 	The lineno option wasn't passed along appropriately.
+# 	Note that locore.s needs it if you want to be able to
+# 	trace into user space.
+# 	[91/10/05  10:12:35  af]
+# 
+# Revision 2.7  91/05/14  15:27:33  mrt
+# 	Correcting copyright
+# 
+# Revision 2.6  91/02/05  17:02:59  mrt
+# 	Changed to new copyright
+# 	[91/01/28  14:47:01  mrt]
+# 
+# Revision 2.5  90/06/19  22:56:59  rpd
+# 	Added CDEBUGFLAGS, CMACHFLAGS definitions.
+# 	[90/06/03            rpd]
+# 
+# Revision 2.4  90/06/02  14:46:26  rpd
+# 	Added dependencies on mig-generated files.
+# 	[90/03/26  21:37:52  rpd]
+# 
+# Revision 2.3  90/01/22  23:04:26  af
+# 	Added nullification of VOLATILE macro.
+# 	[89/12/10            af]
+# 
+# Revision 2.2  89/11/29  14:08:06  af
+# 	Adapted for pure kernel, droppped nonsensical MIPS Copyright
+# 	(why was it included to begin with ?)
+# 	[89/10/28            af]
+# 
+# Revision 2.4  89/05/30  17:06:21  rvb
+# 	Nothing Noteworthy.
+# 
+#
+######################################################################
+#BEGIN	Machine dependent Makefile fragment for the MIPS
+######################################################################
+#
+
+RM=		rm -f
+TEXTBASE=	80030000
+
+
+#
+# COPTS is recognized by config and massaged for profiling kernels
+#
+#
+# cc options for most kernel sources
+# CCNFLAGS - normal files
+# CCDFLAGS - device drivers
+# CCSFLAGS - swap*.c files
+# CCASFLAGS - *.s files
+# CCPFLAGS - profiling *.c files
+# CCPASFLAGS - profiling *.s files
+#
+# CCOPTS may be set from the config file
+# ASOPTS may be set from the config file
+# ENDIAN may be set from the config file
+#
+CDEBUGFLAGS = $(CCOPTS)
+CMACHFLAGS = $(ENDIAN) -G ${GPSIZE} $(CLINENO)
+
+CCNFLAGS= -c $(CDEBUGFLAGS) $(CMACHFLAGS) ${COPTS}
+CCDFLAGS= -c $(CDEBUGFLAGS) $(CMACHFLAGS) ${COPTS}
+CCSFLAGS= -c $(CDEBUGFLAGS) $(CMACHFLAGS) ${COPTS}
+CCASFLAGS= -c $(CMACHFLAGS) ${ASOPTS} ${COPTS} -DASSEMBLER
+CCPFLAGS= -c $(CDEBUGFLAGS) $(CMACHFLAGS) ${PCOPTS}
+CCPASFLAGS= -c $(CMACHFLAGS) ${ASOPTS} ${PCOPTS} -DASSEMBLER
+
+#
+LDOBJS_PREFIX=start.o
+LDFLAGS= $(CMACHFLAGS) -N -T ${TEXTBASE} -e start ${LDOPTS}
+
+${SOBJS}: assym.s
+VOLATILE=
+
+#  Explicit dependencies on generated files,
+#  to ensure that Mig has been run by the time
+#  these files are compiled.
+
+exec.o : mach/mach_interface.h mach/mach_user_internal.h \
+	mach/mach_port_internal.h
+
+pm_tty.o : mach/mach_interface.h
+
+######################################################################
+#END	Machine dependent Makefile fragment for the MIPS
+######################################################################

@@ -1,0 +1,67 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+àÏxHãà U‰åƒìWVSU‰Uüz‰û‹ƒÃ…Àu÷;rƒÃü‰$Ğƒ=üt¡üÿĞƒ=øt¡øÿĞ…Àt‰Äƒ=ôt¡ôÿĞƒ=t‹5ë¾SW‹Uüÿ2èSPÿÖeğ[^_ÉÃusage:  test_tnc_node_self [1 - %d]
+Internal error:  test case (%d).
+U‰åƒìfÇEôÇƒ}u ‹EƒÀÿ0èÏ‰À‰À‰EüƒÄ…Àtë4ÿ5,Ğh°¸ ñƒÀHPè‹$¸ ñƒÀHPèjèºƒÄèòEôPÿuüèŠ‰EøƒÄƒ=t.ÿuühÕ¸ ñƒÀHPè=$¸ ñƒÀHPèÃjèlƒÄÿuøÿuü¿EôPèõjèRÉÃAttempting to kill3 a non-valid pid, should fail.
+kill3(): fork failed.
+Suicide: (kill own pid) should pass.
+kill3 local pid with same uid; should pass.
+Non-root process trying to kill process with another uid; should fail.
+Non-root process trying to kill remote process with same uid; should pass.
+Non-root process trying to kill remote process with different uid; should fail.
+Root process trying to kill local process with different uid; should pass.
+Root process trying to kill remote process with different uid; should pass.
+Unknown testcase.
+%s
+U‰åƒìè‰Eô‹4Ğ‰Uğ‹EHƒø‡ä‹…-ÿàPÄô$T„°ÜhÌh|úèm@‹EfÇèˆ‰À‰À‰EøƒÄƒøÿu5Çhÿ¸ ñƒÀHPè@!¸ ñƒÀHPèÆƒÄézÿuøè ‰EüƒÄéehh|úèù?‹EfÇèh>‰ÀPèp‰EüƒÄé5h<h|úèÉ?‹EfÇÿuôjjèI‰EüƒÄéhih|úè™?‹EfÇÿuôjjè‰EüƒÄéÖh±h|úèi?‹EfÇÿuğjjèé‰EüƒÄé¦hıh|úè9?‹EfÇÿuğjjè¹‰EüƒÄëyhNh|úè?‹EfÇÿuôjjè‰EüƒÄëMhšh|úèá>‹EfÇÿuğjjèa‰EüƒÄë!hçh|úèµ>ÇƒÄë‹Eüë)h|úhú¸ ñƒÀ$Pè¸ ñƒÀ$PèÉÃU‰åƒìhÄj è7fÇ|ûhôj ÿuèŠ‰EüƒÄƒ}üÿu
+¸ÿÿÿÿë+j
+èõ7ƒÄfƒ=|ûu¸ëë
+¸ÿÿÿÿëÉÃU‰å}ôuƒ} ufÇ|ûëfÇ|ûëÉÃU‰åƒìè<‰Eüƒ}üu
+jèƒÄƒ}ü~jè…;‹Eüë¸ÿÿÿÿëÉÃkill3(): setuid failed.
+kill3(): rfork failed.
+U‰åƒìf‹Uf‰Uf‹Uf‰Ufƒ}uOÿ5HĞè”<‰EøƒÄƒ}øÿu8Çh.¸ ñƒÀHPè'¸ ñƒÀHPè­¸ÿÿÿÿéwÿuè`‰EüƒÄƒ}üuqfƒ}uMÿ5LĞè*<‰EøƒÄƒ}øÿu6Çh.¸ ñƒÀHPè½¸ ñƒÀHPèC¸ÿÿÿÿéhD	j èD5j
+èM6jèÎƒÄƒ}ü±fƒ}uVfƒ}uOÿ5HĞè¨;‰EøƒÄƒ}øÿu8Çh.¸ ñƒÀHPè;¸ ñƒÀHPèÁ¸ÿÿÿÿé‹jèÕ5hôj ÿuüè>‰EøƒÄƒ}øÿu
+¸ÿÿÿÿë_EôPè·9ƒÄƒ}ôt¸ÿÿÿÿëCë
+¸ë5ÇhG¸ ñƒÀHPè¯¸ ñƒÀHPè5¸ÿÿÿÿëÉÃU‰åƒ} u}ôujè¿ƒÄëjè±ƒÄÉÃtest_tnc_kill3(): Success case %d:
+test_tnc_kill3(): Failure case %d:
+U‰åf‹Uf‰Ufƒ}tFƒ}uÿuhp	èw2ƒÄëÿuh”	¸ ñƒÀHPèŞƒÄ¸ ñƒÀHPèaƒÄëZƒ}ÿu*ƒ=(Ğtƒ=(Ğtëÿuhp	è2ƒÄëÿuh”	¸ ñƒÀHPè‚ƒÄ¸ ñƒÀHPèƒÄëÉÃnodelistgoodnodebadnodemynodeuserid1userid2badaddrverboseTZPATHr../../config_dataOpen failed configuration file %s%s
+
+TEST ABORTED.
+
+Line %d too long inBad keyword '%s' on line %d ofBad data for keyword '%s' line %d of%d'nodelist' keyword missing.
+'goodnode' keyword missing.
+'badnode' keyword missing.
+'mynode' keyword missing.
+'userid1' keyword missing.
+'userid2' keyword missing.
+'TZ' keyword missing.
+'PATH' keyword missing.
+'userid1' and 'userid2' must be different.
+Verbose output requested:
+
+goodnode=%d   badnode=%d   userid1=%d   userid2=%d
+nodecnt=%d   nodelist= %d
+
+There was 1 configuration error
+
+There were %d configuration errors
+Correct the configuration file '%s' and run the tests again.
+U‰åì@$Ç…ØÛÿÿÇ…ĞÛÿÿÇ…ÌÛÿÿj¸ ñƒÀ$PèQ/j¸ ñƒÀHPèA/h¹
+h»
+è¾‰EüƒÄƒ}üu]hÍ
+è´-ƒÄhÙ
+…ôÛÿÿPèğ6h»
+…ôÛÿÿPhî
+¸ ñƒÀHPèİhõ
+¸ ñƒÀHPèÊƒÄ jÿèƒÄÿuüh…øïÿÿPè0‰ÀƒÄ…À„ïÿ…ØÛÿÿ…øïÿÿPèñ6‰À‰ÁI‰ÈÛÿÿƒÄƒ½ÈÛÿÿt€½øïÿÿ#tëë¦‰è…ÈÛÿÿøïÿÿ€8
+t"ÿµØÛÿÿh…ôÛÿÿPè{1ƒÄé"ÿÿÿ‰è…ÈÛÿÿøïÿÿÆÿÈÛÿÿ‰è…ÈÛÿÿøïÿÿ¾Pè‰ÀƒÄ…ÀtÿÈÛÿÿëÙ‰éÁøïÿÿ‰ìÛÿÿ‹…ìÛÿÿ¾Pèã‰ÀƒÄ…Àt
+ÿ…ìÛÿÿëàÿµìÛÿÿè6‰ÀƒÄ…Àuéçşÿÿ‰éÁôßÿÿ‰èÛÿÿ‹…ìÛÿÿ¾Pè‰ÀƒÄ…Àt‹…èÛÿÿ‹•ìÛÿÿŠ

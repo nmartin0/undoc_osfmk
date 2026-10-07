@@ -1,0 +1,48 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test3" README
+==============
+
+Source: node_a.c node_b.c errexit.c
+
+Desc:	"node_a.c" tests the reading of 2 different datasets out of 3
+            dataset with the middle dataset being skipped; 
+	"node_b.c" tests the reading of 3 datasets in sequence 
+
+Invoke:	load [0] node_a.rx [/cfs/ctape0 [TEST01 [TEST02 [TEST03 [TEST04]]]]
+	load [0] node_b.rx [/cfs/ctape0 [TEST01 [TEST02 [TEST03 [TEST04]]]]
+
+Note:	* use 4 tapes from test4
+	* ASSUME "test4" has written data into the tape already
+	* "test3a.sh" calls "node_a.rx" and 
+	  "test3b.sh" calls "node_b.rx" and
+	* log is on "test3a.SLr0" and "test3b.SLr0" respectively
+	* result is on "test3a.SRr0" and "test3b.SRr0" respectively
+	* to run both "test3a.sh" and "test3b.sh", call "test3.sh" 
+	  and the result will be on "test3.SRr0" with the 
+	  1st line for "test3a" and 2nd line for "test3b"
+	* tape will be not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+
+Algo:	"node_a.c"
+	* read 2 datasets out of 3 with the middle dataset being skipped
+	* UEXITRET = 1  (value to return when user exit is called)
+	  VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)
+
+
+
+     	"node_b.c"
+	* read 3 datasets in sequence
+	* UEXITRET = 1  (value to return when user exit is called)
+	  VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)

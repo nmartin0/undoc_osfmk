@@ -1,0 +1,586 @@
+ 2656	find_fdtab :
+ 2657	 found
+ 2658	
+ 2659	entered destroy_OBJECT, this = 8074e10
+ 2660	
+ 2661	leaving destroy_OBJECT
+ 2662	
+ 2663	find_fdtab :
+ 2664	 not found
+ 2665	
+ 2666	Entered translate_slot_to_ctlr
+ 2667	
+ 2668	For loop: Trying controller number 0
+ 2669	
+ 2670	IO_open of /tmp/35_16464 failed
+ 2671	
+ 2672	For loop: Trying controller number 1
+ 2673	
+ 2674	Slot mismatch
+ 2675	
+ 2676	For loop: Trying controller number 2
+ 2677	
+ 2678	Slot matched OK: slot=2
+ 2679	
+ 2680	Leaving translate_slot_to_ctlr
+ 2681	
+ 2682	 add_fd_to_fdtab :
+ 2683	done
+ 2684	
+ 2685	sysio	: controller_command
+ 2686	
+ 2687	find_fdtab :
+ 2688	 not found
+ 2689	
+ 2690	Entered translate_slot_to_ctlr
+ 2691	
+ 2692	For loop: Trying controller number 0
+ 2693	
+ 2694	IO_open of /tmp/35_17488 failed
+ 2695	
+ 2696	For loop: Trying controller number 1
+ 2697	
+ 2698	Slot mismatch
+ 2699	
+ 2700	For loop: Trying controller number 2
+ 2701	
+ 2702	Slot matched OK: slot=2
+ 2703	
+ 2704	Leaving translate_slot_to_ctlr
+ 2705	
+ 2706	 add_fd_to_fdtab :
+ 2707	done
+ 2708	
+ 2709			cdb.Byte = 55 91 0 0 0 0 0 0 94 0
+ 2710			cdb.Buffer = 80660fc
+ 2711			cdb.BufferLength = 94
+ 2712			direction = 2
+ 2713	
+ 2714			return status from IO_SCSI = -2
+ 2715	
+ 2716			(system) errno = 19
+ 2717	
+ 2718	 Press <ENTER> to continue:
+ 2719	Sense Data:  Valid = 0, Sense Key = 5
+ 2720			
+ 2721	 70
+ 2722	 0
+ 2723	 5
+ 2724	 0
+ 2725	 0
+ 2726	 0
+ 2727	 0
+ 2728	 ffffff98
+ 2729	 0
+ 2730	 0
+ 2731	 0
+ 2732	
+ 2733			
+ 2734	 0
+ 2735	 ffffff91
+ 2736	 2
+ 2737	 0
+ 2738	 0
+ 2739	 0
+ 2740	 0
+ 2741	 0
+ 2742	 0
+ 2743	 1
+ 2744	
+ 2745			
+ 2746	 0
+ 2747	 0
+ 2748	 0
+ 2749	 0
+ 2750	
+ 2751	
+ 2752			scsi_status.Error = 1
+ 2753	
+ 2754			scsi_status.Errno = 0
+ 2755	
+ 2756			scsi_status.Sense_Present = 1
+ 2757	
+ 2758			scsi_status as unsigned hex = c0000000
+ 2759	
+ 2760	scsicmd: mode_sense
+ 2761	
+ 2762	sysio	: destroy
+ 2763	
+ 2764	find_fdtab :
+ 2765	 found
+ 2766	
+ 2767	find_fdtab :
+ 2768	 found
+ 2769	
+ 2770	entered destroy_OBJECT, this = 8074f74
+ 2771	
+ 2772	leaving destroy_OBJECT
+ 2773	
+ 2774	find_fdtab :
+ 2775	 not found
+ 2776	
+ 2777	Entered translate_slot_to_ctlr
+ 2778	
+ 2779	For loop: Trying controller number 0
+ 2780	
+ 2781	IO_open of /tmp/35_16464 failed
+ 2782	
+ 2783	For loop: Trying controller number 1
+ 2784	
+ 2785	Slot mismatch
+ 2786	
+ 2787	For loop: Trying controller number 2
+ 2788	
+ 2789	Slot matched OK: slot=2
+ 2790	
+ 2791	Leaving translate_slot_to_ctlr
+ 2792	
+ 2793	 add_fd_to_fdtab :
+ 2794	done
+ 2795	
+ 2796	sysio	: controller_command
+ 2797	
+ 2798	find_fdtab :
+ 2799	 not found
+ 2800	
+ 2801	Entered translate_slot_to_ctlr
+ 2802	
+ 2803	For loop: Trying controller number 0
+ 2804	
+ 2805	IO_open of /tmp/35_16976 failed
+ 2806	
+ 2807	For loop: Trying controller number 1
+ 2808	
+ 2809	Slot mismatch
+ 2810	
+ 2811	For loop: Trying controller number 2
+ 2812	
+ 2813	Slot matched OK: slot=2
+ 2814	
+ 2815	Leaving translate_slot_to_ctlr
+ 2816	
+ 2817	 add_fd_to_fdtab :
+ 2818	done
+ 2819	
+ 2820			cdb.Byte = 5a 40 2b 0 0 0 0 0 94 0
+ 2821			cdb.Buffer = 80660fc
+ 2822			cdb.BufferLength = 94
+ 2823			direction = 3
+ 2824	
+ 2825			return status from IO_SCSI = 0
+ 2826	
+ 2827			(system) errno = 6
+ 2828	
+ 2829	 Press <ENTER> to continue:
+ 2830	scsicmd: mode_select
+ 2831	
+ 2832	sysio	: destroy
+ 2833	
+ 2834	find_fdtab :
+ 2835	 found
+ 2836	
+ 2837	find_fdtab :
+ 2838	 found
+ 2839	
+ 2840	entered destroy_OBJECT, this = 8074e10
+ 2841	
+ 2842	leaving destroy_OBJECT
+ 2843	
+ 2844	sysio	: controller_command
+ 2845	
+ 2846	find_fdtab :
+ 2847	 not found
+ 2848	
+ 2849	Entered translate_slot_to_ctlr
+ 2850	
+ 2851	For loop: Trying controller number 0
+ 2852	
+ 2853	IO_open of /tmp/35_16464 failed
+ 2854	
+ 2855	For loop: Trying controller number 1
+ 2856	
+ 2857	Slot mismatch
+ 2858	
+ 2859	For loop: Trying controller number 2
+ 2860	
+ 2861	Slot matched OK: slot=2
+ 2862	
+ 2863	Leaving translate_slot_to_ctlr
+ 2864	
+ 2865	 add_fd_to_fdtab :
+ 2866	done
+ 2867	
+ 2868			cdb.Byte = 55 11 0 0 0 0 0 0 94 0
+ 2869			cdb.Buffer = 80660fc
+ 2870			cdb.BufferLength = 94
+ 2871			direction = 2
+ 2872	
+ 2873			return status from IO_SCSI = -2
+ 2874	
+ 2875			(system) errno = 6
+ 2876	
+ 2877	 Press <ENTER> to continue:
+ 2878	Sense Data:  Valid = 0, Sense Key = 5
+ 2879			
+ 2880	 70
+ 2881	 0
+ 2882	 5
+ 2883	 0
+ 2884	 0
+ 2885	 0
+ 2886	 0
+ 2887	 ffffff98
+ 2888	 0
+ 2889	 0
+ 2890	 0
+ 2891	
+ 2892			
+ 2893	 0
+ 2894	 ffffff91
+ 2895	 25
+ 2896	 0
+ 2897	 0
+ 2898	 0
+ 2899	 0
+ 2900	 0
+ 2901	 0
+ 2902	 1
+ 2903	
+ 2904			
+ 2905	 0
+ 2906	 0
+ 2907	 0
+ 2908	 0
+ 2909	
+ 2910	
+ 2911			scsi_status.Error = 1
+ 2912	
+ 2913			scsi_status.Errno = 0
+ 2914	
+ 2915			scsi_status.Sense_Present = 1
+ 2916	
+ 2917			scsi_status as unsigned hex = c0000000
+ 2918	
+ 2919	scsicmd: mode_select
+ 2920	
+ 2921	sysio	: destroy
+ 2922	
+ 2923	find_fdtab :
+ 2924	 found
+ 2925	
+ 2926	entered destroy_OBJECT, this = 8074f74
+ 2927	
+ 2928	leaving destroy_OBJECT
+ 2929	
+ 2930	find_fdtab :
+ 2931	 not found
+ 2932	
+ 2933	Entered translate_slot_to_ctlr
+ 2934	
+ 2935	For loop: Trying controller number 0
+ 2936	
+ 2937	IO_open of /tmp/35_16464 failed
+ 2938	
+ 2939	For loop: Trying controller number 1
+ 2940	
+ 2941	Slot mismatch
+ 2942	
+ 2943	For loop: Trying controller number 2
+ 2944	
+ 2945	IO_open of /tmp/35_147536 failed
+ 2946	
+ 2947	For loop: Trying controller number 3
+ 2948	
+ 2949	IO_open of /tmp/35_213072 failed
+ 2950	
+ 2951	For loop: Trying controller number 4
+ 2952	
+ 2953	IO_open of /tmp/35_278608 failed
+ 2954	
+ 2955	For loop: Trying controller number 5
+ 2956	
+ 2957	IO_open of /tmp/35_344144 failed
+ 2958	
+ 2959	For loop: Trying controller number 6
+ 2960	
+ 2961	IO_open of /tmp/35_409680 failed
+ 2962	
+ 2963	For loop: Trying controller number 7
+ 2964	
+ 2965	IO_open of /tmp/35_475216 failed
+ 2966	
+ 2967	Leaving translate_slot_to_ctlr
+ 2968	
+ 2969	sysio	: controller_command
+ 2970	
+ 2971	find_fdtab :
+ 2972	 not found
+ 2973	
+ 2974	Entered translate_slot_to_ctlr
+ 2975	
+ 2976	For loop: Trying controller number 0
+ 2977	
+ 2978	IO_open of /tmp/35_17488 failed
+ 2979	
+ 2980	For loop: Trying controller number 1
+ 2981	
+ 2982	IO_open of /tmp/35_83024 failed
+ 2983	
+ 2984	For loop: Trying controller number 2
+ 2985	
+ 2986	IO_open of /tmp/35_148560 failed
+ 2987	
+ 2988	For loop: Trying controller number 3
+ 2989	
+ 2990	IO_open of /tmp/35_214096 failed
+ 2991	
+ 2992	For loop: Trying controller number 4
+ 2993	
+ 2994	IO_open of /tmp/35_279632 failed
+ 2995	
+ 2996	For loop: Trying controller number 5
+ 2997	
+ 2998	IO_open of /tmp/35_345168 failed
+ 2999	
+ 3000	For loop: Trying controller number 6
+ 3001	
+ 3002	IO_open of /tmp/35_410704 failed
+ 3003	
+ 3004	For loop: Trying controller number 7
+ 3005	
+ 3006	IO_open of /tmp/35_476240 failed
+ 3007	
+ 3008	Leaving translate_slot_to_ctlr
+ 3009	
+ 3010			scsi_status.Error = 1
+ 3011	
+ 3012			scsi_status.Errno = 5
+ 3013	
+ 3014			scsi_status.Sense_Present = 0
+ 3015	
+ 3016			scsi_status as unsigned hex = 80000005
+ 3017	
+ 3018	scsicmd: mode_sense
+ 3019	
+ 3020	sysio	: destroy
+ 3021	
+ 3022	find_fdtab :
+ 3023	 not found
+ 3024	
+ 3025	find_fdtab :
+ 3026	 not found
+ 3027	
+ 3028	entered destroy_OBJECT, this = 8074e10
+ 3029	
+ 3030	leaving destroy_OBJECT
+ 3031	
+ 3032	find_fdtab :
+ 3033	 not found
+ 3034	
+ 3035	Entered translate_slot_to_ctlr
+ 3036	
+ 3037	For loop: Trying controller number 0
+ 3038	
+ 3039	IO_open of /tmp/35_16464 failed
+ 3040	
+ 3041	For loop: Trying controller number 1
+ 3042	
+ 3043	IO_open of /tmp/35_82000 failed
+ 3044	
+ 3045	For loop: Trying controller number 2
+ 3046	
+ 3047	IO_open of /tmp/35_147536 failed
+ 3048	
+ 3049	For loop: Trying controller number 3
+ 3050	
+ 3051	IO_open of /tmp/35_213072 failed
+ 3052	
+ 3053	For loop: Trying controller number 4
+ 3054	
+ 3055	IO_open of /tmp/35_278608 failed
+ 3056	
+ 3057	For loop: Trying controller number 5
+ 3058	
+ 3059	IO_open of /tmp/35_344144 failed
+ 3060	
+ 3061	For loop: Trying controller number 6
+ 3062	
+ 3063	IO_open of /tmp/35_409680 failed
+ 3064	
+ 3065	For loop: Trying controller number 7
+ 3066	
+ 3067	IO_open of /tmp/35_475216 failed
+ 3068	
+ 3069	Leaving translate_slot_to_ctlr
+ 3070	
+ 3071	sysio	: controller_command
+ 3072	
+ 3073	find_fdtab :
+ 3074	 not found
+ 3075	
+ 3076	Entered translate_slot_to_ctlr
+ 3077	
+ 3078	For loop: Trying controller number 0
+ 3079	
+ 3080	IO_open of /tmp/35_17232 failed
+ 3081	
+ 3082	For loop: Trying controller number 1
+ 3083	
+ 3084	IO_open of /tmp/35_82768 failed
+ 3085	
+ 3086	For loop: Trying controller number 2
+ 3087	
+ 3088	IO_open of /tmp/35_148304 failed
+ 3089	
+ 3090	For loop: Trying controller number 3
+ 3091	
+ 3092	IO_open of /tmp/35_213840 failed
+ 3093	
+ 3094	For loop: Trying controller number 4
+ 3095	
+ 3096	IO_open of /tmp/35_279376 failed
+ 3097	
+ 3098	For loop: Trying controller number 5
+ 3099	
+ 3100	IO_open of /tmp/35_344912 failed
+ 3101	
+ 3102	For loop: Trying controller number 6
+ 3103	
+ 3104	IO_open of /tmp/35_410448 failed
+ 3105	
+ 3106	For loop: Trying controller number 7
+ 3107	
+ 3108	IO_open of /tmp/35_475984 failed
+ 3109	
+ 3110	Leaving translate_slot_to_ctlr
+ 3111	
+ 3112			scsi_status.Error = 1
+ 3113	
+ 3114			scsi_status.Errno = 5
+ 3115	
+ 3116			scsi_status.Sense_Present = 0
+ 3117	
+ 3118			scsi_status as unsigned hex = 80000005
+ 3119	
+ 3120	scsicmd: mode_sense
+ 3121	
+ 3122	sysio	: destroy
+ 3123	
+ 3124	find_fdtab :
+ 3125	 not found
+ 3126	
+ 3127	find_fdtab :
+ 3128	 not found
+ 3129	
+ 3130	entered destroy_OBJECT, this = 8074f74
+ 3131	
+ 3132	leaving destroy_OBJECT
+ 3133	
+ 3134	sysio	: controller_command
+ 3135	
+ 3136	find_fdtab :
+ 3137	 not found
+ 3138	
+ 3139	Entered translate_slot_to_ctlr
+ 3140	
+ 3141	For loop: Trying controller number 0
+ 3142	
+ 3143	IO_open of /tmp/35_16464 failed
+ 3144	
+ 3145	For loop: Trying controller number 1
+ 3146	
+ 3147	IO_open of /tmp/35_82000 failed
+ 3148	
+ 3149	For loop: Trying controller number 2
+ 3150	
+ 3151	IO_open of /tmp/35_147536 failed
+ 3152	
+ 3153	For loop: Trying controller number 3
+ 3154	
+ 3155	IO_open of /tmp/35_213072 failed
+ 3156	
+ 3157	For loop: Trying controller number 4
+ 3158	
+ 3159	IO_open of /tmp/35_278608 failed
+ 3160	
+ 3161	For loop: Trying controller number 5
+ 3162	
+ 3163	IO_open of /tmp/35_344144 failed
+ 3164	
+ 3165	For loop: Trying controller number 6
+ 3166	
+ 3167	IO_open of /tmp/35_409680 failed
+ 3168	
+ 3169	For loop: Trying controller number 7
+ 3170	
+ 3171	IO_open of /tmp/35_475216 failed
+ 3172	
+ 3173	Leaving translate_slot_to_ctlr
+ 3174	
+ 3175			scsi_status.Error = 1
+ 3176	
+ 3177			scsi_status.Errno = 5
+ 3178	
+ 3179			scsi_status.Sense_Present = 0
+ 3180	
+ 3181			scsi_status as unsigned hex = 80000005
+ 3182	
+ 3183	scsicmd: inquiry
+ 3184	
+ 3185	sysio	: controller_command
+ 3186	
+ 3187	find_fdtab :
+ 3188	 not found
+ 3189	
+ 3190	Entered translate_slot_to_ctlr
+ 3191	
+ 3192	For loop: Trying controller number 0
+ 3193	
+ 3194	IO_open of /tmp/35_16464 failed
+ 3195	
+ 3196	For loop: Trying controller number 1
+ 3197	
+ 3198	IO_open of /tmp/35_82000 failed
+ 3199	
+ 3200	For loop: Trying controller number 2
+ 3201	
+ 3202	IO_open of /tmp/35_147536 failed
+ 3203	
+ 3204	For loop: Trying controller number 3
+ 3205	
+ 3206	IO_open of /tmp/35_213072 failed
+ 3207	
+ 3208	For loop: Trying controller number 4
+ 3209	
+ 3210	IO_open of /tmp/35_278608 failed
+ 3211	
+ 3212	For loop: Trying controller number 5
+ 3213	
+ 3214	IO_open of /tmp/35_344144 failed
+ 3215	
+ 3216	For loop: Trying controller number 6
+ 3217	
+ 3218	IO_open of /tmp/35_409680 failed
+ 3219	
+ 3220	For loop: Trying controller number 7
+ 3221	
+ 3222	IO_open of /tmp/35_475216 failed
+ 3223	
+ 3224	Leaving translate_slot_to_ctlr
+ 3225	
+ 3226			scsi_status.Error = 1
+ 3227	
+ 3228			scsi_status.Errno = 5
+ 3229	
+ 3230			scsi_status.Sense_Present = 0
+ 3231	
+ 3232			scsi_status as unsigned hex = 80000005
+ 3233	
+
+
+
+
+
+
+
+

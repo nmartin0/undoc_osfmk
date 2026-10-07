@@ -1,0 +1,8 @@
+Copied nroff source from usr/local/nosupport/nroff
+Modified Makefile to find necessary troff files, also commented out -R switch
+(-R      Passed on to as, making initialized variables shared
+             and read-only.)
+it is not supported by PGI compiler.
+Shala
+
+Wed Mar 25 16:20:04 PST 1992

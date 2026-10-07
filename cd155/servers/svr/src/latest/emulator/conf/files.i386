@@ -1,0 +1,28 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Machine-dependent files for out-of-kernel version
+#
+OPTIONS/syscalltrace		optional syscalltrace
+OPTIONS/mach_rdb		optional mach_rdb
+OPTIONS/stack_limit_check	optional stack_limit_check
+OPTIONS/itrace			optional itrace
+OPTIONS/idebug			optional idebug
+
+i386/bcopy.s			standard
+i386/emul_machdep.c		standard
+i386/emul_vector.s		standard
+
+# These don't exist yet . . . 
+#i386/mul.s			optional tnc
+#i386/nx_svr_user.c		optional nx
+i386/user_copy.s		standard

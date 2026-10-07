@@ -1,0 +1,90 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994, 1995  Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * Copyright (c) 1990
+ * Open Software Foundation, Inc.
+ * 
+ * Permission is hereby granted to use, copy, modify and freely distribute
+ * the software in this file and its documentation for any purpose without
+ * fee, provided that the above copyright notice appears in all copies and
+ * that both the copyright notice and this permission notice appear in
+ * supporting documentation.  Further, provided that the name of Open
+ * Software Foundation, Inc. ("OSF") not be used in advertising or
+ * publicity pertaining to distribution of the software without prior
+ * written permission from OSF.  OSF makes no representations about the
+ * suitability of this software for any purpose.  It is provided "as is"
+ * without express or implied warranty.
+ */
+/* mach_o_header_md.h
+ * 
+ * This is the machine-dependent declaration of the header for the
+ * OSF version of the Mach-O object file format, describing
+ * the header as it is in the file.  Since a Mach-O header has
+ * the same bit pattern on all machines, the way it is described
+ * in C is machine-dependent.
+ *
+ * NOTE:  THIS IS PRELIMINARY AND WILL PROBABLY CHANGE
+ *
+ * OSF/1 Release 1.0
+ */
+
+#ifndef _H_MACH_O_HEADER_MD
+#define _H_MACH_O_HEADER_MD
+
+/*
+* The only programs that should use this header file are
+ * encode_mach_o_hdr and decode_mach_o_hdr.  All other programs
+ * that have to look at the object header should call them and
+ * use the header file mach_o_header.h.
+ *
+ * Version for the Intel IPSC860 (i860)
+ *
+ * The header appears at the very beginning of the file.
+ * All header fields are stored in network byte order (big endian),
+ * All fields are aligned in the natural way for 32-bit word machines
+ * and are 2 or 4 bytes long, with no implicit padding between fields.
+*/
+/* For the I860, all the field sizes can be represented in normal C,
+ * but the byte order is little endian.
+ */
+
+typedef struct raw_mo_header_t {
+          unsigned long		rmoh_magic;    /* magic number = 0xdeafbead */
+	  unsigned short	rmoh_major_version;
+	  unsigned short	rmoh_minor_version;
+	  unsigned short	rmoh_header_version;
+	  unsigned short	rmoh_max_page_size; /* max linked for */
+	  unsigned short	rmoh_byte_order;
+          unsigned short	rmoh_data_rep_id; /* data rep aspects */
+          unsigned long		rmoh_cpu_type;
+          unsigned long		rmoh_cpu_subtype;
+	  unsigned long		rmoh_vendor_type;
+	  unsigned long		rmoh_flags;
+	  unsigned long		rmoh_load_map_cmd_off; 
+	  unsigned long		rmoh_first_cmd_off;
+	  unsigned long		rmoh_sizeofcmds; /* size in bytes of cmds+map */
+	  unsigned long		rmoh_n_load_cmds;
+	  unsigned long		rmoh_reserved [2]; /* = 0, for future use */
+	} raw_mo_header_t;
+
+
+/* definition of the current value of the header version; each header .h file
+ * should have its own definition of the value in case the files get out of 
+ * synch.
+ */
+
+#define MO_RAW_HEADER_VERSION	1 
+
+
+#endif /* _H_MACH_O_HEADER_MD */

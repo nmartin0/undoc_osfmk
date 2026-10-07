@@ -1,0 +1,75 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+#
+# HISTORY
+# $Log: MASTER.local,v $
+# Revision 1.2  1994/11/18  20:24:57  mtm
+# Copyright additions/changes
+#
+# Revision 1.1  1994/04/11  18:41:26  dleslie
+#  Reviewer: John Litvin
+#  Risk: low
+#  Benefit or PTS #: support for configurable emulator builds
+#  Testing: builds STD+WS and RAMDISK+WS emulators of same size as old way
+# 	of building
+#  Module(s):    MASTER MASTER.i386 MASTER.i386.local MASTER.i860
+# 	MASTER.i860.local MASTER.local Makefile.i386 Makefile.i860
+# 	Makefile.template files files.i386 files.i860 make.template
+# 	mkconfig.csh
+#
+# Revision 1.4  1993/07/14  17:53:16  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.3  1993/07/01  19:11:37  cfj
+# Adding new code from vendor
+#
+# Revision 1.3  1993/05/06  19:13:41  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.1  1993/05/03  17:26:50  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.2  1992/11/30  22:18:53  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:18:00  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+#Revision 2.2  1991/08/31  13:26:23  rabii
+#	Initial V2.0 Checkin
+#
+#	Revision 3.2  91/03/08  16:01:16  condict
+#	Modified to work with the OSF/1 header files
+#	
+# Revision 3.1  91/02/27  16:30:33  condict
+# New, OSF version of MASTER.local (gets rid of CMUCS option in CMU version).
+#
+#######################################################################
+#
+#	Master machine independent configuration file for a specific site.
+#
+#	This file allows specific sites to easily maintain local
+#	configuration without touching the official Mach Master configuration
+#	files.  All machine independent local options and configurations can
+#	(and should) be placed in this file.
+#
+#	This version of the file is specific to the OSF Grenoble RI
+#	and should be replaced at each site.
+#
+#######################################################################
+#
+#  PSEUDO-DEVICES (select any combination)
+#
+#
+#######################################################################

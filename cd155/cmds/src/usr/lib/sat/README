@@ -1,0 +1,7 @@
+System Acceptance Tests
+
+This directory contains the standard Paragon system acceptance tests.
+Subdirectories organize the tests into industry standard benchmarks,
+system capability tests, and parallel benchmarks. The README files
+in each directory provide additional information about each test.
+

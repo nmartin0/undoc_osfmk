@@ -1,0 +1,173 @@
+#!/bin/sh
+# @(#) satsum 1.12 02/09/93 15:23:41 walth
+#
+# SAT Summary Report
+#
+# Command invocation: satsum [-<opts>] <SAT transcript file name>
+#
+
+echo "Paragon SAT Summary                                     `date '+%B %d, %Y'`"
+
+# Initialize variables
+devNull=/dev/null
+pgmName="`basename $0`"
+satDir=/usr/lib/sat
+satDir=/home/sigeval/libsat
+reportFile=$devNull
+transcriptFile="$1"
+
+fail=0
+pass=0
+total=0
+exitCode=0
+testError=1
+miscError=2
+
+# Define temporary scratch files
+#        Must be in "/usr/tmp" and allow for multiple invocations
+programResultsFile=/usr/tmp/$pgmName.results.$$
+programScratchFile=/usr/tmp/$pgmName.scratch.$$
+
+# Traps
+trap "Interrupt 2" 2       # SIGINT, interrupt (^C)
+trap "Interrupt 3" 3       # SIGQUIT, quit (^\)
+
+# Functions, signal handlers and output filtering
+
+# Interrupt function: trap interrupt signals
+Interrupt()
+{
+   echo "Interrupted, signal #$1 ..."
+
+   # Remove temporary file(s)
+   removeFiles
+
+   exit $miscError
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programResultsFile
+   rm -f $programScratchFile
+
+}
+
+# Get command line parameters
+while test $# -gt 0
+do
+      case "$1" in
+           -h) # Help, usage message
+               echo "Usage: $pgmName [-<options>] <SAT transcript file name>" ; echo
+               sed -n '/^while/,/^done/ p' $0 | sed '/^done/ q' | \
+               sed -n 's/^.*\([-+][0-9A-Za-z])\)/\1/p' | sed 's/ #//'
+               exit $exitCode
+               ;;
+           -r) # Generate summary report
+               reportFile=SAT.summary
+               shift
+               ;;
+           *)
+               break
+               ;;
+      esac
+done
+
+# Test for argument #1, transcript file name
+if test -z "$1"
+then
+   echo "$pgmName [-<options>] <SAT transcript file name>" ; echo
+
+   echo "No <SAT transcript file name> argument specified, enter: \c"
+   read transcriptFile
+
+   if test -z "$transcriptFile" -o "$transcriptFile" = "q"
+   then
+      echo "No <SAT transcript file name> specified."
+      exit $miscError
+   fi
+else
+   transcriptFile="$1"
+fi
+
+# Verify transcript file
+if test ! -r "$transcriptFile"
+then
+   echo "Specified transcript file, $transcriptFile, not readable!"
+   exit $miscError
+fi
+
+# Verify report file
+if test "$reportFile" = "$transcriptFile"
+then
+   echo "The report and transcript file are the same!"
+   exit $miscError
+fi
+
+echo
+echo "Transcript file: $transcriptFile"
+
+# Prepare
+removeFiles
+
+# Title
+echo
+echo "Paragon SAT Summary                                     `date '+%B %d, %Y'`" > $reportFile
+
+# Configuration
+echo | tee -a $reportFile
+sed -n '1,4p' $transcriptFile | tee -a $reportFile
+
+# Summary
+echo | tee -a $reportFile
+sed -n '/^PASS:/,/^\[/p' $transcriptFile > $programScratchFile
+sed -n '/^FAIL:/p' $transcriptFile >> $programScratchFile
+
+# Format the output:
+# Lines with "PASS:" or "FAIL:" print as is
+# Lines beginning with "[" signal the end of a test, print elasped time, indented
+# All other lines, print indented six (6) spaces
+awk ' \
+      $1 == "PASS:" || $1 == "FAIL:" { print $0 ; next } \
+      substr($1,1,1) == "[" { printf "      Elapsed time: %s minutes\n\n", $NF ; next } \
+      { printf "      %s\n", substr($0,index($0,$1)) } \
+    ' $programScratchFile > $programResultsFile
+
+echo | tee -a $reportFile
+cat $programResultsFile | tee -a $reportFile
+
+# Totals
+fail=`grep -c '^FAIL:' $transcriptFile`
+pass=`grep -c '^PASS:' $transcriptFile`
+total=`expr $fail + $pass`
+
+echo | tee -a $reportFile
+echo "$pass tests passed of $total total tests." | tee -a $reportFile
+
+if test $fail = 0
+then
+   echo "No tests failed." | tee -a $reportFile
+else
+   echo "$fail tests failed of $total total tests." | tee -a $reportFile
+fi
+
+# Signature lines
+echo | tee -a $reportFile
+echo "The successful completion of this Paragon System Acceptance Test was" | tee -a $reportFile
+echo | tee -a $reportFile
+echo "performed by ___________________________________________________ and" | tee -a $reportFile
+echo | tee -a $reportFile
+echo "witnessed by ____________________________________________ on ___________" | tee -a $reportFile
+
+# Remove temporary files
+removeFiles
+
+# Report
+if test $reportFile != $devNull
+then
+   echo
+   echo "SAT report file: $reportFile"
+fi
+
+# Exit
+exit $exitCode

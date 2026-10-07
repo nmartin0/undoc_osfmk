@@ -1,0 +1,131 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# Copyright (C) 1988, 1989, 1991 Free Software Foundation, Inc.
+# This file is part of GNU Make.
+# 
+# GNU Make is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# GNU Make is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with GNU Make; see the file COPYING.  If not, write to
+# the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+
+############################################################################
+#
+#    Copyright (c) 1988-1992 Intel Corporation
+#
+#    This file is part of pmake, an extension of GNU Make.
+#    Pmake is distributed by the Intel Corporation under the
+#    terms of the GNU General Public License.
+#
+#    Title:
+#        $Id: Makefile.paragon,v 1.2 1994/11/19 01:33:31 mtm Exp $
+#
+#    Description:
+#        Stand-alone build makefile for Paragon version of pmake.
+#
+###########################################################################
+
+# Name under which to install pmake (only for install target).
+instname = 	pmake
+
+# Directory to install pmake in (only for install target).
+bindir = 	$(INSTBINDIR)
+
+###########################################################################
+
+AR =		ar860 -rclv
+CC =		icc
+LD =		ld860
+STRIP =		strip860
+RM =		rm -f
+CHGRP = 	chgrp
+CHMOD = 	chmod
+CHOWN = 	chown
+DEPEND =	makedepend
+RANLIB =	echo
+
+DEFINES = 	-D_MACHINE_=\"PARAGON\" -D_machine_=\"paragon\" 	\
+	  	-D_CPUTYPE_=\"I860\" -D_cputype_=\"i860\"	\
+	  	-DPMAKE -DPOSIX -DPARAGON -D_NO_PROTO -DV8REGEXP 
+
+INCLUDES = 	-I$(PARAGON_XDEV)/paragon/include -I/usr/include
+
+CPPFLAGS =
+CFLAGS = 	$(DEFINES) $(INCLUDES)
+LDFLAGS = 	-g -Mnoperfmon
+LINK.c = 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+
+GLOBLIB =	glob/libglob.a
+LOADLIBS = 	-lnx -lmach3
+
+objs = commands.o default.o dir.o expand.o file.o function.o implicit.o \
+       job.o load.o misc.o main.o makeconf.o nx.o read.o regexp.o regsub.o \
+       remake.o remote.o rule.o variable.o vpath.o version.o \
+       arscan.o ar.o
+srcs = commands.c job.c dir.c file.c load.c misc.c main.c makeconf.c nx.c \
+       read.c remake.c remote.c rule.c implicit.c default.c variable.c \
+       expand.c function.c vpath.c version.c regexp.c regsub.c \
+       arscan.c ar.c  
+
+VPATH =
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.SUFFIXES:
+.SUFFIXES: 	.o .c .s .h .ps .dvi .texinfo
+
+all: 		compile  
+
+compile: 	pmake860
+
+pmake860: 	$(objs) $(GLOBLIB)
+		$(CC) $(LDFLAGS) $(objs) $(GLOBLIB) $(LOADLIBS) -o pmake860
+
+$(GLOBLIB): 	force
+		cd glob; \
+		$(MAKE) CC='$(CC)' CFLAGS='$(CFLAGS) -I..' AR='$(AR)' \
+		RANLIB='$(RANLIB)' -f Makefile.paragon libglob.a
+force:
+
+tags: 		$(srcs)
+		ctags -tw $(srcs)
+
+install: 	pmake860 $(bindir)/$(instname)
+
+exports:
+
+$(bindir)/$(instname): pmake860
+		$(RM) $(bindir)/$(instname)
+		$(CP) pmake860 $(bindir)/$(instname)
+		$(STRIP) $(bindir)/$(instname)
+		$(CHMOD) 755 $(bindir)/$(instname)
+		@echo $(CHGRP) bin $(bindir)/$(instname)
+		@echo $(CHOWN) bin $(bindir)/$(instname)
+
+clean: 		glob-clean
+		-rm -f pmake860 *.o core
+
+glob-clean:
+		cd glob; $(MAKE) -f Makefile.paragon $@
+
+depend:
+		$(DEPEND) $(INCLUDES) $(srcs)
+# DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -1,0 +1,141 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+#
+# Copyright (c) 1992-1995, Locus Computing Corporation
+# All rights reserved
+#
+# HISTORY
+# $Log: README,v $
+# Revision 1.8  1995/02/01  23:43:16  bolsen
+#  Reviewer(s): Jerry Toman
+#  Risk: Medium (lots of files)
+#  Module(s): Too many to list
+#  Configurations built: STD, LITE, & RAMDISK
+#
+#  Added or Updated the Locus Copyright message.
+#
+# Revision 1.7  1994/11/19  03:07:47  mtm
+# Copyright additions/changes
+#
+# Revision 1.6  1994/11/18  20:53:26  mtm
+# Copyright additions/changes
+#
+# Revision 1.5  1993/07/14  18:50:37  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.4  1993/05/06  19:28:28  stefan
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.3  1993/07/01  21:16:47  cfj
+# Adding new code from vendor
+#
+# Revision 1.3  1993/01/22  19:29:28  stefan
+# Merged Locus 01-20-93 code drop.
+#
+# Revision 1.2  1992/11/30  23:01:32  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:49:37  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 4.1  1992/11/04  01:01:37  cfj
+# Bump major revision number.
+#
+# Revision 1.1.1.1  1993/05/03  17:57:32  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 3.4  1992/12/28  15:20:44  mbarnett
+# Added words to inform the user that a new directory(/etc/load_level/shm_keys)
+# needs to be created to store key files used to generate ipc keys for shared
+# memory regions.
+#
+# Revision 3.3  92/06/15  12:58:59  mbarnett
+# Removed references to load_leveld_restart and added comments about new
+# parameters "minimum_cputime" and "nodes_to_use".  Also, added comments
+# which specify how the load leveler daemon running on all of the nodes can
+# be killed.
+# 
+# Revision 3.2  92/05/19  12:55:39  mbarnett
+# Added comments explaining the two new parameters "minimum_underload" and
+# "minimum_overload".
+# 
+# Revision 3.1  92/05/13  08:28:18  mbarnett
+# Added lines to accomodate new option "-n" to load_leveld and new utility
+# load_leveld_restart.
+# 
+# Revision 3.0  92/03/27  16:28:22  mbarnett
+# initial check-in
+# 
+#
+
+The load leveler daemon is invoked during startup via the loadlevel rc 
+script.  The "load_leveld" executable file should reside in the "/usr/sbin"
+directory and the "loadlevel" script should reside in the "/sbin/init.d"
+directory.  Also, the symbolic link("S56loadlevel") to the "loadlevel"
+script should be created in the "/sbin/rc3.d" directory.
+
+Finally, in order for the load leveler daemon to run, the directory 
+"/etc/load_level" must be created and the "parameters" file 
+as well as the "migrate_commands" file must reside in this directory.
+Also, the directory "/etc/load_level/shm_keys" must also be created.  This
+directory is used to store the ipc keyfiles used to generate the keys for
+accessing shared memory regions.  
+
+Note that if you want to use a parameters file and/or migrate_commands file
+that is located in a different directory, you can change the "loadlevel"
+script and invoke the load leveler via "load_leveld -c <path1> -p <path2> &"
+where path1 is the full path for the location of the migrate_commands file and
+path2 is the full path for the location of the parameters file.  If the 
+-c and/or -p options are not specified then the load leveler daemon will
+automatically use the default files("/etc/load_level/migrate_commands",
+"/etc/load_level/parameters").
+
+In addition to the "-c" and "-p" options, another option which now can
+be invoked with load_leveld is the "-n" option.  This option, if specified, 
+causes the load leveler daemon(load_leveld) to not do any re-dispatching
+of processes.  Hence, specifying the "-n" option results in the load leveler
+daemon only exchanging load information among other service nodes which
+are running the load leveler daemon.  If the "-n" option is not specified,
+the load leveler daemon will automatically re-dispatch(migrate processes from 
+overloaded nodes to underloaded nodes) local processes by default.
+
+All load leveler daemon processes running on all nodes can be killed by 
+invoking the following command "kill -15 <pid>" where <pid> is the pid of
+the local "load_leveld" process.  This command needs to only be invoked on
+one of the service nodes running a "load_leveld" process.
+
+The new parameters "minimum_overload" and "minimum_underload" have been added
+to the parameters file.  A node will be considered overloaded only if the
+amount by which the node is overloaded is at least as great as the value of
+the "minimum_overload" parameter.  Likewise, a node will be considered 
+underloaded only if the amount by which the node is underloaded is at least
+as great as the value of the "minimum_underload" parameter.
+
+The new parameters "minimum_cputime" and "nodes_to_use" have been added to
+the parameters file.  A process can only become a candidate for migration
+if its accumulated processor time is at least as large as the 
+"minimum_cputime".  Also, the "nodes_to_use" parameter allows the user to
+specify the set of nodes to be used by the load leveler daemon.  This list
+must be a subset of all service nodes.  Each node specified in the list must
+be comma(,) separated.  In addition, ranges can be specified by separating
+the beginning node of the range from the last node of the range with a dash(-).
+A list can be continued onto the next line of the parameters file by ending
+the line to be continued with a backslash(\).  Finally, if no nodes are 
+specified, then all service nodes are considered useable by default.  For 
+example,  all of the following "nodes_to_use" lines in the parameters file are
+valid: 
+
+nodes_to_use=   0,2,3,4-8,9   #defaults to all nodes
+
+nodes_to_use=     3-7,9,\     #defaults to all nodes
+10,11
+
+nodes_to_use=                 #defaults to all nodes

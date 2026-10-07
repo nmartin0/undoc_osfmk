@@ -1,0 +1,49 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# Copyright (c) 1992-1995, Locus Computing Corporation
+# All rights reserved
+#
+# HISTORY
+# $Log: migrate_commands,v $
+# Revision 1.6  1995/02/02  00:25:06  bolsen
+#  Reviewer(s): Jerry Toman
+#  Risk: Medium (lots of files)
+#  Module(s): Too many to list
+#  Configurations built: STD, LITE, & RAMDISK
+#
+#  Added or Updated the Locus Copyright message.
+#
+# Revision 1.5  1994/11/18  21:05:23  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1994/03/14  17:51:30  slk
+# Checkpoint Restart Code Drop
+#  Reviewer: Chris Peak, chrisp@locus.com
+#  Risk: Low
+#  Benefit or PTS #: Enhancement
+#  Testing: Locus VSTNC, individual checkpoint restart by hand
+#  Module(s):
+#
+# Revision 1.3  1994/02/04  01:41:24  slk
+#  Reviewer: Brent Olsen
+#  Risk: Low
+#  Benefit or PTS #: 7176	and update VSTNC.
+#  Testing: Built, Ran VSTNC
+#  Module(s):
+#
+# Revision 3.0  92/07/22  16:48:58  jpaul
+# Initial Checkin
+# 
+# This test file expects to be treated as an inclusion list; that is,
+# the below command is the ONLY one that MAY migrate.
+#
+forever_y

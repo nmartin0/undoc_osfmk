@@ -1,0 +1,75 @@
+echo		7/udp		ping
+echo		7/tcp		ping
+discard		9/udp		sink null
+discard		9/tcp		sink null
+systat		11/udp		users
+daytime		13/udp
+daytime		13/tcp
+netstat		15/tcp
+quote		17/udp		text
+chargen		19/udp		ttytst
+chargen		19/tcp		ttytst
+ftp		21/tcp
+telnet		23/tcp
+smtp		25/tcp		mail
+time		37/udp		timserver
+time		37/tcp		timserver
+name		42/tcp		nameserver
+whois		43/tcp		nicname
+mtp		57/tcp				
+bootp		67/udp
+tftp		69/udp
+rje		77/tcp
+finger		79/tcp
+link		87/tcp		ttylink
+supdup		95/tcp
+hostnames	101/tcp		hostname	
+pop		109/tcp
+nntp		119/tcp		readnews        
+erpc		121/udp			# RPC listener for Annex term srvr
+ntp		123/udp		ntp		
+imap		143/tcp
+print-srv	170/tcp				
+biff		512/udp		comsat
+exec		512/tcp
+login		513/tcp
+who		513/udp		whod
+shell		514/tcp		cmd		
+syslog		514/udp
+printer		515/tcp		spooler		
+talk		517/udp		
+ntalk		518/udp		
+efs		520/tcp				
+route		520/udp		router routed		
+timed		525/udp		timeserver
+courier		530/tcp		rpc		
+uucp		540/tcp	
+klogin		543/tcp
+kshell		544/tcp		kcmd
+kxct		549/tcp		
+new-rwho		550/udp		new-who		
+rmonitor		560/udp		rmonitord		
+monitor		561/udp				
+elcsd		704/udp				
+kerberos		750/udp		kdc
+kerberos_master		751/tcp
+passwd_server		752/udp
+krb_prop		753/tcp
+at-rtmp		769/udp
+at-nbp		770/udp
+at-echo		771/udp
+sms_db          775/tcp                         
+sms_update      777/tcp                         
+serv		778/tcp
+supfilesrv	871/tcp
+supfiledbg	1127/tcp
+ingreslock		1524/tcp
+nbiff		1950/udp				
+rauth2		2001/udp				
+zephyr-clt	2103/udp
+zephyr-hm	2104/udp
+genquery        2220/tcp
+writesrv	2401/tcp		# for the write server (AIXism, new)
+man		9535/tcp
+dictionary	10300/tcp	webster
+sgi-dgl		5232/tcp		# SGI Distributed Graphics Lib.

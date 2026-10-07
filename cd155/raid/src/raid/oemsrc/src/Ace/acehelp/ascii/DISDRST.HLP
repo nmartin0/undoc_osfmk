@@ -1,0 +1,56 @@
+     EXPLANATION OF OPTION
+ 
+     You can always view the current drive statuses in ace because 
+     they are always displayed in the drive matrix.  Note that the 
+     location of the array controller(s) is also displayed in the 
+     drive matrix with a status of 7.
+ 
+     An abbreviated meaning of each drive status is always displayed 
+     in the lower left-hand corner of the drive window and labeled 
+     STATUS.  For descriptions of each drive status, see the table 
+     below.  
+     +===============================================================+
+     |  DRIVE STATUS    |              DESCRIPTION                   |
+     +------------------+--------------------------------------------+
+     | 0 - Optimal      | The drive is operating at an optimal level.|
+     +------------------+--------------------------------------------+
+     | 1 - Non-existent | No drive is physically connected to the    |
+     |                  | array.                                     |
+     +------------------+--------------------------------------------+
+     | 2 - Spare        | The drive is connected to the array, but   |
+     |                  | not configured into a logical unit.        |
+     +======================= (CONTINUED) ===========================+
+ 
+     +===============================================================+
+     |  DRIVE STATUS    |              DESCRIPTION                   |
+     +------------------+--------------------------------------------+
+     | 3 - Failed       | The drive was failed by the array          |
+     |                  | controller or by the user and must be      | 
+     |                  | replaced.                                  |
+     +------------------+--------------------------------------------+
+     | 4 - Replaced     | The drive has just been replaced, is       |
+     |                  | being formatted, or is being reconstructed.|
+     +------------------+--------------------------------------------+
+     | 5 - Warning      | An unrecoverable read error occurred which |
+     |                  | requires you to (1) fail the drive, and    |
+     |                  | (2) replace the drive, and (3) restore the | 
+     |                  | logical unit.                              |
+     +------------------+--------------------------------------------+
+     | 6 - Mismatch     | The array controller sensed that the drive |
+     |                  | has either a sector size, capacity, serial |
+     |                  | number, SCSI Channel, or ID different than |
+     |                  | what the array controller expected.        |
+     +===============================================================+
+                                (CONTINUED)
+ 
+     +===============================================================+
+     |  DRIVE STATUS    |              DESCRIPTION                   |
+     +------------------+--------------------------------------------+
+     | 7 - Controller   | This status is NOT a drive status - it     |
+     |                  | indicates the location of the array        |
+     |                  | controller in the array.                   |
+     +------------------+--------------------------------------------+
+     | 8 - Formatting   | The drive is currently being formatted.    |
+     +------------------+--------------------------------------------+
+     | 9 - Wrong drive  | The wrong drive was replaced.              |
+     +===============================================================+

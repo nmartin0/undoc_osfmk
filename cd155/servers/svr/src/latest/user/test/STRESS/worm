@@ -1,0 +1,148 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Copyright (c) 1992-1995, Locus Computing Corporation
+# All rights reserved
+#
+#
+# HISTORY
+# $Log: worm,v $
+# Revision 1.4  1995/02/02  00:20:53  bolsen
+#  Reviewer(s): Jerry Toman
+#  Risk: Medium (lots of files)
+#  Module(s): Too many to list
+#  Configurations built: STD, LITE, & RAMDISK
+#
+#  Added or Updated the Locus Copyright message.
+#
+# Revision 1.3  1994/11/18  20:57:24  mtm
+# Copyright additions/changes
+#
+# Revision 1.2  1993/07/14  18:54:31  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1  1992/12/02  21:34:07  dleslie
+# New bug drop from Locus, December 2, 1992
+#
+# Revision 1.1.1.2  1993/07/01  21:22:19  cfj
+# Adding new code from vendor
+#
+# Revision 3.0  92/11/23  11:45:02  chrisp
+# First release.
+# 
+# 
+#
+
+. stresslib
+
+DELAY=30		# default working time on each node
+LINES=10
+PADDING=
+FILE=/tmp/$name.$$
+
+required onnode
+
+while getopts ":L:E:e:f:l:Nnpqr:T:t:" opt; do
+	case "$opt" in
+	    L)	LOGFILE="$OPTARG";;
+	    N)	RANDOMIZING_NODES=;;
+	    n)	RANDOMIZING_NODES=true;;
+	    E)	DELAY=$OPTARG;;
+	    e)	DELAY=$OPTARG; randomizing_delay=true;;
+	    f)  FILE=$OPTARG;;
+	    l)  LINES=$OPTARG;;
+	    p)	PADDING=$OPTARG;;
+	    q)	QUIET=please;;
+	    r)	RANDOM=$OPTARG;;
+	    T)	TIME=$OPTARG;;
+	    t)	let "TIME=(RANDOM % OPTARG) + 1";;
+	    :)	echo "$NAME: $OPTARG requires a value"
+		exit 2;;
+	   \?)	echo "$NAME: unknown option $OPTARG"
+		echo "usage: $NAME -n -t|T<secs> -e|E <secs> <node_list>"
+		exit 2;;
+	esac
+done
+shift OPTIND-1
+node_list="$*"
+
+#
+# Prompt for all the important stuff if not given
+# 
+[ "$node_list" ]  || read node_list?"Node list? "
+[ "$node_list" ]  || node_list="$(node_self)"
+
+declare_nodes $node_list
+
+#
+# Create $FILE containing $LINES lines each numbered and padded with $PADDING
+#
+: > $FILE
+let "i = 1"
+while (( i <= $NLINES )); do
+	echo $i "$PADDING" >> $FILE
+	let "i = i + 1"
+done
+
+trap 'kill $reader 1>/dev/null 2>&1; stop_timing; exit' INT KILL TERM
+if [ "$TIME" ]; then
+	CYCLING_NODES=true
+	start_timing $TIME
+	log "munching around for $TIME seconds..."
+else
+	CYCLING_NODES=
+fi
+
+( while : ; do
+	let "i = 0"
+	while read j; do
+		let "i = i + 1"
+		if [ $j != $i ]; then
+			(( $i != $NLINES )) && i="EOF, previously read $jlast"
+			log "read $j, expecting $i"
+		fi
+		let "jlast = j"
+	done < /tmp/file
+	if [ $i != $NLINES ]; then
+		log "EOF returned with count = $j"
+	fi
+done ) &
+reader=$!
+
+#
+# Poke the reader around.
+#
+let "delay_time = DELAY"
+while timing; do
+	#
+	# Make a random selection from the list of nodes
+	#	and migrate there
+	#
+	next_node
+	[ "$NODE" ] || break
+	log "squirming to node $NODE"
+	migrate_to_node $NODE $reader
+
+	[ $DELAY -eq 0 ] && continue
+
+	#
+	# Sleep for a time
+	#
+	if [ "$randomizing_delay" ]; then
+		let "delay_time = (RANDOM % DELAY) + 1"
+	fi
+	sleep $delay_time
+done
+
+kill $reader
+log "...done on node $(node_self)"
+exit 0

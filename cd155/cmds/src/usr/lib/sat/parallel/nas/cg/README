@@ -1,0 +1,7 @@
+NAS Conjugate Gradient (cg)
+
+This directory contains source code and makefile for the Conjugate Gradient
+Benchmark. It is one of the NAS Parallel Benchmarks and it solves the standard
+problem where the order of the matrix is 14000. It will run on all
+partitions where the number of nodes is a power of 2 beginning at 32.
+

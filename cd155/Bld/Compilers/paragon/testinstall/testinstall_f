@@ -1,0 +1,25 @@
+#!/bin/csh -f
+#
+#  testinstall_f
+#  Release 5.0
+#
+#  This script verifies that the application FORTRAN compiler has been installed
+#  properly.  
+#
+if (-e testinstall_f.out) then
+   rm -f testinstall_f.out
+endif
+if77 -Mreloc_libs -lvect vect-test.f -o vect_test_f >& testinstall_f.out
+if ($#argv < 1) then
+   ./vect_test_f >>& testinstall_f.out
+else
+   rcp vect_test_f $1\:/tmp
+   (rsh $1 /tmp/vect_test_f) >>& testinstall_f.out
+endif
+set x = `diff testinstall_f.out testinstall_f.exp | wc -l`
+if ($x == '0') then
+   echo "Installation successful"
+else
+   echo "testinstall_f.out differs from testinstall_f.exp"
+   echo "Installation unsuccessful"
+endif

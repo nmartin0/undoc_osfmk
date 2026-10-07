@@ -1,0 +1,120 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * This file was created by the Center for High Performance Computing of
+ * Worcester Polytechnic Institute (CHPC) on behalf of OSF.
+ */
+/*
+ *
+ * Module Function:
+ *	MiG type definitions used in the Distributed File Server interface.
+ *
+ * HISTORY
+ * $Log: fsvr_types.defs,v $
+ * Revision 1.7  1994/11/18  20:48:30  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.6  1994/01/05  17:18:05  brad
+ * Fixed lint warnings in PFS-related code.
+ *
+ *  Reviewer: None
+ *  Risk: Low
+ *  Benefit or PTS #: Some PFS source now passes lint
+ *  Testing: Ran PFS EATs
+ *  Module(s): emulator/emul_callback.c
+ *             emulator/fsvr_user_side.c
+ *             emulator/pfs2_user_side.c
+ *             emulator/pfs_emath.c
+ *             emulator/pfs_fdt.h
+ *             emulator/pfs_iomode.c
+ *             emulator/pfs_tokenmgt.c
+ *             emulator/pfs_user_side.c
+ *             server/uxkern/fsvr.defs
+ *             server/uxkern/fsvr2.defs
+ *             server/uxkern/fsvr2_server_side.c
+ *             server/uxkern/fsvr_types.defs
+ *             server/uxkern/pfs2.defs
+ *
+ * Revision 1.5  1993/12/23  01:47:30  brad
+ * Fixed various compilers warnings, lint errors, and lint warnings.
+ *
+ *  Reviewer: None.
+ *  Risk: Low.
+ *  Benefit or PTS #: None.
+ *  Testing: Booted and ran minimal PFS tests.
+ *  Module(s): emulator/emul_stack_alloc.c
+ *             emulator/fsvr_user_side.c
+ *             emulator/pfs_emath.c
+ *             emulator/pfs_user_side.c
+ *             emulator/pfs2_user_side.c
+ *             server/pfs/pfs_vfsops.c
+ *             server/uxkern/fsvr_types.defs
+ *             server/uxkern/fsvr_server_side.c
+ *             server/uxkern/fsvr.defs
+ *             server/uxkern/fsvr_types.h
+ *             server/uxkern/pfs2.defs
+ *
+ * Revision 1.4  1993/07/14  18:42:24  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.3  1993/07/01  21:03:22  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.3  1993/04/03  03:12:04  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ *
+ * Revision 1.2  1992/11/30  22:54:52  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1.2.1  1992/11/26  00:02:07  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.1.2.1  1992/11/05  23:43:37  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ * 
+ * Revision 4.1  1992/11/04  00:53:20  cfj
+ * Bump major revision number.
+ *
+ * Revision 2.4  1992/06/08  18:28:26  pjg
+ * 	Use mnemonics for defining fhandle_t, vattr_t and statfs_t sizes
+ * 	fhandle_t is 32 bytes and not 28 bytes (durriya).
+ * 	Added definition for vattr_t (rabii)
+ *
+ * Revision 2.3  92/01/16  17:17:56  roy
+ * 	92/01/16  13:22:44  pjg
+ * 	Added definitions for NFS.
+ * 
+ * Revision 2.2  92/01/14  11:22:47  roy
+ * 	92/01/05  23:43:59  noemi
+ * 	Defs for statfs_t and fhandle_t.
+ * 
+ */
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types_gen.h>
+
+type	fhandle_t	= struct[FHANDLE_SIZE] of char;
+type	statfs_t	= struct[STATFS_SIZE] of char;
+type	vattr_t		= struct[VATTR_SIZE] of char;
+
+type	nfs_args_t	= struct[NFS_ARGS_SIZE] of char;
+type	sockaddr_in_t	= struct[SOCKADDR_IN_SIZE] of char;
+type	nfsv2fh_t	= struct[NFSV2FH_SIZE] of char;;
+
+type	off_t		= unsigned;
+type	size_t		= unsigned;
+type	iomode_t	= unsigned;
+
+import <uxkern/fsvr_types.h>;

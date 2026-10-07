@@ -1,0 +1,142 @@
+    Copyright 1993, 1994, 1995 by Intel Scalable Systems Division, 
+    Beaverton, Oregon. All rights reserved. No part of this work 
+    may be reproduced or copied in any form or by any means...graphic, 
+    electronic, or mechanical including photocopying, taping, or 
+    information storage and retrieval systems...without the express 
+    written consent of Intel Corporation. The information in this 
+    document is subject to change without notice.                                                      
+                                                                                
+    Intel Corporation makes no warranty of any kind with regard to this         
+    material, including, but not limited to, the implied warranties of          
+    merchantability and fitness for a particular purpose. Intel                 
+    Corporation assumes no responsibility for any errors that may               
+    appear in this document. Intel Corporation makes no commitment to           
+    update or to keep current the information contained in this                 
+    document.                                                                   
+                                                                                
+    Intel Corporation assumes no responsibility for the use of any              
+    circuitry other than circuitry embodied in an Intel product. No             
+    other circuit patent licenses are implied.                                  
+                                                                                
+    Intel software products are copyrighted by and shall remain the             
+    property of Intel Corporation. Use, duplication, or disclosure is           
+    subject to restrictions stated in Intel's software license                  
+    agreement. Use, duplication, or disclosure by the U.S. Government           
+    is subject to restrictions as set forth in subparagraphs                  
+    (c)(1)(ii) of the Rights in Technical Data and Computer Software            
+    clause at 252.227-7013. Intel Corporation, 2200 Mission College             
+    Boulevard, Santa Clara, CA 9502. For all Federal use or contracts         
+    other than DoD, Restricted Rights under FAR 52.227-14, ALT. III             
+    shall apply.  Unpublished -- rights reserved under the copyright
+    laws of the United States.                                                               
+    The following are trademarks of Intel Corporation and its                   
+    affiliates and may be used only to identify Intel products:  
+
+
+    286
+
+    287                                                                         
+                                                                                
+    Concurrent File System                                                      
+                                                                                
+    Direct-Connect Module                                                       
+                                                                                
+    i
+     
+    i386                                                                        
+                                                                                
+    i387                                                                        
+                                                                                
+    i486                                                                        
+                                                                                
+    i487                                                                        
+                                                                                
+    i860                                                                        
+                                                                                
+    Intel                                                                       
+                                                                                
+    Intel386                                                                    
+                                                                                
+    Intel387                                                                    
+                                                                                
+    Intel486                                                                    
+                                                                                
+    Intel487                                                                    
+                                                                                
+    iPSC                                                                        
+                                                                                
+    Paragon                                                                     
+                                                                                
+    ProSolver                                                                   
+
+-------------------------------------------------------------------------------
+
+    APSO is a service mark of Verdix Corporation                                     
+    DGL is a trademark of Silicon Graphics, Inc.                                
+                                                                                
+    Ethernet is a registered trademark of XEROX Corporation                     
+                                                                                
+    EXABYTE is a registered trademark of EXABYTE Corporation                    
+                                                                                
+    Excelan is a trademark of Excelan Corporation                               
+                                                                                
+    EXOS is a trademark or equipment designator of Excelan Corporation          
+                                                                                
+    FORGE is a trademark of Applied Parallel Research, Inc.                     
+                                                                                
+    Green Hills Software, C-386, and FORTRAN-386 are trademarks of              
+    Green Hills Software, Inc.                                                  
+                                                                                
+    GVAS is a trademark of Verdix Corporation                                   
+                                                                                
+    IBM and IBM/VS are registered trademarks of International Business          
+    Machines                                                                    
+                                                                                
+    Lucid and Lucid Common Lisp are trademarks of Lucid, Inc.                   
+                                                                                
+    NFS is a trademark of Sun Microsystems                                      
+                                                                                
+    OSF, OSF/1, OSF/Motif, and Motif are trademarks of Open Software            
+    Foundation, Inc.                                                            
+                                                                                
+    PGI and PGF77 are trademarks of The Portland Group, Inc.                    
+                                                                                
+    PostScript is a trademark of Adobe Systems Incorporated                     
+                                                                                
+    ParaSoft is a trademark of ParaSoft Corporation                             
+                                                                                
+    SCO and OPEN DESKTOP are registered trademarks of The Santa Cruz            
+    Operation, Inc.                                                             
+                                                                                
+    SGI and SiliconGraphics are registered trademarks of Silicon                
+    Graphics, Inc.                                                              
+                                                                                
+    Sun Microsystems and the combination of Sun and a numeric suffix            
+    are trademarks of Sun Microsystems                                          
+                                                                                
+    The X Window System is a trademark of Massachusetts Institute of            
+    Technology                                                                  
+                                                                                
+    UNIX is a trademark of UNIX System Laboratories                             
+                                                                                
+    VADS and Verdix are registered trademarks of Verdix Corporation             
+                                                                                
+    VAST2 is a registered trademark of Pacific-Sierra Research                  
+    Corporation                                                                 
+                                                                                
+    VMS and VAX are trademarks of Digital Equipment Corporation                 
+                                                                                
+    VP/ix is a trademark of INTERACTIVE Systems Corporation and Phoenix         
+    Technologies, Ltd.                                                          
+                                                                                
+    XENIX is a trademark of Microsoft Corporation 286                           
+                                                                                
+                RESTRICTED RIGHTS LEGEND
+        This software has been developed at private expense.  Use, duplication,
+        or disclosure by the U.S. Government is subject to restrictions as set
+        forth in subparagraph (c)(1)(ii) of the Rights in Technical Data
+        and Computer Software clause at DFAR 252.227-7013.  Intel Corporation,
+        2200 Mission College Boulevard, Santa Clara, CA 95052.  For all
+        federal use or contracts other than DoD, Restricted Rights under
+        FAR 52.227-14, Alt. III shall apply.  Unpublished -- rights reserved
+        under the copyright laws of the United States.

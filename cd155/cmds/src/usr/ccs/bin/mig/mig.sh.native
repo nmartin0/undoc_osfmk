@@ -1,0 +1,51 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+# Mach Operating System
+# Copyright (c) 1989 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#
+# OSF/1 Release 1.0
+
+C=${CPP-/usr/ccs/bin/cpp}
+M=${MIGCOM-/usr/ccs/lib/migcom}
+
+cppflags=
+migflags=
+files=
+
+until [ $# -eq 0 ]
+do
+    case $1 in
+	-[qQvVtTrRsSi] ) migflags="$migflags $1"; shift;;
+	-user   ) migflags="$migflags $1 $2"; shift; shift;;
+	-server ) migflags="$migflags $1 $2"; shift; shift;;
+	-header ) migflags="$migflags $1 $2"; shift; shift;;
+	-cpp ) C=$2; shift; shift;;
+	-migcom ) M=$2; shift; shift;;
+        -nostdinc ) shift;;
+	-* ) cppflags="$cppflags $1"; shift;;
+	* ) files="$files $1"; shift;;
+    esac
+done
+
+for file in $files
+do
+    $C $cppflags "$file" | $M $migflags || exit
+done
+
+exit 0

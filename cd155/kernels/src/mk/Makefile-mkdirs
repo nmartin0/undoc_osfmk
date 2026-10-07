@@ -1,0 +1,111 @@
+# 
+# $Copyright
+# Copyright 1991, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1992 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon 
+# the rights to redistribute these changes.
+#  
+# HISTORY
+# $Log: Makefile-mkdirs,v $
+# Revision 1.5  1994/11/18  20:23:56  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:15:17  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:12:50  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.1.10.2  1993/04/22  18:11:41  dleslie
+# First R1_0 release
+#
+# Revision 2.3.4.1  92/03/28  10:00:01  jeffreyh
+# 	Picked up from MK71
+# 	[92/03/26  11:34:46  jeffreyh]
+# 
+# Revision 2.3  92/03/05  22:45:36  rpd
+# 	Changed to use double-colon rules for top-level targets.
+# 	[92/02/28            rpd]
+# 
+# Revision 2.2  92/02/20  13:35:01  elf
+# 	Created from Makefile-common.
+# 	[92/02/10            rpd]
+# 
+
+# Makefile-mkdirs has definitions and rules useful to Makefiles
+# which must create subdirectories (or rely on subdirectories existing)
+# in the object, install, or release directories.
+#
+# Using direct dependencies on directories to create directories is
+# unwise, because when the modtime of the directory changes things
+# will be unnecessarily remade.  It would be nice if make had a syntax
+# for depending on the existence of a directory/file, but it doesn't.
+
+
+# The mkodirs target can be used to create subdirectories
+# in the object directory.  It is normally used with
+#
+#	MKODIRS = ...
+#
+#	.INIT :: mkodirs
+
+mkodirs ::
+	+@-for dir in ${MKODIRS}; do \
+	  [ -d $$dir ] || \
+	  { echo "mkdir $$dir"; mkdir $$dir; } \
+	done
+
+# The mkidirs target can be used to create subdirectories
+# in the install directory.  It is normally used with
+#
+#	MKIDIRS = ...
+#
+#	install :: mkidirs ...
+
+mkidirs ::
+	@-for dir in ${MKIDIRS;.*;${INSTALLDIR}/&}; do \
+	  [ -d $$dir ] || \
+	  { echo "mkdir $$dir"; mkdir $$dir; } \
+	done
+
+# The mkrdirs target can be used to create subdirectories
+# in the release directory.  It is normally used with
+#
+#	MKRDIRS = ${MKIDIRS}
+#
+#	release :: mkrdirs ...
+
+mkrdirs ::
+	@-for dir in ${MKRDIRS;.*;${TRELEASEDIR}/&}; do \
+	  [ -d $$dir ] || \
+	  { echo "mkdir $$dir"; mkdir $$dir; } \
+	done

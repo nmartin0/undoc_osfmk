@@ -1,0 +1,187 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/benchmark/byte/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0
+testError=1
+miscError=2
+abortCode=3
+prog=${2-index}
+title="`sed -n '1p' README`"
+
+# Source directory
+sourceDir=`pwd`
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary files
+#        Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/byte.scratch.$$
+programResultsFile=$SAT_USR_TMP/byte.results.$$
+programErrorFile=$SAT_USR_TMP/byte.errors.$$
+
+# Define temporary directory to run program in
+programWorkDir=$SAT_USR_TMP/byte.$$
+programLogFile=${programWorkDir}/log
+programReportFile=${programWorkDir}/report
+
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   # Remove scratch/result files
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+   rm -f $programLogFile
+   rm -f $programReportFile
+
+   # Remove temporary directory
+   cd $sourceDir
+   rm -fr $programWorkDir
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   # check for cores
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "byte sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Set environment variables
+HOMEDIR=$sourceDir
+RESULTDIR=$programWorkDir
+TESTDIR=$sourceDir
+TMPDIR=$programWorkDir
+
+# Index group: double dhry2 execl context1 fstime shell
+iterations=1        # All tests
+
+arithtime=10        # double (10)
+background=8        # shell (1 2 4 8)
+dhrytime=10         # dhry2 (10)
+looper=120          # shell (60)
+seconds=30          # fstime (10 30)
+systime=10          # execl & context1 (10)
+
+# Setup environment
+export HOMEDIR RESULTDIR TESTDIR TMPDIR
+export iterations arithtime background dhrytime looper seconds systime
+unset BINDIR SCRPDIR TIMEACCUM
+
+# Verify program is executable
+if test -x $sourceDir/Run
+then
+   # Execute program
+   if $sourceDir/Run -q $prog > $programScratchFile 2> $programErrorFile
+   then
+      # Verify results, see filter results below
+      cat -n $programLogFile >> $programScratchFile
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "$sourceDir/Run exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+      if test -f "$programLogFile"
+      then
+         cat $programLogFile
+      fi
+      if test -f "$programReportFile"
+      then
+         cat $programReportFile
+      fi
+
+      cleanup $testError
+   fi
+else
+   echo "No \"Run\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Filter results, see verify results above
+cp $programReportFile $programResultsFile
+
+# Report PASS/FAIL results
+if test -s $programResultsFile -a ! -f core -a ! -d core
+then
+   # PROGRAM PASSed, cat (filtered) results back to sat
+   echo "PASS: $title."
+   cat $programResultsFile
+
+else
+   # PROGRAM FAILed, cat (filtered) scratch file back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

@@ -1,0 +1,83 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+.TH EXPORTPAGING 8 "16 October 1993"
+.SH NAME
+exportpaging - Export a Vnode pager service from those non-boot nodes listed
+in the EXPORT_PAGING bootmagic string.
+.SH SYNOPSIS
+.B exportpaging
+.RB [ " \-vdn " ]
+.SH DESCRIPTION
+The "EXPORT_PAGING" bootmagic string lists those MIO nodes (with disks)
+which will export a Vnode paging service.
+Paired with the "EXPORT_PAGING" list, is the "PAGER_NODE" bootmagic string.
+"PAGER_NODE" lists, in brackets '<>', those nodes which import their default
+paging service and the specific node which supplies this service.
+The boot node always exports a Vnode paging service and uses
+\'/mach_servers/pagingfile\' as it's default paging service.
+The boot node is the root of all paging trees, single or multi level.
+By the correct definition of "EXPORT_PAGING" and "PAGER_NODE" one can
+construct a multi-level paging tree.
+The purpose of a multi-level paging tree is to distribute the VM page-out
+traffic over multiple disks thus reducing system paging bottlenecks.
+
+\'exportpaging\' performs the following algorithm: 
+.LP
+For each non-boot node in the bootmagic string "EXPORT_PAGING", find the
+block-special paging device for that node and export a Vnode paging service
+from that node.
+The default block special device files "/dev/io*/rz[0123456]b" are searched
+attempting to match the node number from EXPORT_PAGING with the node number
+stored in the device special file; see rmknod(3).
+When a match is detected a swapon() syscall will be executed using the block
+special device pathname.
+The swapon() syscall instructs the Vnode pager at the specific node to
+register, with that node's UNIX server, a Mach port as an exported paging port.
+It is this exported paging port which will be utilized by other nodes as
+their default paging port.
+.LP
+The default block special paging partition/device 'rz0b' can be overriden by
+adding an entry to the DS (Diagnostic Station) file
+\'/usr/pagagon/boot/SYSCONFIG.TXT\'.
+On the \'SYSCONFIG.TXT\' file line which identifies the MIO node, add the
+following keyword plus argument: "PAGE_TO paging-device".
+Where "paging-device" is a block special disk device (partition) at the MIO
+node.
+Example: "PAGE_TO rz0d", page using the block special device (partition)
+"rz0d" instead of "rz0b".
+.LP
+A specific MIO can be excluded from paging duty by the addition of the
+"NO_PAGER" keyword to the \'SYSCONFIG.TXT\' line describing the MIO node.
+.LP
+.SH OPTIONS
+.TP
+.B \-v
+Enable verbose output.
+.TP
+.B \-d
+Enable runtime debug output.
+.TP
+.B \-n
+Output intended actions but do NOT perform the swapon() syscalls.
+.LP
+.SH SEE ALSO
+.TP
+.B swapon(2), rmknod(3), bootpp(8), SYSCONFIG.TXT(8)
+.LP
+.SH DIAGNOSTICS
+.LP
+Exit status is normally 0.
+.TP
+.SH "BUGS"
+If a node which exports a Vnode paging service does not boot then all
+nodes which import their paging service from the dead node will hang.
+.LP

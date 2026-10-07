@@ -1,0 +1,257 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/* 
+ * Mach Operating System
+ * Copyright (c) 1990 Carnegie-Mellon University
+ * All rights reserved.  The CMU software License Agreement specifies
+ * the terms and conditions for use and redistribution.
+ */
+/*
+ * Copyright (c) 1991, Locus Computing Corporation
+ * All rights reserved
+ */
+/*
+ * HISTORY
+ * $Log: bsd_2.defs,v $
+ * Revision 1.7  1994/11/18  20:47:02  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.6  1994/10/25  23:16:15  yazz
+ *  Reviewer: Nandini Ajmani
+ *  Risk: High -- many lines changed in many files
+ *  Benefit or PTS #: 9853
+ *  Testing: EATs: controlc, sched, os_interfaces, messages, rmcall
+ *  Module(s):
+ * 	server/bsd/init_main.c
+ * 	server/bsd/kern_exit.c
+ * 	server/bsd/kern_fork.c
+ * 	server/bsd/kern_prot.c
+ * 	server/bsd/kern_sig.c
+ * 	server/bsd/mach_signal.c
+ * 	server/sys/proc.h
+ * 	server/sys/user.h
+ * 	server/tnc/chkpnt_pproc.c
+ * 	server/tnc/rvp_subr.c
+ * 	server/tnc/tnc_svipc.c
+ * 	server/uxkern/bsd_2.defs
+ * 	server/uxkern/syscall_subr.c
+ * Side-thread changes.  Abolish specific simpleroutines psignal_retry and
+ * issig_psig in favor of one new general mechanism for handling side threads,
+ * simpleroutine side_thread_server.
+ *
+ * Revision 1.5  1994/05/04  21:48:47  mjl
+ * TNC select rewrite.  Add select id and reply node as args to
+ * bsd_sel_poll_reply().
+ *
+ *  Reviewer: Charlie Johnson (Intel), Bob Yasi (Locus)
+ *  Risk: Medium
+ *  Benefit or PTS #: #7537 + select rewrite
+ *  Testing: VSX, EATS, bobtest, Eval
+ *  Module(s):
+ * 	server/bsd/subr_select.c
+ * 	server/sys/select.h
+ * 	server/sys/socketvar.h
+ * 	server/sys/user.h
+ * 	server/tnc/un_debug.c
+ * 	server/tnc/un_debug.h
+ * 	server/uxkern/bsd_2.defs
+ * 	server/uxkern/bsd_server_side.c
+ * 	server/uxkern/fsvr.defs
+ * 	server/uxkern/fsvr2_server_side.c
+ * 	server/uxkern/fsvr_port.c
+ * 	server/uxkern/fsvr_subr.c
+ * 	server/uxkern/port_hash.c
+ * 	server/uxkern/port_hash.h
+ * 	server/vsocket/mi_config.c
+ * 	server/vsocket/sys_vsocket.c
+ * 	server/vsocket/two_way_hash.h
+ * 	server/vsocket/vs.defs
+ * 	server/vsocket/vs_chouse.c
+ * 	server/vsocket/vs_debug.c
+ * 	server/vsocket/vs_init.c
+ * 	server/vsocket/vs_ipc.c
+ * 	server/vsocket/vs_netops.c
+ * 	server/vsocket/vs_subr.c
+ * 	server/vsocket/vs_subr.h
+ * 	server/vsocket/vs_types.h
+ * 	server/vsocket/vsocket.h
+ *
+ * Revision 1.4  1993/07/14  18:39:32  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.3  1993/07/01  20:58:22  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.3  1993/04/03  03:11:07  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ *
+ * Revision 1.2  1992/11/30  22:52:43  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1.2.1  1992/11/26  00:01:35  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.1.2.1  1992/11/05  23:41:49  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ * 
+ * Revision 4.1  1992/11/04  00:49:54  cfj
+ * Bump major revision number.
+ *
+ * Revision 2.16  93/06/16  13:48:41  klh
+ * 	Revision 2.14  93/06/02  17:12:50  rabii
+ * 		Added stubs for accounting RPCs (rabii)
+ * 
+ * Revision 2.15  92/10/06  12:14:42  roman
+ * Fix RCS comments.
+ *
+ * Revision 2.14  92/10/05  13:48:44  klh
+ * 	Revision 2.13  92/09/11  09:29:04  rabii
+ * 		Changed argument name for remote_print (rabii)
+ * 
+ * Revision 2.13  92/07/26  17:32:48  bhk
+ * added support for select on remote sockets
+ * 
+ * Revision 2.12  92/06/05  13:58:53  klh
+ * 	Revision 2.11  92/05/31  18:59:30  loverso
+ * 		Revision 2.10.1.2  92/05/26  15:55:03  loverso
+ * 		Add file_port_send to convey send right on file port in
+ * 		sbsd_sel_poll-reply.  MOVE_SEND_ONCE the delayed reply port,
+ * 		instead of just using PORT_NAME.
+ * 
+ * 		Revision 2.10.1.1  92/05/21  15:17:39  loverso
+ * 		Revert to the use of the file_port instead of a file pointer for
+ * 		select/poll.
+ * 
+ * 	Revision 2.10  92/05/12  00:02:44  loverso
+ * 		sel_poll_reply changes:
+ * 		The makesend right is now explicitly taken in sel_poll_delay.
+ * 		We pass a file pointer and creds port instead of a file port and
+ * 		explicit cred structure.  (loverso)
+ * 
+ * Revision 2.11  92/04/06  19:08:29  klh
+ * For OSF merge, update version # to match LCC#
+ * 
+ * Revision 2.9  92/04/05  17:05:42  pjg
+ * 	Add new rpc for remote printing (rabii)
+ * 	Fix spelling mistake in comment. (roman)
+ * 
+ * 
+ * Revision 2.8  92/03/09  13:03:56  durriya
+ * 	Add no_op_msg to allow ux_server_thread_blocking to wake up a server
+ * 	thread harmlessly, so it will go away.
+ * 
+ * Revision 2.7  91/12/08  09:39:25  rabii
+ * 	Removed the stub get_credentials, now superceded by the real 
+ *	credentials Service.
+ * 
+ * Revision 2.6  91/11/23  17:39:51  rabii
+ * 	Locus Merge
+ * 	pgid and sid added to credentials service. (chrisp)
+ * 
+ * Revision 2.5  91/10/17  13:04:50  roy
+ * Fix revision history.
+ * 
+ * Revision 2.4  91/10/04  15:06:47  chrisp
+ * Get rid of the cred_port from the sel_poll_delay message, and add
+ * fields for the pid and the credentials structure. This is for the
+ * new philosophy used by server/bsd/subr_select.c which no longer
+ * counts on keeping the credentials port around.
+ * Also add the Locus copyright notice.
+ * 
+ * Revision 2.3  91/09/17  09:41:18  sjs
+ * integrate Locus changes
+ * Add new message in this file to extract a the credentials using
+ * a credentials port.  New message added for responding to delayed
+ * select() and poll().
+ *
+ * Revision 2.2  91/08/31  14:23:28  rabii
+ *	Initial V2.0 Checkin
+ *
+ * Revision 3.2  91/08/28  14:02:53  condict
+ * Add blank line, by accident.  Please ignore.
+ *
+ * Revision 3.1  91/08/22  16:30:15  condict
+ * Added the bsd_issig_psig() MIG declaration.
+ *
+ * Revision 3.1  91/08/09  12:22:29  barbou
+ * Added the bsd_issig_psig() MIG declaration.
+ *
+ * Revision 3.0  91/01/17  12:05:44  condict
+ * Unchanged copy from Mach 3.0 BSD UNIX server
+ *
+ * Revision 2.2  90/06/21  13:42:26  rpd
+ * 	Created.
+ * 
+ * $EndLog
+ */
+
+/*
+ * IPC interface for UX server functions.
+ * The UX server is both the client and server for these functions.
+ */
+
+subsystem bsd_2 102000;
+
+UserPrefix ubsd_;
+ServerPrefix sbsd_;
+
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types.defs>
+
+simpleroutine side_thread_server(
+		proc_port	: mach_port_t;
+	in	side_func	: vm_address_t;
+	in	intarg1		: int);
+
+
+/* Needed to wake up a receiving server thread without causing it to do
+ * anything.  See ux_server_thread_blocking().
+ */
+simpleroutine no_op_msg(
+		proc_port	: mach_port_t);
+
+simpleroutine sel_poll_reply(
+		file_port	: mach_port_t;
+	in	file_port_send	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	cred_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+#ifdef TNC
+	in	delay_port	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	sel_id		: int;
+	in	reply_node	: int;
+#else
+	in	delay_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND_ONCE;
+#endif
+	in	selindex	: short;
+	in	seleventbits	: short);
+
+routine remote_print(
+		print_port	: mach_port_t;
+	in	action		: int;
+	in	pid		: pid_t;
+	in	sid		: pid_t;
+	in	level		: int;
+	in	buf		: small_char_array);
+
+routine acct_off(
+		acct_port	: mach_port_t;
+	out	nacct_port	: mach_port_t = MACH_MSG_TYPE_MOVE_RECEIVE);
+
+routine	acct_write(
+		acct_port	: mach_port_t;
+	in	acctbuf		: acct_t);
+
+routine	acct_on(
+		acct_port	: mach_port_t;
+	in	acctsp		: mach_port_t = MACH_MSG_TYPE_MAKE_SEND);

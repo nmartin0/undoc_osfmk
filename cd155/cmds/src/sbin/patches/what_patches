@@ -1,0 +1,58 @@
+#!/bin/sh
+ 
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+
+#  $Revision: 1.3 $ $Date: 1995/04/10 17:28:47 $
+
+#
+# what_patches: show what software patches are installed
+#
+
+if [ !  -d /etc/patches ]
+then
+	echo
+	echo "No software patches installed"
+	echo
+	exit 1
+fi
+if [ ! \( -r /etc/patches -a -x /etc/patches \) ]
+then
+	echo
+	echo "You do not have permission to access the /etc/patches directory"
+	echo
+	exit 1
+fi
+
+cd /etc/patches
+
+wpCnt=0
+
+for wpFname in `ls -1|awk 'substr($1, length($1)-4) != "_arch" { print $1 }'`
+do
+	if [ -d $wpFname ]
+	then
+		echo $wpFname
+		wpCnt=1
+	fi
+done
+
+if [ $wpCnt -eq 0 ]
+then
+	echo
+	echo "No software patches installed"
+	echo
+	exit 1
+else
+	echo
+	exit 0
+fi
+

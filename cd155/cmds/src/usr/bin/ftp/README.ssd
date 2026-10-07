@@ -1,0 +1,4 @@
+
+Fixed ftp.c in order to get a file and put it under / .
+Wed Apr 22 16:26:15 PDT 1992 - Shala
+

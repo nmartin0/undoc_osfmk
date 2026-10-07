@@ -1,0 +1,83 @@
+#!/bin/sh
+ 
+######################################################################################
+##
+##  mklog
+##
+##      Check to see if a file by the given name already exists
+##      and if so, rename it.  
+##
+##        For example:
+##
+##          If mklog is called with the file 'foo', it will look
+##          for an already existing 'foo'.  If found, 'foo' will
+##          be renamed to 'foo.n', where 'n' is the next sequential
+##          number.
+##
+
+
+fid=""
+
+WhoAmI=`basename $0`
+ 
+while [ $# -gt 0 ]; do
+    case "$1" in
+
+        -help)
+            echo "   Usage: mklog [ -help ] [ -version ] filename"
+            echo ""
+            echo "   Where:"
+            echo ""
+            echo "       -help      Gives this usage message."
+            echo "       -version   Gives the CVS cersion number for $WhoAmI"
+            echo "       filename   Is the file that is to be created."
+            echo ""
+            exit 0
+            ;;
+
+        -version)
+            echo "\$Id: MkLog,v 1.2 1995/03/06 18:00:59 bradf Exp $"
+            exit 0
+            ;;
+
+        *)
+            if [ -z "$fid" ]; then
+                fid=$1
+            else
+                $0 -help
+                exit 1
+            fi
+            ;;
+
+    esac
+    shift
+done
+
+
+##
+## Make sure we have all the parameters we need
+##
+if [ ! -z "$fid" ]; then
+    ##
+    ## The first thing to check is the easiest, if 
+    ## the file doesn't exist, we can just use it.
+    ##
+    if [ -f $fid ]; then
+        ##  Check to see if we have to do any math yet
+        rename=$fid.1
+        while [ -f $rename ]; do
+            ##
+            ## Need to incriment it's suffix and move it
+            ##
+            rename=$fid.`echo $rename | sed -e 's/^.*\.//' | awk '{ $x = $1+1; print $x }'`
+        done
+        mv $fid $rename
+    fi
+    touch $fid  ## Just to initialize the file
+    exit 0
+else
+    $0 -help
+    exit 1
+fi
+
+

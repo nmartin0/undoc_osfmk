@@ -1,0 +1,171 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1989 Carnegie-Mellon University
+# Copyright (c) 1988 Carnegie-Mellon University
+# Copyright (c) 1987 Carnegie-Mellon University
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#
+# HISTORY
+# $Log: MASTER.i860,v $
+# Revision 1.10  1994/11/18  20:29:15  mtm
+# Copyright additions/changes
+#
+# Revision 1.9  1994/07/07  15:58:28  cfj
+# Remove the tieing of PARACORE to nx.
+#
+#  Reviewer:
+#  Risk:
+#  Benefit or PTS #:
+#  Testing:
+#  Module(s):
+#
+# Revision 1.8  1994/06/29  15:29:18  johannes
+# new option "paracore" defined and included in STD & LITE
+# in order to enable the parallel core dumping
+#
+#  Initial check-in of parallel core dumping
+#  Reviewer: stefan, jlitvin
+#  Risk: Medium
+#  Benefit or PTS #: OS support for Postmortem Debugging
+#  Testing: developer tests
+#  Module(s):
+# 	svr/server/conf/MASTER
+# 	svr/server/conf/MASTER.i860
+# 	svr/server/conf/files.i860
+# 	svr/server/paracore/allocinfo.c
+# 	svr/server/paracore/core.c
+# 	svr/server/paracore/dump.c
+# 	svr/server/paracore/dvp_pvpcore.c
+# 	svr/server/sys/allocinfo.h
+# 	svr/server/sys/core.h
+# 	svr/server/sys/user.h
+# 	svr/server/nx/nx.defs
+# 	svr/server/nx/nx.c
+# 	svr/server/bsd/kern_exit.c
+# 	svr/server/bsd/kern_fork.c
+# 	svr/server/bsd/kern_sig.c
+# 	svr/server/tnc/dpvproc.h
+# 	svr/server/tnc/dvp_init.c
+# 	svr/server/tnc/dvp_pvpops.c
+# 	svr/server/tnc/pvp.ops
+# 	svr/server/uxkern/fsvr_msg.c
+# 	cmds_libs/src/usr/sbin/allocator/alloc.defs
+# 	cmds_libs/src/usr/sbin/allocator/misc_rpcs.c
+# 	cmds_libs/src/usr/sbin/allocator/Makefile
+# 	cmds_libs/src/usr/include/README.locate
+# 	cmds_libs/src/usr/include/sys/Makefile
+#
+# Revision 1.7  1993/09/17  17:05:35  steved
+# Added an "MP3" option.
+#
+# Revision 1.6  1993/07/14  17:53:05  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.3  1993/07/01  19:11:30  cfj
+# Adding new code from vendor
+#
+# Revision 1.5  1993/06/21  13:50:58  stefan
+# Made modifications so that a server that is compiled with -sll works with
+# an emulator that is compiled with -DSLL (and vice versa).
+#
+# Revision 1.4  1993/05/13  09:05:37  stefan
+# Integrated static load leveling support.
+#
+# Revision 1.3  1993/05/06  19:13:32  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.1  1993/05/03  17:26:45  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.2  1992/11/30  22:18:49  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:17:54  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 2.3  1992/10/14  17:16:35  cfj
+# NX integration.
+#
+# Revision 2.2  1991/11/15  17:03:42  rabii
+# 	Initial Checkin
+#
+#Revision 1.1  91/09/12  13:26:03  stans
+#	Initial V2.0 Checkin, started life as a copy of MASTER.i386
+#
+#
+#  Master ipsc860 configuration file (see the master machine independent
+#  configuration file for a description of the file format).
+#
+#
+#  i860 (PSEUDO-)DEVICES (select any combination)
+#
+#	du   = CSNET DialupIP interface (software)
+#
+#  CPU TYPE (select exactly one)
+#
+#	i860    = any VAX CPU
+#
+#
+#  Production Configuration Components:
+#  ---------- ------------- ----------
+#
+#  ANY   =[du i860 ]
+#  MF    =[du i860 ]
+#  MP    =[du i860 ]
+#  WS    =[   i860 ]
+#
+#  (any i860 cpu model)
+#
+#  EXTRA =[ ]
+#
+#  ("one-of-a-kind" devices)
+#
+#  Options which are almost always turned on when mach is turned on,
+#  but can still be individually selected:
+#
+#  MSTD  = [ ]
+#
+#  Option to cannibalize one of the i386 mp processors for use as a
+#  high_resolution clock:
+#
+#  HI_RES_CLOCK = [ mp_slave_as_clk ]
+#
+#
+machine		"i860"					# <i860,ipsc860>
+cpu		"i860"		# Only for show		# <i860,ipsc860>
+
+options		COMPAT					# <compat>
+options		"ipsc860"				# <i860,ipsc860>
+#options		"sigma"				# <i860,ipsc860>
+
+options         NX              # NX support            # <nx>
+options		SLL		# Static Load Leveling	# <sll>
+options		SLLCOMPAT	# SLL Compatibility	# <!sll>
+options		SLLDEBUG	# SLL Debugging		# <slldebug>
+options		MP3		# MP3 Node Board	# <mp3>
+options		PARACORE	# Parallel Core Files	# <paracore>
+
+config		vmunix		swap generic
+
+#
+#  CMU/SU packet filter
+#
+pseudo-device	enet					# <en>
+
+#
+#   dialupIP
+#
+pseudo-device	du	2				# <du>

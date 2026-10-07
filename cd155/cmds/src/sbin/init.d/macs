@@ -1,0 +1,126 @@
+#!/sbin/sh
+#
+# 
+# $Copyright
+# Copyright 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+#
+# 
+# $Copyright
+# Copyright 1994 Intel Corporation.
+#        INTEL CONFIDENTIAL
+# Permission to use, copy, modify, and distribute this software and 
+# its online documentation for any purpose is hereby granted.
+# Intel Coprporation, Inc makes no representations about 
+# the suitability of this software for any purpose.
+# It is provided "as is" without express or implied warranty.
+#
+# INTEL CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD 
+# TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF 
+# MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL INTEL CORPORATION.
+# BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+# OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# Copyright$
+#
+  
+# (c) Copyright 1993, INTEL CORP.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+#
+# Start MACS services
+#
+
+LOG_PATH=/usr/spool/macs/log.d
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+
+Kill_macs ()
+{
+
+#
+# Kill macpd
+#
+        pid=`ps -ea | egrep "usr/lib/macs/macpd" | egrep -v egrep | awk '{ print $1 }'`
+        if [ -n "$pid" ]; then
+		/bin/kill -9 $pid
+		i=0
+		while [ $i -lt 15 ]
+		do
+			sleep 1
+			pid=`ps -ea | egrep "usr/lib/macs/macpd" | egrep -v egrep | awk '{ print $1 }'`
+			if [ -n "$pid" ]; then
+				i=`expr $i + 1` 
+			else
+				break
+			fi
+		done
+		if [ $i -eq 15 ]; then
+			echo "kill failed for macpd"
+			exit 1
+		fi
+	fi
+#
+# Issue "si -shutdown", which will kill macd.
+#
+                pid=`ps -ea | egrep "usr/lib/macs/macd" | egrep -v egrep | awk '{ print $1 }'`
+                if [ -n "$pid" ]; then
+			si -shutdown
+	                i=0
+	                while [ $i -lt 15 ]
+	                do
+	                        sleep 1
+	                        pid=`ps -ea | egrep "usr/lib/macs/macd" | egrep -v egrep | awk '{ print $1 }'`
+	                        if [ -n "$pid" ]; then
+	                                i=`expr $i + 1`
+	                        else
+	                                break
+	                        fi
+	                done
+	                if [ $i -eq 15 ]; then
+	                        echo "kill failed for macd"
+	                        exit 1
+	                fi
+		fi
+}
+
+case "$1" in
+'start')
+        set `who -r`
+        if [ $9 = "S" ]; then
+                Kill_macs 
+
+		# Make sure that SMD is running.
+		smd=`ps -ef | egrep "smd" | egrep -v egrep`
+		if [ -z "$smd" ]; then                     
+			echo "MACS initialization failed - SMD not running."
+			exit 1
+		fi
+
+		# Start MACS daemons, exit if anything went wrong...
+                /usr/lib/macs/macpd 
+		if [ $? -ne 0 ]; then
+			echo "MACPD failed to start up!"
+			Kill_macs 
+			exit 1
+		fi
+
+		echo "MACS services provided."
+        fi
+        ;;
+'stop')
+        Kill_macs
+        ;;
+*)
+        echo "usage: $0 {start|stop}"
+        ;;
+esac

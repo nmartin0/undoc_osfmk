@@ -1,0 +1,352 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/parallel/mplinpack/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0
+testError=1
+miscError=2
+abortCode=3
+title="`sed -n '1p' README`"
+
+# Mesh
+computeNodes=0
+minNodes=4
+mpPart="mplinpack$$"
+mpSize=0
+partName=$1
+scratchPart=""
+execDir=`pwd`
+
+# Input
+
+start=0		# range of vector sizes to use and increment for each loop.
+finish=0	#
+incr=0		#
+
+bstart=6	# number of blocks of vector per node. Having all the same 
+bfinish=6	# value causes just a single loop using that value.
+bincr=6		#
+
+x=0		# x:number of matrix rows, y:number of matrix columns
+		# x * y MUST equal number of nodes in partition. x must
+		# be a power of 2 in magnitude.
+y=0		# There are no limits on aspect ratio (x:y represents 
+		# a *logical* matrix). So arrangement of physical nodes does 
+		# not matter. (Partition can be any shape).
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary files
+#        Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/mplinpack.scratch.$$
+programResultsFile=$SAT_USR_TMP/mplinpack.results.$$
+programErrorFile=$SAT_USR_TMP/mplinpack.errors.$$
+programInputFile=$SAT_USR_TMP/mplinpack.input.$$
+
+# Define temporary directory to run program in
+programWorkDir=$SAT_USR_TMP/mplinpack.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+   rm -f $programInputFile
+
+   cd $execDir
+   rm -rf $programWorkDir
+}
+
+# Remove compute partition function: expected cleanup
+removePartition() {
+
+   if test -n "$scratchPart" -a "$scratchPart" != ".compute"
+   then
+      rmpart -f -r $scratchPart > /dev/null 2>&1
+   fi
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   removePartition
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "mplinpack sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Partition size analysis and adjustment
+lspart -r . | awk 'BEGIN { dir = "" }
+                   index($1,":") == length($1) { dir = substr($1,1,length($1)-1) "."
+                                                 if (substr(dir,1,2) == "..")
+                                                    dir = substr(dir,2)
+                                                 next
+                                               }
+                   { fullname = dir $NF
+                     if (substr(fullname,1,1) == ".")
+                        print fullname, $4
+                   }' > $programScratchFile
+if test "`echo $1 | cut -c1`" = "."
+then
+   # Absolute partition pathname
+   partName=$1
+else
+   # Relative partition pathname
+   partName=.compute.$1
+fi
+computeString=`grep "^$partName " $programScratchFile`
+
+if test -z "$computeString"
+then
+   echo "Compute partition $partName does not exist." 1>&2
+   lspart -r . >> $programScratchFile
+   if [ ! -d $SAT_USR_TMP/failures ] ; then 
+     mkdir -p $SAT_USR_TMP/failures
+   fi
+   cp $programScratchFile $SAT_USR_TMP/failures
+
+   cleanup $miscError
+fi
+
+computeNodes="`echo $computeString | awk '{ print $2 ; exit }'`"
+
+# Check compute node size
+if test -z "$computeNodes"
+then
+   echo "Could not determine number of compute nodes." 1>&2
+   cleanup $miscError
+fi
+
+# Check for minimum size partition
+if test $computeNodes -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError nosave
+fi
+
+# Check for existing partition name
+if test -n "`grep '^${partName}.${mpPart} ' $programScratchFile`"
+then
+   echo "Compute partition ${partName}.${mpPart} already exists." 1>&2
+   lspart -r $1 | grep $mpPart 1>&2
+
+   cleanup $miscError
+fi
+
+# Calculate required partition size.  Supported partition sizes are
+# those appearing in the awk print statements.
+mpSize=`echo $computeNodes | \
+awk '	$1 < 16		{ print 4   ; exit } \
+	$1 < 32		{ print 16  ; exit } \
+	$1 < 56		{ print 32  ; exit } \
+	$1 < 64		{ print 56  ; exit } \
+	$1 < 128	{ print 64  ; exit } \
+	$1 < 256	{ print 128 ; exit } \
+	$1 < 512	{ print 256 ; exit } \
+	$1 < 1024	{ print 512 ; exit } \
+			{ print 1024 ; exit }'`
+echo "mpSize: $mpSize"
+
+# Verify partition size
+if test $mpSize -lt $minNodes
+then
+   echo "$partName partition size less than minimum required, $minNodes." 1>&2
+   cleanup $miscError
+fi
+
+scratchPart=${partName}.${mpPart}
+
+# Allocate required partition
+mkpart -sz $mpSize $scratchPart >> $programScratchFile 2> $programErrorFile
+if test $? -ne 0
+then
+   echo "Failed to make partition $scratchPart." 1>&2
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $miscError
+fi
+
+# Calculate start, finish & incr, function of partition size
+case $mpSize in
+     4)    x=2; y=2
+           start=500 ; finish=1000 ; incr=500
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     16)   x=2 ; y=8
+           start=1000 ; finish=2000 ; incr=1000
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     32)   x=4 ; y=8
+           start=1000 ; finish=2500 ; incr=1500
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     56)   x=2 ; y=28
+           start=1000 ; finish=3500 ; incr=2500
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     64)   x=2 ; y=32
+           start=1000 ; finish=3700 ; incr=2700
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     128)  x=2 ; y=64
+           start=1000 ; finish=4500 ; incr=3500
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     256)  x=4 ; y=64
+           start=1000 ; finish=5000 ; incr=4000
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     512)  x=8 ; y=64
+           start=1000 ; finish=5500 ; incr=4500
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     1024) x=32 ; y=32
+           start=1000 ; finish=6000 ; incr=5000
+           bstart=6 ; bfinish=6 ; bincr=6
+           ;;
+     *)    # Not supported at this time
+           echo "$partName partition size not valid, $mpSize." 1>&2
+           cleanup $miscError
+           ;;
+esac
+echo "x: $x, y: $y"
+echo "start: $start, finish: $finish, incr: $incr"
+
+# Create input file
+cat << EOF > $programInputFile
+$x $y
+$start $finish $incr
+$bstart $bfinish $bincr
+EOF
+
+# Verify input file
+if test ! -r $programInputFile
+then
+   # Support file not available
+   echo "Required input file for \"mplinpack\" not available." 1>&2
+
+   cleanup $miscError
+fi
+
+# Verify program is executable
+if test -x ${execDir}/mplinpack
+then
+   # Execute program
+   if ${execDir}/mplinpack $SAT_NX_ARGS -pn $scratchPart -sz $mpSize < $programInputFile > $programScratchFile 2> $programErrorFile
+   then
+      # Check output for residual error too large
+      if test -n "`grep 'ERROR:  Residual too large' $programScratchFile $programErrorFile`"
+      then
+         cat $programScratchFile
+         cat $programErrorFile 1>&2
+
+         cleanup $testError
+      else
+         # Get highest result line
+         awk '/mflops  total/ && $NF > maxFlops { maxFlopsLine = $0 } \
+              END { print maxFlopsLine }' $programScratchFile >> $programResultsFile
+      fi
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "mplinpack exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"mplinpack\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Summarize results: MFlops
+#    awk: format MFlops scientific notation as floating point number
+
+Mflops=`awk '{ printf "%.2f\n", $NF ; exit }' $programResultsFile`
+
+# Report PASS/FAIL results
+if test -n "$Mflops" -a -n "`grep 'TOTAL RESIDUAL PROBLEMS DETECTED: 0' $programScratchFile`" -a ! -f core -a ! -d core
+then
+   # Program PASSed, cat (filtered) results back to sat
+   echo "PASS: $title, $Mflops Mflops."
+
+   # cat $programResultsFile
+else
+   # Program FAILed, cat (filtered) scratch file back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

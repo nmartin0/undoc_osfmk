@@ -1,0 +1,291 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to modify or display the values for the logical 
+     unit parameters.  Note that if you modify the logical unit size, 
+     segment size, or the segment zero size, or are creating a logical 
+     unit, the array controller automatically formats the logical 
+     unit.  This means you must back up your data file-by-file before 
+     modifying a logical unit parameter.
+ 
+     NOTE:  Procedures to modify and display the logical unit 
+            parameters are included in the help screens following 
+            the explanation of this option.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     The "Modify/Display Logical Unit Parameters" option displays the 
+     following information:
+ 
+          - LUN Status
+          - LUN Drives
+          - Logical unit parameters
+ 
+     NOTE:  See the help screens following the explanation of the 
+            option for more information.
+ 
+     The logical unit parameters include:
+          - RAID level
+          - Logical Block Size (bytes)
+          - Logical Unit Size (mb)
+          - Segment Size (blocks)
+          - Segment Zero Size (blocks)
+          - Delay Interval (tenth's of a second)
+          - Blocks Per Delay Interval 
+ 
+     NOTE:  See the help screens following the explanation of the 
+            option for more information.
+                                (CONTINUED)
+     LUN STATUS:  A logical unit status describes the state of the 
+     logical unit and the drives that comprise it.  The following 
+     table gives a description of both the primary and secondary 
+     status.  (Note that in the Array Configuration Editor, only the 
+     primary statuses are displayed, and in sysadm, both the primary 
+     and secondary statuses are displayed.)
+ 
+     NOTE:  If a logical unit status is displayed that is not given in 
+            the following table, call your service representative.
+ 
+     ================================================================
+     Primary Status - Secondary Status |         Description
+     ----------------------------------+-----------------------------
+     Creating                          | You are presently creating 
+                                       | this logical unit.
+     ----------------------------------+-----------------------------
+     Dead - Awaiting format            | The logical unit is waiting 
+                                       | to be formatted either  
+                                       | because two or more drives 
+                                       | failed, or because a logical 
+                                       | unit parameter was modified.
+     ===========================(CONTINUED)==========================
+     ================================================================
+     Primary Status - Secondary Status |         Description
+     ----------------------------------+-----------------------------
+     Dead - Channel mismatch           | Two or more drives have been 
+                                       | reinstalled in the wrong 
+                                       | drive slots.            
+     ----------------------------------+-----------------------------
+     Dead - Component failure          | There is an array controller 
+                                       | problem.
+     ----------------------------------+-----------------------------
+     Dead - ID mismatch                | Jumpers, shunts, or 
+                                       | harnesses are not set 
+                                       | correctly on two or more 
+                                       | drives.    
+     ----------------------------------+-----------------------------
+     Dead - Multiple drive failures    | The logical unit is dead 
+                                       | because two or more drives 
+                                       | failed.
+     ================================================================
+ 
+ 
+                              (CONTINUED)
+     ================================================================
+     Primary Status - Secondary Status |         Description
+     ----------------------------------+-----------------------------
+     Dead - Replaced wrong drive       | A good drive was replaced 
+                                       | and the failed drive was 
+                                       | left in the logical unit.
+     ----------------------------------+-----------------------------
+     Degraded - Component failure      | There is an array controller
+                                       | problem.  The logical unit
+                                       | is degraded.                        
+     ----------------------------------+-----------------------------
+     Degraded - Drive failure          | One drive failed and the 
+                                       | logical unit is operating in 
+                                       | a degraded state.  
+     ----------------------------------+-----------------------------
+     Degraded - ID mismatch            | A jumper, shunt, or harness
+                                       | is not set correctly on a 
+                                       | drive. The logical unit is 
+                                       | degraded.
+     ===================================================================
+ 
+                               (CONTINUED)
+     Primary Status - Secondary Status |         Description
+     ----------------------------------+-----------------------------
+     Degraded - Replaced drive         | The replaced drive is being
+                being formatted        | formatted.  The logical unit 
+                                       | is degraded.
+     ----------------------------------+-----------------------------
+     Optimal - Optimal condition       | The logical unit is
+                                       | operating at an optimal 
+                                       | level.*
+     ----------------------------------+-----------------------------
+     Reconstructing - Component        | There is an array controller   
+                                       | failure problem.
+     ----------------------------------+-----------------------------
+     Reconstructing -                  | The array controller is
+     Reconstruction initiated          | reconstructing drive data on 
+                                       | the new drive.
+     ----------------------------------------------------------------
+     * If the logical unit is RAID 0, it may NOT be operating at 
+       optimal performance level.  To determine if there are drive 
+       problems in a RAID 0 logical unit, check the drive matrix or    
+       "Status Change Messages" menu.
+     ======================== (CONTINUED) ===========================
+     LUN DRIVES:  Each drive in the logical unit (and the drive 
+     group) is displayed as (SCSI Channel, SCSI ID).  
+ 
+     EXAMPLE 1:  For a single-rank array subsystem with a five-drive
+                 logical unit, the "LUN Drives" could be:
+ 
+                 (1,1), (2,1), (3,1), (4,1), (5,1)
+ 
+ 
+     EXAMPLE 2:  For a multiple-rank array subsystem with a
+                 six-drive logical unit, the "LUN Drives" 
+                 could be:
+ 
+              (1,0), (2,0), (3,0), (4,0), (5,0), (4,1), 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                               (CONTINUED)
+     RAID LEVEL:  RAID is a term that means "Redundant Array of 
+     Inexpensive Disks."  The RAID level indicates the way the array 
+     controller reads and writes data and parity on the drives.  The 
+     array controller can implement RAID levels 0, 1, 3, and 5.
+ 
+ 
+     LOGICAL BLOCK SIZE:  A logical block is the block size used by 
+     the array controller to send data to the host system.  The block 
+     size of RAID levels 0, 1 and 5 is 512 bytes.  The block size of 
+     RAID level 3 depends on the number of drives.  Three drives (two 
+     data drives and one parity drive) has a 1024-byte logical block 
+     size; Five drives (four data drives and one parity drive) has a 
+     2048-byte logical block size.  The logical block size can NOT be 
+     changed.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                               (CONTINUED)
+ 
+     LOGICAL UNIT SIZE:  This parameter specifies the total number of 
+     megabytes in the logical unit.  The combination of the RAID level 
+     and the number of drives you specify determines the total 
+     megabytes in the logical unit.  For example, a five-drive RAID 5 
+     logical unit with 426 mb drives (unformatted drive size) has a 
+     logical unit size of 1704 mb.  (Essentially four drives are used 
+     for data and one for parity in a RAID 5 logical unit.  
+     Therefore, multiply 4 by 426 to get 1704 mb.)
+ 
+     For more information about logical unit size, see the User Guide.
+ 
+ 
+     SEGMENT SIZE:  The amount of data the array controller writes to 
+     a drive in a logical unit before writing data to the next drive.  
+     The segment is comprised of blocks.  The default segment size is 
+     512 blocks (multi-rank array) or 64 blocks (single-rank array) 
+     for a RAID 0, 1, or 5, and 1 block for RAID 3 (either array).  
+     The maximum segment size that the array controller accepts is 
+     65,535 blocks.  
+ 
+                                (CONTINUED)
+     SEGMENT ZERO SIZE:  The first segment on a drive is segment 
+     zero.  The default segment zero size is zero (0) blocks.
+ 
+     NOTE:  If you change the value of segment zero to anything but
+            zero, the array segments may not be properly aligned 
+            on the drives and array performance may decrease.
+ 
+ 
+     DELAY INTERVAL:  The amount of time between data reconstruction 
+     operations.  During this time, the array controller performs I/O 
+     system operations. As the delay interval increases, the system 
+     performance increases.  The recommended value is one (1) tenth of 
+     a second.  The maximum value that ace accepts is 255.
+ 
+     You can change the delay interval while the array controller is 
+     reconstructing data on a drive.  This is particularly useful if 
+     you want to vary array performance during reconstruction.
+ 
+ 
+ 
+ 
+                               (CONTINUED)
+     BLOCKS PER DELAY INTERVAL:  The amount of data the array 
+     controller reconstructs at a time.  The recommended value is 256 
+     blocks.  The maximum value that ace accepts is 65,535.
+ 
+     You can change the blocks per delay interval while the array 
+     controller is reconstructing data on a drive.  This is useful 
+     particularly if you want to vary array performance during 
+     reconstruction.
+ 
+ 
+     PROCEDURE -- MODIFYING/DISPLAYING THE LOGICAL UNIT PARAMETERS 
+ 
+     1.   Back-up the data on the logical unit file-by-file.
+ 
+     2.   Select the desired logical unit with the arrow keys.
+ 
+     3.   Press "m" to modify or display the logical unit
+          parameter values.
+ 
+ 
+ 
+                               (CONTINUED)
+     4.   At the prompt, press "y" to save all the logical unit 
+          parameter defaults for this logical unit, press "n" if you 
+          want to modify a value, or press "q" to quit the logical 
+          unit creation.
+ 
+      Did you enter "y" to accept the values? 
+ 
+       YES     
+       Go to step 8, and complete the procedure. -->
+ 
+       NO
+       Go to step 5, and complete the procedure. -->
+ 
+     NOTE:  Press the <Down-arrow> or <Return> to move the cursor to 
+            each logical unit parameter value that can be modified.
+ 
+     5.   Enter the desired value for the parameter, or select a 
+          parameter value by pressing the <Down-arrow> or <Return>.
+ 
+     6.   Repeat step 4 until you have modified all the values you 
+          want to modify.
+                               (CONTINUED)
+     7.   At the prompt, press "y" to save all the logical unit 
+          parameter defaults for this logical unit, press "n" if you 
+          want to modify a value, or press "q" to quit the logical 
+          unit creation.
+ 
+      Did you enter "y" to accept the values? 
+ 
+       YES     
+       Go to step 8, and complete the procedure. -->
+ 
+       NO
+       Go back to step 5, and complete the procedure. -->
+ 
+     8.   Press <Return> to format the logical unit.
+ 
+     9.   Press "q" to quit ace.
+ 
+     10.  Press <F3> (CONT) to run mkdtab or mktable.
+ 
+          This will take some time.
+ 
+                                (CONTINUED)
+     11.  Add the logical unit as a device by partitioning and 
+          slicing it, and creating a filesystem on the slice
+          if you want filesystems on the logical unit.
+ 
+ 

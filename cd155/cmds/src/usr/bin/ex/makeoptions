@@ -1,0 +1,73 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+#
+#
+# Copyright (c) 1980 Regents of the University of California.
+# All rights reserved.  The Berkeley software License Agreement
+# specifies the terms and conditions for redistribution.
+#
+#	@(#)makeoptions	6.4 (Berkeley) 5/31/85
+#
+
+#
+# remake options -- this isn't necessary unless you add/delete options
+#
+# only command-line #defines (-D) will be processed by this script.
+#
+trap 'rm -f ex_data.tmp.c' 0 2
+
+ex_data=${1-ex_data.c}
+shift
+
+	sed -e '/^#include/d' < $ex_data > ex_data.tmp.c
+	cc -E $* ex_data.tmp.c | sed -e '
+/option options/{
+N
+h
+}
+1,/option options/d
+/^#/d
+/^[ 	]*$/d
+/^[ 	]*0/d
+/}/{
+g
+s/[^@]*\n//
+}
+s/[ 	]*"\([^"]*\)".*$/\1/
+y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' | \
+	cat -n | sed -e '
+1a\
+/* rcsid   @(#)  ex_vars.h  @(#)makeoptions $Revision: 1.2 $ $Date: 1994/11/19 01:24:29 $ */\
+
+s/[ 	]*\([0-9][0-9]*\)[ 	]*\(.*\)/#define	\2	\1/
+1{
+h
+d
+}
+$!{
+H
+d
+}
+${
+s/\(	[^	]*	\)\(.*\)$/\10\
+#define	NOPTS	\2/
+P
+s/[^@]*\n//
+H
+x
+}' > ex_vars.h

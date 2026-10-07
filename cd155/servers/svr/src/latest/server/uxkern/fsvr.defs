@@ -1,0 +1,1843 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * This source file was created by the Center for High Performance 
+ * Computation (CHPC) on behalf of OSF.
+ *
+ * Module Function:
+ *      MiG definitions file for Distributed File Server Message interface.
+ *
+ * HISTORY
+ * $Log: fsvr.defs,v $
+ * Revision 1.31  1995/04/04  18:31:47  rlg
+ * The gopen step (for the M_UNIX, M_RECORD, and M_ASYNC I/O modes) of
+ * duplicating the file server's file table was redesigned.  This change
+ * results in only one "many to one" messages (sent from N-1 compute nodes
+ * to logical node 0 in the application's partition) and one set of "one
+ * to many" messages sent from each file server to those N-1 compute nodes.
+ * The old code required each of the compute nodes in the application's
+ * partition (minus one) to execute a sequence of four RPCs to the file
+ * servers containing the header file and each stripe file.  This resulted
+ * in four "many to one" messages sent to each of those file servers.
+ *
+ *  Reviewer:  Balaji Narasimhan, Stan Smith
+ *  Risk:      Medium (number of modules changed, scope of redesign)
+ *  PTS#       9637
+ *  Testing:   pfs and fileio EATs, five Eval gopen tests,
+ *             rw and iomode integration tests
+ *  Module(s): cmds_libs/src/usr/ccs/lib/libnx/_gopen.c
+ * 	    cmds_libs/src/usr/ccs/lib/libnx/pfs_iomode.h
+ * 	    server/svr/src/svr/emulator/pfs_user_side.c
+ * 	    server/svr/src/svr/server/conf/syscalls.master
+ * 	    server/svr/src/svr/server/uxkern/fsvr.defs
+ * 	    server/svr/src/svr/server/uxkern/fsvr_server_side.c
+ * 	    server/svr/src/svr/server/uxkern/pfs2.defs
+ * 	    server/svr/src/svr/server/uxkern/pfs2_server_side.c
+ *
+ * Revision 1.30  1994/11/18  20:47:50  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.29  1994/09/29  10:15:16  johannes
+ * moved fsvr_rmdir() out of #ifdef FULLSERVER part into #ifdef PARACORE part
+ *
+ *  Reviewer: Stefan Tritscher
+ *  Risk: Medium
+ *  Benefit or PTS #: 10705
+ *  Testing: developer testing, corefile EAT
+ * 	  compiling/running with other configurations (LITE, test,
+ *           no PARACORE)
+ *  Module(s): svr/server/paracore/dump.c
+ * 	    svr/server/uxkern/fsvr_msg.c
+ *             svr/server/uxkern/fsvr.defs
+ *             svr/server/uxkern/fsvr_server_side.c
+ *
+ * Revision 1.28  1994/08/31  22:47:38  mtm
+ *    This commit is part of the R1_3 branch -> mainline collapse. This
+ *    action was approved by the R1.X meeting participants.
+ *
+ *    Reviewer:        None
+ *    Risk:            Something didn't get merged properly, or something
+ *                     left on the mainline that wasn't approved for RTI
+ *                     (this is VERY unlikely)
+ *    Benefit or PTS#: All R1.3 work can now proceed on the mainline and
+ *                     developers will not have to make sure their
+ *                     changes get onto two separate branches.
+ *    Testing:         R1_3 branch will be compared (diff'd) with the new
+ *                     main. (Various tags have been set incase we have to
+ *                     back up)
+ *    Modules:         Too numerous to list.
+ *
+ * Revision 1.27.2.1  1994/08/19  22:24:54  dbm
+ * Added support for a new bootmagic, PFS_ASYNC_DFLT, this allows setting
+ * the default PFS I/O mode to M_ASYNC.
+ *
+ *  Reviewer:Bob Godley
+ *  Risk:M
+ *  Benefit or PTS #:10569
+ *  Testing: Specific test cases. PFS EATS (With and without bootmagic set)
+ *  Module(s):
+ *
+ *     (server)
+ *         uxkern/boot_config.c
+ *         uxkern/fsvr_server_side.c
+ *         uxkern/fsvr.defs
+ *     (emulator)
+ *         emul_init.c
+ *         fsvr_user_side.c
+ *         pfs2_user_side.c
+ *         pfs_iomode.c
+ *         pfs_tokenmgt.c
+ *         pfs_iomode.h
+ *         pfs_fdt.h
+ *     (libnx)
+ *         _pfs_setio.c
+ *         _setiomode.c
+ *
+ * Revision 1.27  1994/07/11  16:48:19  johannes
+ * fsvr_unlink(), fsvr_mkdir(), fsvr_unlink(): changed defines and position
+ * fsvr_vnreaddir(): new routine to read a directory by using vnreaddir()
+ *
+ *  Reviewer: Stefan Tritscher
+ *  Risk: L
+ *  Benefit or PTS #: cleanup of core directory (PARACORE)
+ *  Testing: developer tests
+ *  Module(s): 	server/paracore/allocinfo.c
+ * 		server/paracore/core.c
+ * 		server/paracore/dump.c
+ * 		server/uxkern/fsvr.defs
+ * 		server/uxkern/fsvr_msg.c
+ * 		server/uxkern/fsvr_server_side.c
+ * 		server/vfs/vfs_vnops.c
+ *
+ * Revision 1.26  1994/06/30  17:57:09  dbm
+ * Moved the definitions of fsvr_mkdir() to allow it to be used for both
+ * compute and service servers.  This is required now due to the parallel
+ * core file support.
+ *
+ * Revision 1.25  1994/06/02  22:35:22  chrisp
+ * RPCs bsd_rforkmulti and rforkmulti_long parameters change:  file
+ * ports added; child task and thread ports eliminated.  Boolean boot
+ * magic variable TNC_RFORKMULTI_BINARY_TREE added to determine the
+ * spanning tree scheme rforkmulti is to use; it defaults to true i.e.
+ * binary tree.  Parameter added for RPC fsvr_file_ref to specify the
+ * required change in reference count. Previously, this operation
+ * incremented counts by 1 only; now n can be specify and note that
+ * n can be negative.
+ *
+ *  Reviewer: cfj
+ *  Risk: M
+ *  Benefit or PTS #: 6463
+ *  Testing:
+ *  Module(s): boot_config.c bsd_1.defs bsd_types.defs bsd_types.h fsvr.defs
+ *             fsvr_server_side.c
+ *
+ * Revision 1.24  1994/05/13  15:29:54  chrisp
+ * RPC fsvr_exec_check_vnode() modified not to return a non-zero value
+ * if text busy check fails but to set a new output parameter.
+ *
+ *  Reviewer: slk
+ *  Risk: L
+ *  Benefit or PTS #: 8906
+ *  Testing: Restart succeeds on node other than location of checkpoint dir.
+ *  Module(s): fsvr.defs, fsvr_msg.c
+ *
+ * Revision 1.23  1994/05/04  21:53:49  mjl
+ * TNC select rewrite.  The fsvr_file_unref_svr() RPC now returns the
+ * file port send right to the primary socket's node.
+ *
+ *  Reviewer: Charlie Johnson (Intel), Bob Yasi (Locus)
+ *  Risk: Medium
+ *  Benefit or PTS #: #7537 + select rewrite
+ *  Testing: VSX, EATS, bobtest, Eval
+ *  Module(s):
+ * 	server/bsd/subr_select.c
+ * 	server/sys/select.h
+ * 	server/sys/socketvar.h
+ * 	server/sys/user.h
+ * 	server/tnc/un_debug.c
+ * 	server/tnc/un_debug.h
+ * 	server/uxkern/bsd_2.defs
+ * 	server/uxkern/bsd_server_side.c
+ * 	server/uxkern/fsvr.defs
+ * 	server/uxkern/fsvr2_server_side.c
+ * 	server/uxkern/fsvr_port.c
+ * 	server/uxkern/fsvr_subr.c
+ * 	server/uxkern/port_hash.c
+ * 	server/uxkern/port_hash.h
+ * 	server/vsocket/mi_config.c
+ * 	server/vsocket/sys_vsocket.c
+ * 	server/vsocket/two_way_hash.h
+ * 	server/vsocket/vs.defs
+ * 	server/vsocket/vs_chouse.c
+ * 	server/vsocket/vs_debug.c
+ * 	server/vsocket/vs_init.c
+ * 	server/vsocket/vs_ipc.c
+ * 	server/vsocket/vs_netops.c
+ * 	server/vsocket/vs_subr.c
+ * 	server/vsocket/vs_subr.h
+ * 	server/vsocket/vs_types.h
+ * 	server/vsocket/vsocket.h
+ *
+ * Revision 1.22  1994/03/14  02:08:02  slk
+ * Checkpoint Restart Code Drop
+ *  Reviewer: Stefan Tritscher
+ *  Risk: Medium
+ *  Benefit or PTS #: Enhancement
+ *  Testing: Locus VSTNC, EATS TCP-IP, Individual Checkpoint/Restart tests.
+ *  Module(s):
+ *
+ * Revision 1.21  1994/03/11  19:41:19  rlg
+ * Merged the changes from the R1.2 branch into the R1.3 branch (1.17.2.3)
+ *
+ * Revision 1.20  1994/03/09  00:45:55  dbm
+ * Mainline checkin of R1.2 revision 1.17.2.2
+ *
+ * Revision 1.19  1994/01/05  17:17:57  brad
+ * Fixed lint warnings in PFS-related code.
+ *
+ * Revision 1.18  1993/12/23  01:47:40  brad
+ * Fixed various compilers warnings, lint errors, and lint warnings.
+ *
+ *  Reviewer: None.
+ *  Risk: Low.
+ *  Benefit or PTS #: None.
+ *  Testing: Booted and ran minimal PFS tests.
+ *  Module(s): emulator/emul_stack_alloc.c
+ *             emulator/fsvr_user_side.c
+ *             emulator/pfs_emath.c
+ *             emulator/pfs_user_side.c
+ *             emulator/pfs2_user_side.c
+ *             server/pfs/pfs_vfsops.c
+ *             server/uxkern/fsvr_types.defs
+ *             server/uxkern/fsvr_server_side.c
+ *             server/uxkern/fsvr.defs
+ *             server/uxkern/fsvr_types.h
+ *             server/uxkern/pfs2.defs
+ *
+ * Revision 1.17.2.3  1994/03/11  16:35:31  rlg
+ * The utimes() function for PFS files was reimplemented following the model
+ * of pfs_multi_stat(), so that the header file and all stripe files have the
+ * same value set in the access and modification time fields.  The old code
+ * only set these fields in the header file.
+ *
+ *  Reviewer:  Brad Rullnam
+ *  Risk: medium
+ *  Benefit or PTS #:  PTS #6870
+ *  Module(s):  emulator/fsvr_user_side.c
+ *              emulator/pfs2_user_side.c
+ *              server/uxkern/fsvr.defs
+ *              server/uxkern/pfs2.defs
+ *              server/uxkern/fsvr_server_side.c
+ *              server/uxkern/pfs2_server_side.c
+ *              server/vfs/vfs_syscalls.c
+ *
+ * Revision 1.17.2.2  1994/03/09  00:31:20  dbm
+ * Added fsvr_sync_data definition to support O_SYNC mode with mapped files.
+ *  Reviewer: Brad Rullman
+ *  Risk: Low
+ *  Benefit or PTS #: 8420
+ *  Testing: Specific test cases using O_SYNC and PFS eats.
+ *  Module(s):
+ * 	fsvr.defs
+ *
+ * Revision 1.17.2.1  1994/01/09  00:22:14  brad
+ * Fixed bug found by lint (wrong number pf params to pfs_free() in
+ * pfs2_user_side.c); also fixed lint warnings in PFS-related code.
+ *  Reviewer: None
+ *  Risk: Low
+ *  Benefit or PTS #: Some PFS source now passes lint
+ *  Testing: Ran PFS EATs
+ *  Module(s): emulator/emul_callback.c
+ *             emulator/fsvr_user_side.c
+ *             emulator/pfs2_user_side.c
+ *             emulator/pfs_emath.c
+ *             emulator/pfs_fdt.h
+ *             emulator/pfs_iomode.c
+ *             emulator/pfs_tokenmgt.c
+ *             emulator/pfs_user_side.c
+ *             server/uxkern/fsvr.defs
+ *             server/uxkern/fsvr2.defs
+ *             server/uxkern/fsvr2_server_side.c
+ *             server/uxkern/fsvr_types.defs
+ *             server/uxkern/pfs2.defs
+ *
+ * Revision 1.17  1993/09/27  04:35:35  robboy
+ * New ifdefs for FULLSERVER
+ *
+ * Revision 1.16 1993/08/18 16:37:16 cfj Fix for PTS bug #6098.  Turn
+ * on selected code which previously was turned off if FULLSERVER was
+ * not defined to allow pipes to work with the lite server in compute
+ * paritions.
+ *
+ * Revision 1.15  1993/08/04  03:54:53  cfj
+ * 08-03-93 Code drop from Locus.
+ *
+ * Revision 1.14  1993/07/19  22:59:24  robboy
+ * Integrate OSF/Locus Lite server changes
+ *
+ * Revision 1.13  1993/07/14  18:41:23  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.12  1993/07/09  20:58:25  brad
+ * Added PFS support to fsvr_rename.
+ *
+ * Revision 1.1.1.3  1993/07/01  21:01:07  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.11  1993/05/18  22:56:58  cfj
+ * Add #include <nfs.h>
+ *
+ * Revision 1.10  1993/05/18  18:55:44  cfj
+ * Add appropriate ifdefs so that the server will build when turning off NFS.
+ *
+ * Revision 1.9  1993/05/12  18:55:43  cfj
+ * The iomode parameter in fsvr_open_with_token() when PFS is defined needs to
+ * be an inout.
+ *
+ * Revision 1.8  1993/05/07  18:27:42  nandy
+ * Fixed a merge conflict.
+ *
+ * Revision 1.7  1993/05/06  19:27:13  nandy
+ * ad103+tnc merged with Intel code.
+ *
+ * Revision 1.1.1.1  1993/05/03  17:51:38  cfj
+ * Initial 1.0.3 code drop
+ *
+ * Revision 1.1.2.1.2.10  1993/03/30  02:28:46  brad
+ * Added pfs_mountfs for forwarded PFS mount operations.
+ *
+ * Revision 1.1.2.1.2.9  1993/03/10  05:54:51  brad
+ * Added PFS support for chown, chmod, lsize, statfs, ... and others.
+ * All async PFS operations now use the response ID parameter, and
+ * the server side stubs call in to the fsvr_server_side.c routines
+ * to do the work.  Opens of PFS stripefiles in different I/O modes
+ * (e.g. VIO_MAPPED and VIO_STRIPED) are now disallowed.
+ *
+ * Revision 1.1.2.1.2.8  1993/02/23  04:39:59  brad
+ * Added PFS support for access() and truncate()/ftruncate().
+ *
+ * Revision 1.5  1993/02/16  21:07:24  cfj
+ * Merge sync close into main stem.
+ *
+ * Revision 1.4.4.1  1993/02/16  20:38:51  cfj
+ * Synchronous close from OSF.
+ *
+ * Revision 1.1.2.1.2.7  1993/02/16  20:07:52  brad
+ * Merged trunk (as of the T8_EATS_PASSED tag) into the PFS branch.
+ *
+ * Revision 1.1.2.1.2.6  1993/02/09  21:47:57  brad
+ * Removed fsvr_pfs_fstat - it will now be fsvr_pfs_fdevstat in pfs2.defs.
+ *
+ * Revision 1.4  1993/01/15  02:37:41  cfj
+ * Multiple service partition fixes from Locus.
+ *
+ * Revision 2.29  93/01/11  14:38:03  mmp
+ * 	Synchronous close support: add fsvr_file_ref, fsvr_file_unref.
+ * 	Correct close semantics: add fsvr_cleanlocks.  (mmp)
+ * 
+ * Revision 1.1.2.1.2.5  1993/01/08  02:17:19  brad
+ * Added iomode flag to unlink to support PFS files.
+ *
+ * Revision 1.1.2.1.2.4  1992/12/16  22:47:41  dbm
+ * Added PFS token functionality.
+ *
+ * Revision 1.1.2.1.2.3  1992/12/16  06:04:55  brad
+ * Merged trunk (as of the Main_After_Locus_12_1_92_Bugdrop_OK tag)
+ * into the PFS branch.
+ *
+ * Revision 1.1.2.1.2.2  1992/11/26  00:02:00  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.1.2.1.2.1  1992/11/25  23:16:33  brad
+ * Added first cut at PFS file striping capability.
+ * 
+ * Revision 2.29  93/07/31  15:30:37  mjl
+ * Add fsvr_file_unref_svr RPC used when dequeueing select entries from
+ * TNC remote secondary sockets. (mjl for bhk)
+ * 
+ * Revision 2.28  93/07/13  16:07:45  slively
+ * Merged the fsvr.defs by accepting the whole file from OSF. With only
+ * the 1.0.4 specific parts included.
+ *      Revision 2.40  93/06/29  16:16:44  rabii
+ *      Put fileserver routines under FULLSERVER and NFS conditionals (rabii)
+ *
+ *   Revision 2.24  92/12/10  17:34:13  mjl
+ *   Changed name of fsvr_unp_vsockdestroy() RPC to more mnemonic (I think)
+ *   fsvr_unp_unbind().  This vnode port RPC tears down a socket-to-vnode
+ *   association.
+ *
+ * Revision 1.3  1992/12/11  03:05:22  cfj
+ * Merged 12-1-92 bug drop from Locus.
+ *
+ * Revision 1.2  1992/11/30  22:54:05  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1  1992/11/05  23:42:55  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ *
+ * Revision 2.23  1992/10/22  15:56:35  dbm
+ * Added PFS functionality.
+ *
+ * Revision 2.23  92/11/23  15:55:29  klh
+ * 	Revision 2.26  92/11/11  10:38:52  rabii
+ * 		Made all non TNC, PM routines use COPY_SEND for the creds port (rabii)
+ * 
+ * 	Revision 2.25  92/11/05  17:28:05  roy
+ * 		add abs_pathname arg to fsvr_mount_ufs and fsvr_mount_nfs (durriya).
+ * 
+ * 	Revision 2.24  92/11/03  11:54:25  mmp
+ * 		Add fsvr_server_register and fsvr_halt for shutdown.  (mmp)
+ * 
+ * Revision 2.27  93/06/16  13:53:01  klh
+ * 	Revision 2.36  93/05/16  20:59:02  loverso
+ * 		Pass "intr" parameter in intr_delivery().
+ * 
+ * 	Revision 2.35  93/03/25  10:01:04  durriya
+ * 		define fsvr_get_paging_stats                        (durriya)
+ *
+ * 	Revision 2.34  93/02/18  11:50:50  rabii
+ * 		Added stub for fsvr_pf_file_init (rabii)
+ *
+ * 	Revision 2.33  93/02/02  15:24:06  rabii
+ * 		Added creds port to fsvr_cleanlocks and fsvr_file_unref (rabii)
+ *
+ * 	Revision 2.32  93/01/27  11:40:58  durriya
+ *              make the revoke port in fsvr_open_with_token be a
+ *		polymorphic send right. The caller will specify if
+ *		we want to MAKE_SEND or MOVE_SEND for the revoke
+ *		port (durriya)
+ *
+ * 
+ * 	Revision 2.31  93/01/25  22:56:17  durriya
+ * 		add offset as arg to fsvr_spec_read and fsvr_spec_write(durriya)
+ * 
+ * 	Revision 2.30  93/01/12  17:06:13  roy
+ * 		Added fsvr_open_with_token composite operation.
+ * 		Removed mappable out arg from all routines.
+ * 		[92/11/03            roy]
+ *
+ * 	Revision 2.27  92/12/08  10:47:28  durriya
+ * 		replace fsvr_set_unmount by fsvr_unmount_set and fsvr_clear_unmount
+ * 		by fsvr_unmount_done
+ *
+ * 	Revision 2.26  92/11/11  10:38:52  rabii
+ * 		Made all non TNC, PM routines use COPY_SEND for the creds port (rabii)
+ *
+ * Revision 2.25  93/03/10  14:19:58  yazz
+ * Add new RPCs for synchronous close merge from Intel.
+ * 
+ * 	Revision 2.29  93/01/11  14:38:03  mmp
+ * 	Synchronous close support: add fsvr_file_ref, fsvr_file_unref.
+ * 	Correct close semantics: add fsvr_cleanlocks.  (mmp)
+ * 
+ * 	Revision 1.4  1993/01/15  02:37:41  cfj
+ * 	Multiple service partition fixes from Locus.
+ *
+ * 	Revision 1.3  1992/12/11  03:05:22  cfj
+ * 	Merged 12-1-92 bug drop from Locus.
+ *
+ * 	Revision 1.2  1992/11/30  22:54:05  dleslie
+ * 	Copy of NX branch back into main trunk
+ *
+ * 	Revision 1.1.2.1  1992/11/05  23:42:55  dleslie
+ * 	Local changes for NX through noon, November 5, 1992.
+ *
+ * 	Revision 2.23  1992/10/22  15:56:35  dbm
+ * 	Added PFS functionality.
+ *
+ * Revision 2.24  92/12/10  17:34:13  mjl
+ * Changed name of fsvr_unp_vsockdestroy() RPC to more mnemonic (I think)
+ * fsvr_unp_unbind().  This vnode port RPC tears down a socket-to-vnode
+ * association.
+ *
+ * Revision 2.23  92/11/23  15:55:29  klh
+ * 	Revision 2.26  92/11/11  10:38:52  rabii
+ * 		Made all non TNC, PM routines use COPY_SEND for the 
+ *		creds port (rabii)
+ * 
+ * 	Revision 2.25  92/11/05  17:28:05  roy
+ * 		add abs_pathname arg to fsvr_mount_ufs and 
+ *		fsvr_mount_nfs (durriya).
+ * 
+ * 	Revision 2.24  92/11/03  11:54:25  mmp
+ * 		Add fsvr_server_register and fsvr_halt for shutdown.  (mmp)
+ * 
+ * Revision 2.22  92/10/06  12:17:49  roman
+ * Fix RCS comments.
+ * 
+ * Revision 2.21  92/10/05  13:38:16  klh
+ * 	Revision 2.23  92/09/29  16:48:25  rabii
+ * 		fsvr_[gs]etattr must MAKE_SEND the right for the creds port.
+ * 		(loverso)
+ * 
+ * 	Revision 2.22  92/08/26  12:13:40  loverso
+ * 		Fix lint.  Remove transaction_id from token calls.
+ * 		Move fsvr_unp_vsockdestroy to end of file to avoid loader bug.
+ * 		(loverso)
+ * 
+ * 	Revision 2.21  92/08/14  09:03:23  rabii
+ * 		Put back new routines fsvr_getinfo and fsvr_updateinfo lost in 
+ * 		rev 2.20 (rabii)
+ * 
+ * 	Revision 2.20  92/08/13  20:01:46  rabii
+ * 		Locus drop to ifdef out TNC routines
+ * 
+ * 	Revision 2.19  92/08/13  19:21:10  rabii
+ * 		Added new routines fsvr_getinfo and fsvr_updateinfo also fixed 
+ *		bogus line in comment 2.16 (rabii)
+ * 
+ * Revision 2.20  92/08/13  13:21:44  klh
+ * Fix .defs file so non TNC version will build
+ * 
+ * Revision 2.19  92/08/08  01:51:00  jdh
+ * when socket is bound, vnode now holds send right for socket port -- jdh
+ * 
+ * Revision 2.18  92/08/06  16:42:26  roman
+ * Fixes to allow builds without REMOTE_PROC to work.
+ * 
+ * Revision 2.17  92/08/06  13:31:06  klh
+ * 	Revision 2.18  92/07/29  08:53:59  rabii
+ * 		Fixed RCS log
+ * 
+ * 	Revision 2.17  92/07/28  20:00:44  rabii
+ * 		Added stubs for fsvr_vnode_pager_get_state and 
+ * 		fsvr_rproc_server_register (rabii)
+ * 
+ * 	Revision 2.16  92/07/16  09:41:10  rabii
+ * 		Add fsvr_vnopen, fsvr_vnread* and fsvr_vnwrite. These subsumed
+ * 		fsvr_exec_read* (pjg).
+ * 
+ * Revision 2.16  92/06/10  10:11:58  klh
+ * 	Revision 2.15  92/06/08  18:27:40  pjg
+ * 		Added iomode field to routines that open or create a file (pjg).
+ * 		Added stub for routine to get remote device attributes (rabii)
+ * 		Added 'accessed' arg to fsvr_token_release. (roy)
+ * 		Define fsvr_nfsrv_op (durriya)
+ * 		Define fsvr_nfssvc   (durriya)
+ * 		Add node as argument to fsvr_getmntid     (durriya)
+ * 
+ * Revision 2.15  92/06/05  14:00:29  klh
+ * 	Revision 2.14  92/05/18  12:26:58  roy
+ * 		Revision 2.10.1.2  92/05/08  12:04:13  roy
+ * 		Implemented fsvr_token_not_found.  Changed args to 
+ *		fsvr_token_release. Implemented fsvr_swapon (rabii).
+ * 		[92/04/22            roy]
+ * 
+ * 		Revision 2.10.1.1  92/04/22  09:57:34  roy
+ * 		Name change for consistency: 
+ * 		fsvr_vnode_flush_object -> fsvr_vnode_pager_flush.
+ * 		[92/03/25            roy]
+ * 
+ * 	Revision 2.13  92/05/01  10:00:42  rabii
+ * 		Changed the parameters to fsvr_exec_lookup to return the 
+ *		command name and got rid of unused parameters (vtype, vrdev, 
+ *		node) (pjg).
+ * 
+ * Revision 2.14  92/05/01  07:51:03  roman
+ * Changes from pjg to make sure u.u_comm is set up correctly when exec is
+ * done from a remote node.
+ * 
+ * Revision 2.13  92/04/06  19:08:45  klh
+ * For OSF merge, update version # to match LCC#
+ * 
+ * Revision 2.12  92/04/05  17:06:58  pjg
+ * 	add defn for fsvr_devstat and fsvr_getmntid. Change fsvr_stat and
+ * 	fsvr_fstat to use stat_t instead of statb_t              (durriya)
+ * 
+ * 	Added fsvr_report_migrate(), an RPC used by the emulator to inform
+ * 	storage node of pipe or FIFO that a reader has migrated. (chrisp)
+ * 
+ * Revision 2.11  92/03/20  11:35:26  pjg
+ * 	intr_delivery now carries a flag for exit processing (loverso).
+ * 
+ * Revision 2.10  92/03/15  14:29:41  roy
+ * 	Mapped files interfaces moved here from bsd_1.defs.
+ * 	Change parameters to release_token.
+ * 	Add import of server_mach_msg.h (srl).
+ * 	Change copyright (pjg).
+ * 	Allow mapping of anon memory to be backed by vnode pager (durriya).
+ * 
+ * Revision 2.9  92/03/03  13:51:52  pjg
+ * 	Add 'flag' parameter in exec_read_* functions.
+ * 
+ * Revision 2.8  92/03/01  18:38:12  pjg
+ * 	Deleted fsvr_vref and fsvr_vrele (pjg).
+ * 	Add fsvr_inode_pager_setup_fport and fsvr_vnode_flush_object (durriya).
+ * 	Delete signature port and interrupt variable from stubs (loverso).
+ * 
+ * 	92/02/28  16:52:38  noemi
+ * 	Changed all uses of covered vnode ports and file system root ports to
+ * 	mount structure ports.
+ * 
+ * Revision 2.7  92/02/11  21:50:09  pjg
+ * 	Change the creds port to MACH_MSG_TYPE_MAKE_SEND for calls initiated
+ * 	from exec (roman@locus.com).
+ * 
+ * Revision 2.6  92/01/17  17:31:26  roy
+ * 	Interruptible system call support.
+ * 
+ * Revision 2.5  92/01/16  17:45:04  roy
+ * 	92/01/16  13:30:12  pjg
+ * 	Added support for NFS client.
+ * 
+ * Revision 2.4  92/01/14  11:19:59  roy
+ * 	92/01/11  18:48:07  ses
+ * 	Added fsvr_vref.
+ * 
+ * 	92/01/10  21:59:00  noemi
+ * 	Changed arguments to fsvr_update_time.
+ * 
+ * 	92/01/07  16:58:51  noemi
+ * 	Added fsvr_getfsstat and fsvr_getfsstat_count.  Added a credentials
+ * 	port to fsvr_sync.
+ * 
+ * 	92/01/06  20:33:36  noemi
+ * 	Added fsvr_getfh and fsvr_statfs
+ * 
+ * Revision 2.3  92/01/09  15:59:59  roy
+ * 	Unix domain socket support (loverso).
+ * 
+ * Revision 2.2  92/01/05  20:21:07  roy
+ * 	91/12/15  17:08:26  pjg
+ * 	Added functions to support exec().
+ * 
+ * 	91/10/15  16:56:14  noemi
+ * 	Initial revision
+ * 
+ * $EndLog
+ */
+
+subsystem fsvr 11000;
+
+#if	!defined(_EMULATOR)
+#include <remote_proc.h>
+#include <fullserver.h>
+#include <ufs.h>
+#include <nfs.h>
+#endif
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types.defs>
+#include <uxkern/fsvr_types.defs>
+
+uimport <uxkern/server_mach_msg.h>;
+
+ServerPrefix	S_ ;
+
+/*
+ * The message prototypes are divided into four (4) classes:
+ *	1) Single pathname system call messages,
+ *	2) Dual pathname system call messages,
+ *	3) Calls which do not take a pathname (e.g. read),
+ *	and
+ *	4) Support messages that do not directly correspond to
+ *		a system call.
+ *
+ * For pathname operations, the length of the pathname is passed as a
+ *	parameter immediately after the pointer to the character array.
+ *	This parameter is generated by MiG and is, therefore, not
+ *	declared in any of the RPC declarations here.
+ *
+ * The message sequence number is passed as part of the message header; any
+ *	function needing it will have to fetch it from there.
+ *
+ * Standard args to each call:
+ *	creds_port	----	credentials reference (setup by task mgr.)
+ *	transaction_id	----	per-task transaction id for interruptibility.
+ *
+ * Other ports used:
+ *	cwd_port	----	current working directory port.
+ *	root_port	----	root directory port.
+ *	fl_port		----	file structure port used to work with an open
+ *					file.
+ *	vn_port		----	vnode port.
+ *	mnt_port	----	mount structure port.
+ * 	dev_port	----	special file vnode port for device pathname
+ *					translation.
+ *	fsvr_port	----	fileservice port.
+ */
+
+skip;				/* Reserve id #0 */
+
+#if	FULLSERVER
+/* SINGLE PATHNAME OPS */
+routine fsvr_access(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+#ifdef	PFS
+	in	mode		: int;
+	out	iomode		: iomode_t);
+#else
+	in	mode		: int);
+#endif
+
+routine fsvr_chdir(
+		cwd_port	: mach_port_t;
+	in	root_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	path_name	: path_name_t;
+	out	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_chmod(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+#ifdef	PFS
+	in	mode		: int;
+	out	iomode		: iomode_t);
+#else	
+	in	mode		: int);
+#endif
+
+routine fsvr_chown(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	uid		: int;
+#ifdef	PFS
+	in	gid		: int;
+	out	iomode		: iomode_t);
+#else
+	in	gid		: int);
+#endif
+
+routine fsvr_chroot(
+		cwd_port	: mach_port_t;
+	in	root_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	path_name	: path_name_t;
+	out	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_getfh(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	out	fhandleb	: fhandle_t);
+
+routine fsvr_open(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	mode		: int;
+	in	crt_mode	: int;
+	out	fl_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+#ifdef	PFS
+	inout	iomode		: iomode_t);
+#else
+	out	iomode		: iomode_t);
+#endif
+
+routine fsvr_mknod(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	mode		: int;
+	in	dev		: int);
+
+routine fsvr_readlink(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	count		: int;
+	out	buf		: small_char_array);
+
+
+routine fsvr_rmknod(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	mode		: int;
+	in	dev		: int;
+	in	node		: int);
+
+routine fsvr_stat(				/* stat/lstat */
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	follow		: boolean_t;
+#ifdef	PFS
+	out	stat		: stat_t;
+	out	iomode		: iomode_t);
+#else
+	out	stat		: stat_t);
+#endif
+
+routine fsvr_statfs(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	out	statfsb		: statfs_t);
+
+routine fsvr_devstat(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	out	devsb		: devstat_t);
+
+routine fsvr_truncate(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+#ifdef	PFS
+	in	length		: size_t;
+	out	iomode		: iomode_t);
+#else
+	in	length		: size_t);
+#endif
+
+routine fsvr_unmount(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	flags		: int);
+
+routine fsvr_utimes(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	times		: timeval_2_t;
+#ifdef	PFS
+	in	current_time	: boolean_t;
+	out	iomode		: iomode_t);
+#else
+	in	current_time	: boolean_t);
+#endif
+
+/* DUAL PATHNAME OPS */
+routine fsvr_link(
+		from_cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	from_path_name	: path_name_t;
+	in	to_cwd_port	: mach_port_t;
+	in	to_path_name	: path_name_t);
+
+routine fsvr_mount_ufs(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	dev_port	: mach_port_t;
+	in	path_name	: path_name_t;
+        in      abs_pname       : path_name_t;
+	in	flags		: int;
+	in	spec		: path_name_t;
+	in	exflags		: int;
+	in	exroot		: int);
+
+#if	NFS
+routine fsvr_mount_nfs(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	path_name	: path_name_t;
+        in      abs_pname       : path_name_t;
+	in	flags		: int;
+	in	args		: nfs_args_t;
+	in	addr		: sockaddr_in_t;
+	in	fh		: nfsv2fh_t;
+	in	hostname	: path_name_t);
+#else
+skip ;
+#endif	/* NFS */
+
+routine fsvr_rename(
+		from_cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	from_root_port	: mach_port_t;
+	in	from_path_name	: path_name_t;
+	in	to_cwd_port	: mach_port_t;
+#ifdef	PFS
+	in	to_path_name	: path_name_t;
+	inout	iomode		: iomode_t);
+#else
+	in	to_path_name	: path_name_t);
+#endif
+
+routine fsvr_symlink(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	from_path_name	: path_name_t;
+	in	to_path_name	: path_name_t);
+
+/* NON-PATHNAME OPS */
+routine fsvr_fchdir(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_fchmod(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	mode		: int);
+
+routine fsvr_fchown(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	uid		: int;
+	in	gid		: int);
+
+routine fsvr_sync(
+		root_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	tag		: int);
+
+#if	UFS
+routine fsvr_ufs_mountfs(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	mnt_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	dir		: path_name_t;
+	in	spec		: path_name_t;
+	in	flag		: int;
+	out	rmt_mnt_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+#else
+skip;
+#endif	/* UFS */
+
+#if	NFS
+routine fsvr_nfs_mountfs(
+		netserver_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	mnt_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	pathname	: path_name_t;
+	in	flags		: int;
+	in	args		: nfs_args_t;
+	in	addr		: sockaddr_in_t;
+	in	fh		: nfsv2fh_t;
+	in	hostname	: path_name_t;
+	out	rmt_mnt_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_nfssvc(
+                file_port       : mach_port_t;
+        in      creds_port      : mach_port_t;
+        in      transaction_id  : transaction_id_t;
+        in      mask            : int;
+        in      match           : int;
+        out     rval            : int);
+#else
+
+skip;
+skip;
+
+#endif /* NFS */
+
+
+
+#ifdef	COMPAT_43
+/* BSD43 Compatibility */
+
+routine fsvr_oopen(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	mode		: int;
+	in	crt_mode	: int;
+	out	fl_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+#ifdef	PFS
+	inout	iomode		: iomode_t);
+#else
+	out	iomode		: iomode_t);
+#endif
+
+routine fsvr_ocreat(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	mode		: int;
+	out	fl_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+#ifdef	PFS
+	inout	iomode		: iomode_t);
+#else
+	out	iomode		: iomode_t);
+#endif
+#else
+
+/* for emulator compatibility */
+skip;
+skip;
+
+#endif /*COMPAT_43*/
+
+routine fsvr_swapon(
+                cwd_port        : mach_port_t;
+        in      creds_port      : mach_port_t;
+        in      transaction_id  : transaction_id_t;
+        in      root_port       : mach_port_t;
+        in      path_name       : path_name_t;
+        in      flags           : int;
+        in      hiwat           : int;
+        in      lowat           : int);
+
+routine fsvr_open_with_token(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	mode		: int;
+	in	crt_mode	: int;
+	in	flags		: int;
+	in	revoke_port	: mach_port_send_t;
+	out	fl_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+#ifdef PFS
+	inout	iomode		: iomode_t;
+#else
+	out	iomode		: iomode_t;
+#endif /* PFS */
+	out	token		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	offset		: int;
+	out	length		: int;
+	out	mem_obj		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+#else	/* FULLSERVER */
+
+skip;		/* fsvr_access */
+skip;		/* fsvr_chdir */
+skip;		/* fsvr_chmod */
+skip;		/* fsvr_chown */
+skip;		/* fsvr_chroot */
+skip;		/* fsvr_getfh */
+skip;		/* fsvr_open */
+skip;		/* fsvr_mknod */
+skip;		/* fsvr_readlink */
+skip;		/* fsvr_rmknod */
+skip;		/* fsvr_stat */
+skip;		/* fsvr_statfs */
+skip;		/* fsvr_devstat */
+skip;		/* fsvr_truncate */
+skip;		/* fsvr_unmount */
+skip;		/* fsvr_utimes */
+skip;		/* fsvr_link */
+skip;		/* fsvr_mount_ufs */
+skip;		/* fsvr_mount_nfs */
+skip;		/* fsvr_rename */
+skip;		/* fsvr_symlink */
+skip;		/* fsvr_fchdir */
+skip;		/* fsvr_fchmod */
+skip;		/* fsvr_fchown */
+skip;		/* fsvr_sync */
+skip;		/* fsvr_ufs_mountfs */
+skip;		/* fsvr_nfs_mountfs */
+skip;		/* fsvr_nfssvc */
+skip;		/* fsvr_oopen */
+skip;		/* fsvr_ocreat */
+skip;		/* fsvr_swapon */
+skip;		/* fsvr_open_with_token */
+
+#endif	/* FULLSERVER */
+
+#if 	FULLSERVER || defined(PARACORE)
+
+routine fsvr_mkdir(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	mode		: int);
+
+routine fsvr_rmdir(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t);
+
+routine fsvr_unlink(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+#if	defined(PFS) || defined(PARACORE)
+	in	path_name	: path_name_t;
+	inout	iomode		: iomode_t);
+#else
+	in	path_name	: path_name_t);
+#endif
+
+#else	/* FULLSERVER || defined(PARACORE) */
+
+skip;		/* fsvr_mkdir */
+skip;		/* fsvr_rmdir */
+skip;		/* fsvr_unlink */
+
+#endif	/* FULLSERVER || defined(PARACORE) */
+
+/*
+ * Operations for Unix domain sockets
+ */
+routine	fsvr_uds_bindconn(
+	    	file_port	: mach_port_t;
+	in	cwd_port	: mach_port_t;
+	in  	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	syscall		: int;		/* SYS_bind, SYS_connect */
+	in	name		: sockarg_t);
+
+routine	fsvr_uds_sendto_short(
+		file_port	: mach_port_t;
+	in	cwd_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	flags		: int;
+	in	to		: sockarg_t;
+	in	data		: small_char_array;
+	out	amount_written	: int);
+
+routine	fsvr_uds_sendto_long(
+		file_port	: mach_port_t;
+	in	cwd_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	flags		: int;
+	in	to		: sockarg_t;
+	in	data		: char_array;
+	out	amount_written	: int);
+
+routine	fsvr_uds_sendmsg(
+		file_port	: mach_port_t;
+	in	cwd_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	syscall		: int;		/* SYS_sendmsg, SYS_osendmsg */
+	in	flags		: int;
+	in	name		: sockarg_t;
+	/* msg is really a pointer; copyin'd in socket code */
+	in	msg		: int;
+	out	amount_written	: int);
+
+/*
+ * Interfaces for mapped files.
+ */
+routine	fsvr_token_acquire(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	flags		: int;
+	in	revoke_port	: mach_port_t = MACH_MSG_TYPE_MAKE_SEND;
+	out	token		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	offset		: int;
+	out	length		: int);
+
+routine	fsvr_token_acquire_with_mo(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	flags		: int;
+	in	revoke_port	: mach_port_t = MACH_MSG_TYPE_MAKE_SEND;
+	out	token		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	offset		: int;
+	out	length		: int;
+	out	mem_obj		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine	fsvr_get_window(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	offset		: vm_offset_t;
+	in	size		: int;
+	inout	addr		: vm_address_t);
+
+routine	fsvr_token_change(
+		token_port	: mach_port_t;
+	in	move_token_right : mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	flags		: int;
+	out	token		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+simpleroutine fsvr_token_release(
+		token_port	: mach_port_t;
+	in	move_token_right1 : mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	move_token_right2 : mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	offset		: int;
+	in	length		: int;
+	in	accessed	: int;
+	in	modified	: int;
+	in	min_offset	: int;
+	in	max_offset	: int);
+
+routine fsvr_sync_data(
+		token_port	: mach_port_t;
+	in	length		: size_t;
+	in	min_offset	: off_t;
+	in	max_offset	: off_t);
+
+simpleroutine fsvr_token_not_found(
+		token_port	: mach_port_t;
+	in	move_token_right : mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+
+/*
+ * End of mapped file interfaces.
+ */
+
+routine fsvr_acct(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	pathname	: path_name_t;
+	in	acct_on		: boolean_t);
+
+
+routine fsvr_cleanlocks(
+		file_port	: mach_port_t;
+	in	creds_port	: mach_port_t);
+
+#if     NFS
+routine fsvr_nfsrv_op(
+                fsvr_port       : mach_port_t;
+        in      creds_port      : mach_port_t;
+        in      transid         : transaction_id_t;
+        in      procid          : int;
+        in      cred            : cred_t;
+        in      md_arr          : char_array, Dealloc[];
+        in      doff            : int;
+        in      retxid          : int;
+        out     mreq_arr        : char_array, Dealloc[];
+        out     repstat         : int);
+#else   /* NFS */
+skip;
+#endif  /* NFS */
+
+
+routine fsvr_updateinfo(
+		vport		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	accessed	: int;
+	in	modified	: int;
+	out	vap		: vattr_t);
+
+routine fsvr_getinfo(
+		vport		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	accessedp	: int;
+	out	modifiedp	: int);
+
+
+
+routine fsvr_revoke(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t);
+
+routine fsvr_flock(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	cmd		: int);
+
+routine fsvr_lseek(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	offset		: int;
+	in	sbase		: int;
+	out	new_offset	: int);
+
+routine fsvr_fstat(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	stat		: stat_t);
+
+routine fsvr_fsync(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t);
+
+routine fsvr_ftruncate(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	length		: size_t);
+
+routine fsvr_getfsstat_count(
+ 		root_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	tag		: int;
+	out	entries		: int);
+
+routine fsvr_getfsstat(
+		root_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	maxsize		: int;
+	in	flags		: int;
+	in	tag		: int;
+	out	statfsbuf	: char_array, dealloc);
+
+routine fsvr_read(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	length		: int;
+	out	buf		: char_array, dealloc);
+
+routine fsvr_write(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	data		: char_array;
+	out	amount		: int);
+
+routine fsvr_file_ref(
+		file_port	: mach_port_t;
+	in	n		: int);
+
+routine fsvr_file_unref(
+		file_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	move_file_right	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_pf_file_init(
+		fsvr_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	dev		: int;
+	in	tag		: int;
+	in	dev_node	: int;
+	in	hiwat		: int;
+	in	lowat		: int;
+	in	prefer		: int;
+	in	vtype		: int;
+	in	name		: path_name_t);
+
+/* SUPPORT OPS */
+
+routine fsvr_spec_fsopen(
+		fsvr_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	node		: int;
+	in	dev		: int;
+	in	vtype		: int;
+	in	mode		: int;
+	in	tag		: int;
+	in	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	fl_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	dev_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_spec_open(
+		fsvr_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	node		: int;
+	in	dev		: int;
+	in	vtype		: int;
+	in	mode		: int;
+	in	tag		: int;
+	in	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	dev_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_spec_vnode_fsopen(
+		vn_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	mode		: int;
+	out	fl_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_spec_vnode_open(
+	vn_port			: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	mode		: int);
+
+routine fsvr_spec_close(
+	vn_port			: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flag		: int);
+
+routine fsvr_spec_read(
+		vn_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+        in      offset          : int;
+	in	length		: int;
+	in	ioflag		: int;
+	out	buf		: char_array, dealloc);
+
+routine fsvr_spec_write(
+		vn_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+        in      offset          : int;
+	in	ioflag		: int;
+	in	buf		: char_array;
+	out	amount		: int);
+
+routine fsvr_spec_reclaim(
+		vn_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t);
+
+routine fsvr_clearalias(
+		vn_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t);
+
+routine fsvr_mount_update(
+		mnt_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flag		: int);
+
+routine	fsvr_unmount_set(
+		mnt_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t);
+
+routine	fsvr_unmount_done(
+		mnt_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	inerror		: int);
+
+routine	fsvr_lookup(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	pathname	: path_name_t;
+	in	options		: int;
+	out	vtype		: int;
+	out	vrdev		: int;
+	out	node		: int;
+	out	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_get_root_port(
+		root_fsvr_port	: mach_port_t;
+	out	root_vn_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_getmntid(
+                fsvr_port       : mach_port_t;
+        in      creds_port      : mach_port_t;
+        in      transaction_id  : transaction_id_t;
+        in      node            : int;
+        in      rdev            : int;
+        out     mountid         : unsigned);
+
+
+routine fsvr_inode_pager_setup(
+		vnode_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	is_text		: boolean_t;
+	in	can_cache	: boolean_t;
+	out	pager		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_inode_pager_setup_fport(
+                file_port       : mach_port_t;
+        in      creds_port      : mach_port_t;
+        in      is_text         : boolean_t;
+        in      can_cache       : boolean_t;
+        out     vtype           : int;
+        out     fflags          : int;
+        out     pager           : mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_vnode_pager_get(
+                fsvr_port       : mach_port_t;
+        in      creds_port      : mach_port_t;
+        in      can_cache       : boolean_t;
+        in      size            : vm_size_t;
+        out     pager           : mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_vnode_pager_flush(
+                fsvr_port       : mach_port_t;
+        in      pager           : mach_port_t;
+        in      creds_port      : mach_port_t;
+        in      offset          : int;
+        in      size            : int;
+        in      wait            : int;
+        in      should_clean    : boolean_t;
+        in      should_flush    : boolean_t;
+        in      lock_value      : int);
+
+/*
+ * Operations to support exec().
+ */
+routine	fsvr_exec_lookup(
+		fsvr_port	: mach_port_t;
+	in	cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	pathname	: path_name_t;
+	in	options		: int;
+	out	command		: path_name_t;
+	out	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_exec_setup_suid(
+		vnode_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	pflag		: int;
+	in	suid		: boolean_t;
+	out	new_uid		: int;
+	out	new_gid		: int;
+	out	new_is_priv	: boolean_t);
+
+routine	fsvr_exec_check_vnode(
+		vnode_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	inout	access		: int;
+	out	text		: int);
+
+routine	fsvr_vnopen(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	fmode		: int;
+	in	cmode		: int;
+	out	vnode_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	vtype		: int);
+
+routine fsvr_vnread_inline(
+		vnode_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	len		: int;
+	in	offset		: int;
+	in	flag		: int;
+	out	base		: small_char_array;
+	out	resid		: int);
+
+routine fsvr_vnread_outline(
+		vnode_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	len		: int;
+	in	offset		: int;
+	in	flag		: int;
+	out	base		: char_array, dealloc;
+	out	resid		: int);
+
+routine fsvr_vnwrite(
+		vnode_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	offset		: int;
+	in	flag		: int;
+	in	base		: char_array;
+	out	resid		: int);
+
+#ifdef PARACORE
+
+routine fsvr_vnreaddir(
+		vnode_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	len		: int;
+	inout	offset		: int;
+	out	base		: small_char_array;
+	out	resid		: int);
+
+#else /* PARACORE */
+
+skip;		/* fsvr_vnreaddir */
+
+#endif /* PARACORE */
+
+/* File server assist for creating a VSOCK for unp */
+routine	fsvr_unp_vsockcreate(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	sockid		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+/* File server assist for reading a VSOCK for unp */
+routine	fsvr_unp_vsockread(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	options		: int;
+	out	sockid		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	vn_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+
+/* END of File Server RPC Operation Definitions */
+
+simpleroutine intr_delivery(
+		forw_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	intr		: boolean_t;
+	in	exiting		: boolean_t);
+
+routine fsvr_getattr(
+		vport		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	vap		: vattr_t);
+
+routine fsvr_setattr(
+		vport		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	vap		: vattr_t);
+
+routine fsvr_vnode_pager_get_state(
+		fsvr_port	: mach_port_t;
+	out	has_backing_spacep	: int;
+	out	pager_portp	: mach_port_t = MACH_MSG_TYPE_MAKE_SEND);
+
+#if	REMOTE_PROC
+
+routine fsvr_rproc_server_register(
+		fsvr_port	: mach_port_t;
+	in	node		: int);
+
+#else
+
+skip;				/* !REMOTE_PROC (or for emulator) */
+
+#endif
+
+routine fsvr_server_register(
+		fsvr_port	: mach_port_t;
+	in	node		: int);
+
+simpleroutine fsvr_halt(
+		fsvr_port	: mach_port_t;
+	in	options		: int);
+
+
+routine fsvr_get_paging_stats(
+                fsvr_port       : mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+        in      size_only       : boolean_t;
+        out     num_entries     : int;
+        out     pginfo          : char_array, dealloc);        
+
+
+#ifdef	TNC
+
+/* File server assist for removing a VSOCK vnode for unp */
+routine	fsvr_unp_unbind(
+		vn_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t);
+
+#ifdef  CHKPNT
+routine fsvr_openfh(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	fh		: fhandle_t;
+	in	mode		: int;
+	out	fl_port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	iomode		: unsigned);
+#else	/* CHKPNT */
+skip;	/* fsvr_openfh()              */
+#endif	/* CHKPNT */
+
+/*
+ * Note: for binary compatibility of TNC and non-TNC emulators the following
+ * RPC exists in both cases but has a null handler in the non-TNC case.
+ * Non-TNC emulators will, however, never generate this message.
+ */
+routine fsvr_report_migrate(
+		file_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	pid		: pid_t;
+	in	new_node	: int;
+	out	status		: int);
+
+#else	/* !TNC */
+
+skip;				/* for emulator compatibility */
+skip;				/* for emulator compatibility */
+
+#endif	/* !TNC */
+
+#if	FULLSERVER || defined(TNC)
+
+routine fsvr_file_unref_svr(
+		file_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	file_port_send	: mach_port_t =
+					MACH_MSG_TYPE_MOVE_SEND;
+	in	increment	: int);
+
+#else	/* !FULLSERVER */
+
+	skip;
+
+#endif	/* !FULLSERVER */
+
+
+#ifdef	PFS
+/*
+ * Interfaces for PFS.
+ */
+
+routine fsvr_mount_pfs(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	dev_port	: mach_port_t;
+	in	path_name	: path_name_t;
+        in      abs_pname       : path_name_t;
+	in	flags		: int;
+	in	spec		: path_name_t;
+	in	exflags		: int;
+	in	exroot		: int;
+	in	args		: char_array);
+
+routine fsvr_pfs_mountfs(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	mnt_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	dir		: path_name_t;
+	in	spec		: path_name_t;
+	in	flag		: int;
+	in	stripe_attr	: char_array;
+	out	rmt_mnt_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr__lsize(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	offset		: off_t;
+	in	sbase		: int;
+	out	new_length	: size_t);
+
+routine fsvr_unshare(
+		oldfl_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	newfl_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine fsvr_statpfs(
+		cwd_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	root_port	: mach_port_t;
+	in	path_name	: path_name_t;
+	in	statpfsb_len	: int;
+	out	statpfsb	: char_array, dealloc);
+
+routine fsvr_fstatpfs(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	statpfsb_len	: int;
+	out	statpfsb	: char_array, dealloc);
+
+routine fsvr_pfs_fdevstat(
+		fl_port		: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	pfs_stat_buf	: pfs_stat_t);
+
+routine fsvr_pfs_token_acquire(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	flags		: int;
+	in	revoke_port	: mach_port_t = MACH_MSG_TYPE_MAKE_SEND;
+	out	token		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	offset		: esize_t;
+	out	length		: esize_t);
+
+simpleroutine fsvr_pfs_token_release(
+		token_port	: mach_port_t;
+	in	move_token_right1 : mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	move_token_right2 : mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	in	offset		: esize_t;
+	in	length		: esize_t;
+	in	accessed	: int;
+	in	modified	: int);
+
+routine fsvr_pfs_update_off(
+                file_port       : mach_port_t;
+        in      offset          : esize_t);
+
+routine fsvr_pfs_get_off(
+                file_port       : mach_port_t;
+        out     offset          : esize_t);
+
+routine fsvr_pfs_async_dflt(
+                file_port       : mach_port_t;
+	out	pfs_async_dflt	: int);
+		
+routine fsvr_duplicate(
+		oldfl_port	: mach_port_t;
+	in	creds_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	response_id	: unsigned;
+	in	newfl_ports_b	: long_multi_port_array_t);
+
+#endif	PFS

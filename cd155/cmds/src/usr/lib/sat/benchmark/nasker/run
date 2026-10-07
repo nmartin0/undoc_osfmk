@@ -1,0 +1,157 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/benchmark/nasker/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# run just one thread
+DFLT_NCPUS=1
+export DFLT_NCPUS
+
+# Initialize local variables
+exitCode=0
+testError=1
+miscError=2
+abortCode=3
+title="`sed -n '1p' README`"
+
+# Source directory
+sourceDir=`pwd`
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+#        Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/nasker.scratch.$$
+programResultsFile=$SAT_USR_TMP/nasker.results.$$
+programErrorFile=$SAT_USR_TMP/nasker.errors.$$
+
+# Define temporary directory to run program in
+programWorkDir=$SAT_USR_TMP/nasker.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+
+   # Remove temporary directory
+   cd $sourceDir
+   rm -fr $programWorkDir
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "nasker sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Verify program is executable
+if test -x $sourceDir/nasker
+then
+   # Execute program
+   if $sourceDir/nasker > $programScratchFile 2> $programErrorFile
+   then
+      # Verify results, see filter results below
+      :
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "nasker exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"nasker\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Error, first occurance, second field in line containing "TOTAL"
+error=`awk '$0 ~ /TOTAL/ { print $2 ; exit }' $programScratchFile`
+
+# MFlops, first occurance, fifth field in line containing "TOTAL"
+Mflops=`awk '$0 ~ /TOTAL/ { print $5 ; exit }' $programScratchFile`
+
+# Report PASS/FAIL results, error & Mflops non-null
+if test -n "$error" -a -n "$Mflops" -a ! -f core -a ! -d core
+then
+   # Program PASSed, cat (filtered) results back to sat
+   #echo "PASS: $title, $error error, $Mflops Mflops."
+   echo "PASS: $title, $Mflops Mflops."
+
+else
+   # Program FAILed, cat (filtered) scratch file back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

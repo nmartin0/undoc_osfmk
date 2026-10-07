@@ -1,0 +1,1079 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/* 
+ * Mach Operating System
+ * Copyright (c) 1990 Carnegie-Mellon University
+ * Copyright (c) 1989 Carnegie-Mellon University
+ * All rights reserved.  The CMU software License Agreement specifies
+ * the terms and conditions for use and redistribution.
+ */
+/*
+ * Copyright (c) 1991, Locus Computing Corporation
+ * All rights reserved
+ */
+/*
+ * This source file was modified and extended by the Center for High 
+ * Performance Computing (CHPC) on behalf of OSF.
+ */
+/*
+ * HISTORY
+ * $Log: bsd_1.defs,v $
+ * Revision 1.16  1994/11/18  20:47:01  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.15  1994/11/04  18:25:18  toman
+ * Corrected CVS comments.
+ *
+ * Revision 1.14  94/11/04  18:22:46  toman
+ * Added routines bsd_orecv_short() and bsd_orecv_long().
+ * 
+ *  Reviewer: John Litvin, Bob Yasi
+ *  Risk: med
+ *  Benefit or PTS #: 9422
+ *  Testing: Lachman t_recv, TCP/IP EAT
+ *  Module(s): emulator/fsvr_user_side.c
+ * 	    server/conf/syscalls.master
+ * 	    server/uxkern/bsd_1.defs
+ * 	    server/uxkern/bsd_server_side.c
+ * 
+ * 
+ * Revision 1.13  94/06/02  22:34:59  chrisp
+ * RPCs bsd_rforkmulti and rforkmulti_long parameters change:  file
+ * ports added; child task and thread ports eliminated.  Boolean boot
+ * magic variable TNC_RFORKMULTI_BINARY_TREE added to determine the
+ * spanning tree scheme rforkmulti is to use; it defaults to true i.e.
+ * binary tree.  Parameter added for RPC fsvr_file_ref to specify the
+ * required change in reference count. Previously, this operation
+ * incremented counts by 1 only; now n can be specify and note that
+ * n can be negative.
+ * 
+ *  Reviewer: cfj
+ *  Risk: M
+ *  Benefit or PTS #: 6463
+ *  Testing:
+ *  Module(s): boot_config.c bsd_1.defs bsd_types.defs bsd_types.h fsvr.defs
+ *             fsvr_server_side.c
+ * 
+ * Revision 1.12  1994/03/14  02:07:46  slk
+ * Checkpoint Restart Code Drop
+ *  Reviewer: Stefan Tritscher
+ *  Risk: Medium
+ *  Benefit or PTS #: Enhancement
+ *  Testing: Locus VSTNC, EATS TCP-IP, Individual Checkpoint/Restart tests.
+ *  Module(s):
+ *
+ * Revision 1.11  1993/10/29  11:56:53  paul
+ * Add support for setting and using the RPM distributed time-of-day clock.
+ *
+ * Revision 1.10  1993/08/11  18:40:01  stefan
+ * Fixed a bug in SLL that could make rfork(localnode) actually
+ * go to a remote node.
+ *
+ * Revision 1.9  1993/07/14  18:39:29  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.6  1993/07/01  20:58:13  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.8  1993/06/21  13:52:30  stefan
+ * Made modifications so that a server that is compiled with -sll works with
+ * an emulator that is compiled with -DSLL (and vice versa).
+ *
+ * Revision 1.7  1993/05/13  09:16:35  stefan
+ * Integrated static load leveling support.
+ *
+ * Revision 1.6  1993/05/06  19:24:38  nandy
+ * ad103+tnc merged with Intel code.
+ *
+ * Revision 1.5  1993/04/03  03:11:03  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ *
+ * Revision 1.1.2.2.2.2  1992/12/16  06:04:29  brad
+ * Merged trunk (as of the Main_After_Locus_12_1_92_Bugdrop_OK tag)
+ * into the PFS branch.
+ *
+ * Revision 1.4  1992/12/11  03:04:53  cfj
+ * Merged 12-1-92 bug drop from Locus.
+ *
+ * Revision 1.1.2.2.2.1  1992/11/26  00:01:28  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.3  1992/11/30  22:52:38  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.2  1992/11/06  20:33:57  dleslie
+ * Merged bug drop from Locus November 3, 1992, with NX development
+ * 
+ * Revision 1.1.2.1  1992/11/05  23:41:46  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ *
+ * Revision 2.33  93/06/16  15:27:44  klh
+ * 	Revision 2.28  93/06/04  12:21:20  rabii
+ * 		Added node argument to bsd_fork stub (rabii)
+ * 
+ * Revision 2.32  93/06/02  12:32:42  yazz
+ * For Sys V IPC under TNC add RPC to allow process to obtain an svipc port.
+ * 
+ * Revision 2.31  92/11/23  16:02:40  klh
+ * 	Revision 2.27  92/11/11  10:40:09  rabii
+ * 		Made all non TNC, PM routines use COPY_SEND for the creds port (rabii)
+ * 
+ * 	Revision 2.25  92/11/05  17:27:09  roy
+ * 		bsd_set_callback changed to bsd_register_proc, and a new rlimit_fsize
+ * 		out arg added.
+ * 		[92/10/26            roy]
+ * 
+ * Revision 2.30  92/11/02  12:26:57  roman
+ * Add a version of the rforkmulti() message that uses out-of-line data.
+ * Add missing skip() to keep TNC and non-TNC emulators compatible.
+ * 
+ * Revision 2.29  92/10/28  15:57:09  roman
+ * Add entries for new TNC-specific system call table_node().
+ * 
+ * Revision 2.31  1992/11/23  16:02:40  klh
+ * 	Revision 2.27  92/11/11  10:40:09  rabii
+ * 		Made all non TNC, PM routines use COPY_SEND for the creds port (rabii)
+ *
+ * 	Revision 2.25  92/11/05  17:27:09  roy
+ * 		bsd_set_callback changed to bsd_register_proc, and a new rlimit_fsize
+ * 		out arg added.
+ * 		[92/10/26            roy]
+ *
+ * Revision 2.30  92/11/02  12:26:57  roman
+ * Add a version of the rforkmulti() message that uses out-of-line data.
+ * Add missing skip() to keep TNC and non-TNC emulators compatible.
+ * 
+ * Revision 2.29  92/10/28  15:57:09  roman
+ * Add entries for new TNC-specific system call table_node().
+ * 
+ * Revision 2.28  92/10/06  12:14:26  roman
+ * Add traced flag to rexec (similar to what was done for exec).
+ * 
+ * Revision 2.27  92/10/05  13:48:30  klh
+ * 	Revision 2.24  92/09/24  16:51:12  rabii
+ * 		dded 'traced' parameter to bsd_execve(), and new entry point
+ * 		sd_psignal() for emulator.  (dwm; #376)
+ * 
+ * 	Revision 2.23  92/08/26  12:12:39  loverso
+ * 		Change bsd_set_callback_port to bsd_set_callback; include 
+ *		callback thread port; MAKE_SEND the appropriate send rights. 
+ *		(loverso)
+ * 
+ * Revision 2.26  92/10/01  10:36:00  roman
+ * Fix up types for clean compilation under gcc.
+ * Fix prior RCS comments.
+ * 
+ * Revision 2.25  92/06/05  13:58:45  klh
+ * 	Revision 2.21  92/05/31  18:59:26  loverso
+ * 		Revision 2.20.1.1  92/05/21  15:17:37  loverso
+ * 		Explicitly give the server a send-right on the file port, to 
+ *		be held for the duration of the select/poll call (i.e., 
+ *		longer than just bsd_sel_poll_delay).  (loverso)
+ * 
+ * 		Revision 3.16  92/04/08  20:46:04  barbou
+ * 		Fix for bug #127: interface to force current process to exit
+ * 
+ * 		Revision 3.14  92/01/07  23:35:20  condict
+ * 		Add dealloc to recvfrom_short stub (bug).
+ * 
+ * Revision 2.24  92/05/06  14:00:40  roman
+ * Change set_tnc_port() MIG definition to only pass in the port name
+ * 	(rather than the port right) and let the server extract
+ * 	the right.
+ * 
+ * Revision 2.23  92/04/14  10:41:05  roman
+ * Remove current and root directory parameters from call to bsd_execve(). (pjg)
+ * 
+ * Revision 2.22  92/04/01  16:22:40  roman
+ * Add interface for (new) rforkmulti() TNC system call.
+ * 
+ * Revision 2.21  92/03/27  11:36:34  roman
+ * Add new system calls for set_tnc_port() and get_tnc_port().
+ * Change the shipping of vproc ports back to the emulator to COPY_SEND.
+ * Comment TNC "skip" statements for legibility.
+ * 
+ * Revision 2.20  92/03/24  10:20:43  klh
+ * For OSF merge, update version # to match LCC#
+ * 
+ * Revision 2.18  92/03/20  11:35:04  pjg
+ * 	credentials_port is no longer an arg in bsd_mmap()  (durriya)
+ * 
+ * Revision 2.17  92/03/15  14:29:25  roy
+ * 	92/02/19  10:33:26  roy
+ * 	Mapped files interfaces moved to fsvr.defs.
+ * 	Added import of server_mach_msg.h (srl).
+ * 	Changed copyright (pjg).
+ * 
+ * Revision 2.16  92/03/09  12:59:30  durriya
+ * 	92/02/28  00:11:30  condict
+ * 	Add bsd_emul_uacc message.  Called by emulator main program during
+ * 	bootstrap to set EFAULT recovery addresses in server.
+ * 
+ * Revision 2.15  92/03/01  18:37:31  pjg
+ * 	Add bsd_setports definition (used by chdir) (pjg).
+ * 	Add bsd_mmap definition (durriya).
+ * 	Delete all signature port references.
+ * 	Only messages to process manager (proc_port) get "interrupt". (loverso)
+ * 
+ * 	92/02/20  09:32:32  roman
+ * 	Add #else case to TNC ifdefs to ensure binary compatibility is preserved
+ * 	for TNC and non-TNC emulators.
+ * 
+ * Revision 2.14  92/02/11  21:38:47  pjg
+ * 	Fixed parameters of bsd_sel_poll_immed.
+ * 	Add interfaces for rfork()/rexec()/migrate() (TNC only).
+ * 	Change the port types used to pass back credentials on fork()
+ * 	(roman@locus.com).
+ * 
+ * Revision 2.13  92/01/17  21:07:55  roy
+ * 	Make socket system calls interruptible (loverso).
+ * 
+ * Revision 2.12  92/01/17  17:31:07  roy
+ * 	Added bsd_set_signature_port (loverso).
+ * 
+ * Revision 2.11  92/01/16  17:27:13  roy
+ * 	Change events args to poll interfaces to shorts.
+ * 
+ * Revision 2.10  92/01/05  20:25:08  roy
+ * 	92/01/02  17:46:30  roy
+ * 	Add start port and root port args to bsd_execve.
+ * 	Moved many routines to fsvr.defs (noemi).
+ * 
+ * Revision 2.9  91/12/17  10:31:41  roy
+ * 	91/10/30  17:43:32  bernadat
+ * 	Fix for bug #30, handle NULL times argument to utimes() [barbou].
+ * 
+ * 	91/10/28  11:10:07  condict
+ * 	Add MIG stub functions bsd_msleep/bsd_mwakeup.
+ * 
+ * Revision 2.8  91/12/13  10:18:16  roy
+ * 	91/11/12  10:17:11  roy
+ * 	Added token interfaces.
+ * 
+ * Revision 2.7  91/11/25  11:23:55  rabii
+ * 	Imlemented rmknod stub for remote devices
+ * 
+ * Revision 2.6  91/10/17  13:04:37  roy
+ * Fix revision history.
+ * 
+ * Revision 2.5  91/10/14  14:56:09  sjs
+ * 91/10/04  16:41:56  sp
+ * Pass auxiliary vector information from the server to the emulator in
+ * the message.
+ * 
+ * 91/09/27  12:02:04  emcmanus
+ * Added profiling routines.
+ * 
+ * Revision 2.4  91/10/04  15:06:34  chrisp
+ * Add in the Locus copyright notice.
+ *
+ * Revision 2.3  91/09/17  10:33:02  sjs
+ * integrate Locus changes	hao
+ * Major changes to this file, dealing with file descriptors now
+ * being handled in the emulator.  many new routines now declared in
+ * this file.  Any parameter that was a file descriptor is now
+ * a Mach port.  Routines that had file descriptor as rvalp now
+ * have Mach port as explicit output parameters.  Additionally,
+ * there is a new interface between emulator aznd server for fork().
+ * New message interface for individual file ports manipulated by
+ * select() and poll().
+ * 
+ * Revision 2.2  91/08/31  14:23:02  rabii
+ *	Initial V2.0 Checkin
+ *
+ * Revision 3.8  91/08/09  12:22:05  barbou
+ * Added the bsd_signal() MIG interface to the sysV signal() system call.
+ *
+ * Revision 3.7  91/06/12  09:38:24  condict
+ * Eliminate oexecve syscall and stubs (no longer needed for bootstrap).
+ * 
+ * Revision 3.6  91/06/07  15:52:34  barbou
+ * bsd_exec_set_args(): send some information to the server about argv and env.
+ *
+ * Revision 3.5  91/05/30  17:37:35  jose
+ * Added "o" prefix to compat syscalls.
+ * 
+ * Revision 3.4  91/05/15  17:56:18  barbou
+ * Declaration of new routine: osf1_sigaction().
+ *
+ * Revision 3.3  91/05/07  15:52:19  condict
+ * Rename BSD 4.3 execve to oexecve and install OSF/1 execve.
+ *
+ * Revision 3.2  91/03/08  16:05:55  condict
+ * Modified to work with the OSF/1 header files
+ * 
+ * Revision 3.1  91/02/27  16:25:00  condict
+ * Eliminate CMU syscalls.
+ *
+ * Revision 3.0  91/01/17  12:05:42  condict
+ * Unchanged copy from Mach 3.0 BSD UNIX server
+ *
+ * Revision 2.10  90/08/06  15:34:15  rwd
+ * 	Change bsd_select to pass status of each fd_set to avoid extra
+ * 	copies and scans.
+ * 	[90/06/25            rwd]
+ * 
+ * Revision 2.9  90/06/19  23:14:26  rpd
+ * 	Added bsd_pid_by_task.
+ * 	[90/06/14            rpd]
+ * 
+ * Revision 2.8  90/06/02  15:26:43  rpd
+ * 	Removed bsd_signals_wakeup.
+ * 	[90/05/10            rpd]
+ * 	Converted more calls to new IPC.
+ * 	[90/05/03            rpd]
+ * 	Converted to new IPC.
+ * 	Changed bsd_task_by_pid to use a polymorphic argument.
+ * 	[90/03/26  20:07:48  rpd]
+ * 
+ * Revision 2.7  90/05/29  20:24:42  rwd
+ * 	Do argument shuffling for exec entirely within emulator.
+ * 	[90/03/22            dbg]
+ * 
+ * 	Added calls used by MAP_UAREA && MACH_NBC interface.
+ * 	[90/03/21            rwd]
+ * 
+ * Revision 2.6  90/05/21  14:00:37  dbg
+ * 	Do argument shuffling for exec entirely within emulator.
+ * 	[90/03/22            dbg]
+ * 
+ * Revision 2.5  90/03/14  21:30:22  rwd
+ * 	Added bsd_share_wakeup.  This is the interface for shared locks
+ * 	between the emulator and the server.
+ * 	[90/02/16            rwd]
+ * 	Add bsd_emulator_error and bsd_readwrite.
+ * 	[90/01/26            rwd]
+ * 
+ * Revision 2.4  89/11/29  15:30:10  af
+ * 	Added tramp field to sigvec.  Needed on mips&balance&mmax..
+ * 	but could be used by others as well.
+ * 	[89/11/15            af]
+ * 
+ * Revision 2.3  89/11/15  13:27:19  dbg
+ * 	Add bsd_pioctl.
+ * 	[89/11/07            dbg]
+ * 	Add bsd_table_set and bsd_table_get.  Table call is split into
+ * 	two interfaces because we can't use a 'dealloc' flag on an
+ * 	in-out argument.
+ * 	[89/10/25            dbg]
+ * 
+ * Revision 2.2  89/10/17  11:26:40  rwd
+ * 	Added bsd_init_process.
+ * 	[89/09/29            rwd]
+ * 
+ * Revision 2.1.1.1  89/09/21  20:38:39  dbg
+ * 	Added interrupt return parameter to all calls.
+ * 	[89/09/21            dbg]
+ * 
+ * 	Added more routines.  The only routines calling copyin
+ * 	that are missing are:
+ * 	    ioctl pioctl readv writev sendmsg recvmsg
+ * 	[89/05/16            dbg]
+ * 
+ * 	Support separate emulator-mode stack.
+ * 	[89/05/03            dbg]
+ * 
+ * 	Created.
+ * 	[89/04/03            dbg]
+ * 
+ * $EndLog$
+ */
+/*
+ * IPC interface for selected UX server functions.
+ */
+subsystem bsd_1		101000;
+
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types.defs>
+
+/*
+ * Calls that need the current thread
+ */
+routine bsd_execve(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	fname		: path_name_t;
+	out	cfname		: cfname_t;
+	out	cfarg		: cfname_t;
+	out	entry		: entry_array;
+	out	auxv_structs	: auxv_mig_t;
+	out	auxv_strings	: auxv_strings_t;
+	out	traced		: boolean_t);
+
+routine bsd_exec_args_set(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	argp		: int;
+	in	arg_size	: int;
+	in	envp		: int;
+	in	env_size	: int);
+
+routine bsd_fork(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	new_node	: int;
+	in	new_state	: thread_state_t;
+	out	new_task	: task_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	new_thread	: thread_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	new_vproc	: mach_port_t = MACH_MSG_TYPE_COPY_SEND;
+	out	new_cred	: mach_port_t;
+#if ! defined(SLL) && ! defined(SLLCOMPAT)
+	out	child_pid	: int);
+#else /* ! SLL && ! SLLCOMPAT */
+	out	child_pid	: int;
+	in	vproc_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	cred_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	force_local	: boolean_t;
+	out	was_rfork	: boolean_t);
+#endif /* ! SLL && ! SLLCOMPAT */
+
+routine bsd_take_signal(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	out	old_mask	: int;
+	out	old_onstack	: int;
+	out	sig		: int;
+	out	code		: int;
+	out	handler		: int;
+	out	new_sp		: int);
+
+routine bsd_sigreturn(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	old_on_stack	: int;
+	in	old_sigmask	: int);
+
+routine	bsd_getrusage(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	which		: int;
+	out	rusage		: rusage_t);
+
+routine bsd_mmap(
+                proc_port       : mach_port_t;
+        in      file_port       : mach_port_t;
+        in      addr            : int;
+        in      len             : int;
+        in      prot            : int;
+        in      flags           : int;
+        in      off             : int;
+        out     rval            : int;
+        out     interrupt       : boolean_t);
+
+#ifdef	COMPAT_43
+routine	bsd_osend_short(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	data		: small_char_array;
+	out	amount_written	: int);
+
+routine	bsd_osend_long(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	data		: char_array;
+	out	amount_written	: int);
+#endif	/* COMPAT_43 */
+
+routine	bsd_sendto_short(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	to		: sockarg_t;
+	in	data		: small_char_array;
+	out	amount_written	: int);
+
+routine	bsd_sendto_long(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	to		: sockarg_t;
+	in	data		: char_array;
+	out	amount_written	: int);
+
+/* These routines are only used #if PROFILING, but since the emulator doesn't
+   know about the server's configuration we have to include them always and
+   define dummies when they are not used.  */
+routine	bsd_profil_set(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	buff		: int;
+	in   	bufsiz		: int;
+	in	offset		: int;
+	in	scale		: int);
+
+routine	bsd_profil_get(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	out	uaddr		: int;
+	out 	out_addr	: char_array, dealloc);
+/* End of #if PROFILING routines. */
+
+/*
+ * Glue between MACH and U*X
+ */
+routine	bsd_task_by_pid(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pid		: int;
+	out	task		: task_t = MACH_MSG_TYPE_PORT_SEND);
+
+routine	bsd_pid_by_task(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	task		: task_t;
+	out	pid		: int;
+	out	command		: path_name_t;
+	out	rval		: int);
+
+routine bsd_get_bootstrap_process_ports(
+		proc_port	: mach_port_t;
+	out	vproc_port	: mach_port_t = MACH_MSG_TYPE_COPY_SEND;
+	out	cred_port	: mach_port_t);
+
+routine bsd_get_bootstrap_directories(
+		proc_port	: mach_port_t;
+	out	rootdir_port	: mach_port_t = MACH_MSG_TYPE_COPY_SEND;
+	out	currentdir_port	: mach_port_t = MACH_MSG_TYPE_COPY_SEND);
+
+routine bsd_setports(
+		proc_port	: mach_port_t;
+	in	cwd_port	: mach_port_t;
+	in	root_port	: mach_port_t;
+	out	interrupt	: boolean_t);
+
+/*
+ * More IO
+ */
+#ifdef	COMPAT_43
+routine	bsd_orecv_short(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	len		: int;
+	out	data		: small_char_array);
+
+routine	bsd_orecv_long(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	len		: int;
+	out	data		: char_array, dealloc);
+#endif	/* COMPAT_43 */
+
+#ifdef	COMPAT_43
+routine	bsd_orecvfrom_short(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	len		: int;
+	out	from_addr	: sockarg_t;
+	out	data		: small_char_array);
+
+routine	bsd_orecvfrom_long(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	len		: int;
+	out	from_addr	: sockarg_t;
+	out	data		: char_array, dealloc);
+#endif	/* COMPAT_43 */
+
+
+routine	bsd_recvfrom_short(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	len		: int;
+	out	from_addr	: sockarg_t;
+	out	data		: small_char_array);
+
+routine	bsd_recvfrom_long(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	flags		: int;
+	in	len		: int;
+	out	from_addr	: sockarg_t;
+	out	data		: char_array, dealloc);
+
+/*
+ * And more random system calls
+ */
+routine	bsd_setgroups(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	gidsetsize	: int;
+	in	gidset		: gidset_t);
+
+routine	bsd_setrlimit(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	which		: int;
+	in	lim		: rlimit_t);
+
+#ifdef	COMPAT_43
+routine	bsd_osigvec(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	signo		: int;
+	in	have_nsv	: boolean_t;
+	in	nsv		: sigvec_t;
+	out	osv		: sigvec_t;
+	in	tramp		: vm_address_t);
+#endif	/* COMPAT_43 */
+
+routine bsd_signal(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	signo		: int;
+	in	handler		: vm_address_t;
+	out	ohandler	: vm_address_t;
+	in	tramp		: vm_address_t);
+
+
+routine osf1_sigaction(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	signo		: int;
+	in	have_nsa	: boolean_t;
+	in	nsa		: sigaction_t;
+	out	osa		: sigaction_t;
+	in	tramp		: vm_address_t);
+
+routine	bsd_sigstack(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	have_nss	: boolean_t;
+	in	nss		: sigstack_t;
+	out	oss		: sigstack_t);
+
+routine	bsd_msleep(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	msem_addr	: int);
+
+routine	bsd_mwakeup(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	msem_addr	: int);
+
+routine	bsd_settimeofday(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	have_tv		: boolean_t;
+	in	tv		: timeval_t;
+	in	have_tz		: boolean_t;
+	in	tz		: timezone_t);
+
+routine	bsd_adjtime(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	delta_supplied	: boolean_t;
+	in	delta		: timeval_t;
+	out	olddelta	: timeval_t);
+
+routine	bsd_setitimer(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	which		: int;
+	in	have_itv	: boolean_t;
+	in	itv		: itimerval_t;
+	out	oitv		: itimerval_t);
+
+routine	bsd_sethostname(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	hostname	: hostname_t;
+	in	len		: int);
+
+routine	bsd_bind(
+	    	file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	name		: sockarg_t);
+
+#ifdef	COMPAT_43
+routine	bsd_oaccept(
+	    	file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	name		: sockarg_t;
+	out	fpp		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+#endif	/* COMPAT_43 */
+
+routine	bsd_accept(
+	    	file_port	: mach_port_t;
+	in  	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	name		: sockarg_t;
+	out	fpp		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine	bsd_connect(
+	    	file_port	: mach_port_t;
+	in  	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	name		: sockarg_t);
+
+routine	bsd_setsockopt(
+	    	file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	level		: int;
+	in	name		: int;
+	in	val		: sockarg_t);
+
+routine	bsd_getsockopt(
+	    	file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	in	level		: int;
+	in	name		: int;
+	out	val		: sockarg_t);
+
+#ifdef	COMPAT_43
+routine	bsd_ogetsockname(
+	    	file_port	: mach_port_t;
+	in  	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	name		: sockarg_t);
+
+routine	bsd_ogetpeername(
+	    	file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	name		: sockarg_t);
+#endif	/* COMPAT_43 */
+
+routine	bsd_getsockname(
+	    	file_port	: mach_port_t;
+	in  	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	name		: sockarg_t);
+
+routine	bsd_getpeername(
+	    	file_port	: mach_port_t;
+	in  	cred_port	: mach_port_t;
+	in	transaction_id	: transaction_id_t;
+	out	name		: sockarg_t);
+
+routine bsd_init_process(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t);
+
+#if CMUCS || defined(OSF1_SERVER)
+routine	bsd_table_set(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	id		: int;
+	in	index		: int;
+	in	lel		: int;
+	in	nel		: int;
+	in	addr		: small_char_array;
+	out	nel_done	: int);
+
+routine	bsd_table_get(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	id		: int;
+	in	index		: int;
+	in	lel		: int;
+	in	nel		: int;
+	out	addr		: char_array, dealloc;
+	out	nel_done	: int);
+#endif 	/* CMUCS || defined(OSF1_SERVER) */
+
+routine bsd_emulator_error(
+		proc_port	: mach_port_t;
+	in	err_message	: small_char_array);
+
+routine bsd_share_wakeup(
+		proc_port	: mach_port_t;
+	in	lock_offset	: int);
+
+routine	bsd_socket(
+	    	proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	domain		: int;
+	in	stype		: int;
+	in	protocol	: int;
+	out	fpp		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine	bsd_socketpair(
+	    	proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	domain		: int;
+	in	stype		: int;
+	in	protocol	: int;
+	out	fpp1		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	fpp2		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine	bsd_pipe(
+	    	proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	out	fpp1		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	fpp2		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine bsd_sel_poll_immed(
+		file_port	: mach_port_t;
+	in	cred_port	: mach_port_t;
+	in	events		: short;
+	out	revents		: short);
+
+routine bsd_sel_poll_delay(
+		file_port	: mach_port_t;
+	in	file_port_send	: mach_port_t = MACH_MSG_TYPE_COPY_SEND;
+	in	cred_port	: mach_port_t;
+	in	delay_port	: mach_port_t = MACH_MSG_TYPE_MAKE_SEND_ONCE;
+	in	events		: short;
+	in	index		: int;
+	out	revents		: short);
+
+routine bsd_register_proc(
+		proc_port	: mach_port_t;
+	in	cb_thread_port	: thread_t = MACH_MSG_TYPE_COPY_SEND;
+	in	callback_port	: mach_port_t = MACH_MSG_TYPE_MAKE_SEND;
+	out	rlimit_fsize	: int);
+
+#ifdef	TNC
+
+routine bsd_rfork(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	new_node	: int;
+	in	new_state	: thread_state_t;
+	in	vproc_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	cred_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	out	new_task	: task_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	new_thread	: thread_t = MACH_MSG_TYPE_MOVE_SEND;
+	out	child_pid	: int);
+
+routine bsd_migrate(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	new_node	: int;
+	in	new_state	: thread_state_t;
+	in	vproc_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	cred_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	orig_task_name	: task_t = MACH_MSG_TYPE_PORT_NAME);
+
+routine bsd_rexecve(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	fname		: path_name_t;
+	in	new_node	: int;
+	in	new_state	: thread_state_t;
+	in	vproc_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	cred_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	orig_task_name	: task_t = MACH_MSG_TYPE_PORT_NAME;
+	in	arg_addr	: int;
+	in	arg_size	: int;
+	in	arg_count	: int;
+	in	env_count	: int;
+	in 	char_count	: int);
+
+routine bsd_rexecve_arrival(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	out	fname		: path_name_t;
+	out	arg_addr	: vm_address_t;
+	out	arg_size	: vm_size_t;
+	out	arg_count	: int;
+	out	env_count	: int;
+	out 	char_count	: int;
+	out	cfname		: cfname_t;
+	out	cfarg		: cfname_t;
+	out	entry		: entry_array;
+	out	auxv_structs	: auxv_mig_t;
+	out	auxv_strings	: auxv_strings_t;
+	out	traced		: boolean_t);
+
+routine bsd_rforkmulti(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	node_array	: multi_node_array_t;
+	out	rval_array	: multi_int_array_t;
+	out	ch_pid_array	: multi_pid_array_t;
+	in	fp_name_array	: multi_name_array_t;
+	in	fp_right_array	: multi_port_array_t;
+	in	ch_state	: thread_state_t;
+	in	vproc_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	cred_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME);
+
+routine bsd_rforkmulti_long(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	node_array	: long_multi_node_array_t;
+	out	rval_array	: long_multi_int_array_t, dealloc;
+	out	ch_pid_array	: long_multi_pid_array_t, dealloc;
+	in	fp_name_array	: long_multi_name_array_t;
+	in	fp_right_array	: long_multi_port_array_t;
+	in	ch_state	: thread_state_t;
+	in	vproc_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	cred_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME);
+
+routine bsd_set_tnc_port(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	id		: int;
+	in	port		: mach_port_t = MACH_MSG_TYPE_PORT_NAME);
+
+routine bsd_get_tnc_port(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	id		: int;
+	in	node		: int;
+	out	port		: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+routine	bsd_table_node_set(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	node		: node_t;
+	in	id		: int;
+	in	index		: int;
+	in	lel		: int;
+	in	nel		: int;
+	in	addr		: small_char_array;
+	out	nel_done	: int);
+
+routine	bsd_table_node_get(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	node		: node_t;
+	in	id		: int;
+	in	index		: int;
+	in	lel		: int;
+	in	nel		: int;
+	out	addr		: char_array, dealloc;
+	out	nel_done	: int);
+
+#ifdef	CHKPNT
+routine	bsd_chkpnt_self(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	flag		: int;
+	in	node		: int;
+	in	new_state	: thread_state_t;
+	in	fs		: char_array);
+
+routine	bsd_exec_restart(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	chkpnt_prefix	: path_name_t;
+	out	new_state	: thread_state_t;
+	out	new_rootdir	: mach_port_t = MACH_MSG_TYPE_COPY_SEND;
+	out	new_currentdir	: mach_port_t = MACH_MSG_TYPE_COPY_SEND;
+	out	fs		: char_array, dealloc;
+	out	traced		: boolean_t);
+
+routine	bsd_forkfamily(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pid_array	: multi_pid_array_t;
+	in	fp_name_array	: multi_name_array_t;
+	in	fp_right_array	: multi_port_array_t;
+	in	ch_state	: thread_state_t;
+	in	vproc_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	cred_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME);
+
+routine bsd_forkfamily_long(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pid_array	: long_multi_node_array_t;
+	in	fp_name_array	: multi_name_array_t;
+	in	fp_right_array	: multi_port_array_t;
+	in	ch_state	: thread_state_t;
+	in	vproc_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME;
+	in	cred_port_name	: mach_port_t = MACH_MSG_TYPE_PORT_NAME);
+
+#else	/* !CHKPNT */
+
+skip;	/* bsd_chkpnt_self() */
+
+skip;	/* bds_exec_restart() */
+
+skip;	/* bsd_forkfamily() */
+
+skip;	/* bsd_forkfamily_long() */
+
+#endif	/* CHKPNT */
+
+routine	bsd_get_my_svipc_port(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	out	svipc_port	: mach_port_t = MACH_MSG_TYPE_MOVE_SEND);
+
+#else	/* !TNC */
+
+/* for binary compatibility of TNC and non-TNC emulators */
+
+skip;	/* bsd_rfork() */
+
+skip;	/* bsd_migrate() */
+
+skip;	/* bsd_rexecve() */
+
+skip;	/* bsd_rexecve_arrival() */
+
+skip;	/* bsd_rforkmulti() */
+
+skip;	/* bsd_rforkmulti_long() */
+
+skip;	/* bsd_set_tnc_port() */
+
+skip;	/* bsd_get_tnc_port() */
+
+skip;	/* bsd_table_node_set() */
+
+skip;	/* bsd_table_node_get() */
+
+skip;	/* bsd_chkpnt_async() */
+
+skip;	/* bsd_exec_restart() */
+
+skip;	/* bsd_forkfamily() */
+
+skip;	/* bsd_forkfamily_long() */
+
+skip;	/* bsd_get_my_svipc_port() */
+
+#endif	/* !TNC */
+
+routine bsd_emul_uacc(
+		proc_port	: mach_port_t;
+	in	uacc_start	: int;
+	in	uacc_end	: int;
+	in	uacc_err	: int);
+
+routine bsd_proc_exit(
+		proc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	signal		: int;
+	in	dump		: boolean_t);
+
+routine bsd_psignal(
+                proc_port       : mach_port_t;
+        out     interrupt       : boolean_t;
+        in      signal          : int);

@@ -1,0 +1,9 @@
+
+IPSC860 mods:
+
+[ Tue Sep 24 18:42:15 PDT 1991 ] stan
+	added i860 to xdr_float.c
+
+[ Mon Oct 14 08:16:52 PDT 1991 ] stans
+	rpc_commondata.c; data initialized to overcome a ld860 bug. will be
+	removed when bug is cleared up.

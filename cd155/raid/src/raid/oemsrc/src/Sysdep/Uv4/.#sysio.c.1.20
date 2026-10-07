@@ -1,0 +1,610 @@
+/******************************************************************************
+ ***				IDENTIFICATION				    ***
+ ******************************************************************************
+ Name:		sysio.c
+ Title:		SYSIO Class Implementation
+ Version:	   
+ Revision:	$Revision: 1.1 $
+ Update Date:	$Date: 1992/12/28 18:37:53 $
+ Programmer:	rmj
+ Documents:	1. UNIX V.4 Disk Array Utilities FS no. 348-0027726
+		2. "Object-Oriented Programming in C," C Users Journal, 07/90
+
+ COPYRIGHT 1991-92, NCR Corp.
+
+ Description:	This module contains the methods for the SYSIO class.
+*/
+
+/******************************************************************************
+ ***				   INCLUDES				    ***
+ *****************************************************************************/
+#include "sysio.h"
+#include "cdb_struct.h"
+#include "getrel.h"
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mkdev.h>
+#include <fcntl.h>
+
+/******************************************************************************
+ ***				   MACRO DEFINITIONS		    	    ***
+ *****************************************************************************/
+#define SENSE_DATA_PRESENT   -2
+#define DEV_MODE	S_IFCHR | S_IRWXU | S_IRGRP | S_IROTH
+
+/******************************************************************************
+ ***				  INTERNAL PROCEDURES			    ***
+ *****************************************************************************/
+int
+get_sense_data( this )
+SYSIO *this;
+{
+	extern SCSI_Sense_Data_t SenseData;  /* global var used by libio */
+
+	/*
+		this->sense_data will contain the sense data from the last
+		command that received a check condition 
+	*/
+	this->sense_data = ( u_char *) zalloc( sizeof( SCSI_Sense_Data_t) );
+	memcpy( this->sense_data, &SenseData, sizeof( SCSI_Sense_Data_t) );
+	debug_display_sense( this->sense_data );
+	return ( 0 );
+}
+
+int
+set_scsi_stat( stat )
+u_int stat;
+{
+	scsi_stat_t scsi_status;
+	int *p;
+
+	scsi_status.Reserved = 0;
+	scsi_status.Error = TRUE;
+	if ( stat == -1 )
+		scsi_status.Errno = errno;
+	else if ( stat == -5 )
+		scsi_status.Errno = EIO;
+	else
+		scsi_status.Errno = 0;
+	if ( stat == SENSE_DATA_PRESENT )
+		scsi_status.Sense_Present= TRUE;
+	/* must return an integer */
+	p = (int *) &scsi_status;
+	debug("		scsi_status.Error = %d\n", scsi_status.Error);
+	debug("		scsi_status.Errno = %d\n", scsi_status.Errno);
+	debug("		scsi_status.Sense_Present = %d\n", scsi_status.Sense_Present);
+	debug("		scsi_status as unsigned hex = %x\n", *p);
+	return( *p );
+}
+
+int
+add_fd_to_fdtab( fd, hw_addr, exclusive, dev_path )
+int fd;
+u_long hw_addr;
+int exclusive;
+u_char *dev_path;
+{
+	int i;
+	fd_entry_t	*p;
+
+	debug( " add_fd_to_fdtab :" );
+	for ( i=0, p=&fdtab.entry[0]; i < FD_TABLE_SIZE; i++, p++ )
+		if ( p->allocated_slot == FALSE )
+			break;
+	if ( i == FD_TABLE_SIZE ) {
+		fprintf( stderr, "sysio:  no open slots in fdtab, can't continue\n" );
+		exit( DEVICE_OPEN );
+	}
+	p->hw_addr = hw_addr;
+	p->fd = fd;
+	p->excl = exclusive;
+	p->allocated_slot = TRUE;
+	strcpy(p->dev_path, dev_path);
+	fdtab.count += 1;
+	debug( "done\n" );
+	return (0);
+}
+
+static void 
+close_and_remove_fd( hw_addr )
+hw_zipcode hw_addr;
+{
+	int i;
+
+	if ( (i = find_fdtab( hw_addr )) < 0 ) {
+		/* not found, so assume everything's fine */
+		return;
+	} else {
+		IO_Close( fdtab.entry[i].fd );
+		fdtab.entry[i].allocated_slot = FALSE;
+		fdtab.count--;
+	}
+}
+
+int
+search_fd_table( hw_addr, exclusive )
+u_long hw_addr;
+int exclusive;
+{
+	int i;
+
+	debug(" search_fd_table :");
+	for (i=0; i<FD_TABLE_SIZE; i++) {
+		if ( fdtab.entry[i].allocated_slot == FALSE )
+			continue;
+		if ( fdtab.entry[i].hw_addr == hw_addr )
+			if ( (fdtab.entry[i].excl == exclusive) ||
+			    (exclusive==FALSE && fdtab.entry[i].excl==TRUE) )  {
+				debug("found\n");
+				return( fdtab.entry[i].fd );
+			}
+	}
+	debug("not found\n");
+	return( 0 );
+}
+
+int
+find_fdtab( hw_addr )
+u_long hw_addr;
+{
+	int i;
+
+	debug("find_fdtab :");
+	for ( i=0; i<FD_TABLE_SIZE; i++ ) {
+		if ( fdtab.entry[i].allocated_slot == FALSE )
+			continue;
+		if ( fdtab.entry[i].hw_addr == hw_addr ) {
+			debug(" found\n");
+			return( i );
+		}
+	}
+	debug(" not found\n");
+	return( -1 );
+}
+
+void
+make_nil_IO_device( iod )
+struct IO_DeviceParameters *iod;
+{
+	/* Stuff some bogus values into iod */
+	iod->dp_IO_BusNumber = -1;
+	iod->dp_BaseAddress = -1;
+	iod->dp_IO_BusSlot = 0xFF;
+	iod->dp_SCSI_BusNumber = 0xFF;
+	iod->dp_PUN = 0xFF;
+	iod->dp_LUN = 0xFF;
+}
+
+int
+translate_slot_to_ctlr( hw_addr, exclusive )
+hw_zipcode hw_addr;
+int exclusive;
+{
+	OS1_Device_t minor1;
+	OS2_Device_t minor2;
+	minor_t *SCSI_Minor1 = (minor_t *) &minor1;
+	minor_t *SCSI_Minor2 = (minor_t *) &minor2;
+	u_long release_num;		
+	int ctlr_num, RtnV;
+	int fd;
+	u_int mode;
+	char dev_path[30];
+	dev_t dev_num;
+	int DevOpen_Success = FALSE, SlotMatch = FALSE;
+	hw_zipcode_t *hw = (hw_zipcode_t *) &hw_addr;
+	struct IO_DeviceParameters SCSI_HA_Params;
+
+	debug( "Entered translate_slot_to_ctlr\n" );
+
+	/* We know everything we need for the minor (OS_Device_t struct),    */
+	/* except for SCSI_Controller number and OS release number.          */
+
+	/* determine the OS release */
+	release_num=get_release();
+
+	/* build the minor number depending on the OS release */
+	if (release_num == 1) {
+		minor1.OS_Major = 0;
+		minor1.IO_Bus = hw->IO_Bus;
+		minor1.SCSI_Controller = 0; /* Initialize to 0 since we don't */
+					    /* know what proper value is yet. */
+		minor1.SCSI_Bus = hw->SCSI_Bus;
+		minor1.LUN = hw->LUN;
+		minor1.PUN = hw->PUN;
+		minor1.Partition = 0;
+	}
+	else {
+		minor2.OS_Major = 0;
+		minor2.IO_Bus = hw->IO_Bus;
+		minor2.SCSI_Controller = 0; /* Initialize to 0 since we don't */
+					    /* know what proper value is yet. */
+		minor2.SCSI_Bus = hw->SCSI_Bus;
+		minor2.LUN = hw->LUN;
+		minor2.PUN = hw->PUN;
+		minor2.Partition = 0;
+	}
+
+	for ( ctlr_num=0; ctlr_num<SCSI_CONTROLLERS_PER_IO_BUS; ctlr_num++ ) {
+
+		debug( "For loop: Trying controller number %d\n", ctlr_num );
+
+		/* Initialize SCSI_HA_Params with some bogus values so,	     */
+		/* later on, we can tell if IO_GetDeviceParameters() worked. */
+		make_nil_IO_device( &SCSI_HA_Params );
+
+		if (release_num == 1) { /* use the minor number depending */
+					/* on the OS release	          */
+			minor1.SCSI_Controller = ctlr_num;
+			/* device name is composed of major#_minor# ie. 35_32 */
+			sprintf( (char *) dev_path, "/tmp/%d_%d", 
+				SCSI_MAJOR, minor1 );
+			/* make the device node */
+			dev_num = makedev( SCSI_MAJOR, *SCSI_Minor1 );
+		}
+		else {
+			minor2.SCSI_Controller = ctlr_num;
+			/* device name is composed of major#_minor# ie. 35_32 */
+			sprintf( (char *) dev_path, "/tmp/%d_%d",
+				SCSI_MAJOR, minor2 );
+			/* make the device node */
+			dev_num = makedev( SCSI_MAJOR, *SCSI_Minor2 );
+		}
+
+		if ( dev_num != NODEV ) {
+			RtnV = mknod( (char *) dev_path, DEV_MODE, dev_num );
+			if ( (RtnV < 0) && (errno != EEXIST) ) {
+				debug("mknod path=%s, mode=%x, dev_num=%x failed, errno=%d\n", dev_path, DEV_MODE, dev_num, errno);
+			}
+			else {
+				DevOpen_Success = TRUE;
+			}
+		}
+		else {
+			if (release_num == 1) {
+				debug("makedev(%d, %d) failed\n",
+				SCSI_MAJOR, minor1);
+			}
+			else {
+				debug("makedev(%d, %d) failed\n",
+				SCSI_MAJOR, minor2);
+			}
+		}
+
+		if ( DevOpen_Success ) {
+			/* open the device node and get an fd/handle */
+			/* if open fails return an error status */
+			mode = exclusive ? (O_RDWR | O_EXCL ) : O_RDWR;
+			fd = DEV_Open( (char *) dev_path, mode );
+			if ( fd < 0 ) {
+				debug( "IO_open of %s failed\n", dev_path );
+				DevOpen_Success = FALSE;
+			}
+		}
+
+		if ( DevOpen_Success ) {
+			/* Double check slot number by calling	*/
+			/* IO_GetDeviceParameters()		*/
+			if ( ( RtnV = IO_GetDeviceParameters( fd, &SCSI_HA_Params ) ) != 0 ) {
+				debug( "IO_GetDeviceParameters: bad return value = %d\n", RtnV );
+			}
+			else {
+				if ( SCSI_HA_Params.dp_IO_BusSlot
+				    == (u_char) hw->SCSI_Controller ) {
+					SlotMatch = TRUE;
+					debug( "Slot matched OK: slot=%d\n", hw->SCSI_Controller );
+					break;
+				}
+				else {
+					debug( "Slot mismatch\n" );
+				}
+			}
+			DevOpen_Success = FALSE;
+		}
+	}
+
+	debug( "Leaving translate_slot_to_ctlr\n" );
+	if ( DevOpen_Success && SlotMatch ) {
+		add_fd_to_fdtab( fd, hw_addr, exclusive, (u_char *) dev_path );
+		return( fd );
+	}
+	return( -1 );
+}
+
+/******************************************************************************
+ ***				  PROCEDURES				    ***
+ *****************************************************************************/
+
+#define THIS	( (SYSIO *) this )
+
+static int
+lock( this, hw_addr )
+void *this;
+hw_zipcode hw_addr;
+{
+	int idx, fd;
+	u_int mode;
+
+#ifdef NO_IO
+	return( 0 );
+#else
+	hwaddr_to_fd( THIS->hw_addr ); /* cache fd if not already cached */
+	if ( (idx = find_fdtab( hw_addr )) >= 0 ) {
+		if ( fdtab.entry[idx].excl == TRUE )
+			return( 0 );
+		else {
+			/* close/reopen in exclusive mode */
+			IO_Close( fdtab.entry[idx].fd );
+			mode = O_RDWR | O_EXCL;
+			fd = DEV_Open( (char *)fdtab.entry[idx].dev_path, mode );
+			if ( fd >= 0 ) {
+				fdtab.entry[idx].fd = fd;
+				fdtab.entry[idx].excl = TRUE;
+				return( 0 );
+			}
+			else {	/* reopen exclusive failed, so reopen shared */
+				mode = O_RDWR;
+				fd = DEV_Open(
+				    (char *) fdtab.entry[idx].dev_path,
+				    mode );
+				if ( fd >= 0 ) {
+					fdtab.entry[idx].fd = fd;
+					return( -1 );
+				}
+				else {	/* now we've got a real problem */
+					fprintf( stderr, "?(SCSI_DEV->make_exclusive) ABORT - failed both exclusive and shared open\n  of device: %s\n",
+					    fdtab.entry[idx].dev_path );
+					exit( DEVICE_OPEN );
+				}	/* reopen shared has failed */
+			}	/* else open exclusive failed, so open shared */
+		}	/* end else fdtab entry was NOT exclusive */
+	}	/* end if fdtab entry found */
+	else	/* not in fdtab */
+		return( -1 );
+#endif
+}
+
+static int
+unlock( this, hw_addr )
+void *this;
+hw_zipcode hw_addr;
+{
+	int idx, fd;
+	u_int mode;
+
+#ifdef NO_IO
+	return( 0 );
+#else
+	hwaddr_to_fd( THIS->hw_addr ); /* cache fd if not already cached */
+	if ( (idx = find_fdtab( hw_addr )) >= 0 ) {
+		if ( fdtab.entry[idx].excl == FALSE )
+			return( 0 );
+		else {
+			/* close/reopen in non-exclusive mode */
+			IO_Close( fdtab.entry[idx].fd );
+			mode = O_RDWR;
+			fd = DEV_Open( (char *)fdtab.entry[idx].dev_path, mode );
+			if ( fd >= 0 ) {
+				fdtab.entry[idx].fd = fd;
+				fdtab.entry[idx].excl = FALSE;
+				return( 0 );
+			}
+			else {	/* reopen non-exclusive failed */
+				fprintf( stderr, "?(SCSI_DEV->unlock) ABORT - failed re-open in non-exclusive mode of device: %s\n",
+				    fdtab.entry[idx].dev_path );
+				exit( DEVICE_OPEN );
+			}	/* else re-open non-exclusive failed */
+		}	/* end else fdtab entry WAS exclusive */
+	}	/* end if fdtab entry found */
+	else	/* not in fdtab */
+		return( -1 );
+#endif
+}
+
+static int
+controller_command( this, cdb )
+void *this;
+u_char *cdb;
+{
+	u_int direction;
+	int fd, stat;
+	int scsi_status;
+	int op_code;
+	Request_Sense_CDB_t *p;
+#ifdef DEBUG_ON
+	char Reply[20], *ReplyPtr;
+#endif
+
+	debug("sysio	: controller_command\n");
+	op_code = ((CDB_t *)cdb)->Byte[0];
+	/* get data direction */
+	/*
+		if WriteBuffer cmd and Length is 0 indicating end of transfer
+		then set direction to IO_NONE - this is a special condition,
+		did not know where else to put it.  Length of 0 and direction
+		NOT equal to IO_NONE was generating an error.
+		Also, if Format cmd and Length is 0 then set direction to
+		IO_NONE.
+	*/
+	if ( ((op_code == SCSI_WriteBuffer) | (op_code == SCSI_Format)) &
+	    (((CDB_t *)cdb)->BufferLength == 0) )
+		direction = IO_NONE;
+	else
+		direction = IO_Direction[ (op_code) ];
+
+	/*
+		another special case - if RequestSense cmd and AEN bit is not
+		set then get the request sense data from THIS->sense_data.
+		If AEN bit is set then go ahead and issue the cdb to get
+		array specific sense data
+	*/
+	if ( op_code == SCSI_RequestSense ) {
+		p = (Request_Sense_CDB_t *) cdb;
+		if ( ! p->AEN ) {
+			get_sense_data( THIS );
+			memcpy( ((CDB_t *)cdb)->Buffer, THIS->sense_data,
+			    ((CDB_t *)cdb)->BufferLength );
+			return( 0 );
+		}
+	}
+
+	fd = hwaddr_to_fd( THIS->hw_addr );
+#ifdef IO_TEST
+	stat = io_test( fd, cdb, direction);
+#else
+#ifdef NO_IO
+	stat = 0;
+#else
+	if ( fd == -1 ) {
+		stat = -5;
+		scsi_status = set_scsi_stat( stat );
+		return( scsi_status );
+	}
+	else
+		stat = IO_SCSI( fd, cdb, direction);
+#endif
+	debug_display_cdb ( cdb );
+	debug("		direction = %d\n", direction);
+	debug("		return status from IO_SCSI = %d\n", stat);
+	debug("		(system) errno = %d\n", errno);
+#endif
+#ifdef DEBUG_ON
+	debug(" Press <ENTER> to continue: ");
+	ReplyPtr = fgets(Reply, 2, stdin);
+#endif
+
+	/*
+		if a check condition occured, save the sense data in 
+		case it is requested for later
+	*/
+	if ( stat == SENSE_DATA_PRESENT )
+		get_sense_data( THIS );
+	if ( stat ) {
+		scsi_status = set_scsi_stat( stat );
+		return( scsi_status );
+	}
+	else
+		return( stat );
+}
+
+static int
+is_root( this )
+void *this;
+{
+	dev_t rdev, adev;
+	int fd, isroot = FALSE;
+	struct stat r_statbuf, a_statbuf;
+	OS_Device_t *p_rdev = (OS_Device_t *) &rdev;
+	OS_Device_t *p_adev = (OS_Device_t *) &adev;
+
+/* Note: because of the position of Partition within the OS1_Device and 
+OS2_Device structures it is not necessary to differentiate between Operating
+System revision levels.  If the minor number changes causing these structures
+to change in the future, this code will have to be modified.             */
+
+	if ( stat( "/dev/rroot", &r_statbuf ) != -1 ) {
+		if ( ( fd = hwaddr_to_fd( THIS->hw_addr ) ) != -1 ) {
+			if ( fstat( fd, &a_statbuf ) != -1 ) {
+				rdev = r_statbuf.st_rdev;
+				p_rdev->Partition = 0;
+				adev = a_statbuf.st_rdev;
+				p_adev->Partition = 0;
+				if ( rdev == adev )
+					isroot = TRUE;
+			}
+		}
+	}
+	return( isroot );
+}
+
+void
+destroy_SYSIO( this )
+void *this;
+{
+	debug("sysio	: destroy\n");
+	close_and_remove_fd( THIS->hw_addr );
+	destroy_OBJECT( this );
+}
+
+#undef THIS
+
+SYSIO *
+new_SYSIO( hw_addr, exclusive )
+hw_zipcode hw_addr;
+int exclusive;
+{
+	OBJECT *s;
+	SYSIO *this;
+	int fd;
+	hw_zipcode_t *hw = (hw_zipcode_t *) &hw_addr;
+
+	s = new_OBJECT();
+	this = (SYSIO *) zalloc( sizeof( SYSIO ) );
+	memcpy( this, s, sizeof( OBJECT ) ); /* inherit from OBJECT */
+	free( s );
+	this->controller_command = controller_command;
+	this->lock = lock;
+	this->unlock = unlock;
+	this->is_root = is_root;
+	this->destroy = destroy_SYSIO;
+	this->description = "sysio object";
+	this->hw_addr = hw_addr;
+	if ( exclusive )
+		lock( this, hw_addr );
+	return( this );
+}
+
+
+/* NOTE: convert_maj_min() is not part of the sysio object; it is a function */
+/* which performs a conversion of hw-addr to dev maj/min (similar to that    */
+/* done in the sysio constructor), but stops at that and returns a char      */
+/* string containing the dev maj/min numbers.  It is used by the csb and     */
+/* cfb shell scripts.							     */
+
+int
+convert_maj_min( hw_addr, cbuf )
+hw_zipcode hw_addr;
+char *cbuf;
+{
+	int idx, fd, RtnV, minor_num;
+	int Success = FALSE;
+	char *mp;
+
+	debug( "Entered convert_maj_min\n" );
+	fd = translate_slot_to_ctlr( hw_addr, FALSE );
+	if ( fd < 0 ) {
+		debug( "translate_slot_to_ctlr(%d, %d) call failed\n", hw_addr, FALSE );
+	}
+	else {
+		if ( (idx = find_fdtab( hw_addr )) >= 0 ) {
+			mp = (char *) strrchr( fdtab.entry[idx].dev_path, '_' );
+			mp++;
+			RtnV = sscanf( mp, "%d", &minor_num );
+			if ( RtnV == 1 )
+				Success = TRUE;
+			else
+				debug( "sscanf failed\n" );
+			IO_Close( fdtab.entry[idx].fd );
+		}
+	}
+
+	debug( "Leaving connvert_maj_min\n" );
+	if ( Success ) {
+		sprintf( cbuf, "%d,%3d", SCSI_MAJOR, minor_num );
+		return( 0 );
+	}
+	return( -1 );
+}
+
+static int
+hwaddr_to_fd( hw_addr )
+hw_zipcode hw_addr;
+{
+	int i;
+
+	if ( (i = find_fdtab( hw_addr )) >= 0 )
+		return( fdtab.entry[i].fd );
+	else
+		return( translate_slot_to_ctlr( hw_addr, FALSE ) );
+}

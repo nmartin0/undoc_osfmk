@@ -1,0 +1,5 @@
+
+[ Mon Apr 19 13:12:56 PDT 1993 ] stan
+
+Copy libthreads.a (from the mk release area) to our export lib dir.
+libcthreads.a is required to build the Mach 3.0 version of "mach_init".

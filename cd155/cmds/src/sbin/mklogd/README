@@ -1,0 +1,62 @@
+To:brad
+cc:ellenm,elb,georgeb,debral
+bcc:stans
+Subject: MK console logging overview [Mon Feb  6 15:44:54 PST 1995]
+--------
+
+The following verbiage describes the remote micro-kernel console logging
+system. This is a first cut and intended to start the food chain to becoming
+a man page.
+
+stan.
+
+
+mklogd: the remote micro-kernel console logger daemon
+
+'mklogd' was designed to collect and forward remote micro-kernel (MK) output
+to the system logger daemon process 'syslogd'.  Remote (non-boot-node) MK
+printf()'s, assert()'s and panic messages are buffered locally at each MK.
+This buffering of critical system messages has wasted far too much system
+debug time in trying to figure out which node has died and why. 'mklogd'
+attempts to rectify this problem.
+
+'mklogd' works in conjunction with each MK to collect the buffered MK output and
+forward it to the system-logger daemon 'syslogd'.  Logically speaking, 'mklogd'
+is an integral component of 'syslogd'.  'syslogd' identifies the MK output,
+timestamps and writes it to the files '/var/adm/syslog/kern.log' and
+'/dev/console' thus creating a permanent record and drawing attention to the
+event on the system console.  With mklogd the output of remote MK's can now
+be observed and acted upon by a system administrator.  The idea is to catch
+those nasty surprises when kernels die with ECC panic()'s or SCSI drivers
+(e.g., tape) complain when a device does not have a writeable media present.
+
+Just before the system logger daemon process 'syslogd' starts, 'mklogd' is
+started.  Due to the synchronizing nature of SYSV fifos, which comprise the
+forwarding link between 'mklogd' and 'syslogd', 'mklogd' MUST be started
+before 'syslogd'. The Paragon 'fifo' implementation has an existing bug which
+forces the fifo creator/producer and consumer to execute on the same node.
+This is not a problem as the shell script '/sbin/init.d/syslog' which starts
+both 'mklogd' and 'syslogd' runs from the boot-node before load-leveling has
+been enabled.
+
+Upon initialization, 'mklogd' allocates a Mach IPC port and sets this port in
+all Mach kernels as the norma special port 'NORMA_CONSOLE_LOG_PORT'.
+The side-effect of setting this norma special port is a kernel thread is
+created to drain buffered MK console output.  Character output from kernel
+printf()'s, assert()'s and panic()'s are buffered by the console putc() routine.
+'mklogd' drains the buffered output by composing and sending Mach messages to
+the norma special 'NORMA_CONSOLE_LOG_PORT'.  'mklogd' receives these messages
+from all kernels. 'mklogd' writes these messages to the fifo '/dev/klog' which
+'syslogd' is listening on.  'syslogd' believes '/dev/klog' is the standard
+kernel logging device and merrily reads kernel output, timestamps the data and
+then writes it to the kernel log file 'var/adm/syslog/kern.log'. Based on the
+priority 'mklogd' has assigned to the kernel output, boot-node messages are not
+critical as they have already been displayed on the console, the output is then
+written to '/dev/console'.
+
+Should one desire to disable MK console logging, set the bootmagic variable
+'CONSLOG=0'. Normal operation of 'mklogd' is to discard the first message from
+each node as it is the standard system startup banter. Should one desire to
+see the first message, set the bootmagic variable 'MKLOGD_FLAGS=1'.
+
+

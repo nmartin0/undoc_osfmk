@@ -1,0 +1,23 @@
+#!/bin/sh
+# Need to strip -nostdinc and -I- args
+# Also need to call cpp860 if we get -ES until the compiler bug is fixed.
+args=""
+execfile="/usr/bin/cc -Dsparc -Dvolatile= `cpath` `lpath`"
+until [ $# -eq 0 ]
+    do
+	case $1 in
+		-ES) 
+			execfile="cpp860 -Di860";;
+		-I-) 
+			;;
+		-MD)	
+			;;
+		-nostdinc)
+			;;
+		*)
+			args="$args $1"
+			;;
+	esac
+	shift
+done
+exec $execfile $args

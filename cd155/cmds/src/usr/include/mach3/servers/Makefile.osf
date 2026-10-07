@@ -1,0 +1,75 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# @OSF_FREE_COPYRIGHT@
+#
+#
+# HISTORY
+# $Log: Makefile.osf,v $
+# Revision 1.2  1994/11/19  02:43:03  mtm
+# Copyright additions/changes
+#
+# Revision 1.1  1993/04/19  20:45:46  stans
+# Initial revision
+#
+# Revision 1.4  1992/10/21  13:21:25  devrcs
+# 	Allow server compilation against MK78 sources if ODE_CMU_COMPAT is
+# 	defined.
+# 	[1992/09/23  13:11:03  barbou]
+#
+# 	machid_lib.h is defunct.
+# 	[1992/08/05  15:51:06  emcmanus]
+#
+# Revision 1.3  1992/06/15  15:27:52  devrcs
+# 	Fix targets, include path, copyright
+# 	[1992/06/11  08:30:22  david]
+# 
+# Revision 1.2  1992/05/12  14:57:12  devrcs
+# 	Created for OSF/1 MK
+# 	[1992/05/04  09:05:56  condict]
+# 
+# $EndLog$
+
+
+MIG3_DEFS		= machid.defs machid_debug.defs \
+			  netmemory.defs netname.defs service.defs
+
+INCDIRS			=  ${INC3DIRS}
+INCFLAGS		= -I..
+DATAFILES		= machid_types.defs machid_types.h netname_defs.h \
+			  ${MIG3_DEFS}
+
+INCLUDES		= ${DATAFILES}
+MIGINCLUDES		= ${_MIG3_HDRS_}
+
+ILIST			= ${INCLUDES} ${MIGINCLUDES}
+IDIR			= /usr/mach3/include/servers/
+IMODE			= 644
+
+include ${MAKEFILEPATH}/standard.mk
+include ${MAKEFILEPATH}/datafiles.mk
+include ${MAKEFILEPATH}/objects.mk
+
+# Temporary hack to allow the compilation of mach_servers against a
+# vanilla CMU micro-kernel source tree (not complying to the ODE architecture).
+# Our user headers aren't compatible with CMU kernels, so just don't build
+# them...
+.INIT:
+	@if [ "${ODE_CMU_COMPAT}" ]; then \
+		echo "***** CMU compatibility mode: ${MAKEDIR} not built"; \
+		for target in ${ILIST}; do \
+			if [ ! -f $${target} ]; then \
+				echo "touch $${target}"; \
+				touch $${target}; \
+			fi; \
+		done; \
+	fi;

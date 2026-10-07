@@ -1,0 +1,6 @@
+NAS Fast Fourier Transform (pdefft)
+
+Contained in this directory are source code and makefile for the PDEFFT bench-
+mark from the NAS Parallel Benchmarks. This program only runs on 32, 64 or 128
+nodes. When 64 or 128 nodes are used, the standard problem of size 256x256x128
+is run. With 32 nodes, a reduced problem of dimension 128x128x128 is run.

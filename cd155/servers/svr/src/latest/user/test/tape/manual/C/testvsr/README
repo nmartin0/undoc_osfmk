@@ -1,0 +1,35 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test3" README
+==============
+
+Source: node.c errexit.c
+
+Desc:	"node.c" tests the reading of the datasets written by "testvsw" with
+	    variable spanned (VS) and variable blocked & spanned (VR) format
+
+Invoke:	load [0] node.rx [/cfs/ctape0 [TEST01 [TEST02 [TEST03 ]]]
+
+Note:	* use 3 tapes from testvsw
+	* ASSUME "testvsw" has written data into the tape already
+	* "testvsr.sh" calls "node.rx"  
+	* log is on "testvsr.SLr0" 
+	* result is on "testvsr.SRr0"
+
+Algo:   * tapealloc 3 tapes
+	* tdsopen, tread, and tdsclose 6 dataset;
+	  the 1st/2nd datasets are written in VS format;
+	  the 3rd/4th/5th/6th are written in VR format;
+	* tapedealloc
+	* IMAX=2001;
+	  JMAX=3;
+	  ZEROREAD=1  

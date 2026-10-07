@@ -1,0 +1,526 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * @OSF_COPYRIGHT@
+ */
+/*
+ * HISTORY
+ * $Log: regexp.h,v $
+ * Revision 1.3  1994/11/18  21:10:49  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.2  1992/11/30  23:16:49  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1  1992/11/05  23:59:39  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ *
+ * Revision 4.1  1992/11/04  01:18:19  cfj
+ * Bump major revision number.
+ *
+ * Revision 1.1  1992/07/20  16:20:51  nandy
+ * Initial revision
+ *
+ * Revision 2.8  92/04/13  14:38:56  stans
+ * "OSF-distribution-ad8.5.2"
+ * 
+ * Revision 2.8  90/10/07  20:34:08  devrcs
+ * 	Added EndLog Marker.
+ * 	[90/09/28  20:55:21  gm]
+ * 
+ * Revision 2.7  90/09/13  12:32:25  devrcs
+ * 	remove BSD ifdef
+ * 	[90/08/27  17:56:38  mbrown]
+ * 
+ * Revision 2.6  90/06/29  14:13:59  devrcs
+ * 	add CBRA
+ * 	[90/06/21  18:49:54  mbrown]
+ * 
+ * Revision 2.5  90/04/27  23:07:09  devrcs
+ * 	Revamped ifdef structure to give X/Open, SYSV or BSD behavior
+ * 	depending on which feature test macros are defined.
+ * 	[90/04/16  13:48:57  tom]
+ * 
+ * Revision 2.4  90/03/27  20:08:09  gm
+ * 	merge of old-n-new regexp, addition of _SYSV flag
+ * 	[90/03/13  19:34:13  mbrown]
+ * 
+ * 	AIX merge first cut.
+ * 	[90/02/12  17:59:10  tom]
+ * 
+ * Revision 2.3  90/03/13  21:23:19  mbrown
+ * 	AIX merge first cut.
+ * 	[90/02/12  17:59:10  tom]
+ * 
+ * Revision 2.2  90/01/02  19:15:44  gm
+ * 	Fixes for first snapshot.
+ * 
+ * $EndLog$
+ */
+/* @(#)regexp.h 1.6  com/inc,3.1,9013 1/15/90 16:39:26 */
+/*
+ * COMPONENT_NAME: (LIBCGEN) Standard C Library General Functions
+ *
+ * FUNCTIONS:
+ *
+ * ORIGINS: 27
+ *
+ * (C) COPYRIGHT International Business Machines Corp. 1985, 1989
+ * All Rights Reserved
+ * Licensed Materials - Property of IBM
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ */
+
+
+#ifndef _REGEXP_H_
+#define _REGEXP_H_
+
+/*
+ * If XOPEN is defined, you get the Sys V functions with international support
+ * If _BSD is defined, you get the bsd library functions.
+ * If you define a strict POSIX or ANSI environment, (i.e., no X/Open) you 
+ * 	will get the old Sys V functions without international support.
+ *
+ */
+
+#if defined(_XOPEN_SOURCE) 
+#include <NLregexp.h>	/* handle internationalised expressions */
+
+#else	/* if not _XOPEN_SOURCE */
+/*****
+	This is for the old-SysV world, without X/Open.
+*****/
+
+
+#define	CBRA	2
+#define	CCHR	4
+#define	CDOT	8
+#define	CCL	12
+#define	CDOL	20
+#define	CCEOF	22
+#define	CKET	24
+#define	CBACK	36
+
+#define	STAR	01
+#define RNGE	03
+
+#define	NBRA	9
+
+#define PLACE(c)	ep[c >> 3] |= bittab[c & 07]
+#define ISTHERE(c)	(ep[c >> 3] & bittab[c & 07])
+
+char	*braslist[NBRA];
+char	*braelist[NBRA];
+char	*loc1, *loc2, *locs;
+char	bittab[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
+
+int     sed, nbra;
+int	ebra;
+int	nodelim;
+int	circf;
+int	low;
+int	size;
+
+char *
+compile(instring, ep, endbuf, seof)
+register char *ep;
+char *instring, *endbuf;
+{
+	INIT	/* Dependent declarations and initializations */
+	register c;
+	register eof = seof;
+	char *lastep = instring;
+	int cclcnt;
+	char bracket[NBRA], *bracketp;
+	int closed;
+	char neg;
+	int lc;
+	int i, cflg;
+
+	lastep = 0;
+	if((c = GETC()) == eof || c == '\n') {
+		if(c == '\n') {
+			UNGETC(c);
+			nodelim = 1;
+		}
+		if(*ep == 0 && !sed)
+			ERROR(41);
+		RETURN(ep);
+	}
+	bracketp = bracket;
+	circf = closed = nbra = ebra = 0;
+	if(c == '^')
+		circf++;
+	else
+		UNGETC(c);
+	while(1) {
+		if(ep >= endbuf)
+			ERROR(50);
+		c = GETC();
+		if(c != '*' && ((c != '\\') || (PEEKC() != '{')))
+			lastep = ep;
+		if(c == eof) {
+			*ep++ = CCEOF;
+			RETURN(ep);
+		}
+		switch(c) {
+
+		case '.':
+			*ep++ = CDOT;
+			continue;
+
+		case '\n':
+			if(!sed) {
+				UNGETC(c);
+				*ep++ = CCEOF;
+				nodelim = 1;
+				RETURN(ep);
+			}
+			else ERROR(36);
+		case '*':
+			if(lastep == 0 || *lastep == CBRA || *lastep == CKET)
+				goto defchar;
+			*lastep |= STAR;
+			continue;
+
+		case '$':
+			if(PEEKC() != eof && PEEKC() != '\n')
+				goto defchar;
+			*ep++ = CDOL;
+			continue;
+
+		case '[':
+			if(&ep[17] >= endbuf)
+				ERROR(50);
+
+			*ep++ = CCL;
+			lc = 0;
+			for(i = 0; i < 16; i++)
+				ep[i] = 0;
+
+			neg = 0;
+			if((c = GETC()) == '^') {
+				neg = 1;
+				c = GETC();
+			}
+
+			do {
+				if(c == '\0' || c == '\n')
+					ERROR(49);
+				if(c == '-' && lc != 0) {
+					if((c = GETC()) == ']') {
+						PLACE('-');
+						break;
+					}
+					while(lc < c) {
+						PLACE(lc);
+						lc++;
+					}
+				}
+				lc = c;
+				PLACE(c);
+			} while((c = GETC()) != ']');
+			if(neg) {
+				for(cclcnt = 0; cclcnt < 16; cclcnt++)
+					ep[cclcnt] ^= -1;
+				ep[0] &= 0376;
+			}
+
+			ep += 16;
+
+			continue;
+
+		case '\\':
+			switch(c = GETC()) {
+
+			case '(':
+				if(nbra >= NBRA)
+					ERROR(43);
+				*bracketp++ = nbra;
+				*ep++ = CBRA;
+				*ep++ = nbra++;
+				continue;
+
+			case ')':
+				if(bracketp <= bracket || ++ebra != nbra)
+					ERROR(42);
+				*ep++ = CKET;
+				*ep++ = *--bracketp;
+				closed++;
+				continue;
+
+			case '{':
+				if(lastep == (char *) 0)
+					goto defchar;
+				*lastep |= RNGE;
+				cflg = 0;
+			nlim:
+				c = GETC();
+				i = 0;
+				do {
+					if('0' <= c && c <= '9')
+						i = 10 * i + c - '0';
+					else
+						ERROR(16);
+				} while(((c = GETC()) != '\\') && (c != ','));
+				if(i > 255)
+					ERROR(11);
+				*ep++ = i;
+				if(c == ',') {
+					if(cflg++)
+						ERROR(44);
+					if((c = GETC()) == '\\')
+						*ep++ = 255;
+					else {
+						UNGETC(c);
+						goto nlim;
+						/* get 2'nd number */
+					}
+				}
+				if(GETC() != '}')
+					ERROR(45);
+				if(!cflg)	/* one number */
+					*ep++ = i;
+				else if((ep[-1] & 0377) < (ep[-2] & 0377))
+					ERROR(46);
+				continue;
+
+			case '\n':
+				ERROR(36);
+
+			case 'n':
+				c = '\n';
+				goto defchar;
+
+			default:
+				if(c >= '1' && c <= '9') {
+					if((c -= '1') >= closed)
+						ERROR(25);
+					*ep++ = CBACK;
+					*ep++ = c;
+					continue;
+				}
+			}
+	/* Drop through to default to use \ to turn off special chars */
+
+		defchar:
+		default:
+			lastep = ep;
+			*ep++ = CCHR;
+			*ep++ = c;
+		}
+	}
+}
+
+step(p1, p2)
+register char *p1, *p2;
+{
+	register c;
+
+	if(circf) {
+		loc1 = p1;
+		return(advance(p1, p2));
+	}
+	/* fast check for first character */
+	if(*p2 == CCHR) {
+		c = p2[1];
+		do {
+			if(*p1 != c)
+				continue;
+			if(advance(p1, p2)) {
+				loc1 = p1;
+				return(1);
+			}
+		} while(*p1++);
+		return(0);
+	}
+		/* regular algorithm */
+	do {
+		if(advance(p1, p2)) {
+			loc1 = p1;
+			return(1);
+		}
+	} while(*p1++);
+	return(0);
+}
+
+advance(lp, ep)
+register char *lp, *ep;
+{
+	register char *curlp;
+	char c;
+	char *bbeg;
+	int ct;
+
+	while(1) {
+		switch(*ep++) {
+
+		case CCHR:
+			if(*ep++ == *lp++)
+				continue;
+			return(0);
+	
+		case CDOT:
+			if(*lp++)
+				continue;
+			return(0);
+	
+		case CDOL:
+			if(*lp == 0)
+				continue;
+			return(0);
+	
+		case CCEOF:
+			loc2 = lp;
+			return(1);
+	
+		case CCL:
+			c = *lp++ & 0177;
+			if(ISTHERE(c)) {
+				ep += 16;
+				continue;
+			}
+			return(0);
+		case CBRA:
+			braslist[*ep++] = lp;
+			continue;
+	
+		case CKET:
+			braelist[*ep++] = lp;
+			continue;
+	
+		case CCHR | RNGE:
+			c = *ep++;
+			getrnge(ep);
+			while(low--)
+				if(*lp++ != c)
+					return(0);
+			curlp = lp;
+			while(size--) 
+				if(*lp++ != c)
+					break;
+			if(size < 0)
+				lp++;
+			ep += 2;
+			goto star;
+	
+		case CDOT | RNGE:
+			getrnge(ep);
+			while(low--)
+				if(*lp++ == '\0')
+					return(0);
+			curlp = lp;
+			while(size--)
+				if(*lp++ == '\0')
+					break;
+			if(size < 0)
+				lp++;
+			ep += 2;
+			goto star;
+	
+		case CCL | RNGE:
+			getrnge(ep + 16);
+			while(low--) {
+				c = *lp++ & 0177;
+				if(!ISTHERE(c))
+					return(0);
+			}
+			curlp = lp;
+			while(size--) {
+				c = *lp++ & 0177;
+				if(!ISTHERE(c))
+					break;
+			}
+			if(size < 0)
+				lp++;
+			ep += 18;		/* 16 + 2 */
+			goto star;
+	
+		case CBACK:
+			bbeg = braslist[*ep];
+			ct = braelist[*ep++] - bbeg;
+	
+			if(ecmp(bbeg, lp, ct)) {
+				lp += ct;
+				continue;
+			}
+			return(0);
+	
+		case CBACK | STAR:
+			bbeg = braslist[*ep];
+			ct = braelist[*ep++] - bbeg;
+			curlp = lp;
+			while(ecmp(bbeg, lp, ct))
+				lp += ct;
+	
+			while(lp >= curlp) {
+				if(advance(lp, ep))	return(1);
+				lp -= ct;
+			}
+			return(0);
+	
+	
+		case CDOT | STAR:
+			curlp = lp;
+			while(*lp++);
+			goto star;
+	
+		case CCHR | STAR:
+			curlp = lp;
+			while(*lp++ == *ep);
+			ep++;
+			goto star;
+	
+		case CCL | STAR:
+			curlp = lp;
+			do {
+				c = *lp++ & 0177;
+			} while(ISTHERE(c));
+			ep += 16;
+			goto star;
+	
+		star:
+			do {
+				if(--lp == locs)
+					break;
+				if(advance(lp, ep))
+					return(1);
+			} while(lp > curlp);
+			return(0);
+
+		}
+	}
+}
+
+getrnge(str)
+register char *str;
+{
+	low = *str++ & 0377;
+	size = (*str == 255)? 20000: (*str &0377) - low;
+}
+
+ecmp(a, b, count)
+register char	*a, *b;
+register	count;
+{
+	while(count--)
+		if(*a++ != *b++)
+			return(0);
+	return(1);
+}
+
+#endif /* defined(_XOPEN_SOURCE) */
+#endif /* _REGEXP_H_ */

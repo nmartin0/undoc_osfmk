@@ -1,0 +1,79 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to manually initiate reconstruction of data on a 
+     failed drive.  You need to manually initiate reconstruction if 
+     you have disabled the "Auto-detection Of Drive Replacement And 
+     Reconstruction" option using acf.
+ 
+     NOTE:  A procedure for reconstructing drive data is included in 
+            the help screens following the explanation of option.
+ 
+     WHAT "RECONSTRUCT" MEANS:  Reconstructing data on a drive causes the 
+     array controller to do the following, in order:
+ 
+          - Sense that there is a new drive in the array,
+          - Change the drive status to "Replace" (4),
+          - Copy special array controller files to the new drive,
+          - Recalculate data and parity from the data and parity
+            on the other drives,
+          - Write the recalculated data and parity to the new drive,
+          - Change the drive status to "Optimal" (0).
+ 
+                                (CONTINUED)
+     WHEN TO RECONSTRUCT DRIVE DATA:  When you replace a drive, the array 
+     controller AUTOMATICALLY starts reconstructing the drive data (unless 
+     you have disabled the "Auto-detection Of Drive Replacement And 
+     Reconstruction" option using acf).  If you replace a drive and 
+     reconstruction does NOT start automatically, manually initiate 
+     reconstruction using this option.
+ 
+     IMPORTANT NOTE:  Remember, a RAID 0 array does not have parity so 
+                      you can NOT recover the data by reconstructing 
+                      it.  You must restore the RAID 0 array to a 
+                      working state by formatting the logical unit, 
+                      then copying the data from the back-up media 
+                      file-by-file (see the "Format Logical Unit" 
+                      option in the logical unit window).
+ 
+     ABOUT FORMATTING A DRIVE 
+ 
+     Most of the time, a drive is pre-formatted, so the array controller 
+     does not format it again.  However, you may want to format a drive 
+     that is already in the logical unit if you suspect that the drive is 
+     still good.
+                                (CONTINUED)
+     First, to force a drive format, you must disable the "Auto-detection 
+     Of Drive Replacement And Reconstruction" option (using acf).  Then, 
+     replace the drive, and reconstruction will NOT automatically start.  
+     Next, select the "Reconstruct" drive data option in the drive window 
+     to manually initiate reconstruction, and the Array Configuration 
+     Editor gives you the choice to format the drive.  Press "y" to format 
+     the drive.  While the drive is formatting, the drive status is 
+     "Formatting" (8).
+ 
+ 
+     PROCEDURE -- RECONSTRUCTING DRIVE DATA
+ 
+     NOTE:  You can NOT restore a RAID 0 array by reconstructing it.  
+            However, if you want to force a drive format, use the 
+            "Reconstruct"  option. 
+ 
+     1.   Select a drive by pressing the arrow keys.
+ 
+     2.   Press "r" to reconstruct the data on the drive.
+ 
+ 
+				(CONTINUED)
+     3.   Press "n" to continue with the reconstruction,
+          press "y" to force a drive format, or press "q" to quit.
+ 
+     NOTE:  A drive format takes approximately 10 - 15 minutes
+            depending on the size of the drive.
+ 
+     4.   Monitor the reconstruction progress by periodically
+          checking the percent of reconstruction complete, 
+          the LUN status, and the drive's status.
+ 
+     5.   Monitor array performance, and modify the reconstruction
+          rate (delay interval and blocks per delay interval) if
+          necessary.

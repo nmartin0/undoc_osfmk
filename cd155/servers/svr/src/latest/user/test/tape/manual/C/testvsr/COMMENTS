@@ -1,0 +1,29 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"testvsr" COMMENTS
+================
+
+******************* Step to run this test *******************************
+
+1. make -f makefile.man all
+
+2. testvsr.sh
+
+    the result will be on "testvsr.SRr0".  The log will be on "testvsr.SLr0"
+    The test will require the user to prepare 3 tapes that
+    have been written by "testvsw".  The user will need to put the 3 tapes on
+    the 4980 cabinet and load the first tape onto the drive.  Then the user
+    will need to hit the return.  
+
+
+   THE TEST TAKES ~2 MINUTES TO RUN; 
+

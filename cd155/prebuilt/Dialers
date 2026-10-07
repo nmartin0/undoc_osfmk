@@ -1,0 +1,45 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+#
+#
+# @(#)Dialers	1.3  com/cmd/uucp,3.1,9013 10/10/89 13:30:43
+#
+# COMPONENT_NAME: UUCP Dialers
+#
+# FUNCTIONS:
+#
+# ORIGINS: 10  27  3
+#
+# (C) COPYRIGHT International Business Machines Corp. 1985, 1989
+# All Rights Reserved
+# Licensed Materials - Property of IBM
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+# Execute /usr/lib/uucp/uucpadm for on-line uucp configuration help.
+#
+hayes	=,-,	"" \dAT\r\c OK \pATDT\T\r\c CONNECT
+penril	=W-P	"" \d > s\p9\c )-W\p\r\ds\p9\c-) y\c : \E\DP > 9\c OK
+ventel	=&-%	"" \r\p \r\p-\r\p-$ <K\D%%\r>\c ONLINE!
+rixon	=&-%	"" \r\p \r\p-\r\p-$ <K\D%%\r>\c ONLINE!
+vadic	=K-K	"" \005\p *-\005\p-*\005\p-* D\p BER? \E\D\e \r\c LINE
+micom	""	"" \s\c NAME? \D\r\c GO
+#
+TCP
+direct

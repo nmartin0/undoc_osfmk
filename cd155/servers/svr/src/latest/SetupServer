@@ -1,0 +1,45 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+#
+# create everything you need for the server build environment
+#
+#
+if [ $# -eq 1 ] ; then
+	MKREL=$1
+else
+	echo "Usage: SetupServer path_to_kernel_release_tree"
+	echo "Example: SetupServer /afs/ssd/i860/R1_3/Kernel/release"
+	exit 1
+fi
+
+#OBJECTDIR=${OBJECTDIR-../../obj}
+OBJECTDIR=../../obj
+
+here=`pwd`
+#BCSBBASE=${BCSBBASE?${BCSBBASE}:`basename $here`}
+BCSBBASE=`basename $here`
+chmod +w Makeconf
+echo "#SOURCEDIR=$here" >> Makeconf
+echo "BCSBBASE=${BCSBBASE}" >> Makeconf
+echo ".EXPORT: BCSBBASE SOURCEDIR" >> Makeconf
+
+# Reset this if building for X86 or other target processor
+TARGET_MACHINE=i860
+
+[ -d $OBJECTDIR ] || mkdir $OBJECTDIR
+[ -d $OBJECTDIR/${TARGET_MACHINE}_mach ] || mkdir $OBJECTDIR/${TARGET_MACHINE}_mach 
+[ -d $OBJECTDIR/${TARGET_MACHINE}_mach/$BCSBBASE ] || mkdir $OBJECTDIR/${TARGET_MACHINE}_mach/$BCSBBASE 
+
+
+[ -d ../../../mkrel ] || mkdir ../../../mkrel
+rm -f ../../../mkrel/$BCSBBASE
+ln -s $MKREL/.. ../../../mkrel/$BCSBBASE

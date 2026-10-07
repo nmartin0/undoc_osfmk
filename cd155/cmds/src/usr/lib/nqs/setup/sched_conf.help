@@ -1,0 +1,366 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+#  Help strings
+#
+
+partition_graph="
+A graph of the partition relationships would look like this: 
+
+	            Paragon(TM) System
+        ______________________________________________
+       | node_set | node_set | node_set | node_set |
+       |          |          |          |          |
+       |          |          |          |          |
+       |          |          |          |          |
+       |          |          |          |          |
+       |          |          |          |          |
+       |          |          |          |          |
+       |          |          |          |----------|
+       |          |          |          | node_set |
+       |          |          |          |          |
+       |          |          |          |          |
+       |          |          |          |          |
+       |__________|__________|__________|__________|
+                       
+                  |---- node_group -----|
+
+A 'node_set' is a rectangular collection of nodes defined with the
+'node_set' configuration parameter. A node_group is a collection of
+one or more node sets, defined with the 'node_group' configuration
+parameter. Queues are assigned to a node_group with the QMGR SEt NODE_Group
+subcommand.
+"
+#########
+time_zone_help="
+The 'time_zone' parameter indicates which time zone the 'prime_start' and
+'prime_end' hour specifications are relative to.  The time zone is typically
+set to the local time zone but can be set to any valid OSF/1 time zone
+specification.
+"
+#############
+prime_start_help="
+The 'prime_start' and 'prime_end' parameters determine when NQS changes the
+size of the batch partition under its control.  Both parameters are specified
+as a series of 7 space-separated hours, in 24 hour time notation, beginning
+with Sunday as the first field.
+"
+#############
+prime_end_help=$prime_start_help
+#############
+cur_open_name_help="
+During prime time, the partition named by open_p_name is active and the
+partition named by open_np_name is inactive. During non-prime time, the
+partition named by open_p_name is inactive and the partition named by
+open_np_name is active.
+
+When the time changes from prime time to non-prime time, NQS renames the
+cur_open_name partition to the nane defined by open_p_name, and then
+renames the name defined by open_np_name to cur_open_name. The reverse is
+done when the time changes from non-prime time to prime time. Thus the
+active open partition is always named by the value supplied by
+cur_open_name. This is done so that users always see a single open
+partition name in both operating modes.
+
+If this feature is not desired, 'open_p_name', 'open_np_name', and
+ 'cur_open_name' should all be left blank.
+"
+#############
+open_np_name_help=$cur_open_name_help
+#############
+open_p_name_help=$cur_open_name_help
+#############
+timeshare_help="
+The 'timeshare' parameter is a boolean value that allows two jobs to share
+nodes.  A value of 0 turns off job time sharing.  A value of 1 allows, when
+possible, a second job in the time sharing layer.
+"
+#############
+block_pri_help="
+The 'block_pri' parameter is an integer value that defines the minimum 
+dynamic priority a job must have in order for it to block other jobs not in 
+the time sharing layer.  The scheduling scheme tends to favor smaller jobs.  
+To allow a large job which has reached the top of the queue to be 
+scheduled, jobs with a lower dynamic priority will not be scheduled if the 
+dynamic priority of the large job is greater than the value specified in 
+block_pri.  The default value is "-1", meaning no blocking will take place.  
+A value of 0 for 'block_ts_pri' would mean all jobs can block a second job 
+from being scheduled.
+"
+#############
+timesh_pri_help="
+The 'timesh_pri' parameter is an integer value that defines the minimum
+dynamic priority required for a job to trigger time sharing with another job.
+NQS fills the first scheduling layer without considering the minimum dynamic
+priority requirement in order to prevent nodes from being idle.  In order for
+a job to be scheduled in the time sharing layer, its dynamic priority must be
+greater than or equal to the value specified in 'timesh_pri'.  For example, a
+value of 0 allows all jobs in the time sharing layer.
+"
+#############
+tsched_pri_help="
+The 'tsched_pri' parameter is an integer value that defines the minimum NQS
+queue priority required for a queue to become a dedicated job (TSCHED) queue.
+Jobs submitted to a TSCHED queue using the -a switch of the qsub(1) command are
+run at the time specified and are not be preempted by other jobs run by NQS.
+"
+#############
+chk_runlimit_help="
+The 'chk_runlimit' parameter is a boolean value that defines whether the NQS
+complex and queue run limits should be checked before allowing a job to run.
+In standard NQS implementations, the run limit determines the maximum number
+of jobs that will be allowed to run in a queue or complex.  The enhancements
+made to NQS for Paragon reduce the importance of these limits.  A value of
+1 will enforce standard NQS run limits.  A value of 0 causes the run limits
+to be ignored.
+"
+#############
+age_factor_help="
+The 'age_factor' parameter is a floating point value used to calculate the
+dynamic priority of a job.  The dynamic priority is calculated using the
+following equation:
+
+     dynamic_priority = (nqs_queue_priority + (age_factor * time))
+
+Time is a floating point term equal to the hours the job has been waiting in
+the queue.
+"
+#############
+grace_time_help="
+The 'grace_time' parameter is an integer value specifying the number of
+seconds NQS will wait between sending a SIGTERM and the SIGKILL signals.
+When an NQS job exceeds the run time limit of the queue, NQS sends the job
+a SIGTERM signal.  The job then has 'grace_time' seconds to before a SIGKILL
+symbol is sent to the job.
+"
+#############
+rollin_quan_help="
+The 'rollin_quan' parameter is an integer value that specifies, in seconds,
+the rollin quantum of NQS controlled partitions.  For best batch performance,
+this value should not be less than 60 seconds.
+"
+#############
+do_wall_help="
+The 'do_wall' parameter is a boolean value that causes NQS to send a wall(1)
+message when it switches between prime and non-prime time.  The message is
+sent to all logged in users of `hostname`.  A value of 0 indicates that a
+broadcast message is not sent.  A value of 1 indicates that a message is sent.
+"
+#############
+node_set_help="
+A 'node set' is  a rectangular collection of nodes defined by a unique set of 
+physical nodes in the configuration file. The syntax is as follows :
+
+        node_set<set_number>: <root_partition> <node_spec>
+
+	where:
+	 
+	node_set is the configuration file parameter
+
+	<set_number> is a numerical value (between 0 and 63) that identifies
+	the node_set. 
+
+	<root partition> is the partition under which the NQS daemon will 
+        create partitions for the NQS jobs running in this 'node_set'.
+
+	node_spec is the location and dimension of the 'node_set'. The format
+	for 'node_spec' is heightxwidth:starting_node.  For example,
+	8x32:0 specifies a rectangle of 256 nodes starting at parent partition 
+        node zero.
+
+For example: 
+
+	node_set0: .compute.GP 8x8:0
+	node_set1: .compute.GP 8x4:8
+	node_set2: .compute.MP 8x1:12
+	node_set3: .compute.MP 8x2:13
+					 
+These input lines define four 'node_sets'. 'Node_sets' 0 and 1 
+have a common root partition--.compute.GP--while both 'node_set 2 and 3 
+have root partition .compute.MP.
+"
+#############
+node_group_help="
+A 'node_group' consists of one or more 'node sets'. Each NQS batch 
+queue is associated with a 'node_group' which defines the group of 'node 
+sets' to use when scheduling jobs submitted to the queue.
+ 
+
+A 'node_group' is  defined in the configuration file with the following syntax.
+
+        node_group<group_number>: <first node_set> <second node_set> ...
+
+	where:
+
+	node_group is the configuration file parameter 
+
+	<group_number> is a numerical value (between 0 and 63) that
+	identifies the 'node_group' 
+
+	<first node_set> <second node_set> are one or more 'node_set' numbers 
+	that compose the 'node_group'.
+
+For example, suppose we have four 'node_sets' with the following physical 
+attributes :
+	 
+	node_set0 - 16 Mb GP nodes
+	node_set1 - 32 Mb GP nodes
+	node_set2 - 16 Mb MP nodes
+	node_set3 - 32 Mb MP nodes
+	
+and we define four 'node_groups' in the configuration file as follows :
+
+	node_group0:0 1
+	node_group1:1
+	node_group2:2 3
+	node_group3:3
+
+'Node_group' 0 includes both the 16 and 32 Mb GP nodes and 'Node_group' 2 
+includes both the 16 and 32 Mb MP nodes. 'Node_group' 1 consists of only 
+the 32 Mb GP nodes and 'Node_group' 3 consists of only the 32 Mb MP nodes.
+
+Therefore, 'Node_group' 0 can be used to characterize requests that would run
+in any GP nodes, regardless of the memory size, while requests associated
+with 'Node_group' 1 will only run in 32 Mb GP nodes. 'Node_groups' 2 and 3 
+have similar implication except they are for the MP nodes.
+"
+#############
+prime_list_help="
+The prime_list configuration parameter defines the node_sets within 
+a node_group that are used during prime time.  
+The syntax for prime_list is as follows.
+
+        prime_list<node_group>: <first node_set> <second node_set> ...
+
+For example:
+
+	prime_list0 : 1 2
+"
+############# 
+nprime_list_help=" 
+
+
+The nprime_list configuration parameter defines the node_sets within 
+a node_group that are used during non-prime time.  
+The syntax for prime_list is as follows.
+
+        nprime_list<node_group>: <first node_set> <second node_set> ...
+
+For example:
+
+	nprime_list1 : 2 3
+" 
+############# 
+prompt=" 
+Please specify or validate the NQS scheduling parameters given in the following
+prompts.  The values displayed in brackets are the default values.  To use the 
+defaults, just press the Return key.  If you want to change the default or 
+when no default is given, enter the desired value followed by the Return 
+key.  If you want more information on a parameter, enter a question mark 
+(?).  "
+############
+np_overrun_help="
+The np_overrun configuration parameter determines if NQS will schedule
+jobs to run during non-prime time if the requested time plus the current
+time will overrun into prime time. If this parameter is set to 0, jobs
+can overrun into Prime time. If it is set to 1, jobs cannot overrun. 
+The default value is 0.
+"
+############
+macs_flag_help="
+The macs_flag configuration parameter determines if NQS will communicate 
+with MACS. This parameter allows MACS to distiguish between NQS batch jobs
+and interactive jobs. If MACS is running and macs_flag is set to 0, all NQS 
+jobs reported in the MACS reports appear as interactive jobs. If MACS is 
+running and macs_flag is set to 1, NQS jobs are differentiated from 
+interactive jobs. If MACS is not running and macs_flag is set to 1, all NQS
+jobs will fail.
+The default value is 0.
+"
+############
+use_login_help="
+The 'use_login' parameter is a boolean value that tells NQS whether or not
+to spawn the user's shell as a login shell.  A value of 1 causes NQS to
+spawn the user's shell as a login shell, which makes the shell read the
+user's .profile or .login file as it starts up (this is done by invoking
+the shell with a dash prepended to its name: '-sh', '-csh', or '-ksh').  A
+value of 0 causes NQS to spawn the user's shell as a non-login shell, which
+means that the shell does NOT read the user's .profile or .login file.
+The default value is 0.
+"
+############
+nosched_help="
+The 'nosched' parameter is a boolean value that tells NQS whether or not to
+schedule jobs.  A value of 1 causes NQS to not schedule any jobs at all.  A
+value of 0 causes NQS to schedule jobs normally.
+
+This parameter is almost always set to 0 during normal operation.  A
+typical use of this parameter is to prevent NQS from re-scheduling a job
+that crashed the system and will start again when the system comes up.  If
+this occurs, use the following procedure to prevent this job from running:
+
+    1. Boot the system to single-user mode.
+    2. Edit the sched_param file and change 'nosched' to 1.
+    3. Continue booting to multi-user mode.
+    4. Remove the problem job from the queue.
+    5. Edit the sched_param file and change 'nosched' to 0.
+    6. Use the 'qstart' command to force NQS to re-read the 
+       sched_param file.
+
+The default value is 0.
+"
+############
+prime_script_help="
+The 'prime_script' parameter specifies the full pathname of an
+executable file (typically a shell script) which is run at the
+beginning of prime time.  The script is run after all other processing
+has been performed for the non-prime/prime switchover.
+
+NOTE: the specified file is executed as root.  If it is a shell script,
+it needs to be properly protected from unauthorized modification.
+
+The default value is blank (meaning that no script is executed).
+"
+############
+nprime_script_help="
+The 'nprime_script' parameter specifies the full pathname of an
+executable file (typically a shell script) which is run at the
+beginning of non-prime time.  The script is run after all other
+processing has been performed for the prime/non-prime switchover.
+
+NOTE: the specified file is executed as root.  If it is a shell script,
+it needs to be properly protected from unauthorized modification.
+
+The default value is blank (meaning that no script is executed).
+"
+############
+wallclock_limits_help="
+The 'wallclock_limits' parameter is a boolean value that determines how
+NQS enforces per-request CPU time limits.
+
+A value of 1 causes CPU time limits to be enforced by strict 'wall
+clock' time.  For example, a limit of 30 minutes means that a job can
+run no longer than 30 minutes as measured by the clock on the wall of
+the computer room (even if it spends part or all of the time
+gang-scheduled out).
+
+A value of 0 causes CPU time limits to be enforced by node-hours.  In
+this case, the CPU time limit is multipled by the number of nodes in
+the job to give the maximum number of node-hours the job is allowed to
+use.  For example, a job run in a 16-node queue (with no -lP switch)
+with a limit of 30 minutes can use no more than 8 node-hours total.
+This means that jobs that do not use all the nodes that have been
+allocated to them (by use of the -sz switch within the job script) can
+run longer than the limit.
+
+The default value is 0.
+"

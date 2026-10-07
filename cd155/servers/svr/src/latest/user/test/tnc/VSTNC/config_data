@@ -1,0 +1,9 @@
+userid2 = 2
+userid1 = 1
+goodnode = 1
+mynode = 0
+badnode = 186000
+nodelist = 0 - 2
+badaddr = 0xffffffff
+TZ = PST8PDT
+PATH=:/sbin:/usr/sbin:/bin:/usr/bin:/etc

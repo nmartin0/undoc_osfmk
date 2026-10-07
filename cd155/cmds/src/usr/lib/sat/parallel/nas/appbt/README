@@ -1,0 +1,14 @@
+NAS Block Tridiagonal (appbt)
+
+The block tridiagonal (BT) benchmark is one of three application
+benchmarks contained within the NAS Parallel Benchmarks.  Like the
+others, this benchmark simulates an application of importance in
+computational fluid dynamics - ARC3D.
+
+The "Class A" problem is solved by this SAT version of the BT program.
+For the Class A problem, 200 iterations are required on a three 
+dimensional grid that is 64x64x64.
+
+Two versions of the BT executable are supplied in this directory,
+bt64 and bt128.  bt64 has been compiled to run in a 64 node
+partition.  bt128 has been compiled to run in a 128 node partition.

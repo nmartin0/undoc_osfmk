@@ -1,0 +1,35 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, 1991, 1992 OPEN SOFTWARE FOUNDATION, INC. 
+# ALL RIGHTS RESERVED 
+#
+#
+# OSF/1 Release 1.0.4
+
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+
+case "$1" in
+'start')
+	rm -f /tmp/t1
+	/usr/bin/strings /mach_servers/startup | grep 'OSF/1 Release' >/tmp/t1
+        if [ -s /tmp/t1 ]; then
+		sed -e '1s;^OSF/1 Release ;&;' -e tx -e b -e :x -e d /etc/motd >>/tmp/t1
+        	cp /tmp/t1 /etc/motd
+        fi
+        rm -f /tmp/t1
+        ;;
+'stop')
+        ;;
+esac

@@ -1,0 +1,234 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/parallel/random/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0
+testError=1
+miscError=2
+abortCode=3
+title="`sed -n '1p' README`"
+
+computeNodes=0
+interactions=10
+maxMsg=20
+minNodes=2
+maxNodes=512		# ceiling of 512 nodes to avoid many-to-one issues
+msgLen=16
+msgBuf=2097152
+partName=$1
+homeDir=`pwd`                  # Current working directory
+execDir=${homeDir}/../comtest  # Directory for executable
+type=123
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+# Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/random.scratch.$$
+programErrorFile=$SAT_USR_TMP/random.errors.$$
+
+programWorkDir=$SAT_USR_TMP/random.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programScratchFile
+   rm -f $programErrorFile
+
+   cd $homeDir
+   rm -rf $programWorkDir
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "comtest sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Partition size analysis and adjustment
+lspart -r . | awk 'BEGIN { dir = "" }
+                   index($1,":") == length($1) { dir = substr($1,1,length($1)-1) "."
+                                                 if (substr(dir,1,2) == "..")
+                                                    dir = substr(dir,2)
+                                                 next
+                                               }
+                   { fullname = dir $NF
+                     if (substr(fullname,1,1) == ".")
+                        print fullname, $4
+                   }' > $programScratchFile
+if test "`echo $1 | cut -c1`" = "."
+then
+   # Absolute partition pathname
+   partName=$1
+else
+   # Relative partition pathname
+   partName=.compute.$1
+fi
+computeString=`grep "^$partName " $programScratchFile`
+
+if test -z "$computeString"
+then
+   echo "Compute partition $partName does not exist." 1>&2
+   lspart -r . >> $programScratchFile
+   if [ ! -d $SAT_USR_TMP/failures ] ; then 
+     mkdir -p $SAT_USR_TMP/failures
+   fi
+   cp $programScratchFile $SAT_USR_TMP/failures
+
+   cleanup $miscError
+fi
+
+computeNodes="`echo $computeString | awk '{ print $2 ; exit }'`"
+
+# Check compute node size
+if test -z "$computeNodes"
+then
+   echo "Could not determine number of compute nodes." 1>&2
+   cleanup $miscError
+fi
+
+# Check for minimum size partition
+if test $computeNodes -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError nosave
+fi
+
+# Limit maximum size of partition to avoid many to one swamping issues
+# on large systems.
+
+if test $computeNodes -gt $maxNodes
+then
+	computeNodes=$maxNodes
+fi
+echo "computeNodes: $computeNodes"
+
+# Reduce message length if running on large systems to avoid possibility
+# of exhausting uncommitted system message buffer space
+if test $computeNodes -ge 512
+then
+   msgLen=14
+elif test $computeNodes -ge 256
+then
+   msgLen=15
+fi
+
+# Check for maximum message length
+if test $msgLen -gt $maxMsg
+then
+   echo "Message length greater than $maxMsg." 1>&2
+   cleanup $miscError
+fi
+
+# Check valid types
+if test -n "$type" -a -n "`echo $type | sed 's/[123]//g'`"
+then
+   echo "Requested random test not part of set [123]." 1>&2
+   cleanup $miscError
+fi
+
+# Verify program is executable
+if test -x ${execDir}/comtest
+then
+   # Execute program
+   if ${execDir}/comtest $SAT_NX_ARGS -pn $partName -sz $computeNodes -mbf $msgBuf -tn -r $type -n $interactions -m $msgLen > $programScratchFile 2> $programErrorFile
+   then
+      # Verify results, see filter results below
+      :
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "comtest exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"comtest\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Report PASS/FAIL results, no ERROR in scratch file
+if test -z "`grep ERROR $programScratchFile $programErrorFile`" -a -z "`grep -i 'Bad Node Specification' $programScratchFile $programErrorFile`" -a ! -f core -a ! -d core
+then
+   # Program PASSed
+   echo "PASS: $title."
+   cat $programErrorFile 1>&2
+
+else
+   # Program FAILed, cat scratch file back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

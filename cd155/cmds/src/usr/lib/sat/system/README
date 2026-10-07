@@ -1,0 +1,7 @@
+System
+
+This directory contains tests that demonstrate the correct operation
+of this system at its rated performance. Tests cover file I/O,
+process and memory management, computation, system balance, and message
+passing capabilities.
+

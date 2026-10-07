@@ -1,0 +1,33 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test15" COMMENTS
+================
+
+******************* Step to run this test *******************************
+
+1. make -f makefile.man all
+
+2. <testname>.sh 
+Note: When running the script, the users will be asked to prepare 2 tapes and
+      to load the first one.  Then the users will need to hit the return.  The 
+      script will then perform "ms" (making the scrap tapes) and unload all the
+      tapes.  This will take about 1 minutes.  Afterward, the users will be
+      asked to reinsert those tapes in the same order and to load the first 
+      tape.  Then the users will need to hit the return again.  Finally, the
+      test is ready to run (to write data into the tapes).
+
+
+      THE TEST TAKES ~2 MINUTES TO RUN
+
+
+
+

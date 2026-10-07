@@ -1,0 +1,7 @@
+MPP Linpack (mplinpack)
+
+This is the parallel version of the Linpack benchmark for factoring and
+solving dense matrices. This version works on the largest possible
+problems and is generally recognized as the world record target for
+supercomputer performance.
+

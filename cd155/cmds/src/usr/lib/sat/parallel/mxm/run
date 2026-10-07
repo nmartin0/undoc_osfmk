@@ -1,0 +1,282 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/parallel/mxm/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0
+testError=1
+miscError=2
+abortCode=3
+title="`sed -n '1p' README`"
+
+computeNodes=0
+dimension=300
+minNodes=4
+mxmSize=0
+mxmPart="mxmpart$$"
+partName=$1
+scratchPart=""
+repetitions=20
+execDir=`pwd`
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+#        Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/mxm.scratch.$$
+programResultsFile=$SAT_USR_TMP/mxm.results.$$
+programErrorFile=$SAT_USR_TMP/mxm.errors.$$
+
+# Define temporary directory to run program in
+programWorkDir=$SAT_USR_TMP/mxm.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+
+   cd $execDir
+   rm -rf $programWorkDir
+}
+
+# Remove compute partition function: expected cleanup
+removePartition() {
+
+   if test -n "$scratchPart" -a "$scratchPart" != ".compute"
+   then
+      rmpart -f -r $scratchPart > /dev/null 2>&1
+   fi
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   removePartition
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "mxm sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Partition size analysis and adjustment
+lspart -r . | awk 'BEGIN { dir = "" }
+                   index($1,":") == length($1) { dir = substr($1,1,length($1)-1) "."
+                                                 if (substr(dir,1,2) == "..")
+                                                    dir = substr(dir,2)
+                                                 next
+                                               }
+                   { fullname = dir $NF
+                     if (substr(fullname,1,1) == ".")
+                        print fullname, $4
+                   }' > $programScratchFile
+if test "`echo $1 | cut -c1`" = "."
+then
+   # Absolute partition pathname
+   partName=$1
+else
+   # Relative partition pathname
+   partName=.compute.$1
+fi
+computeString=`grep "^$partName " $programScratchFile`
+
+if test -z "$computeString"
+then
+   echo "Compute partition $partName does not exist." 1>&2
+   lspart -r . >> $programScratchFile
+   if [ ! -d $SAT_USR_TMP/failures ] ; then 
+     mkdir -p $SAT_USR_TMP/failures
+   fi
+   cp $programScratchFile $SAT_USR_TMP/failures
+
+   cleanup $miscError
+fi
+
+computeNodes="`echo $computeString | awk '{ print $2 ; exit }'`"
+
+# Check compute node size
+if test -z "$computeNodes"
+then
+   echo "Could not determine number of compute nodes." 1>&2
+   cleanup $miscError
+fi
+
+# Check for minimum size partition
+if test $computeNodes -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError nosave
+fi
+
+# Check for existing partition name
+if test -n "`grep '^${partName}.${mxmPart} ' $programScratchFile`"
+then
+   echo "Compute partition ${partName}.${mxmPart} already exists." 1>&2
+   lspart -r $1 | grep $mxmPart 1>&2
+
+   cleanup $miscError
+fi
+
+# Calculate partition size.  Generated matrix must have an aspect
+# ratio no larger than 2.0, else we drop to a partition size which
+# satisfies this criteria.
+mxmSize=`echo $computeNodes | \
+awk '{ nodes = $NF
+       aspect = 10.0
+       while (1) {
+          i = int(sqrt(nodes + 0.5))
+          while ( (nodes % i) != 0 ) {
+             i--
+          }
+          x = nodes / i
+          y = i
+          aspect = x / y
+          if (aspect <= 2.0)
+             break
+          else
+             nodes--
+       }
+       print nodes
+     }'`
+
+# Verify partition size
+if test $mxmSize -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError
+fi
+
+scratchPart=${partName}.${mxmPart}
+
+# Allocate required partition
+mkpart -sz $mxmSize $scratchPart >> $programScratchFile 2> $programErrorFile
+if test $? -ne 0
+then
+   echo "Failed to make partition $scratchPart of size $mxmSize." 1>&2
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $miscError
+fi
+
+# Set dimension input parameter
+dimension=`echo $mxmSize | awk '{ print (int(sqrt($NF + 0.5)) * 150) }'`
+
+# Verify program is executable
+if test -x ${execDir}/mxm
+then
+   # Print parameters
+   echo "Partition: $partName, size: $mxmSize, repetitions: $repetitions, dimension: $dimension"
+
+   # Execute program
+   if ${execDir}/mxm -pn $scratchPart -sz $mxmSize <<- EOF > $programScratchFile 2> $programErrorFile
+$repetitions
+$dimension
+$dimension
+$dimension
+0
+0
+0
+0
+EOF
+   then
+      # Collect results
+      sed '/Please input/d' $programScratchFile > $programResultsFile
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "mxm exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"mxm\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Report PASS/FAIL results, no INVALID in scratch file
+
+if test -z "`grep INVALID $programScratchFile $programErrorFile`" -a -z "`grep \"Insufficient memory\" $programScratchFile`" -a -s $programResultsFile -a ! -f core -a ! -d core
+then
+   # Program PASSed (no INVALID), cat (filtered) results back to sat
+   echo "PASS: $title."
+
+   cat $programResultsFile
+
+else
+   # Program FAILed, cat (filtered) scratch and error files back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

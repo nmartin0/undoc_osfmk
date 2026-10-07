@@ -1,0 +1,105 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+0	long	0177555			very old pdp11 archive
+0	short	0177545			old pdp11 archive
+0	string	^<ar>			System V archive
+0	string	^!<arch>\n__\\.SYMDEF	archive random library
+0	string	^!<arch>\n__________E	MIPS archive
+>20	string	^U			with mipsucode members
+>21	string	^L			with mipsel members
+>21	string	^B			with mipseb members
+>19	string	^L			and a EL hash table
+>19	string	^B			and a EB hash table
+>22	string	^X			-- out of date
+0	string	^!<arch>\n		archive
+#
+#  All sorts of scripts (like /bin/sh, /bin/awk, etc.) are identified
+#  here.
+#
+0	string	^#![ ]*\\%[^ \n]*\\%	%s
+#
+#  Various sorts of executable images.  Note how either "POSIX" or "SVID"
+#  are chosen based on the value of the second short word.
+#
+0	short	0407			VAX executable (object file)
+>8	short	>0			not stripped
+0	long	0410			VAX pure
+>16	long	>0			not stripped
+0	short	0413			VAX demand paged pure
+>2	short	02			POSIX
+>2	short	01			SVID
+>16	long	>0			not stripped
+0	short	0401			Ultrix-11 Stand-alone or boot executable
+0	short	0430			Ultrix-11 overlay text kernel executable
+0	short	0431			Ultrix-11 user overlay (separated I&D) executable
+0	short	0450			Ultrix-11 overlay kernel executable
+0	short	0451			Ultrix-11 overlay kernel (separated I&D) executable
+#
+#  Various sorts of text and data files.
+#
+0	string	^\01h[0-9][0-9][0-9][0-9][0-9]	sccsfile
+0	string	^#ifndef			c program
+0	string	^070707				ASCII cpio archive
+0	string	^%!PS-Adobe-\\%[.0-9]*\\%\n	PostScript (v%s) text
+#
+#
+0	string	^\0377\0377\0177	ddis/ddif 
+0	string	^\0377\0377\0174	ddis/dots archive
+0	string	^\0377\0377\0176	ddis/dtif table data
+0	string	^\033c\033		LN03 output
+0	string	^\0100\0357		troff (CAT) output
+0	long	04553207		X image
+0	short	017777			compacted data
+0	short	0116437			compressed data 
+0	short	070707			cpio archive
+0	short	017037			packed data
+0	string	^begin\040[0-9]		uuencoded data
+#
+#	MIPS magic info follows.
+#
+0	long		0x1010101	MMDF mailbox
+#
+# MIPS binary information - Note that version number printing is an
+# extreme hack.
+#
+0	short		0x0160		mipseb
+>20	short		0407		executable
+>20	short		0410		pure
+>20	short		0413		demand paged
+>8	long		!0		not stripped
+0	short		0x0162		mipsel
+>20	short		0407		407
+>20	short		0410		pure
+>20	short		0413		demand paged
+>8	long		0		executable
+>8	long		>0		not stripped
+>8	long		<0		not stripped
+0	short		0x6001		swapped mipseb
+>20	short		03401		executable
+>20	short		04001		pure
+>20	short		05401		demand paged
+>8	long		!0		not stripped
+0	short		0x6201		swapped mipsel
+>20	short		03401		407
+>20	short		04001		pure
+>20	short		05401		demand paged
+>8	long		0		executable
+>8	long		>0		not stripped
+>8	long		<0		not stripped
+0	short		0x180		mipseb ucode
+0	short		0x182		mipsel ucode

@@ -1,0 +1,91 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+:	#  The ':' assures that this will run under Bourne shell
+#
+#  Run the test to write multi-volumes and multi-datasets
+#
+#  Syntax: test4.sh 
+#
+
+DEV=/dev/io1/rmt6
+PART=test3480
+PATH=/home/slk/util
+
+# Check arguments
+if [ $# -gt 0 ]
+then
+        echo "Usage: test4.sh "
+        echo ""
+        echo "RESULT: F (usage error)" >> NOT_RUN
+        exit 2
+fi       
+echo ""
+echo "*****  MULTI-VOLUME/MULTI-DS WRITE TEST *****" | tee -a test4.SLr0
+echo "" | tee -a test4.SLr0
+echo "please PREPARE 4 tapes on the STK 4980 cabinet and LOAD the first tape, " | tee -a test4.SLr0
+echo "then press return to continue ..." | tee -a test4.SLr0
+read response
+echo "starting to make scratch tape \"ms\" utilility & unload tapes" | tee -a test4.SLr0
+
+$PATH/ms -f -vtest01 -neval $DEV
+/usr/bin/mt -f $DEV offline
+echo "sleeping to wait for tape fully unloaded from tape drive ..."
+/usr/bin/sleep 20
+$PATH/ms -f -vtest02 -neval $DEV
+/usr/bin/mt -f $DEV offline
+echo "sleeping to wait for tape fully unloaded from tape drive ..."
+/usr/bin/sleep 20
+$PATH/ms -f -vtest03 -neval $DEV
+/usr/bin/mt -f $DEV offline
+echo "sleeping to wait for tape fully unloaded from tape drive ..."
+/usr/bin/sleep 20
+$PATH/ms -f -vtest04 -neval $DEV
+/usr/bin/mt -f $DEV offline
+echo "sleeping to wait for tape fully unloaded from tape drive ..."
+/usr/bin/sleep 20
+
+echo "done making scratch tapes" | tee -a test4.SLr0
+         
+echo " "
+echo "please REINSERT the previous 4 tapes in same order & LOAD the 1st tape," |  tee -a test4.SLr0
+echo "then press return to continue ..." | tee -a test4.SLr0
+read response
+
+d1=`date '+%j'`
+h1=`date '+%H'`
+m1=`date '+%M'`
+s1=`date '+%S'`
+
+./node.rx $DEV -pn $PART  | tee -a test4.SLr0
+
+# Execute time
+d=`expr \( \`date '+%j'\` - $d1 \) \* 86400`
+h=`expr \( \`date '+%H'\` - $h1 \) \* 3600`
+m=`expr \( \`date '+%M'\` - $m1 \) \* 60`
+execTime=`expr $d + $h + $m + \( \`date '+%S'\` - $s1 \)`
+
+
+#
+#  Check for test failure
+#
+
+if grep 'PASSED' scratch > /dev/null
+then
+ echo "RESULT: P `hostname` $execTime" | tee -a test4.SLr0
+ echo "RESULT: P `hostname` $execTime" > test4.SRr0
+else
+ echo "RESULT: F (found FAILED) `hostname` $execTime" | tee -a test4.SLr0
+ echo "RESULT: F (found FAILED) `hostname` $execTime" > test4.SRr0
+fi
+
+echo "" | tee -a test4.SLr0
+echo "*****  MULTI-VOLUME/MULTI-DS WRITE TEST COMPLETE  *****" | tee -a test4.SLr0

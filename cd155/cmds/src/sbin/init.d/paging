@@ -1,0 +1,134 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, 1991, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0.3
+
+
+# save my arg1
+ARG1="$1"
+
+#
+# Activate paging files
+#
+#
+# Get actual configuration 
+#
+PAGEFILE=;PAGEMINSZ=20M;PAGEMAXSZ=700M
+PARTITION=;PARTITIONTYPE=
+
+if [ -f /etc/rc.config ] ; then
+	. /etc/rc.config
+else
+	echo "ERROR: /etc/rc.config defaults file MISSING"
+	exit
+fi
+
+#
+# Enable paging devices and files
+#
+case $ARG1 in
+'default')
+# Check to make sure swapon is not already done
+	if [ -f /tmp/when_swapon_ran1 ]
+	then
+        	swapon_time1=`/sbin/getmagic BOOT_TIME`
+        	when_swapon_ran1=`cat /tmp/when_swapon_ran1`
+        	if [ "$when_swapon_ran1" -gt "$swapon_time1" ]
+        	then
+               		echo "NOTE: swapon already run, skipping swapon process."
+                	exit
+        	fi
+		rm -f /tmp/when_swapon_ran1
+	fi
+	echo "Initializing boot-node (vnode) paging space"
+	if [ "x$PARTITION" != "x" ]; then
+		echo
+		/sbin/swapon -v -p /dev/io0/$PARTITION
+		if [ $? -gt 0 ] 
+         	then
+			echo "        *************    NOTE   *************"
+			echo "There is a problem with the paging configuration. You may choose to halt the"
+			echo "boot process, correct it on the diagnostic station if possible and reboot again."
+                	echo "If the problem needs to be corrected on the Paragon, continue to multiuser."
+			echo "Do you want to halt the boot process? (y/n)[y] \c"
+	                read ans
+                        if [ -z "$ans" ]; then
+                                ans="Y"
+                        fi
+                        if [ $ans = "y" -o $ans = "Y" ]; then
+				echo "Halting the system ..."
+				sync;sync
+				cd /
+				umount -a
+				/sbin/halt
+			else
+                        	echo "NOTE: continuing with the boot process to multiuser."
+                        	echo "Please correct paging configuration problem immediately and reboot again."
+				echo
+			fi
+		fi
+	fi
+	. /etc/TIMEZONE
+	epoch_time >/tmp/when_swapon_ran1
+	chmod 644 /tmp/when_swapon_ran1
+        ;;
+*)
+#	echo "Initializing remote (vnode) paging space"
+#	/sbin/swapon -a
+	# Check to make sure swapon is not already done
+	if [ -f /tmp/when_swapon_ran ]
+	then
+        	swapon_time=`/sbin/getmagic BOOT_TIME`
+        	when_swapon_ran=`cat /tmp/when_swapon_ran`
+        	if [ "$when_swapon_ran" -gt "$swapon_time" ]
+        	then
+               		echo "NOTE: swapon already run, skipping swapon process."
+                	exit
+        	fi
+		rm -f /tmp/when_swapon_ran
+	fi
+	echo
+	/usr/sbin/exportpaging 
+	if [ $? -gt 0 ] 
+        then
+        	echo "        *************    NOTE   *************"
+                echo "There is a problem the with paging configuration. You may choose to halt the"
+                echo "boot process, correct it on the diagnostic station if possible and reboot again."
+                echo "If the problem needs to be corrected on the Paragon, continue to multiuser."
+                echo "Do you want to halt the boot process? (y/n)[y] \c"
+                read ans
+                if [ -z "$ans" ]; then
+              	  ans="Y"
+                fi
+                if [ $ans = "y" -o $ans = "Y" ]; then
+               		echo "Halting the system ..."
+                        sync;sync
+                        cd /
+                        umount -a
+                        /sbin/halt
+                else
+                        echo "NOTE: continuing with the boot process to multiuser."
+                        echo "Please correct paging configuration problem immediately and reboot again."
+			echo
+                fi
+
+	fi
+	. /etc/TIMEZONE
+	epoch_time >/tmp/when_swapon_ran
+	chmod 644 /tmp/when_swapon_ran
+        ;;
+esac

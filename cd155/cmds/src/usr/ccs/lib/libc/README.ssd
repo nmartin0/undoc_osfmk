@@ -1,0 +1,21 @@
+Local modified files for i860
+
+Makefile
+	i860 specific lib link
+doscan.c
+	i860 varargs support.
+
+gethostnmad.c
+	SOLID_NETWORK, tmp until res_search() is valid.
+
+sigsetjmp.c
+	added routine instead of macro to be consistant with setjmp.h defs.
+
+crypt.c
+       Replace it with a version from Berkeley. (4/6/92 - Shala)
+
+errlst.c
+      Added resource (partition) management errors. (4/9/92 - Shala)
+
+errlst.c
+      Added NX message passing errors. (4/23/92 - Shala)

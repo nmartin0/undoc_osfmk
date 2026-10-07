@@ -1,0 +1,1069 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+######################################################################
+#
+#  Copyright (c) 1991, Locus Computing Corporation
+#  All rights reserved
+#
+# 
+# HISTORY
+# $Log: files,v $
+# Revision 1.20  1995/03/02  18:54:36  stans
+#  Do not include vfs/vfs_debug.c unless mach_kdb is defined as there is a
+#  #ifdef MACH_KDB around the entire file contents. Since nothing gets compiled,
+#  the compiler complains about an empty translation unit.
+#
+#  Reviewer:suri,lenb
+#  Risk:low
+#  Benefit or PTS #:12424
+#  Testing:WW07 sats
+#
+# Revision 1.19  1994/11/18  20:29:31  mtm
+# Copyright additions/changes
+#
+# Revision 1.18  1994/06/28  23:25:47  dbm
+# Added modifications required to support IPI-3 devices.
+#  Reviewer: Dave Minturn / Dave Noveck (OSF)
+#  Risk:M
+#  Benefit or PTS #: PTS # 10033, added file system support for IPI-3 devices.
+#  Testing: fileio/pfs/vsx eats, PFS sats.
+#  Module(s): Complete list of the files is contained in the description of
+#             PTS 10033.
+#
+# Revision 1.17  1994/03/14  02:01:34  slk
+# Checkpoint Restart Code Drop
+#  Reviewer: Stefan Tritscher
+#  Risk: Medium
+#  Benefit or PTS #: Enhancement
+#  Testing: Locus VSTNC, EATS TCP-IP, Individual Checkpoint/Restart tests.
+#  Module(s):
+#
+# Revision 1.16  1993/10/29  11:57:50  paul
+# Add support for setting and using the RPM distributed time-of-day clock.
+#
+# Revision 1.15  1993/10/21  23:24:01  bolsen
+# 10-21-93 Locus code drop for Generic Spanning Tree.
+#
+# Revision 1.14  1993/09/27  04:29:33  robboy
+# Made disk_io.c optional for FULLSERVER
+# 
+# Revision 1.13  1993/07/21  17:04:35  robboy
+# change fsvr_server_side.c from standard to 'optional mach'
+#
+# Revision 1.12  1993/07/19  22:58:52  robboy
+# Integrate OSF/Locus Lite server changes
+#
+# Revision 1.11  1993/07/14  17:53:56  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.5  1993/07/01  19:12:15  cfj
+# Adding new code from vendor
+#
+# Revision 1.10  1993/05/17  19:06:06  cfj
+# 05-06-93 MI driver drop from Locus.
+#
+# Revision 1.9  1993/05/06  19:14:21  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.3  1993/05/03  17:27:28  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.8  1993/04/03  03:05:30  brad
+# Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+# Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+#
+# Revision 1.7  1993/03/25  21:29:37  cfj
+# T9 Merge.
+#
+# Revision 1.5.4.2  1993/03/24  23:39:44  cfj
+# Locus 03-22-93 vsocket drop to fix select().
+#
+# Revision 1.6  1993/02/18  01:17:31  cfj
+# Complete select() fix from Locus.
+#
+# Revision 1.1.2.2.2.2  1993/02/16  20:03:48  brad
+# Merged trunk (as of the T8_EATS_PASSED tag) into the PFS branch.
+#
+# Revision 1.5  1993/01/15  01:53:10  cfj
+# Multiple service partition fixes from Locus.
+# 
+# Revision 1.1.2.2.2.1  1992/12/16  05:59:37  brad
+# Merged trunk (as of the Main_After_Locus_12_1_92_Bugdrop_OK tag)
+# into the PFS branch.
+#
+# Revision 1.3  1992/11/30  22:19:12  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.2  1992/11/06  18:22:30  dleslie
+# Conflict resolution resulting from merge of November 3 bugdrop from Locus
+# into the NX tree
+# 
+# Revision 2.47  93/09/16  08:27:42  chrisp
+# [SPE 0030] Generic Spanning Trees: tnc/spanning_tree.c contains the
+# 	nitty-gritty-bitty bits.
+#
+# Revision 2.30  93/10/20  15:26:31  dnoveck
+#       DEV_BSIZE elimination: Delete DEV_BSIZE-ridden files that were
+#       not used anyway. (ufs_disksubr.c and ufs_physio.c)
+#
+#
+# Revision 2.46  93/07/13  16:00:16  slively
+# 
+# 	Revision 2.29  93/06/29  16:16:18  rabii
+# 	Made new options UFS and FULLSERVER. UFS requires FULLSERVER 
+# 	and NFS requires both FULLSERVER and UFS (rabii)
+# 
+# Revision 2.45  93/06/25  11:22:48  slively
+# Backout the LITE server changes.
+# 
+# Revision 2.44  93/06/22  20:00:13  slively
+# Support for LITE server, changed some "standard" to "optional ufs".
+# 
+# Revision 2.43  93/06/02  09:51:32  yazz
+# For Sys V IPC under TNC add the file tnc/tnc_svipc.c, optionally included
+# depending upon config option "tnc".
+# 
+# Revision 2.42  93/05/06  17:32:43  mjl
+# Delete obsolete vsocket/mi_ipc.c file.
+# 
+# Revision 2.41  93/05/05  22:18:08  mjl
+# Replace mi_arp.c (MIv2) with mi_config.c (MIv3).
+# 
+# Revision 2.40  93/04/29  14:00:18  klh
+# 	Revision 2.28  93/03/30  16:09:42  roy
+# 		Added optional vfs/vfs_vio.c (for vfs_vio option).
+# 		[93/02/16            roy]
+# 
+# 	Revision 2.27  93/01/14  13:10:34  loverso
+# 		Added boot_config.c (split off from server_init.c)
+#
+# Revision 2.39  93/02/22  17:09:06  mjl
+# Add mi_arp.c , address resolution code for MI interface.
+# 
+# Revision 2.38  93/02/09  18:08:47  mjl
+# Add vs_chouse.c clearinghouse management code.
+# 
+# Revision 2.37  92/12/10  17:05:52  mjl
+# Added files for TNC Unix domain datagram sockets.  Deleted un_st_subr.c,
+# it no longer exists.
+# 
+# Revision 2.36  92/11/02  11:28:48  roman
+# Change tnc_syscalls.c to tnc_server_side.c
+# 
+# Revision 2.35  92/10/28  14:59:39  roman
+# Add new file tnc/tnc_syscalls.c with TNC-specific system calls.
+# 
+# Revision 2.34  92/10/27  17:36:10  bhk
+# Removed vs_inetops.c
+# 
+# Revision 2.33  92/10/05  13:59:38  klh
+# 	Revision 2.24  92/08/26  12:10:42  loverso
+# 		Added ufs_nbc_debug.
+# 		[92/08/09            roy]
+# 
+# Revision 2.32  92/09/28  16:37:35  roman
+# Move STUBnfs_syscalls.c to a more logical place.
+# Add new TNC files.
+# 
+# Revision 2.31  92/08/17  18:08:24  mjl
+# Add FIFO relocation files for TNC, un_ff*.c.
+# 
+# Revision 2.30  92/08/08  01:39:23  jdh
+# generic unix domain stuff is in files named un_ -- most of
+# the old un_pp stuff falls in this category -- jdh
+# 
+# Revision 2.29  92/08/06  13:35:35  klh
+# 	Revision 2.22  92/07/29  08:21:13  rabii
+# 		Add uxkern/ux_notify.c from grV4.0
+# 
+# Revision 2.28  92/06/26  18:01:08  mjl
+# Rename ust_XXX to un_pp_XXX.  New naming convention for the AF_UNIX
+# domain:  un_pp/pipe, un_st/stream socket, un_dg/datagram socket,
+# un_ff/FIFO, un/common routine.
+# 
+# Revision 2.27  92/06/16  18:33:52  bhk
+# added vs_netops.c
+# 
+# Revision 2.26  92/06/11  16:08:05  mjl
+# Added files for pipe relocation.
+# 
+# Revision 2.25  92/06/10  10:11:00  klh
+# 	Revision 2.20  92/06/08  18:19:18  pjg
+# 		Add support for FAST_PATH_IO (option fast_path_io and file
+# 		fsvr2_server_side.c) (pjg).
+# 
+# Revision 2.24  92/06/05  13:57:07  klh
+# 	Revision 2.19  92/05/24  19:59:15  pjg
+# 		Revision 3.32  92/03/23  18:03:11  condict
+# 		Get rid of unused mach option.
+# 
+# 		Revision 3.31  92/03/13  15:18:43  condict
+# 		Add init_main.c and server_init.c.  Delete mach_init.c.
+# 
+# Revision 2.23  92/04/20  17:26:55  bhk
+# Added MI driver and internet remote virtual sockets files
+# 
+# Revision 2.22  92/04/14  10:19:33  roman
+# Add new credentials file uxkern/cred_servers.c (rabii)
+# 
+# Revision 2.21  92/04/06  10:50:05  mjl
+# Add tnc/ust_subr.c
+# 
+# Revision 2.20  92/03/28  10:51:03  chrisp
+# add ust_vsops.c for virtual sockets
+# 
+# Revision 2.19  92/03/27  11:12:49  roman
+# Add new TNC files.
+# 
+# Revision 2.18  92/03/24  10:20:02  klh
+# For OSF merge, update version # to match LCC#
+# 
+# Revision 2.16  92/03/20  11:42:57  pjg
+# 	Removed Mach option (roy)
+# 	Changed location of lnsvr related files from uxkern to lnsvr 
+# 	directories (rabii)
+# 
+# Revision 2.15  92/03/09  12:01:08  durriya
+# 	[Revision 3.30  92/01/30  16:05:19  sp]
+# 	add xpr stuff that got left out
+# 
+# 	[Revision 3.29  92/01/07  23:33:42  condict]
+# 	Accidental comment line added.  Please ignore.
+# 
+# 	[Revision 3.28  92/01/02  15:20:46  david]
+# 	added new NFS system call stubs file reference
+# 
+# 	[Revision 3.27  91/12/24  12:37:46  sp]
+# 	remove STUBosf_syscalls and add kern_kmodcall
+# 
+# Revision 2.14  92/02/11  22:03:05  pjg
+# 	Add TNC files for rfork()/rexec()/migrate().
+# 
+# Revision 2.13  92/01/17  17:22:51  roy
+# 	Added uxkern/emul_user.c (loverso).
+# 
+# Revision 2.12  92/01/16  17:12:24  roy
+# 	Local node nameserver support (durriya).
+# 
+# Revision 2.11  92/01/14  10:45:09  roy
+# 	Added remote_proc option  (sjs)
+# 
+# Revision 2.10  92/01/05  18:54:58  roy
+# 	Added netname_user for norma_ipc option (pjg).
+# 
+# Revision 2.9  92/01/02  18:45:36  roy
+# 	1991/12/16  22:43:51  noemi
+# 	Added norma_ipc option.
+# 	Added files: fsvr_generic.c, fsvr_msg.c fsvr_port.c fsvr_rmtspec_ops.c,
+# 	fsvr_server_side.c, fsvr_server.c, fsvr_subr.c, mach_norma_user.c.
+# 	Removed file_to_port.c.
+# 
+# Revision 2.8  91/12/16  14:05:26  roy
+# 	91/11/26  15:32:59  sp
+# 	Upgrade to 1.0.3
+# 
+# 	91/10/31  12:27:22  david
+# 	svipc files
+# 
+# 	91/10/30  17:42:54  bernadat
+# 	Added AFS files
+# 
+# 	91/10/29  16:11:28  barbou
+# 	New file for the kernel loader: bsd/ldr_kload.c
+# 
+# 	91/10/17  18:33:10  barbou
+# 	New files for LVM.
+# 
+# 	91/10/17  15:44:58  condict
+# 	Delete cmucs option, add wired_threads option, add bsd/kern_utctime.c.
+# 
+# 	91/10/15  12:17:18  sp
+# 	add uxkern/vm_unix.c
+# 
+# Revision 2.7  91/12/13  10:08:26  roy
+# 	91/11/02  12:17:15  roy
+# 	Added mapped_files and ufs_nbc options.
+# 	Added mf.c for mapped_files.
+# 
+# Revision 2.6  91/11/22  15:00:31  rabii
+# 	Fix up RCS log formatting. (roman)
+# 	Merged LCC and new OSF versions.
+#       Added mach_process.c for ptrace support
+# 
+# 	91/09/27  11:59:20  emcmanus
+# 	Added files for profiling and streams.  streamsm/* files should
+# 	be if_dynamic but are not yet.
+#
+# 	Change structure of files to put all TNC-dependent files in the
+# 	tnc directory. Remove files in pvproc directory. (roman)
+# 	Remove tnc OPTIONS (klh)
+#
+# Revision 2.5  91/10/16  10:09:08  roy
+# Fix revision history comments.
+# 
+# Revision 2.4  91/10/15  16:42:36  sjs
+#	Clean up of messages
+#	91/10/03  10:31:19  jose
+#	Added mach_process.c for ptrace support
+#
+#	91/09/27  11:59:20  emcmanus
+#	Added files for profiling and streams.  streamsm/* files should
+#	be if_dynamic but are not yet.
+#
+#	91/09/13  12:49:42  sp
+#	use the real kern_mman.c
+#
+# Revision 2.3  91/09/16  16:37:52  rabii
+#	Merge of V2.0 and Locus (locus check-in by klh)
+#	Add new source file server/uxkern/file_to_port.c. Along with new
+#	source files in vproc and pvproc directories.
+#
+# Revision 2.2  91/08/31  13:29:46  rabii
+#	Initial V2.0 Checkin
+#
+# Revision 3.16  91/07/05  16:23:04  jose
+# 	Added nfs files
+# 
+# Revision 3.15  91/07/02  14:38:28  condict
+# 	Delete mach_exec.c and empty_server.c (were only needed for bootstrapping
+# 	emulator using parent UNIX server -- no longer necessary).
+# 
+# Revision 3.14  91/06/27  15:49:02  sp
+# 	Add system V file system
+# 
+# Revision 3.13  91/06/25  17:05:07  condict
+# 	Moved sys/*.h files that were from OSF/1 kern dir, back to kern.
+# 	Moved uxkern/*.c files that were from OSF/1 kern dir, back to kern.
+# 	Added networking files.
+# 
+# Revision 3.12  91/06/25  15:10:36  jose
+# 	Added inode_pager.c
+# 	removed STUBinode_pager.c
+# 
+# Revision 3.11  91/06/12  09:36:15  condict
+#  	^D or single '.')
+# 	Turn off MACH_NBC (doesn't work in OSF/1).
+# 
+# Revision 3.10  91/06/05  16:15:59  condict
+# 	Delete bsd/mach_synch.c.  Its functions have been split between kern_synch.c
+# 	and sched_prim.c, which have been newly added from OSF/1.
+# 
+# Revision 3.9  91/05/29  14:29:30  condict
+# 	Add complete set of OPTION/ lines from OSF/1.  Also, delete obsolete
+# 	STUB files and add about 40 new files.
+# 
+# Revision 3.8  91/05/24  11:33:41  jose
+# 	Unstubbed and added new files.
+# 
+# Revision 3.7  91/05/15  17:47:15  barbou
+# 	New files: bsd/kern_sig.c and bsd/mach_signal.c
+# 
+# Revision 3.6  91/05/07  15:39:56  condict
+# 	Add various options from OSF/1.  Delete file lines that were commented out.
+# 
+# Revision 3.5  91/04/12  13:57:50  condict
+# 	Add the new files for the OSF/1 file system;
+# 	Get rid of unused files (stubs from the old ufs_* file system).
+# 
+# 
+# Revision 3.4  91/03/13  15:04:47  condict
+# 	Add second_traps.s as a replacement for the libmach_sa.a module
+# 	mach_traps.cs.  Our version defines task_by_pid, needed when running
+# 	as a second server under another server.
+# 
+# Revision 3.3  91/03/08  16:02:01  condict
+# 	Modified to work with the OSF/1 header files
+# 
+# Revision 3.2  91/02/27  16:32:26  condict
+# 	Change file names (mach_directory.c, mach_exit.c -> STUB) and remove VICE
+# 	files.  Add empty_server.c
+# 
+# Revision 3.1  91/01/17  16:12:49  condict
+# 	Add files for running as 2nd server
+# 
+# Revision 3.0  91/01/17  12:06:53  condict
+# 	Unchanged copy from Mach 3.0 BSD UNIX server
+# 
+# Revision 2.6  90/09/09  22:31:55  rpd
+# 	Add MAP_ETHER option
+# 	[90/08/30  17:52:05  af]
+# 
+# 	Restored syslog support code.
+# 	[90/08/14  10:25:51  af]
+# 
+# Revision 2.5  90/06/02  15:23:19  rpd
+# 	Added uxkern/mfs_prim.c.
+# 	[90/06/01            rpd]
+# 
+# 	Removed uxkern/ux_notify.c.
+# 	[90/03/26  19:44:05  rpd]
+# 
+# Revision 2.4  90/03/14  21:27:39  rwd
+# 	Add MAP_UAREA option
+# 	[90/01/22            rwd]
+# 
+# Revision 2.3  90/01/23  00:04:22  af
+# 	Added namei_macros option for @sys/@cpu expansion.
+# 	[90/01/20  23:17:25  af]
+# 
+# Revision 2.2  89/09/15  15:28:48  rwd
+# 	Added MAP_TIME option
+# 	[89/09/13            rwd]
+# 
+# 	Out-of-kernel version.
+# 	[89/01/03            dbg]
+# 
+# Revision 2.1  89/08/04  15:28:03  rwd
+# 	Created.
+# 
+# Revision 2.14  88/12/20  13:48:44  rpd
+# 	Added mach_ipc_rcvhack and mach_ipc_sighack.
+# 	[88/11/26  21:18:04  rpd]
+# 
+# Revision 2.13  88/12/19  02:40:36  mwyoung
+# 	Remove old options.
+# 	[88/12/14            mwyoung]
+# 
+# Revision 2.12  88/10/27  10:43:53  rpd
+# 	Added the mach_sctimes option.
+# 	[88/10/26  14:39:13  rpd]
+# 
+# Revision 2.11  88/10/01  21:51:39  rpd
+# 	Changed cs_assert to cmucs_assert.
+# 	[88/10/01  21:15:07  rpd]
+# 	
+# 	Added mach_xp_fpd option.
+# 	[88/09/29  01:06:42  rpd]
+# 
+# Revision 2.10  88/09/25  22:08:33  rpd
+# 	Added options mach_ipc_tcache and mach_ipc_wwa.
+# 	[88/09/19  23:24:00  rpd]
+# 	
+# 	Added mach_costats option and kern/callout_statistics.c, present
+# 	when mach_costats is enabled.
+# 	[88/09/09  04:41:04  rpd]
+# 
+# Revision 2.9  88/08/25  19:17:17  mwyoung
+# 	Eliminate old options.
+# 	[88/08/22            mwyoung]
+# 	
+# 	Eliminate old options.
+# 	[88/08/25  19:27:33  mwyoung]
+# 
+# Revision 2.8  88/08/25  18:41:56  mwyoung
+# 	Picked up fix from Rick for mach_np.
+# 	[88/08/18  17:25:00  rpd]
+# 
+# Revision 2.7  88/08/06  18:08:13  rpd
+# 	Added ipc_copyin.c, ipc_copyout.c, ipc_kport.c, ipc_kset.c, ipc_pobj.c.
+# 	Changed mach_ipc_netport.c to ipc_netportc; now conditional on mach_np.
+# 	Added CMUCS_DEBUG option.
+# 
+# Revision 2.6  88/07/22  07:34:30  rpd
+# 	New files ipc_globals.c, ipc_mports.c, ipc_prims.c, ipc_statistics.c.
+# 
+# Revision 2.5  88/07/20  16:21:20  rpd
+# 	Split mach_ipc.c into ipc_basics.c, ipc_port.c, and ipc_tt.c.
+# 	Add cs_assert, mach_ldebug, mach_ipcstats options.
+# 	Removed mach_port_sets, because it is standard now.
+# 
+# Revision 2.4  88/07/17  17:53:19  mwyoung
+# 	Add vm/memory_object.c for the external memory management interface.
+# 
+# 	Added MACH_PORT_SETS option, until it becomes standard.
+# 
+# Revision 2.3.2.2  88/07/04  15:27:13  mwyoung
+# 	Add vm/memory_object.c for the external memory management interface.
+# 
+# Revision 2.3.2.1  88/06/28  20:28:19  mwyoung
+# 	Added MACH_PORT_SETS option, until it becomes standard.
+# 
+# 27-Jun-88  Michael Young (mwyoung) at Carnegie-Mellon University
+#	Added MACH_PORT_SETS option, until it becomes standard.
+#
+#  7-Jun-88  Michael Young (mwyoung) at Carnegie-Mellon University
+#	Move MiG-generated files into the build directory.
+#
+#  4-May-88  David Black (dlb) at Carnegie-Mellon University
+#	Removed mach_time_new, slow_clock options.  Added stat_time.
+#
+#  9-Apr-88  Daniel Julin (dpj) at Carnegie-Mellon University
+#	Added files needed by MACH_NP.
+#
+#  1-Mar-88  Michael Young (mwyoung) at Carnegie-Mellon University
+#	Added kern/debug.c.
+#
+# 24-Mar-88  Douglas Orr (dorr) at Carnegie-Mellon University
+#	Add mach_emulation and mach_device options
+#
+# 18-Mar-88  Robert Baron (rvb) at Carnegie-Mellon University
+#	Add cs_disk option.  If off, hp.c and uda.c use bsd layouts.
+#
+# 12-May-88  Mike Accetta (mja) at Carnegie-Mellon University
+#	Added "mach_compat" option and "compat/xxx_syscalls.c" entry.
+#	[ V5.1(XF24) ]
+#
+# 09-Apr-88  Mike Accetta (mja) at Carnegie-Mellon University
+#	Added MACH and CMUCS* options.	
+#	[ V5.1(XF23) ]
+#
+# 26-Dec-87  David Golub (dbg) at Carnegie-Mellon University
+#	Removed obsolete options files: mach_nofloat, mach_pager,
+#	mach_remote, mach_who, new_sched.
+#
+# 12-Dec-87  Michael Young (mwyoung) at Carnegie-Mellon University
+#	MACH_XP: Added kern/pager_default_user.c and vm/device_pager.c.
+#
+#  8-Dec-87  David Black (dlb) at Carnegie-Mellon University
+#	MACH_EXCEPTION also requires kernel RPCs from a builtin task.
+#
+#  4-Dec-87  Michael Young (mwyoung) at Carnegie-Mellon University
+#	Added files to allow builtin tasks to make kernel RPCs
+#	[currently under MACH_XP switch].
+#
+#  1-Dec-87  David Black (dlb) at Carnegie-Mellon University
+#	Changes for new exception stuff.
+#
+# 27-Nov-87  Mike Accetta (mja) at Carnegie-Mellon University
+#	Flushed obsolete CS_TCP option.
+#	[ V5.1(XF21) ]
+#
+# 19-Nov-87  David Black (dlb) at Carnegie-Mellon University
+#	Added net/netisr.c; implements softnet interrupts in a separate
+#
+# 18-Nov-87  Avadis Tevanian (avie) at Carnegie-Mellon University
+#	Cleanup, removed old history.
+#
+# 16-Oct-87  Mike Accetta (mja) at Carnegie-Mellon University
+#	Zap MPX and BBNNET 4.1 compatability files.
+#	[ V5.1(XF19) ]
+#
+# 13-Oct-87  Mike Accetta (mja) at Carnegie-Mellon University
+#	Flush obsolete CS_COMPAT, CS_OLDFS, CS_MSYS and CS_ONLY
+#	options.
+#	[ V5.1(XF18) ]
+#
+# $EndLog$
+######################################################################
+OPTIONS/bogus_memory	optional bogus_memory
+OPTIONS/bsd_a_out	optional bsd_a_out
+OPTIONS/bufcache_stats	optional bufcache_stats
+OPTIONS/com		optional com
+OPTIONS/cs_kdb		optional cs_kdb
+OPTIONS/cs_lint		optional cs_lint
+OPTIONS/cs_tty		optional cs_tty
+OPTIONS/cs_ttyloc	optional cs_ttyloc
+OPTIONS/dli		optional dli
+OPTIONS/fast_csw	optional fast_csw
+OPTIONS/fullserver      optional fullserver
+OPTIONS/generic		optional generic
+OPTIONS/hw_ast		optional hw_ast
+OPTIONS/hw_footprint	optional hw_footprint
+OPTIONS/igmproto	optional igmproto
+OPTIONS/inet		optional inet define_dynamic
+OPTIONS/inocache_stats	optional inocache_stats
+OPTIONS/kji		optional kji
+OPTIONS/lock_stats	optional lock_stats
+OPTIONS/mach_afs	optional mach_afs
+OPTIONS/mach_afs_30	optional mach_afs_30
+OPTIONS/mach_assert	optional mach_assert
+OPTIONS/mach_co_info	optional mach_co_info
+OPTIONS/mach_co_stats	optional mach_co_stats
+OPTIONS/mach_compat	optional mach_compat
+OPTIONS/mach_debug	optional mach_debug
+OPTIONS/mach_device	optional mach_device
+OPTIONS/mach_emulation	optional mach_emulation
+OPTIONS/mach_fastlink	optional mach_fastlink
+OPTIONS/mach_host	optional mach_host
+OPTIONS/mach_ipc_sighack	optional mach_ipc_sighack
+OPTIONS/mach_ipc_stats	optional mach_ipc_stats
+OPTIONS/mach_ipc_tcache	optional mach_ipc_tcache
+OPTIONS/mach_ipc_wwa	optional mach_ipc_wwa
+OPTIONS/mach_ipc_xxxhack	optional mach_ipc_xxxhack
+OPTIONS/mach_kdb	optional mach_kdb
+OPTIONS/mach_km		optional mach_km
+OPTIONS/mach_ldebug	optional mach_ldebug
+OPTIONS/mach_load	optional mach_load
+OPTIONS/mach_ltracks	optional mach_ltracks
+OPTIONS/mach_nbc	optional mach_nbc
+OPTIONS/mach_net	optional mach_net
+OPTIONS/mach_no_kernel	optional mach_no_kernel
+OPTIONS/mach_np		optional mach_np
+OPTIONS/mach_old_vm_copy	optional mach_old_vm_copy
+OPTIONS/mach_pagemap	optional mach_pagemap
+OPTIONS/mach_sctimes	optional mach_sctimes
+OPTIONS/mach_syscall	optional mach_syscall
+OPTIONS/mach_time	optional mach_time
+OPTIONS/mach_vmtp	optional mach_vmtp
+OPTIONS/mach_xp		optional mach_xp
+OPTIONS/mach_xp_fpd	optional mach_xp_fpd
+OPTIONS/mach_xp_sc	optional mach_xp_sc
+OPTIONS/map_ether	optional map_ether
+OPTIONS/map_time	optional map_time
+OPTIONS/map_uarea	optional map_uarea
+OPTIONS/mapped_files	optional mapped_files
+OPTIONS/multibind	optional multibind
+OPTIONS/multicast	optional multicast
+OPTIONS/multicast_agent	optional multicast_agent
+OPTIONS/namei_macros	optional namei_macros
+OPTIONS/net_bugfix	optional net_bugfix
+OPTIONS/nfs		optional nfs define_dynamic
+OPTIONS/norma_ipc	optional norma_ipc
+OPTIONS/remote_proc	optional remote_proc
+OPTIONS/ns		optional ns define_dynamic
+OPTIONS/osf_mach_o	optional osf_mach_o
+OPTIONS/profiling	optional profiling
+OPTIONS/quota		optional quota
+OPTIONS/sec_acl_posix	optional sec_acl_posix
+OPTIONS/sec_acl_sware	optional sec_acl_sware
+OPTIONS/sec_base	optional sec_base
+OPTIONS/sec_cmw		optional sec_cmw
+OPTIONS/sec_mac_ob	optional sec_mac_ob
+OPTIONS/sec_ncav	optional sec_ncav
+OPTIONS/sec_priv	optional sec_priv
+OPTIONS/sec_shw		optional sec_shw
+OPTIONS/ser_compat	optional ser_compat
+OPTIONS/simple_clock	optional simple_clock
+OPTIONS/slock_stats	optional slock_stats
+OPTIONS/stat_time	optional stat_time
+OPTIONS/streams		optional streams
+OPTIONS/streams_debug	optional streams_debug
+OPTIONS/strecho		optional strecho define_dynamic
+OPTIONS/strlog		optional strlog	define_dynamic
+OPTIONS/strnull		optional strnull define_dynamic
+OPTIONS/strpass		optional strpass define_dynamic
+OPTIONS/strsc		optional strsc define_dynamic
+OPTIONS/strtmux		optional strtmux define_dynamic
+OPTIONS/strsvvs		optional strsvvs define_dynamic
+OPTIONS/sun_lock	optional sun_lock
+OPTIONS/svtt		optional svtt define_dynamic
+OPTIONS/sysv_coff	optional sysv_coff
+OPTIONS/sysv_fs		optional sysv_fs define_dynamic
+OPTIONS/timod		optional timod define_dynamic
+OPTIONS/tirdwr		optional tirdwr define_dynamic
+OPTIONS/ttlcontrol	optional ttlcontrol
+OPTIONS/ufs             optional ufs
+OPTIONS/ufs_nbc		optional ufs_nbc
+OPTIONS/ufs_nbc_debug	optional ufs_nbc_debug
+OPTIONS/uipc		optional uipc
+OPTIONS/unix_locks	optional unix_locks
+OPTIONS/unix_uni	optional unix_uni
+OPTIONS/vague_stats	optional vague_stats
+OPTIONS/vfs_vio		optional vfs_vio
+OPTIONS/wired_threads	optional wired_threads
+OPTIONS/xpr_debug	optional xpr_debug
+OPTIONS/xtiso		optional xtiso define_dynamic
+
+./syscalls.c		standard
+./init_sysent.c		standard
+afs/afs_buffer.c	optional mach_afs
+afs/afs_cache.c		optional mach_afs
+afs/afs_call.c		optional mach_afs
+afs/afs_callback.c	optional mach_afs
+afs/afs_daemons.c	optional mach_afs
+afs/afs_dir.c		optional mach_afs
+#afs/afs_gateway.c	optional mach_afs
+afs/afs_istuff.c	optional mach_afs
+afs/afs_lock.c		optional mach_afs
+afs/afs_osi.c		optional mach_afs
+afs/afs_osifile.c	optional mach_afs
+afs/afs_osinet.c	optional mach_afs
+afs/afs_physio.c	optional mach_afs
+afs/afs_pioctl.c	optional mach_afs
+afs/afs_resource.c	optional mach_afs
+afs/afs_vfsops.c	optional mach_afs
+afs/afs_vnodeops.c	optional mach_afs
+afs/afs_chunk.c		optional mach_afs
+#afs/afs_config.c	optional mach_afs very interesting
+afs/afs_exporter.c	optional mach_afs
+afs/afs_main.c		optional mach_afs
+afs/afs_memcache.c	optional mach_afs
+afs/afs_nfsclnt.c	optional mach_afs
+afs/afs_nfssrv.c	optional mach_afs
+afs/afs_stat.c		optional mach_afs
+afs/fcrypt.c		optional mach_afs
+afs/crypt_conn.c	optional mach_afs
+afs/rxkad_client.c	optional mach_afs
+afs/rxkad_common.c	optional mach_afs
+afsint/Kcallback.ss.c	optional mach_afs
+afsint/Kvice.cs.c	optional mach_afs
+afsint/Kvice.xdr.c	optional mach_afs
+afsint/afsaux.c		optional mach_afs
+afsint/afsvlint.cs.c	optional mach_afs
+afsint/afsvlint.xdr.c	optional mach_afs
+#
+bsd/cmu_syscalls.c	standard
+bsd/init_main.c		standard
+bsd/kern_acct.c		standard
+bsd/kern_descrip.c	standard
+bsd/kern_devsw.c	standard
+bsd/kern_mman.c		standard
+bsd/kern_proc.c		standard
+bsd/kern_prot.c		standard
+bsd/kern_resource.c	standard
+bsd/kern_sig.c		standard
+bsd/kern_xxx.c		standard
+bsd/mach_clock.c	optional mach
+bsd/mach_core.c		optional mach
+bsd/kern_exec.c		optional mach
+bsd/ldr_exec.c		optional mach
+bsd/ldr_kload.c		standard
+bsd/kern_exit.c		standard
+bsd/kern_fork.c		standard
+bsd/kern_kmodcall.c	standard
+bsd/kern_time.c		standard
+bsd/kern_utctime.c	standard
+bsd/mach_process.c	optional mach
+bsd/mach_signal.c	optional mach
+bsd/kern_synch.c	standard
+bsd/subr_log.c		standard
+bsd/subr_mcount.c	optional profiling-routine
+bsd/subr_prf.c		standard
+bsd/subr_xxx.c		standard
+bsd/subr_select.c       standard
+bsd/sys_generic.c	standard
+bsd/sys_socket.c	standard
+bsd/tty.c		standard
+bsd/tty_compat.c	standard
+bsd/tty_conf.c		standard
+bsd/tty_kji.c           optional kji
+bsd/tty_pty.c		optional pty
+bsd/tty_tb.c            optional tb
+bsd/tty_subr.c		standard
+bsd/tty_tty.c		standard
+bsd/uipc_domain.c	standard
+bsd/uipc_mbuf.c		optional mbclusters
+bsd/uipc_proto.c	optional uipc
+bsd/uipc_socket.c	standard
+bsd/uipc_socket2.c	standard
+bsd/uipc_syscalls.c	standard
+bsd/uipc_usrreq.c	optional uipc
+bsd/svipc_ipc.c         standard
+bsd/svipc_msg.c         standard
+bsd/svipc_sem.c         standard
+bsd/svipc_shm.c         standard
+#
+vproc/vp_syscalls.c	standard
+vproc/vp_subr.c		standard
+vproc/vp_init.c		standard
+vproc/vp_debug.c	standard
+vproc/bvp_init.c	standard
+vproc/bvp_vpops.c	standard
+vproc/bvp_vpsops.c	standard
+vproc/pp_procset.c	standard
+#
+nfs/nfs_config.c	optional nfs
+nfs/nfs_syscalls.c	optional nfs
+nfs/nfs_vfsops.c	optional nfs
+nfs/nfs_vnops.c		optional nfs
+nfs/nfs_node.c		optional nfs
+nfs/nfs_hooks.c		optional nfs
+nfs/nfs_subs.c		optional nfs
+nfs/nfs_bio.c		optional nfs
+nfs/nfs_socket.c	optional nfs
+nfs/nfs_serv.c		optional nfs
+nfs/nfs_srvcache.c	optional nfs
+nfs/STUBnfs_syscalls.c	optional not nfs
+#
+s5fs/s5fs_alloc.c	optional sysv_fs
+s5fs/s5fs_config.c	optional sysv_fs
+s5fs/s5fs_inode.c	optional sysv_fs
+s5fs/s5fs_lookup.c	optional sysv_fs
+s5fs/s5fs_bmap.c	optional sysv_fs
+s5fs/s5fs_vfsops.c	optional sysv_fs
+s5fs/s5fs_vnops.c	optional sysv_fs
+#
+builtin/inode_pager.c	optional mach
+#
+conf/param.c		standard
+#
+kern/xpr.c		optional xpr_debug
+kern/event.c		optional mach
+kern/kalloc.c		optional mach
+kern/zalloc.c		optional mach
+kern/lock.c		optional cpus
+kern/sched_prim.c	standard
+kern/threadcall.c	standard
+#
+lvm/lv_block.c		optional lv
+lvm/lv_config.c		optional lv
+lvm/lv_defect.c		optional lv
+lvm/lv_ioctls.c		optional lv
+lvm/lv_kdb.c		optional lv
+lvm/lv_lvsubr.c		optional lv
+lvm/lv_mircons.c	optional lv
+lvm/lv_pbuf.c		optional lv
+lvm/lv_phys.c		optional lv
+lvm/lv_schedule.c	optional lv
+lvm/lv_strategy.c	optional lv
+lvm/lv_subr.c		optional lv
+lvm/lv_syscalls.c	optional lv
+lvm/lv_vgda.c		optional lv
+lvm/lv_vgsa.c		optional lv
+#
+net/if.c		standard
+net/if_ethersubr.c	optional ether
+net/if_loop.c		standard
+net/if_loop.c		optional loop
+net/if_sl.c		optional sl
+net/netisr.c            standard
+net/netisr.c		optional netthreads
+net/raw_cb.c		standard
+net/raw_usrreq.c        standard
+net/route.c             standard
+netinet/if_ether.c	optional ether
+netinet/in.c		optional inet
+netinet/in_pcb.c	optional inet
+netinet/in_proto.c	optional inet
+netinet/ip_icmp.c	optional inet
+netinet/ip_input.c	optional inet
+netinet/ip_output.c	optional inet
+netinet/raw_ip.c	optional inet
+netinet/tcp_debug.c	optional inet
+netinet/tcp_input.c	optional inet
+netinet/tcp_output.c	optional inet
+netinet/tcp_subr.c	optional inet
+netinet/tcp_timer.c	optional inet
+netinet/tcp_usrreq.c	optional inet
+netinet/udp_usrreq.c	optional inet
+#
+netns/idp_usrreq.c	optional ns
+netns/ns.c		optional ns
+netns/ns_error.c	optional ns
+netns/ns_input.c	optional ns
+netns/ns_ip.c		optional ns
+netns/ns_output.c	optional ns
+netns/ns_pcb.c		optional ns
+netns/ns_proto.c	optional ns
+netns/spp_debug.c	optional ns
+netns/spp_usrreq.c	optional ns
+#
+rpc/xdr_array.c		optional mach_afs
+rpc/xdr.c		optional mach_afs
+#
+rx/rx.c			optional mach_afs
+rx/rx_bcrypt.c		optional mach_afs
+rx/rx_clock.c		optional mach_afs
+rx/rx_event.c		optional mach_afs
+rx/rx_globals.c		optional mach_afs
+rx/rx_kernel.c		optional mach_afs
+rx/rx_null.c		optional mach_afs
+rx/rx_vab.c		optional mach_afs
+rx/xdr_rx.c		optional mach_afs
+rx/rx_getaddr.c		optional mach_afs
+#
+ufs/mfs_vfsops.c	optional ufs
+ufs/mfs_vnops.c         optional ufs
+ufs/ufs_vfsops.c	optional ufs
+ufs/ufs_vnops.c		optional ufs
+ufs/ufs_lookup.c	optional ufs
+ufs/ufs_alloc.c		optional ufs
+ufs/ufs_quota.c         optional quota
+ufs/ufs_inode.c		optional ufs
+ufs/ufs_bmap.c		optional ufs
+ufs/ufs_tables.c	optional ufs
+ufs/ufs_subr.c		optional ufs
+ufs/ufs_data.c		optional ufs_nbc
+ufs/ufs_cache.c		optional ufs_nbc
+#
+uxkern/block_io.c	optional mach
+uxkern/bsd_server.c	optional mach
+uxkern/bsd_server_side.c optional mach
+uxkern/cons.c		optional mach
+uxkern/credentials.c	optional mach
+uxkern/cred_servers.c	optional mach
+uxkern/device_misc.c	optional mach
+uxkern/device_reply_hdlr.c	optional mach
+uxkern/device_utils.c	optional mach
+uxkern/disk_io.c	optional mach fullserver
+uxkern/ether_io.c	optional mach
+uxkern/fsvr_generic.c	optional mach
+uxkern/fsvr_msg.c	optional mach
+uxkern/fsvr_port.c	optional mach
+uxkern/fsvr_rmtspec_ops.c	optional mach
+uxkern/fsvr_server_side.c	optional mach
+uxkern/fsvr2_server_side.c optional mach
+uxkern/fsvr_server.c optional mach
+uxkern/fsvr_subr.c	optional mach
+uxkern/inittodr.c	optional mach
+uxkern/mach_norma_user.c	optional mach
+uxkern/mf.c		optional mapped_files
+uxkern/mfs_prim.c	standard
+uxkern/rpm_clock.c	optional tnc
+uxkern/misc.c		optional mach
+uxkern/port_hash.c	optional mach
+uxkern/proc_to_port.c	optional profiling
+uxkern/proc_to_task.c	optional mach
+uxkern/stubs.c		optional mach
+uxkern/server_init.c	optional mach
+uxkern/boot_config.c	optional mach
+uxkern/syscall.c	optional mach
+uxkern/syscall_subr.c	optional mach
+uxkern/tty_io.c		optional mach
+uxkern/user_copy.c	optional mach
+uxkern/user_reply_msg.c	optional mach
+uxkern/ux_exception.c	optional mach
+uxkern/ux_notify.c	optional mach
+uxkern/ux_server_loop.c	optional mach
+uxkern/vm_unix.c	optional mach
+lnsvr/netname_user.c	optional norma_ipc
+lnsvr/netname_poly_user.c	optional norma_ipc
+uxkern/mach_poly_user.c	optional norma_ipc
+uxkern/emul_user.c	optional mach
+#
+# Added by us to allow a second server to run under another BSD server:
+uxkern/second_traps.s	optional second_server
+uxkern/second_cons.c	optional second_server
+#
+vfs/dead_vfsops.c	standard
+vfs/dead_vnops.c	standard
+vfs/fifo_vnops.c	standard
+vfs/spec_vnops.c	standard
+vfs/vfs_bio.c		standard
+vfs/vfs_cache.c		standard
+vfs/vfs_conf.c		standard
+vfs/vfs_flock.c		standard
+vfs/vfs_lookup.c	standard
+vfs/vfs_syscalls.c	standard
+vfs/vfs_subr.c		standard
+vfs/vfs_vnops.c		standard
+vfs/vfs_vio.c		optional vfs_vio
+vfs/vfs_kdb.c           optional mach_kdb
+#
+##
+## Network code needs two header files:
+##
+#net/NOTHING		optional hy
+#net/NOTHING		optional en
+streams/stht.c		optional streams
+streams/str_debug.c	optional streams_debug
+streams/str_env.c	optional streams
+streams/str_filesys.c	optional streams
+streams/str_init.c	optional streams
+streams/str_config.c	optional streams
+streams/str_memory.c	optional streams
+streams/str_memory.c	optional strheap
+streams/str_modsw.c	optional streams
+streams/str_osr.c	optional streams
+streams/str_runq.c	optional streams
+streams/str_runq.c	optional strthreads
+streams/str_scalls.c	optional streams
+streams/str_shead.c	optional streams
+streams/str_subr.c	optional streams
+streams/str_synch.c	optional streams
+streams/str_tty.c	optional streams
+streams/str_util.c	optional streams
+streams/str_weld.c	optional streams
+streams/mi.c  		optional streams
+streams/nd.c		optional streams
+streamsm/log.c		optional streams
+#streamsm/null.c		optional strnull if_dynamic strnull
+#streamsm/echo.c		optional strecho if_dynamic strecho
+#streamsm/pass.c		optional strpass if_dynamic strpass
+#streamsm/spass.c	optional strpass if_dynamic strpass
+#streamsm/sc.c		optional strsc if_dynamic strsc
+#streamsm/s5tt.c		optional svtt if_dynamic svtt
+#streamsm/tmux.c		optional strtmux if_dynamic strtmux
+#streamsm/timod.c	optional timod if_dynamic timod
+#streamsm/tirdwr.c	optional tirdwr if_dynamic tirdwr
+#streamsm/xtiso.c	optional xtiso if_dynamic xtiso
+#streamsm/svvs3.c	optional strsvvs if_dynamic strsvvs
+streamsm/null.c		optional strnull
+streamsm/echo.c		optional strecho
+streamsm/pass.c		optional strpass
+streamsm/spass.c	optional strpass
+streamsm/sc.c		optional strsc
+streamsm/s5tt.c		optional svtt
+streamsm/tmux.c		optional strtmux
+streamsm/timod.c	optional timod
+streamsm/tirdwr.c	optional tirdwr
+streamsm/xtiso.c	optional xtiso
+streamsm/svvs3.c	optional strsvvs
+sec/sec_stream.c	optional sec_base streams
+#
+# local node nameserver
+#
+lnsvr/lnsvr.c           optional norma_ipc
+lnsvr/lnsvr_subr.c      optional norma_ipc
+lnsvr/netname_server.c	optional norma_ipc
+#
+# TNC
+#
+tnc/tnc_init.c		optional tnc
+tnc/tnc_ipc.c		optional tnc
+tnc/tnc_mig.c		optional tnc
+tnc/tnc_server_side.c	optional tnc
+tnc/tnc_svipc.c		optional tnc
+tnc/pvpops.c		optional tnc
+tnc/dvp_init.c		optional tnc
+tnc/dvp_lock.c		optional tnc
+tnc/dvp_vpops.c		optional tnc
+tnc/dvp_pvpops.c	optional tnc
+tnc/dvp_vpsops.c	optional tnc
+tnc/dvp_pvpsops.c	optional tnc
+tnc/dvp_debug.c		optional tnc
+tnc/rvp_pvpops.c	optional tnc
+tnc/rvp_pvpops_server.c	optional tnc
+tnc/rvp_pvpsops.c	optional tnc
+tnc/rvp_pvpsops_server.c optional tnc
+tnc/rvp_subr.c		optional tnc
+tnc/rtask_cli_pproc.c	optional tnc
+tnc/rtask_cli_vproc.c	optional tnc
+tnc/rtask_server.c	optional tnc
+tnc/rtask_svr_pproc.c	optional tnc
+tnc/rtask_svr_vproc.c	optional tnc
+tnc/spanning_tree.c	optional tnc
+tnc/tnc_reloc.c		optional tnc
+tnc/reloc_subr.c	optional tnc
+tnc/sgd.c		optional tnc
+tnc/un_debug.c		optional tnc
+tnc/vector.c		optional tnc
+tnc/un_ff_ops.c		optional tnc
+tnc/un_ff_reloc.c	optional tnc
+tnc/un_ff_subr.c	optional tnc
+tnc/un_vsops.c		optional tnc
+tnc/un_reloc.c		optional tnc
+tnc/un_subr.c		optional tnc
+tnc/un_port_hash.c	optional tnc
+tnc/un_pp_vsops.c	optional tnc
+tnc/un_st_vsops.c	optional tnc
+tnc/un_st_reloc.c	optional tnc
+tnc/un_dg_vsops.c	optional tnc
+tnc/un_dg_reloc.c	optional tnc
+tnc/un_dg_subr.c	optional tnc
+#
+# Virtual Sockets
+#
+vsocket/vs_init.c	optional tnc
+vsocket/vs_debug.c	optional tnc
+vsocket/vs_soops.c	optional tnc
+vsocket/sys_vsocket.c	optional tnc
+vsocket/vs_subr.c	optional tnc
+vsocket/vs_chouse.c	optional tnc
+#
+# if_mi driver
+#
+vsocket/if_mi.c		optional mi
+vsocket/mi_config.c	optional mi
+vsocket/mi_mig.c	optional mi
+#
+#inet server
+#
+vsocket/inetsrv.c	optional tnc
+vsocket/vs_mig.c	optional tnc
+vsocket/vs_ipc.c	optional tnc
+vsocket/vs_netops.c	optional tnc
+#
+# Checkpoint/restart support
+#
+tnc/chkpnt_vproc.c	optional chkpnt
+tnc/chkpnt_pproc.c	optional chkpnt

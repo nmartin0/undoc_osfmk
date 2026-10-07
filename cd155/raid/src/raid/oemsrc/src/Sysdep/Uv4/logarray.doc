@@ -1,0 +1,22 @@
+                         LOGICAL ARRAY PAGE
+
+   0     Page Code (2b)
+   1     Page Length (42)
+   2     LUN Status (00)
+   3     RAID Level (05)
+   4     LUN Type (00)
+  5-8    LUN Blocksize (00 00 02 00)
+  9-10   Drive Sector Size (02 00)
+ 11-14   LUN Number of Blocks (00 03 20 3f)
+ 15-18   Reserved (00 00 00 00)
+ 19-22   LUN Segment Size (00 00 00 01)
+  23     LUN Segment0 Size (00)
+ 24-25   LUN Flags (00 00)
+ 26-29   Block Reconstructed (00 00 00 01)
+  30     Reconstruction Frequency (00)
+ 31-32   Reconstruction Amount (00 00)
+ 33-35   Reserved (00 00 00)
+ 36-67   Disk Bit Map
+         ( 01  02  00  00  00  00  00  00  00  00  00  00  00  00  00  00  
+           00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  ff ) 
+

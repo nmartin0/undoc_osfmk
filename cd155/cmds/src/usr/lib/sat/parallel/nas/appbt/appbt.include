@@ -1,0 +1,123 @@
+C******************************************************************************C
+C******************************************************************************C
+
+        implicit double precision (a-h,o-z)
+
+        parameter ( node_col = 64 )
+        parameter ( node_row = 1 )
+
+	parameter ( nnodes  = node_col*node_row )
+
+	parameter ( ndcolm1 = node_col-1 )
+	parameter ( ndcolm2 = node_col-2 )
+
+	parameter ( ndrowm1 = node_row-1 )
+
+        parameter ( isiz1 = 64, isiz2 = 64, isiz3 = 64 )
+
+	parameter ( isizmax = isiz1 )
+	parameter ( isizmax_row = isizmax/node_row )
+
+	parameter ( isiz1_row = isiz1/node_row )
+	parameter ( isiz2_row = isiz2/node_row )
+	parameter ( isiz3_row = isiz3/node_row )
+
+	parameter ( num30 = 2**30 , num300 = 300300 )
+
+        parameter (c1=1.4d0,c2=0.4d0,c3=1.00d-01,c4=1.0d0,c5=1.4d0)
+	parameter (c2iv=2.5d0,con43=4.d0/3.d0,con16=1.d0/6.d0)
+	parameter (c2half=0.2d0,c2m2=1.6d0)
+
+c*** grid
+
+        common/cgcon3/dxi,deta,dzeta,tx1,tx2,tx3,
+     &                ty1,ty2,ty3,tz1,tz2,tz3
+
+c*** output control parameters
+
+        common/cprcon/ ipr,iout,inorm
+
+c*** dissipation
+
+        common/disp/dx1,dx2,dx3,dx4,dx5,dy1,dy2,dy3,dy4,dy5,
+     &              dz1,dz2,dz3,dz4,dz5,dssp,c4dssp,c5dssp
+
+c*** newton-raphson iteration control parameters
+
+        common/ctscon1/itmax,invert,istep,numstep
+
+        common/ctscon2/dt,omega,tolrsd(5),rsdnm(5),errnm(5),frc
+
+c*** coefficients of the exact solution
+
+        common/cexact/ce(5,13)
+
+c*** my new common blocks of data.
+
+	common/block1/my_node,my_pid,my_col,my_colm1,num_node,
+     &	   my_row,my_rowm1,numtype1,numtype2,numtype3,node_wr,
+     &     node_plus1,node_plus2,node_minus1,node_minus2,idowr,
+     &     nbytes_plane5,nbytes_plane6,nbytes_line,nbytes_lrow,
+     &	   nbytes_row1,nbytes_row2,nbytes_row3,nbytes_row4
+
+        common/block2/nx,ny,nz,nxm1,nxm2,nxm3,nxm4,nym1,nym2,
+     &	   nym3,nym4,nzm1,nzm2,nzm3,nzm4,nxnriv,nynriv,nznriv
+
+        common/block3/dnxm1,dnym1,dnzm1,dtotal
+
+	common/block4/c1c2,c3c4,c1c5,c1345,root12,dttx1,dttx2,
+     &	   dtty1,dtty2,dttz1,dttz2,c2dttx2,c2dtty2,c2dttz2,
+     &     c1dttx2,c1dtty2,c1dttz2,
+     &	   comz1,comz4,comz5,comz6,c3c4a,c3c4aa,c3c4bb,
+     &	   dttx1dx1,dttx1dx2,dttx1dx3,dttx1dx4,dttx1dx5,
+     &	   dtty1dy1,dtty1dy2,dtty1dy3,dtty1dy4,dtty1dy5,
+     &	   dttz1dz1,dttz1dz2,dttz1dz3,dttz1dz4,dttz1dz5
+
+	common/block5/c3c4tx3,c3c4ty3,c3c4tz3,
+     &	   dx1tx1,dx2tx1,dx3tx1,dx4tx1,dx5tx1,
+     &	   dy1ty1,dy2ty1,dy3ty1,dy4ty1,dy5ty1,
+     &     dz1tz1,dz2tz1,dz3tz1,dz4tz1,dz5tz1,
+     &	   xxcon1,xxcon2,xxcon3,xxcon4,xxcon5,
+     &	   yycon1,yycon2,yycon3,yycon4,yycon5,
+     &	   zzcon1,zzcon2,zzcon3,zzcon4,zzcon5
+
+	common/block6/tcomm,tcalrhs,txchng1,txchng2,ttotal,
+     &	   time_xch,time_wait
+
+	common/block7/ndsen_col(node_col,2),ndrec_col(node_col),
+     &	   ndsen_row(node_row,2),ndrec_row(node_row),
+     &     msidrec(node_col)
+
+c*** static allocation memory.
+
+	common/block8/uiv(isizmax,isizmax),qu(isizmax,isizmax)
+
+	common/block9/bufrec(isiz1,5,isiz2),
+     &                bufrow(isiz1_row,5,isiz2)
+
+	common/block10/ii_pointer,jj_pointer,kk_pointer,
+     &      ii_begin,ii_end,jj_begin,jj_end,kk_begin,kk_end,
+     &      ibeg_loop,iend_loop,jbeg_loop,jend_loop,
+     &      kbeg_loop,kend_loop,jbegm1,jenda1,
+     &	    kbegm1,kenda1,jstart,jstop,kstart,kstop,
+     &	    ilength,jlength,klength
+
+        common/block12/u(isizmax,isizmax,5),rsd(isizmax,isizmax,5),
+     &     frct(isizmax,isizmax,5),frct2(isizmax,isizmax,5)
+
+c*** dynamic allocation memory for global jacobian matrix
+
+	common/msgtype/msgtp_lf1,msgtp_rt1,msgtp_lf2,msgtp_rt2
+
+        common/block14/utsd(isiz1,isiz2_row,6),
+     &	               utrc(isiz1,isiz2_row,6)
+
+        common/block15/buff1(isizmax),buff2(isizmax),
+     &	     buff3(isizmax),buff4(isizmax),buff5(isizmax),
+     &       cuff(isizmax),save2(isizmax),save3(isizmax),
+     &       save4(isizmax),save5(isizmax)
+
+	common/block16/temp(5,isizmax,isizmax_row)
+
+C******************************************************************************C
+C******************************************************************************C

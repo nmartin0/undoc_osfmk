@@ -1,0 +1,837 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# File Control Database (C2 version)
+#
+# @(#)files.C2	6.4 14:45:33 3/8/91 SecureWare
+#
+# Vendor-supplied directories, devices, and control files:
+#
+/:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/dev:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/dev/kmem:\
+	:f_type=c:f_mode#040:f_owner=bin:f_group=mem:\
+	:chkent:
+/dev/mem:\
+	:f_type=c:f_mode#040:f_owner=bin:f_group=mem:\
+	:chkent:
+/dev/null:\
+	:f_type=c:f_mode#0666:f_owner=bin:f_group=bin:\
+	:chkent:
+/dev/tty:\
+	:f_type=c:f_mode#0666:f_owner=bin:f_group=bin:\
+	:chkent:
+/etc:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/etc/group:\
+	:f_type=r:f_mode#0644:f_owner=bin:f_group=bin:\
+	:chkent:
+/etc/group-t:\
+	:f_type=r:f_mode#0644:f_owner=bin:f_group=bin:\
+	:chkent:
+/etc/passwd:\
+	:f_type=r:f_mode#0644:f_owner=bin:f_group=bin:\
+	:chkent:
+/etc/ptmp:\
+	:f_type=r:f_mode#0644:f_owner=bin:f_group=bin:\
+	:chkent:
+/sbin:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/tmp:\
+	:f_type=d:f_mode#01777:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/adm/cron:\
+	:f_type=d:f_mode#0770:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/adm/cron/.proto.b:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/adm/cron/.proto:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/adm/cron/FIFO:\
+	:f_type=f:f_mode#060:f_owner=cron:f_group=cron:\
+	:chkent:
+/usr/adm/cron/at.allow:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/adm/cron/at.deny:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/adm/cron/cron.allow:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/adm/cron/cron.deny:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/adm/cron/log:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/adm/cron/queuedefs:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/bin:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/lib:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/sbin:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/sbin/acct:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/spool/cron:\
+	:f_type=d:f_mode#070:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/spool/cron/atjobs:\
+	:f_type=d:f_mode#070:f_owner=bin:f_group=cron:\
+	:chkent:
+/var/spool/cron/crontabs:\
+	:f_type=d:f_mode#070:f_owner=bin:f_group=cron:\
+	:chkent:
+/var/spool/cron/crontabs/*:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/spool/cron/crontabs:\
+	:f_type=d:f_mode#070:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/spool/cron/crontabs/*:\
+	:f_type=r:f_mode#060:f_owner=bin:f_group=cron:\
+	:chkent:
+/usr/spool/mail:\
+	:f_type=d:f_mode#0775:f_owner=bin:f_group=mail:\
+	:chkent:
+/usr/spool/mail/*:\
+	:f_type=r:f_mode#0620:f_group=mail:\
+	:chkent:
+/usr:\
+	:f_type=d:f_mode#0755:f_owner=bin:f_group=bin:\
+	:chkent:
+/var/adm/utmp:\
+	:f_type=r:f_mode#0664:f_owner=bin:f_group=bin:\
+	:chkent:
+/var/preserve:\
+	:f_type=d:f_mode#0777:f_owner=bin:f_group=bin:\
+	:chkent:
+/var/tmp:\
+	:f_type=d:f_mode#01777:f_owner=bin:f_group=bin:\
+	:chkent:
+/vmunix:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=mem:\
+	:chkent:
+#
+# Vendor-supplied commands modified for security:
+#
+/usr/sbin/acct/accton:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/arp:\
+	:f_type=r:f_mode#06111:f_owner=root:f_group=mem:\
+	:chkent:
+/usr/sbin/arp:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=mem:\
+	:chkent:
+/usr/bin/at:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=cron:\
+	:chkent:
+/usr/bin/atq:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=cron:\
+	:chkent:
+/usr/bin/atrm:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=cron:\
+	:chkent:
+/usr/bin/binmail:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=mail:\
+	:chkent:
+/usr/bin/chgrp:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/chown:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/chroot:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/clri:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/clri:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/cpio:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=tape:\
+	:chkent:
+/usr/sbin/cron:\
+	:f_type=r:f_mode#04500:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/crontab:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=cron:\
+	:chkent:
+/sbin/date:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/date:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/dcheck:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=backup:\
+	:chkent:
+/usr/sbin/dumpfs:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/edquota:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/lbin/expreserve:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/fastboot:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/fasthalt:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/finger:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=auth:\
+	:chkent:
+/usr/bin/from:\
+	:f_type=r:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/sbin/fsdb:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/fsdb:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/getty:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/sbin/halt:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/halt:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/hostid:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/hostid:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/hostname:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/hostname:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/icheck:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=backup:\
+	:chkent:
+/sbin/ifconfig:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/ifconfig:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/init:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/iostat:\
+	:f_type=r:f_mode#02555:f_owner=bin:f_group=mem:\
+	:chkent:
+/usr/bin/ipcs:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/kill:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/kill:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/killall:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/killall:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/link:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/login:\
+	:f_type=r:f_mode#04500:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/lpc:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=lp:\
+	:chkent:
+/usr/sbin/lpd:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/bin/lpq:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=lp:\
+	:chkent:
+/usr/bin/lpr:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=lp:\
+	:chkent:
+/usr/bin/lprm:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=lp:\
+	:chkent:
+/usr/bin/mesg:\
+	:f_type=r:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/sbin/mknod:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/mknod:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/mkpasswd:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/mount:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/mount:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/mt:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/ncheck:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=backup:\
+	:chkent:
+/usr/sbin/netstat:\
+	:f_type=r:f_mode#02555:f_owner=bin:f_group=mem:\
+	:chkent:
+/sbin/newfs:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/newfs:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/newgrp:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/nfsstat:\
+	:f_type=r:f_mode#02555:f_owner=bin:f_group=mem:\
+	:chkent:
+/usr/bin/nice:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/passwd:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=auth:\
+	:chkent:
+/sbin/ping:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/ping:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/ps:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/ps:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/quot:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/quota:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/quotacheck:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/quotacheck:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/quotaoff:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/quotaon:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/rcp:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/reboot:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/reboot:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/renice:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/repquota:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/rlogin:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/route:\
+	:f_type=r:f_mode#06111:f_owner=root:f_group=mem:\
+	:chkent:
+/usr/sbin/route:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=mem:\
+	:chkent:
+/usr/bin/rsh:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/rshd:\
+	:f_type=r:f_mode#04500:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/savecore:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/savecore:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/shutdown:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/su:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/swapon:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/swapon:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/syslogd:\
+	:f_type=r:f_mode#0100:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/sbin/syslogd:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/sbin/tar:\
+	:f_type=r:f_mode#06111:f_owner=root:f_group=tape:\
+	:chkent:
+/usr/bin/tar:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=tape:\
+	:chkent:
+/usr/sbin/trpt:\
+	:f_type=r:f_mode#02555:f_owner=bin:f_group=mem:\
+	:chkent:
+/usr/sbin/tunefs:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/ufs_fsck:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/ufs_fsck:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/sbin/umount:\
+	:f_type=r:f_mode#04111:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/umount:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/sbin/vipw:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/vmstat:\
+	:f_type=r:f_mode#02555:f_owner=bin:f_group=mem:\
+	:chkent:
+/usr/bin/w:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=auth:\
+	:chkent:
+/usr/sbin/wall:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/usr/bin/write:\
+	:f_type=r:f_mode#0255:f_owner=bin:f_group=terminal:\
+	:chkent:
+#
+# SecureWare-supplied directories, devices, and control files:
+#
+/dev/auditr:\
+	:f_type=c:f_mode#0440:f_owner=audit:f_group=audit:\
+	:chkent:
+/dev/auditw:\
+	:f_type=c:f_mode#0666:f_owner=audit:f_group=audit:\
+	:chkent:
+/dev/spd0:\
+	:f_type=c:f_mode#0666:f_owner=tcb:f_group=tcb:\
+	:chkent:
+/dev/spd1:\
+	:f_type=c:f_mode#0666:f_owner=tcb:f_group=tcb:\
+	:chkent:
+/dev/spd2:\
+	:f_type=c:f_mode#0666:f_owner=tcb:f_group=tcb:\
+	:chkent:
+/dev/spd3:\
+	:f_type=c:f_mode#0666:f_owner=tcb:f_group=tcb:\
+	:chkent:
+/dev/spdcontrol:\
+	:f_type=c:f_mode#0666:f_owner=tcb:f_group=tcb:\
+	:chkent:
+/etc/auth:\
+	:f_type=d:f_mode#0771:f_owner=auth:f_group=auth:\
+	:chkent:
+/etc/auth/subsystems:\
+	:f_type=d:f_mode#0771:f_owner=auth:f_group=auth:\
+	:chkent:
+/etc/auth/subsystems/users-t:\
+	:f_type=r:f_mode#0664:f_owner=auth:f_group=auth:\
+	:chkent:
+/etc/auth/subsystems/users:\
+	:f_type=r:f_mode#0664:f_owner=auth:f_group=auth:\
+	:chkent:
+/etc/auth/system:\
+	:f_type=d:f_mode#0771:f_owner=auth:f_group=auth:\
+	:chkent:
+/etc/auth/system/*:\
+	:f_type=r:f_mode#0664:f_owner=auth:f_group=auth:\
+	:chkent:
+/usr/share/lib/sechelp:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/help.keys:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/*:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XIsso/accounts:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XIsso/accounts/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XIsso/audit:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XIsso/audit/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XIsso/devices:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XIsso/devices/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XIsso/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XOperator/backup:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XOperator/backup/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XOperator/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/XSysAdmin/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/aclif/*:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/aclif/edit/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/aclif/test/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/aclif/top/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/motif/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/share/lib/sechelp/ascii/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/etc/policy:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/etc/policy/acl:\
+	:f_type=d:f_mode#0555:f_owner=tcb:f_group=tcb:\
+	:chkent:
+/etc/policy/acl/config:\
+	:f_type=r:f_mode#0664:f_owner=tcb:f_group=tcb:\
+	:chkent:
+/tcb:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/files:\
+	:f_type=d:f_mode#0771:f_owner=bin:f_group=auth:\
+	:chkent:
+/tcb/files/audit:\
+	:f_type=d:f_mode#0770:f_owner=audit:f_group=audit:\
+	:chkent:
+/tcb/files/audit/audit_parms:\
+	:f_type=r:f_mode#0660:f_owner=audit:f_group=audit:\
+	:chkent:
+/tcb/files/audit/audit_select:\
+	:f_type=r:f_mode#0660:f_owner=audit:f_group=audit:\
+	:chkent:
+/tcb/files/audit/audit_parms-t:f_type=f:f_owner=audit:f_group=audit:\
+        :f_mode#0660:chkent:
+/tcb/files/audit/reports:f_type=d:f_owner=audit:f_group=audit:\
+        :f_mode#0770:chkent:
+/tcb/files/audit/reports/*:f_type=r:f_owner=audit:f_group=audit:\
+        :f_mode#0660:chkent:
+/tcb/files/auditrparms:\
+	:f_type=d:f_mode#0770:f_owner=audit:f_group=audit:\
+	:chkent:
+/tcb/files/auditrparms/*:\
+        :f_type=d:f_mode#0660:f_owner=audit:f_group=audit:\
+        :chkent:
+/tcb/files/auth:\
+	:f_type=d:f_mode#0770:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/*:\
+	:f_type=d:f_mode#0770:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/a/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/b/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/c/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/d/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/e/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/f/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/g/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/h/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/i/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/j/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/k/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/l/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/m/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/n/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/o/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/p/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/q/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/r/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/s/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/t/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/u/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/v/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/w/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/x/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/y/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/auth/z/*:\
+	:f_type=r:f_mode#0660:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/files/rc:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/files/skel/*:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/files/skel:\
+	:f_type=d:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/files/spdinitrc:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/files/subsys:\
+	:f_type=d:f_mode#0111:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/files/subsys/audit:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=audit:\
+	:chkent:
+/tcb/files/subsys/auth:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=auth:\
+	:chkent:
+/tcb/files/subsys/backup:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=backup:\
+	:chkent:
+/tcb/files/subsys/cron:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=cron:\
+	:chkent:
+/tcb/files/subsys/lp:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=lp:\
+	:chkent:
+/tcb/files/subsys/mem:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=mem:\
+	:chkent:
+/tcb/files/subsys/sysadmin:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=sysadmin:\
+	:chkent:
+/tcb/files/subsys/tape:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=tape:\
+	:chkent:
+/tcb/files/subsys/terminal:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=terminal:\
+	:chkent:
+/tcb/files/subsys/uucp:\
+	:f_type=r:f_mode#040:f_owner=bin:f_group=uucp:\
+	:chkent:
+/tcb/lib:\
+	:f_type=d:f_mode#0111:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/lib/X11/app-defaults/XIsso:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/lib/X11/app-defaults/XOperator:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+/usr/lib/X11/app-defaults/XSysAdmin:\
+	:f_type=r:f_mode#0444:f_owner=bin:f_group=bin:\
+	:chkent:
+#
+# SecureWare-supplied commands:
+#
+/tcb/bin/acld:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin/aclsyn:\
+	:f_type=r:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/etc/auth/audit_dlvr:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=audit:\
+	:chkent:
+/tcb/bin/auditcmd:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/auditd:\
+	:f_type=r:f_mode#04500:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/authck:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/auths:\
+	:f_type=r:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin/chacl:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/dbck:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/epa:\
+	:f_type=r:f_mode#04500:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/lib/initcond:\
+	:f_type=r:f_mode#04500:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/integrity:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/ipcacl:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/lsacl:\
+	:f_type=r:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin/mkaud:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin/mkdb:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin/mltape:\
+	:f_type=r:f_mode#06555:f_owner=root:f_group=tape:\
+	:chkent:
+/tcb/bin/privs:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/lib/redirect:\
+	:f_type=r:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin/reduce:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/lib/report.expire:\
+	:f_type=r:f_mode#0550:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/lib/report.login:\
+	:f_type=r:f_mode#0550:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/lib/report.term:\
+	:f_type=r:f_mode#0550:f_owner=auth:f_group=auth:\
+	:chkent:
+/tcb/bin/setfiles:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/setfstag:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/spconfig:\
+	:f_type=r:f_mode#0555:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin/spdinit:\
+	:f_type=r:f_mode#0500:f_owner=bin:f_group=bin:\
+	:chkent:
+/tcb/bin/XIsso:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/XSysAdmin:\
+	:f_type=r:f_mode#04555:f_owner=root:f_group=bin:\
+	:chkent:
+/tcb/bin/issoif:f_type=r:f_owner=root:f_group=bin:f_mode#04555:\
+        :chkent:
+/tcb/bin/sysadmif:f_type=r:f_owner=root:f_group=bin:f_mode#04555:\
+        :chkent:

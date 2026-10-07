@@ -1,0 +1,53 @@
+# $Copyright
+# Copyright 1992, 1993, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# ******************************************************************************
+# ***				IDENTIFICATION				    ***
+# ******************************************************************************
+# Name:		ccf_a
+# Title:	Canned Configuration "a"
+# Version:	
+# Revision:	$Revision: 1.2.4.1 $
+# Update Date:	$Date: 1995/06/11 23:26:05 $ 
+# Programmer:	ach
+# Documents:	UNIX V.4 Disk Array Utilities FS no. 348-0027726
+#
+# COPYRIGHT 1991, NCR Corp.
+#
+# Description:	This script sets up the following DAC parameters:
+#
+##	Read Retry Count				    1
+##	Write Retry Count				    1
+##	Automatic Write Reallocation			   on		
+##	Automatic Read Reallocation			   on
+##	Recovered Error Reporting			   on
+##	Logical Block Size				  512
+##	RAID Level					    5
+##	Segment Size					   64
+##	Segment Zero Size				    0
+##	Auto Drive Reconstruct				  off
+##	Reconstruction Frequency			    1
+##	Reconstruction Amount				  256		
+# 
+# ******************************************************************************
+# ***				  PROCEDURES				    ***
+# ******************************************************************************
+acf -u -z$1 -Ux >/dev/null 2>&1
+
+acf -u -z$1 -b512 -db1p0,b2p0,b3p0,b4p0,b5p0 -r5 -S64 -Z0 -F1 -a256
+status=$?
+if [ $status != 0 ]; then 
+	exit $status
+fi
+acf -e -z$1 -r1 -w1 
+status=$?
+if [ $status != 0 ]; then 
+	exit $status
+fi
+acf -f -z $1
+exit $status

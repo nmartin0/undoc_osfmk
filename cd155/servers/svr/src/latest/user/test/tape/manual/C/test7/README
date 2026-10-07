@@ -1,0 +1,36 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test3" README
+==============
+
+Source: node.c errexit.c
+
+Desc:	test to read datasets using multiple devices
+
+Invoke: load [0] node.rx [/cfs/ctape0 [/cfs/ctape1
+                [TEST01 [TEST02 [TEST03 [TEST04
+                [TEST11 [TEST12 [TEST13 [TEST14]]]]]]]]]]
+
+Note:	* use 8 tapes from test8
+	* ASSUME "test8" has written data into the tapes already
+	* "test7.sh" calls "node.rx"  
+	* log is on "test7.SLr0" 
+	* result is on "test7.SRr0"
+
+Algo:   * tapealloc on "/cfs/ctape0" and "/cfs/ctape1"
+	* tdsopen, tread on 1st first tape of each drive
+	* tdsclose "/cfs/ctape0" dataset, tread more on "/cfs/ctape1" dataset
+	* tdsclose "/cfs/ctape1" dataset
+	* tdsopen, tread on 2nd tape of "/cfs/ctape0", tdsclose
+	* tapedealloc on both drives
+        * UEXITRET0=1
+          UEXITRET1=1

@@ -1,0 +1,17 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+à_Ğ`ED U‰åƒìWVSU‰Uüz‰û‹ƒÃ…Àu÷;rƒÃü‰$`ƒ=ôpt¡ôpÿĞƒ=ğpt¡ğpÿĞ…Àt‰Äƒ=ìpt¡ìpÿĞƒ=øpt‹5øpë¾XSW‹Uüÿ2èPÿÖeğ[^_ÉÃstdout: my node is %d
+stdout: argc is %d
+stdout: arg %d is %s
+stderr: my node is %d
+stderr: argc is %d
+stderr: arg %d is %s

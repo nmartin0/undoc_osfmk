@@ -1,0 +1,377 @@
+---------- ace.c ---------
+86 #ifdef PARAGON860
+87 char		Devname[100];
+88 #endif
+129 #ifdef PARAGON860
+130 extern int      display_recon_progress ( int );
+131 extern void     pop_recon_complete ( int );
+132 #endif
+227 #ifdef PARAGON860
+228 	int     rindex, index, ch, id, action, status;
+229 #endif
+287 #ifdef PARAGON860
+288 	case 'm':
+289 	case 'M':
+290 		ch = ( current_drive >> 4 ) & 0x07;
+291         	id = current_drive & 0x07;
+292         	rindex = index = ( id * 5 ) + ch;
+293         	if ( index > 4 )
+294                	 	index += ( id * 10 );
+295 		status = display_recon_progress ( rindex );
+296 	        if ( status != QUIT  && status == OPTIMAL )
+297        		         pop_recon_complete ( action );
+298 		break;
+299 #endif
+301 #ifdef PARAGON860
+302 	case '':
+303 #endif
+384 #ifdef PARAGON860
+385 	while ( ( c = getopt ( Argc, Argv, "f:dp" ) ) != EOF ) {
+386 		switch ( c ) {
+387 		case 'f':
+388 			strcpy(Devname,optarg);
+389 			hw_addr = zip_edit (convert_array_name(optarg), &ok);
+390 #else
+391 	while ( ( c = getopt ( Argc, Argv, "z:dp" ) ) != EOF ) {
+392 		switch ( c ) {
+393 		case 'z':
+394 			hw_addr = zip_edit ( optarg, &ok  ); 
+395 #endif
+---------- ace_err.c ---------
+504 #ifdef PARAGON860
+505 		mvaddstr ( 12, 17, "usage:  ace -f filename" );
+506 #else
+507 		mvaddstr ( 12, 17, "usage:  ace -z hw_addr" );
+508 #endif
+---------- acomm.c ---------
+975 #ifdef PARAGON860
+976 	move ( 23, 79 );
+977 #else
+978 	move ( 24, 79 );
+979 #endif
+988 #ifdef PARAGON860
+989 	move ( 23, 79 );
+990 #else
+991 	move ( 24, 79 );
+992 #endif
+1004 #ifdef PARAGON860
+1005 	mvprintw ( 23, 46, "ace - " ); 		/* sdpr u-109 */
+1006 #else
+1007 	mvprintw ( 24, 46, "ace - " ); 		/* sdpr u-109 */
+1008 #endif
+---------- acurses.c ---------
+1204 #ifdef PARAGON860
+1205 	move ( 23, 79 );
+1206 #else
+1207 	move ( 24, 79 );
+1208 #endif
+1280 #ifdef PARAGON860
+1281 	mvaddstr ( W5R7, W5COL, "M - Monitor" );
+1282 	mvaddstr ( W5R8, W5COL, "U - Update" );
+1283 	mvaddstr ( W5R9, W5COL, "Q - Quit" );
+1284 #else
+1285 	mvaddstr ( W5R7, W5COL, "Q - Quit" );
+1286 #endif
+1331 #ifdef PARAGON860
+1332         mvaddstr ( W9R2, W9COL + 21, "U - Update" );
+1333         mvaddstr ( W9R3, W9COL + 21, "Q - Quit" );
+1334 #else
+1335         mvaddstr ( W9R2, W9COL + 21, "Q - Quit" );
+1336 #endif
+1357 #ifdef PARAGON860
+1358        move ( 22, VERT1 );				/* horz line */
+1359 #else
+1360        move ( 23, VERT1 );				/* horz line */
+1361 #endif
+1365 #ifdef PARAGON860
+1366 	for ( i = 1; i < (HORZ1 -1); i++ ) {			/* vert line */
+1367 #else
+1368 	for ( i = 1; i < HORZ1; i++ ) {			/* vert line */
+1369 #endif
+1389 #ifdef PARAGON860
+1390 	move ( 22, VERT1 );				/* right connect */
+1391 #else
+1392 	move ( 23, VERT1 );				/* right connect */
+1393 #endif
+---------- adebug.c ---------
+1474 #ifndef PARAGON860
+1475 	popbox ( 0, 0, 24, 79, "DEBUG" );
+1476 #else
+1477 	popbox ( 0, 0, 23, 79, "DEBUG" );
+1478 #endif
+1496 #ifdef PARAGON860
+1497 		refresh();
+1498 #endif
+1746 #ifdef PARAGON860
+1747 	refresh();
+1748 #endif
+1750 #ifdef PARAGON860
+1751 	addch(lun);
+1752 	refresh();
+1753 #endif
+1768 #ifdef PARAGON860
+1769 	refresh();
+1770 #endif
+---------- agetrel.c ---------
+1830 #ifdef PARAGON860
+1831 	rel = 299;
+1832 #else
+1833 
+1834 	/* determine the release number */
+1835 	for (i = 0; i < 256; i++)
+1836 		rbuf[i] = 0x00;   /* initialize the buffer */
+1837 
+1838 	if ((fd = open ("/etc/.relid", O_RDONLY)) == -1) {
+1839 		ace_error(NON_SPECIFIC_ERROR, BAD_RELID_OPEN);	/* could not read  */
+1840 		          				  	/* the .relid file */
+1841 	}		
+1842 	read (fd, rbuf, 128);
+1843 
+1844 	ucp = (char *) strtok (rbuf, " ");		/* tokenize the buffer*/
+1845 	while (ucp != NULL) {				/* search for RELEASE */
+1846 		if (strncmp (ucp, "RELEASE", 7) == 0)
+1847 			break;
+1848 		ucp = (char *) strtok (NULL, " ");
+1849 	}	
+1850 	
+1851 	ucp = (char *) strtok (NULL, " ");		/* hopefully the next */
+1852 	rel = (( ucp[0] - 0x30) * 1000 ) +		/* token will be the  */
+1853 	      (( ucp[1] - 0x30) * 100 ) +		/* number we want */
+1854 	      (( ucp[2] - 0x30) * 10 ) +
+1855 	      (( ucp[3] - 0x30 ));
+1856 
+1857 	close ( fd );
+1858 
+1859 	if ((rel <= 100) || (rel >= 300)) {
+1860 		NULL;					    /*uh-oh we didn't */
+1861 		ace_error(NON_SPECIFIC_ERROR, BAD_OS_REV_LEVEL);/*get back rel 1  */
+1862 		         			            /*or rel 2        */
+1863 	}
+1864 #endif
+---------- create.c ---------
+2278 #ifdef PARAGON860
+2279 	popbox ( 0, 34, 20, 78, "< CREATE LUN >" );
+2280 #else
+2281 	popbox ( 0, 34, 24, 78, "< CREATE LUN >" );
+2282 #endif
+2304 #ifdef PARAGON860
+2305 				addch(ch);
+2306 #endif
+2317 #ifdef PARAGON860
+2318 				addch(id);
+2319 #endif
+2339 #ifdef PARAGON860
+2340 			mvaddstr ( i + 13, 39,
+2341 				"                                     " );
+2342 		do {
+2343 			mvaddstr ( 13, 39, "Is the data OK? (y/n/q)  " );
+2344 			move ( 13, 63 );
+2345 #else
+2346 			mvaddstr ( i + 18, 39,
+2347 				"                                     " );
+2348 		do {
+2349 			mvaddstr ( 18, 39, "Is the data OK? (y/n/q)  " );
+2350 			move ( 18, 63 );
+2351 #endif
+2571 #ifndef PARAGON860
+2572 	mvaddstr ( 11, 39, "6      Channel =     ID =  " );
+2573 	mvaddstr ( 12, 39, "7      Channel =     ID =  " );
+2574 	mvaddstr ( 13, 39, "8      Channel =     ID =  " );
+2575 	mvaddstr ( 14, 39, "9      Channel =     ID =  " );
+2576 	mvaddstr ( 15, 38, "10      Channel =     ID =  " );
+2577 	mvaddstr ( 18, 39, "Enter the channel and ID number." );
+2578 	mvaddstr ( 20, 39, "Press <Enter> at \"Channel\" to end" );
+2579 	mvaddstr ( 21, 39, "drive selection, or press \"q\" to" );
+2580 	mvaddstr ( 22, 39, "quit." );
+2581 #else
+2582 	mvaddstr ( 13, 39, "Enter the channel and ID number." );
+2583 	mvaddstr ( 15, 39, "Press <Enter> at \"Channel\" to end" );
+2584 	mvaddstr ( 16, 39, "drive selection, or press \"q\" to" );
+2585 	mvaddstr ( 17, 39, "quit." );
+2586 #endif
+---------- curview.c ---------
+2769 #ifdef PARAGON860
+2770 			cap = ( (double) g->lun_table[lun].capacity / (double)  1048576)
+2771 			  * g->lun_table[lun].block_size;
+2772 #else
+2773 			cap = ( g->lun_table[lun].capacity *
+2774 			   g->lun_table[lun].block_size ) / ( u_int32 ) 1048576;
+2775 #endif
+---------- daction.c ---------
+3157 #ifndef PARAGON860
+3158 static int		display_recon_progress ( int );
+3159 #endif
+3161 #ifndef PARAGON860
+3162 static void		pop_recon_complete ( int );
+3163 #endif
+3181 #ifdef PARAGON860
+3182 int display_recon_progress( int );
+3183 int pop_recon_complete (int);
+3184 #endif
+3346 #ifdef PARAGON860
+3347 			wrefresh(curscr);
+3348 #endif
+3389 #ifdef PARAGON860
+3390 		move ( 23, 79 );
+3391 #else
+3392 		move ( 24, 79 );
+3393 #endif
+3404 #ifdef PARAGON860
+3405 			move ( 23, 79 );
+3406 #else
+3407 			move ( 24, 79 );
+3408 #endif
+3510 #ifdef PARAGON860
+3511 int pop_recon_complete ( int action )
+3512 #else
+3513 static void pop_recon_complete ( int action )
+3514 #endif
+---------- drvhlp.c ---------
+3628 #ifdef PARAGON860
+3629 		case 'c':
+3630 		case 'C':
+3631 #else
+3632 		case 'm':
+3633 		case 'M':
+3634 #endif
+3675 #ifdef PARAGON860
+3676 		case 'm':
+3677 		case 'M':
+3678 			strcpy ( HelpFileName, ACE_HELP_DIR );
+3679 			strcat ( HelpFileName, "MRECON.HLP" );
+3680 			get_dhelp ( HelpFileName, "Monitor Reconstruction" );
+3681 			break;
+3682 #endif
+3706 #ifdef PARAGON860
+3707 	mvaddstr ( uly+5, ulx+3,  "C - Changing/Modifying Drive Status" );
+3708 #else
+3709 	mvaddstr ( uly+5, ulx+3,  "M - Modifying Drive Status" );
+3710 #endif
+3716 #ifdef PARAGON860
+3717 	mvaddstr ( uly+11, ulx+3, "M - Monitor Drive Reconstruction" );
+3718 	mvaddstr ( uly+12, ulx+3, "Q - Quit" );
+3719 #else
+3720 	mvaddstr ( uly+11, ulx+3, "Q - Quit" );
+3721 #endif
+---------- helpcmn.c ---------
+4272 #ifdef PARAGON860
+4273 static line_ent_t	w10[22];
+4274 #else
+4275 static line_ent_t	w10[23];
+4276 #endif
+4314 #ifdef PARAGON860
+4315 		if ( cnt == 22 ) {
+4316 #else
+4317 		if ( cnt == 23 ) {
+4318 #endif
+4339 #ifdef PARAGON860
+4340 	popbox ( 0, 0, 23, 78, title );
+4341 #else
+4342 	popbox ( 0, 0, 24, 78, title );
+4343 #endif
+4345 #ifdef PARAGON860
+4346 	mvaddstr ( 23, 4, "\"n\" to move to next screen  \"p\" to move to previous screen  \"q\" to QUIT " );
+4347 #else
+4348 	mvaddstr ( 24, 2, " <PgDn> to move down one screen  <PgUp> to move up one screen  \"q\" to QUIT " );
+4349 #endif
+4360 #ifdef PARAGON860
+4361 		for ( i = 0; i < 22; i++ ) {
+4362 #else
+4363 		for ( i = 0; i < 23; i++ ) {
+4364 #endif
+4374 #ifdef PARAGON860
+4375 		paint_window ( w10, 22 );
+4376 #else
+4377 		paint_window ( w10, 23 );
+4378 #endif
+4427 #ifdef PARAGON860
+4428 	for ( i = 0; i < 22; i++ ) {
+4429 #else
+4430 	for ( i = 0; i < 23; i++ ) {
+4431 #endif
+4442 #ifdef PARAGON860
+4443 	for ( i = 0; i < 22; i++ ) {
+4444 #else
+4445 	for ( i = 0; i < 23; i++ ) {
+4446 #endif
+---------- modify.c ---------
+4938 #ifdef PARAGON860
+4939 	popbox ( 0, 0, 23, 78, "< MODIFY/DISPLAY PARAMETERS >" );
+4940 #else
+4941 	popbox ( 0, 0, 24, 78, "< MODIFY/DISPLAY PARAMETERS >" );
+4942 #endif
+5206 #ifdef PARAGON860
+5207 	capacity = get_four_bytes ( page2b.LUN_Number_of_Blocks );
+5208 	capacity = (double) capacity / (1048576 / (double) lun_blk_sz);
+5209 #else
+5210 	capacity = get_four_bytes ( page2b.LUN_Number_of_Blocks );
+5211 	capacity *= ( u_int32 ) lun_blk_sz;
+5212 	capacity /= ( u_int32 ) 1048576;
+5213 #endif
+5225 #ifdef PARAGON860
+5226 	capacity = get_four_bytes ( page2b.LUN_Number_of_Blocks );
+5227 	capacity = (double) capacity / (1048576 / (double) lun_blk_sz);
+5228 #else
+5229 					capacity = get_four_bytes
+5230 						( page2b.LUN_Number_of_Blocks );
+5231 					capacity *= ( u_int32 ) lun_blk_sz;
+5232 					capacity /= ( u_int32 ) 1048576;
+5233 #endif
+5245 #ifdef PARAGON860
+5246 			lval =  ((double)lval * (double)1048576 ) / lun_blk_sz;
+5247 #else
+5248 			lval = ( lval * 1048576 ) / lun_blk_sz;
+5249 #endif
+5252 #ifdef PARAGON860
+5253 	capacity = get_four_bytes ( page2b.LUN_Number_of_Blocks );
+5254 	capacity = (double) capacity / (1048576 / (double) lun_blk_sz);
+5255 #else
+5256 				capacity = get_four_bytes
+5257 					( page2b.LUN_Number_of_Blocks );
+5258 				capacity *= ( u_int32 ) lun_blk_sz;
+5259 				capacity /= ( u_int32 ) 1048576;
+5260 #endif
+5275 #ifdef PARAGON860
+5276 	capacity = get_four_bytes ( page2b.LUN_Number_of_Blocks );
+5277 	capacity = (double) capacity / (1048576 / (double) lun_blk_sz);
+5278 #else
+5279 	capacity = get_four_bytes ( page2b.LUN_Number_of_Blocks );
+5280 	capacity *= ( u_int32 ) lun_blk_sz;
+5281 	capacity /= ( u_int32 ) 1048576;
+5282 #endif
+5354 #ifdef PARAGON860	/* allow a value of 0 */
+5355 			if ( *lvp < 0 || *lvp > 255 ) {
+5356 #else
+5357 			if ( *lvp < 1 || *lvp > 255 ) {
+5358 #endif
+5436 #ifdef PARAGON860
+5437 	capacity = (double) capacity / (double)(1048576 / lun_blk_sz);
+5438 #else
+5439 	capacity *= ( u_int32 ) lun_blk_sz;
+5440 	capacity /= ( u_int32 ) 1048576;
+5441 #endif
+---------- sysdname.c ---------
+6046 #ifdef PARAGON860
+6047 /******************************************************************************
+6048  ***                          GLOBAL VARIABLES                              ***
+6049  *****************************************************************************/
+6050 char Devname[100];
+6051 #endif
+6063 #ifdef PARAGON860
+6064 	char *t;
+6065 	t =  Devname;
+6066 	if(strrchr(Devname,'/'))
+6067 		t = strrchr(Devname,'/') + 1;
+6068 	sprintf(s,"  %s     ",t);
+6069 #else
+6070 	hw_zipcode_t *p = ( hw_zipcode_t * ) &hw_addr;
+6071 
+6072 	if ( p->IO_Bus )
+6073 		sprintf ( s, "c%x%x%xt%xd%x    ",
+6074 			p->IO_Bus, IOBus, p->SCSI_Bus, p->PUN, lun );
+6075 	else if ( IOBus )
+6076 		sprintf ( s, " c%x%xt%xd%x    ",
+6077 			IOBus, p->SCSI_Bus, p->PUN, lun );
+6078 	else
+6079 		sprintf ( s, "  c%xt%xd%x    ", p->SCSI_Bus, p->PUN, lun );
+6080 #endif

@@ -1,0 +1,231 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1989 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#  
+#
+# HISTORY
+# $Log: Makefile.i860,v $
+# Revision 1.10  1994/11/18  20:29:21  mtm
+# Copyright additions/changes
+#
+# Revision 1.9  1994/07/15  18:14:49  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: Remove -x flag from LDFLAGS.  It has been stripped by
+# 	the 'ld860' script anyway, as it is not supported by PGI's ld860.
+# 	With this change the 'ld860' script becomes superfluous.
+#  Testing: builds on Sun
+#  Module(s): Makefile.i860
+#
+# Revision 1.8  1994/04/28  19:01:38  chrisp
+# Changes to allow non-NX, i386 builds.
+#
+#  Reviewer: dleslie, cfj
+#  Risk: M
+#  Benefit or PTS #: 9188
+#  Testing: Builds, builds, builds.
+#  Module(s): Makefile MASTER Makefile.i386 Makefile.i860
+#             Makefile.template make.template
+#
+# Revision 1.7  1993/11/22  21:21:58  cfj
+# Change it so that the server start of data can be specified in Makeconf.
+#
+#  Reviewer:nandy, jlitvin
+#  Risk:L
+#  Benefit or PTS #:Combined with the Makeconf change, allows Paragon systems
+# to run longer before the dead name port leak causes port name space to
+# collide with the servers data.
+#  Testing:Relinked and booted the server.
+#  Module(s):Makeconf, server/conf/Makefile.i860
+#
+# Revision 1.6  1993/10/11  17:07:24  dleslie
+# Set KCPP in toplevel Makeconf file instead of here
+#
+# Revision 1.5  1993/07/14  17:53:32  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.3  1993/07/01  19:11:54  cfj
+# Adding new code from vendor
+#
+# Revision 1.4  1993/05/06  19:13:55  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.1  1993/05/03  17:26:56  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.3  1993/04/03  03:05:22  brad
+# Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+# Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+#
+# Revision 1.1.2.1.2.3  1993/02/09  21:56:31  brad
+# Added dependencies for pfs2_user.
+#
+# Revision 1.1.2.1.2.2  1993/01/05  22:42:28  brad
+# Added correct dependencies for pfs2_server.o
+#
+# Revision 1.2  1992/11/30  22:19:03  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1.2.1  1992/11/25  23:09:41  brad
+# Added first cut at PFS file striping capability.
+#
+# Revision 1.1.2.1  1992/11/05  23:18:07  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 2.9  1992/10/14  17:16:37  cfj
+# NX integration.
+#
+# Revision 2.12  1993/04/29  13:59:54  klh
+# 	Revision 2.8  93/04/15  22:45:55  condict
+# 		Various changes to allow building in a Mach 2.5 environment that has
+# 		been ported to a different OS, e.g. OSF/1.  These include removing
+# 		absolute path names from build commands.
+#
+# Revision 2.11  93/03/04  17:05:34  yazz
+# Allow master Makeconf files to lack definitions for OPTIMIZE_{I860,I386}
+# and still compile, using OPTIMIZE_DEFAULT.  Change comments accordingly.
+# 
+# Revision 2.10  93/02/26  19:56:56  yazz
+# Remove hard-coded pathname to the master Makeconf file.
+# For i860 architecture, allow OPTIMIZE definition to be optionally
+# overridded by definition of OPTIMIZE_I860 in master Makeconf file.
+# 
+# Revision 2.9  93/02/24  14:50:30  klh
+# Fix hard coded path for PGILIBS to reflect new build tools.
+# 
+# Revision 2.8  92/06/05  13:56:54  klh
+# 	Revision 2.7  92/05/01  10:09:14  rabii
+# 		KCC=icc -v ---> KCC=icc and 
+# 		PGILIBS=/usr/i860/lib/pgi/libpgi.a ---> PGILIBS=/usr/i860/lib/libpgi.a
+# 		as requested by stans (rabii)
+# 
+# Revision 2.7  92/04/28  16:52:42  klh
+# Change PGILIBS for the path in Locus' development environment
+# 
+# Revision 2.6  92/04/05  16:52:04  pjg
+# 	Re-define OPTIMIZE to NULL, and change KCPP to undefine i386 and
+# 	define i860 (rabii)
+# 
+# Revision 2.5  92/01/09  16:08:55  roy
+# 	LIBS and LDFLAGS tweeks (rabii).
+# 
+# Revision 2.4  91/12/19  12:35:29  roy
+# 	Define SIZE.
+# 
+# Revision 2.3  91/11/21  15:00:07  rabii
+# 	Fixed path for pgi lib, and name of icc
+# 
+# Revision 2.2  91/11/15  17:08:19  rabii
+# 	Initial check-in
+# 
+# Revision 1.1  91/09/12  13:26:32  stans
+# 	Initial V2.0 Checkin, started life as a copy of Makefile.i386
+#	Unchanged copy from Mach 3.0 BSD UNIX server
+# 
+# 
+###############################################################################
+#BEGIN	Machine dependent Makefile fragment for the ipsc860
+###############################################################################
+C_RULE_2_P=true
+
+#tmp
+
+SYS_RULE_2=-@
+SYS_RULE_3=-@
+SYS_RULE_4=-@
+
+
+#KCC=cc860
+KCC=icc
+
+# This is now set in the toplevel Makeconf file.
+#KCPP=cc -ES -Ui386 -Di860
+LD=ld860
+AS=as860
+AR=ar860
+SIZE=size860
+LINTOPTS=${ALLOPTS} -Di860 -D_i860_ -D__i860__ -F -Dvolatile=
+
+# The master Makeconf file may have defined OPTIMIZE_I860.  If so we
+# set OPTIMIZE accordingly; if not we use the OPTIMIZE_DEFAULT value
+# we get from the Makefile.template file.
+#
+OPTIMIZE=${OPTIMIZE_I860?$(OPTIMIZE_I860):$(OPTIMIZE_DEFAULT)}
+
+MD=md
+
+# Note that COMPILER_RT contains a hard-coded pathname.
+# It is now defined in the master Makeconf file.
+#
+#LIBS_P=-lc_p
+#LIBS=-lthreads -lmach_sa
+LIBS=-lthreads -lmach_sa ${COMPILER_RT}
+#LIBS=${MKLIB}/libthreads.a ${MKLIB}/libmach_sa.a ${COMPILER_RT}
+
+#LDFLAGS= -x -e start -L${MKLIB}
+LDFLAGS= -k -e start $(DATA_START_I860) -L${MKLIB}
+#
+nx_svr_server.o: nx/nx_svr_server.c uxkern/bsd_types_gen.h
+
+nx_mig.o:       nx/nx_user.c
+
+nx.o:           nx/nx_user.h
+
+MAKE_NX = [ -d nx ] || mkdir nx
+
+NX_SVR_FILES = nx/nx_svr_server.c nx/nx_svr.h
+
+$(NX_SVR_FILES): uxkern/bsd_types_gen.h $(SOURCE_DIR)/nx/nx_svr.defs
+		-$(MAKE_NX)
+		$(MIG) -MD $(MIGFLAGS) -header nx/nx_svr.h -user /dev/null -server nx/nx_svr_server.c $(SOURCE_DIR)/nx/nx_svr.defs
+
+nx/nx_user.c: $(SOURCE_DIR)/nx/nx.defs
+		-$(MAKE_NX)
+		$(MIG) -MD $(MIGFLAGS) -header /dev/null -user nx/nx_user.c -server /dev/null $(SOURCE_DIR)/nx/nx.defs
+
+nx/nx_user.h: $(SOURCE_DIR)/nx/nx.defs
+		-$(MAKE_NX)
+		$(MIG) -MD $(MIGFLAGS) -header nx/nx_user.h -user /dev/null -server /dev/null $(SOURCE_DIR)/nx/nx.defs
+
+#
+# PFS server.
+#
+pfs2_server.o: uxkern/pfs2_server.c uxkern/bsd_types_gen.h uxkern/pfs2.h
+
+pfs2_user.o: uxkern/pfs2_user.c uxkern/bsd_types_gen.h uxkern/pfs2.h
+
+pfs2_server_side.o: uxkern/bsd_types_gen.h uxkern/pfs2.h
+
+PFS2_FILES = uxkern/pfs2_server.c uxkern/pfs2_user.c uxkern/pfs2.h
+
+$(PFS2_FILES): uxkern/bsd_types_gen.h $(SOURCE_DIR)/uxkern/pfs2.defs
+	-$(MAKE_UXKERN)
+	$(MIG) -MD $(MIGFLAGS) -header uxkern/pfs2.h -user uxkern/pfs2_user.c -server uxkern/pfs2_server.c $(SOURCE_DIR)/uxkern/pfs2.defs
+
+
+#
+# crt0.o (start) comes from libmach_sa.a
+#
+#
+###############################################################################
+#END	Machine dependent Makefile fragment for the ipsc860
+###############################################################################
+
+
+
+
+
+

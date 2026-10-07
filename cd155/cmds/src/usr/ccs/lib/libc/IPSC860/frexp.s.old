@@ -1,0 +1,116 @@
+// 
+// $Copyright
+// Copyright 1993, 1994, 1995  Intel Corporation
+// INTEL CONFIDENTIAL
+// The technical data and computer software contained herein are subject
+// to the copyright notices; trademarks; and use and disclosure
+// restrictions identified in the file located in /etc/copyright on
+// this system.
+// Copyright$
+// 
+ 
+//	Copyright (c) 1989, Intel Corporation.
+//	All rights reserved.
+//
+//         INTEL CORPORATION PROPRIETARY INFORMATION
+//
+//    This software is supplied under the terms of a license
+//    agreement or nondisclosure agreement with Intel Corpo-
+//    ration and may not be copied or disclosed except in
+//    accordance with the terms of that agreement.
+//
+
+/*
+ * $Id: frexp.s.old,v 1.4 1994/11/19 02:11:22 mtm Exp $
+ *
+ * HISTORY:
+ * $Log: frexp.s.old,v $
+// Revision 1.4  1994/11/19  02:11:22  mtm
+// Copyright additions/changes
+//
+// Revision 1.3  1992/05/07  10:42:15  stans
+// place RCS macros inside C style comments.
+//
+ * Revision 1.2  92/05/07  10:40:03  stans
+ * make references to kill & getpid be "_kill" and "_getpid".
+ */
+
+	.file	"frexp.s"
+
+//	frexp takes only two arguments: val, a double passed in f9:f8,
+//	and ptr, a 32-bit pointer passed in r16.
+//	if val is +/-0.0, frexp returns val and makes *ptr = 0;
+//	if val is infinity or NaN, generate a kill(SIGFPE) signal;
+//	else, val is neither infinity nor NaN, so frexp returns a double x
+//	satisfying      0.5 <= |x| < 1.0, and assigns a value to *ptr
+//	such that       val == |x| * (2**(*ptr))
+//
+
+	.text
+	.align	4
+
+_frexp::
+	fxfr	f9,r17
+	fxfr	f8,r18
+	andh	0x7ff0,r17,r20
+	bc	.denorm_or_0		// val is either denormal or zero
+	shr	20,r20,r20		// extract old exponent
+	xor	0x07ff,r20,r0
+	bc.t	.inf_or_nan_exit	// val is either infinite or NaN
+	orh	0x8000,r0,r20
+	andnoth 0x7ff0,r17,r17		// clear old exponent
+.insert_bias_exp:
+	orh	0x3fe0,r17,r17		// make exponent -1
+	ixfr	r17,f9
+	adds	0xfc02,r20,r20		// adjust exponent with (bias - 1)
+	bri	r1
+	st.l	r20,0(r16)
+
+.inf_or_nan_exit:			// generate a SIGFPE signal
+	call	_getpid
+	  nop
+	call	_kill
+	  or	8,r0,r17		// SIGFPE == 8
+					// should never return from kill
+
+.denorm_or_0:				// exponent is known to be zero
+	andnoth 0x8000,r17,r21		// make val positive
+	bnc	.big_denorm		// if high-part of fraction is not zero
+	xor	r18,r0,r0		// check low fraction bits
+	bnc	.lil_denorm		// fraction not zero, a denormal number
+	bri	r1			// true signed zero
+	st.l	r0,0(r16)
+
+.big_denorm:				// fraction is more than 32-bits
+	or	1,r0,r20		// pre-set the biased exponent
+	shl	12,r21,r21		// left justify high-part of fraction
+.lf_shft:				// loop to normalize significant:
+	adds	-1,r20,r20		//	decrement biased exponent
+	andh	0x8000,r21,r0		//	is most signif. bit set?
+	shl	1,r21,r21		//	shift, making MSB implicit
+	bc	.lf_shft		//	loop if implicit bit 0
+.rt_shft:				// align normalized significant:
+	shr	12,r21,r21		// return high frac to proper field
+	adds	31,r20,r22		// get count of low frac bits needed
+	shr	r22,r18,r22		// rt justify low frac bits to be hi 
+	or	r21,r22,r21		// put low frac bits in hi frac
+	andh	0x8000,r17,r22		// get sign of val
+	or	r21,r22,r17		// put sign & hi frac in r17
+	subs	1,r20,r22		// get lshift count for low frac
+	shl	r22,r18,r18		// align low frac properly
+	br	.insert_bias_exp	// done, but for biased_exp field
+	ixfr	r18,f8			// set-up low frac of result
+
+.lil_denorm:				// 20 most signif. frac bits are 0 
+	adds	-19,r0,r20		// biased exponent after 20-bit lshift
+.lil_lf_shft:				// loop to normalize significant:
+	adds	-1,r20,r20		//	decrement biased exponent
+	andh	0x8000,r18,r0		//	is most signif. bit set?
+	shl	1,r18,r18		//	shift, making MSB implicit
+	bc	.lil_lf_shft		//	loop if implicit bit 0
+.lil_rt_shft:				// align normalized significant:
+	shr	12,r18,r21		// put high frac in proper field
+	shl	20,r18,r18		// make low frac of result
+	or	r17,r21,r17		// put sign and hi frac in r17
+	br	.insert_bias_exp	// done, bit for biased_exp field
+	ixfr	r18,f8			// set-up low frac of result

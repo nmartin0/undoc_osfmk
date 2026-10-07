@@ -1,0 +1,34 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to add a drive through software after you install 
+     a drive or rank of drives in the array subsystem (or integrated 
+     array).  
+ 
+     NOTE:  A procedure for adding a drive is included in the help 
+            screens following the explanation of option.
+ 
+ 
+     WHAT "ADD" MEANS:  Adding a drive through software causes the 
+     array controller to change the drive status from "Non-existent" 
+     (1) to "Spare" (2), thus making the drive available for you to 
+     create a logical unit.  
+ 
+     WHEN TO ADD A DRIVE:  You do NOT need to use this option (unless you 
+     mistakenly delete a drive).  It is a feature for non-NCR array 
+     subsystems.
+ 
+ 
+ 
+                                (CONTINUED)
+     PROCEDURE -- ADDING A DRIVE
+ 
+     NOTE:  To add a drive, you must first install a drive or 
+            rank of drives in the array subsystem (or integrated
+            array).
+ 
+     1.   Select the drive you want to add by pressing the arrow keys.
+ 
+     2.   Press "a" to add the drive.
+ 
+     3.   Repeat steps 1 - 2 until you have added all the drives
+          you want.

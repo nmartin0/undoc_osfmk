@@ -1,0 +1,6 @@
+Livermore LOOPS (lloops)
+
+This is a set of FORTRAN loops which measure floating point processor speed
+and compiler technology. The loops were taken from real applications at
+the Lawrence Livermore National Laboratory.
+

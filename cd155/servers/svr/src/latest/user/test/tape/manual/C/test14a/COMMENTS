@@ -1,0 +1,36 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test14a" COMMENTS
+================
+
+******************* Step to run this test *******************************
+
+1. make -f makefile.man all
+
+2. <testname>.sh 
+Note: Since the program needs 11 to 32 tapes (depending on the source TESTNUM1,
+      TESTNUM2, TESTNUM3 values) and the cabinet can at most hold 9
+      at a time, the program will prompt the user to put 8 tapes in the 
+      cabinet at a time to make scratch tapes.  This will take about 20 
+      minutes.  Then the program will prompt the user to prepare the 1st
+      9 tapes on the cabinet and load the 1st one.  Then the user will hit
+      RETURN.  After the program finishs writing these 9 tapes, it will
+      prompt the user for the "vol/serial" (volumn/serial number).  The
+      user need to manual put each tape on the cabinet (DON'T LOAD IT IN)
+      and answer the question with "TEST10" to "TEST32" one after one.
+
+
+      THE TEST TAKES ~30 MINUTES TO RUN
+
+
+
+

@@ -1,0 +1,105 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * Copyright (c) 1993, Locus Computing Corporation
+ * All rights reserved
+ *
+ * HISTORY
+ * $Log: vps.ops,v $
+ * Revision 1.2  1994/11/18  20:51:19  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.1  1994/04/28  19:21:08  chrisp
+ * Changes for introduction of tncgen and support of i386 builds.
+ * Generated prototype header files changed for consistency with tnc/.
+ *
+ *  Reviewer: dleslie, cfj
+ *  Risk: M
+ *  Benefit or PTS #: 9188
+ *  Testing: Builds and tested on i386 platform.
+ *  Module(s):
+ *      Modified Files:
+ *      	bvp_init.c bvp_vpops.c bvp_vpsops.c
+ *      Added Files:
+ *      	gen_dispatch_table.sh gen_op_macros.sh gen_prototypes.sh
+ *      	gen_table_struct.sh tncgen vp.ops vprocgen.mk vps.ops
+ *      Removed Files:
+ *      	maketables.sh
+ *
+ * $EndLog$
+ *
+ */
+
+/*
+ * This file defines the TNC virtual process system operations.
+ * It is used as input to the tncgen script for automatic generation
+ * of *_gen* source files.
+ */
+operation sigprocset {
+	parameter IN struct procset *ps	/* set of processes to be signalled */
+	parameter IN int signo		/* signal to be sent */
+	parameter IN int arg		/* argument (for SIGMIGRATE) */
+	parameter OUT int *nproc	/* number of processes signaled */
+}
+operation procset_nice {
+	parameter IN struct procset *ps	/* set of processes changed/queried */
+	parameter INOUT int *nice	/* nice value */
+	parameter IN int flag		/* VPROC_SET or VPROC_GET */
+}
+operation pid_from_task {
+	parameter IN task_t task	/* task port to which pid refers to */
+	parameter OUT pid_t *pid	/* pid of process using task */
+	parameter OUT char *comm	/* command name for pid */
+	parameter INOUT unsigned int *commlen /* length of command name */
+}
+operation table {
+	parameter IN int id		/* id of action to take */
+	parameter IN int index		/* index into table */
+	parameter IN caddr_t addr	/* address in user space */
+	parameter IN int nel		/* number of elements in "addr" */
+	parameter IN u_int lel		/* length of each element in "addr" */
+	parameter OUT int *retval	/* returned value */
+}
+operation sethostid {
+	parameter IN long new_hostid	/* hostid to be set */
+}
+operation sethostname {
+	parameter IN char *new_hostname	/* hostname to be set */
+	parameter IN unsigned int new_hostnamelen /* hostname length */
+}
+operation setdomainname {
+	parameter IN char *new_domainname /* domainname to be set */
+	parameter IN unsigned int new_domainnamelen /* domainname length */
+}
+#ifdef	ipsc860
+operation rpmoffset {
+	parameter IN u_int rpmlow
+	parameter IN u_int rpmhigh	/* Amount to skew RPM counter */
+
+}
+#endif	/* ipsc860 */
+operation settimezone {
+	parameter IN struct timezone tzp /* timezone to be set */
+}
+#ifdef	NX
+operation reset_boot_node_list {
+	parameter IN char *nodelist            /* nodelist to set */
+	parameter IN unsigned int nodelistlen  /* nodelist length */
+	parameter IN boolean_t local_node_only /* restrict to local node */
+}
+#endif	/* NX */
+operation reboot {
+	parameter IN int flags		/* indicates whether panicking */
+	parameter IN int options	/* options applying to reboot */
+}

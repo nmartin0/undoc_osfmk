@@ -1,0 +1,288 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * HISTORY
+ * $Log: nx_svr.defs,v $
+ * Revision 1.16  1994/11/18  20:37:52  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.15  1994/06/01  20:35:04  mag
+ * Mesh utilities changes adding Node Attributes
+ *  Reviewer: cfj, sdh, shala
+ *  Risk: High
+ *  Benefit or PTS #: Needed for MP support
+ *  Testing: EATS: rmcall, rmcmd, sched
+ *  Module(s): server/sys/errno.h, server/sys/version.h server/nx/nx.c
+ * 	    server/nx/nx.defs server/nx/nx_svr.defs server/nx/nx_types.defs,
+ * 	    server/nx/nx_types.h, server/nx/nx_create_attr.c (new)
+ * 	    emulator/i860/emul_machdep.c
+ *  Related: libnx, allocator, bootmesh, mkpart, showpart, lspart
+ *
+ * Revision 1.14  1993/12/20  22:53:50  carbajal
+ * vm_dealloc() OOL memory passed in for allocator system calls.
+ *   Tell MIG to dealloc this memory in nx_svr.defs
+ *    Reviewer: cfj,nandy
+ *    Risk: Low
+ *    Benefit or PTS #: 7257
+ *    Testing: Ran against bug report, MUNOPS, EATs
+ *    Module(s): nx.c, nx_svr.defs
+ *
+ * Revision 1.13.2.1  1993/12/20  21:42:47  carbajal
+ * vm_dealloc() OOL memory passed in for allocator system calls.
+ * Tell MIG to dealloc this memory in nx_svr.defs
+ *  Reviewer: cfj,nandy
+ *  Risk: Low
+ *  Benefit or PTS #: 7257
+ *  Testing: Ran against bug report, MUNOPS, EATs
+ *  Module(s): nx.c, nx_svr.defs
+ *
+ * Revision 1.13  1993/11/30  23:37:09  carbajal
+ * Added nx_pspart_rpc and nx_alloc_exit
+ *  Reviewer: none
+ *  Risk: Low
+ *  Benefit or PTS #: R1.2 User Model Support
+ *  Testing:
+ *  Module(s):
+ *
+ * Revision 1.12  1993/11/17  02:30:43  carbajal
+ * R1.2 User Model Support
+ *  Reviewer: cfj
+ *  Risk: Medium
+ *  Benefit or PTS #: R1.2 User Model Support
+ *  Testing:
+ *  Module(s):
+ *
+ * Revision 1.11  1993/10/27  01:26:29  carbajal
+ * Changed parameters to routine NX__nx_init()
+ * Added routine NX_nx_app_node_list()
+ *
+ * Revision 1.10  1993/08/28  00:48:42  carbajal
+ * Added NX_nx_register_daemon() for PTS #6141
+ *
+ * Revision 1.9  1993/07/18  19:40:29  carbajal
+ * Added nx_chpart_rpc stub
+ *
+ * Revision 1.8  1993/07/14  21:08:25  carbajal
+ * Added support for allocator system calls
+ *
+ * Revision 1.7  1993/04/12  16:51:06  cfj
+ * Added join_root_part() syscall.
+ *
+ * Revision 1.6  1993/04/05  15:09:27  cfj
+ * Merge with T9.
+ *
+ * Revision 1.3.6.2  1993/04/04  01:39:26  cfj
+ * Added magic_num to nx_init().
+ *
+ * Revision 1.5  1993/04/03  03:06:57  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ *
+ * Revision 1.4  1993/02/24  18:47:31  nandy
+ * Changes brought in from T9
+ *
+ * Revision 1.3.6.1  1993/02/22  17:38:24  nandy
+ * nx_init() now takes an extra argument, priority
+ *
+ * Revision 1.1.2.1.2.3  1993/01/09  00:04:39  brad
+ * Merged changes between ...Locus_Bug_Drop_OK... and Jan5 main trunk
+ * tags into the PFS branch, to bring PFS up-to-date with Transmittal
+ * 7.
+ *
+ * Revision 1.3  1993/01/05  19:49:03  shala
+ * Added routine for an extra systemcall for setting priority. - Nandini
+ * 
+ * Revision 1.1.2.1.2.2  1992/12/14  23:16:50  brad
+ * Merged tip of old NX branch with PFS branch.
+ * 
+ * Revision 1.2  1992/11/30  22:33:29  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.2  1992/11/26  00:14:37  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.1.2.1  1992/11/05  23:31:37  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ * 
+ * Revision 4.1  1992/11/04  00:25:50  cfj
+ * Bump major revision number.
+ * 
+ * Revision 1.2  1992/07/28  09:50:10  nandy
+ * NX integration
+ * 
+ * Revision 1.9  92/06/22  15:33:51  cfj
+ * Add numnodes as an OUT parameter to NX_join().
+ * 
+ * Revision 1.8  92/06/11  16:03:17  cfj
+ * Added nx_join,nx_attach_pgrp and nx_detach_pgrp.
+ * 
+ * Revision 1.7  92/06/10  07:58:46  cfj
+ * Defined some new NX RPCs.
+ * 
+ * Revision 1.6  92/05/20  08:39:36  cfj
+ * Use vproc port for nx_init.
+ * 
+ * Revision 1.5  92/05/14  16:45:28  cfj
+ * Added numnodes as a out parameter to nx_init().
+ * 
+ * Revision 1.4  92/05/13  13:52:55  cfj
+ * Removed an unnecessary uimport.
+ * 
+ * Revision 1.3  92/05/13  09:23:39  cfj
+ * Added semicolon to the uimport line.
+ * 
+ * Revision 1.2  92/05/13  09:11:53  cfj
+ * Added a uimport <sys/types.h>
+ * 
+ * Revision 1.1  92/05/08  13:31:49  cfj
+ * Initial revision
+ * 
+ * 
+ */
+
+/*
+ * IPC interface for selected NX server functions.
+ */
+subsystem nx_svr	314159;
+
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types.defs>
+#include <nx/nx_types.defs>
+
+routine	NX__nx_init(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+        in      nx_info		: NX_INIT_T;
+	out	numnodes	: int;
+	in	appl_info       : APPLINFO_T;
+	in	selector_cnt	: int;
+	in	selector	: MIG_BITMAP_T);
+
+
+routine	NX_node_self(
+		vproc_port	: mach_port_t;
+	out	mynode          : int);
+
+
+routine NX_attach_pgrp(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pgrp            : pid_t);
+
+routine NX_detach_pgrp(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pgrp            : pid_t);
+
+routine NX_join(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pgrp            : pid_t;
+	out     numnodes        : int);
+
+routine NX_nx_pri(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pid            : pid_t;
+	in	pri            : int);
+
+
+routine	NX_join_root_part(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t);
+
+routine NX_nx_part_attributes(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	inode		: ino_t;
+	out	partinfo	: PARTREQ_T);
+
+routine NX_nx_node_list(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	inode		: ino_t;
+	out	node_list	: LP_MAP_T,dealloc);
+
+routine NX_nx_part_bitmap(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	inode		: ino_t;
+	out	bitmap		: MIG_BITMAP_T,dealloc);
+
+routine NX_nx_matching_bitmap(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	out	bitmap		: MIG_BITMAP_T,dealloc;
+	in	selector_buf	: MIG_BITMAP_T;
+	in	exact		: int);
+
+routine NX_nx_mkpart_rpc(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	buffer		: MIG_BITMAP_T;
+	out	num_nodes	: int);
+
+routine NX_nx_chpart_rpc(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	buffer		: string);
+
+routine NX_nx_rmpart_rpc(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pathname	: string;
+	in	inode		: ino_t;
+	in	flags		: int);
+
+routine NX_nx_register_daemon(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	daemon_id	: int;
+	in	sock_addr	: smd_iface_t);
+
+routine NX_nx_mypart(
+                vproc_port      : mach_port_t;
+        out     interrupt       : boolean_t;
+        out     rows            : int;
+        out     cols            : int);
+
+routine NX_nx_app_info(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pgroup		: pid_t;
+	out	app_info	: nx_app_info_t);
+
+routine NX_nx_app_node_list(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pgroup		: pid_t;
+	out	node_list	: LP_MAP_T,dealloc);
+
+routine NX_nx_free_node_list(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	inode		: ino_t;
+	out	bitmap		: MIG_BITMAP_T,dealloc);
+
+routine NX_nx_pspart_rpc(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	inode		: ino_t;
+	out	buffer		: MIG_BITMAP_T,dealloc);
+
+routine NX_nx_alloc_exit_rpc(
+		vproc_port	: mach_port_t;
+	out	interrupt	: boolean_t;
+	in	pgroup		: pid_t);
+	

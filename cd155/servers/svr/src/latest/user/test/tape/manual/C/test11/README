@@ -1,0 +1,66 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test11" README
+==============
+
+Source: node_a.c node_b.c 
+
+Desc:	"node_a.c" tests the reading of 31 different datasets;  "tget_blk_id"
+		call is called in the "tdsopen" and "tdsclose"; however it is
+		not use to locate for reading
+	"node_b.c" tests the reading of 31 different datasets; "tget_blk_id"
+		call is used to locate block for reading
+
+Invoke:	load [0] node_a.rx [/cfs/ctape0 [TEST01]]
+	load [0] node_b.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use 1 tape from "test12" 
+	* ASSUME "test12" has written data into the tape already
+	* "test11a.sh" calls "node_a.rx" and 
+	  "test11b.sh" calls "node_b.rx" and
+	* log is on "test11a.SLr0", and "test11b.SLr0" respectively
+	* result is on "test11a.SRr0", and "test11b.SRr0" respectively
+	  To run both "test11a.sh" and "test11b.sh", type "test11.sh" 
+	  and the result will be on "test11.SRr0" with the 
+	  1st line for "test11a", and 2nd line for "test11b" 
+	* tape will be not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+
+Algo:	"node_a.c" 
+	* call tdsopen, tget_blk_id
+	* read dataset (31)
+	* call tget_blk_id, tdsclose
+	* abort on user exit                                          
+	* each dataset contains JMAX * IMAX numbers of record (i.e. JMAX * IMAX
+	  "tread" is called) with JMAX = 2, IMAX = 100 (i.e. truncated blocks)
+	* VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)
+	* ZEROREAD = 1 (set to call "tread" to check if the
+			return number of bytes is zero)
+
+
+
+     	"node_b.c" 
+	* call tdsopen, tget_blk_id
+	* read dataset (31)     
+	  - read all elements, locate to start position
+	  - read to middle, locate to start position
+	  - read all elements, locate to middle position
+	  - read to end, plus EOF mark
+	* call tget_blk_id, tdsclose     
+	* no user exit
+	* each dataset contains JMAX * IMAX numbers of record (i.e. JMAX * IMAX
+	  "tread" is called) with JMAX = 2, IMAX = 100 (i.e. truncated blocks)
+	* VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)
+	* ZEROREAD = 1 (set to call "tread" to check if the
+			return number of bytes is zero)

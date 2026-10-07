@@ -1,0 +1,341 @@
++ [ -r setup/AT386/host.sh ] 
++ . setup/AT386/host.sh 
+MACHINE=i386
+TARGET_MACHINE=AT386
+target_machine=at386
+CPUTYPE=I386
+cputype=i386
++ export MACHINE TARGET_MACHINE target_machine CPUTYPE cputype 
+HOST_OBJECT_FORMAT=A_OUT
+CMD_OBJECT_FORMAT=MACHO
+KERNEL_OBJECT_FORMAT=A_OUT
+ARCHIVE_FORMAT=ASCARCH
++ export ARCHIVE_FORMAT 
++ pwd 
+srcdir=/u1/1.0.3/src
++ expr /u1/1.0.3/src : \(.*\)/.* 
+base=/u1/1.0.3
++ basename /u1/1.0.3/src 
++ [ src != src ] 
+obj=/u1/1.0.3/obj
++ [ -d /u1/1.0.3/obj ] 
++ mkdir /u1/1.0.3/obj 
+objdir=/u1/1.0.3/obj/at386
++ [ -d /u1/1.0.3/obj/at386 ] 
++ mkdir /u1/1.0.3/obj/at386 
+obj=/u1/1.0.3/hostobj
++ [ -d /u1/1.0.3/hostobj ] 
++ mkdir /u1/1.0.3/hostobj 
+objdir=/u1/1.0.3/hostobj/at386
++ [ -d /u1/1.0.3/hostobj/at386 ] 
++ mkdir /u1/1.0.3/hostobj/at386 
+exp=/u1/1.0.3/export
++ [ -d /u1/1.0.3/export ] 
++ mkdir /u1/1.0.3/export 
+expdir=/u1/1.0.3/export/at386
++ [ -d /u1/1.0.3/export/at386 ] 
++ mkdir /u1/1.0.3/export/at386 
+exp=/u1/1.0.3/hostexp
++ [ -d /u1/1.0.3/hostexp ] 
++ mkdir /u1/1.0.3/hostexp 
+expdir=/u1/1.0.3/hostexp/at386
++ [ -d /u1/1.0.3/hostexp/at386 ] 
++ mkdir /u1/1.0.3/hostexp/at386 
+tools=/u1/1.0.3/tools
++ [ -d /u1/1.0.3/tools ] 
++ true 
+toolsdir=/u1/1.0.3/tools/at386
++ [ -d /u1/1.0.3/tools/at386 ] 
++ true 
+bindir=/u1/1.0.3/tools/at386/bin
++ [ -d /u1/1.0.3/tools/at386/bin ] 
++ true 
+hostbindir=/u1/1.0.3/tools/at386/hostbin
++ [ -d /u1/1.0.3/tools/at386/hostbin ] 
++ true 
+libdir=/u1/1.0.3/tools/at386/lib
++ [ -d /u1/1.0.3/tools/at386/lib ] 
++ true 
++ [ A_OUT = MACHO ] 
+gccdir=/u1/1.0.3/tools/at386/gcc
++ [ -d /u1/1.0.3/tools/at386/gcc ] 
++ true 
++ [ MACHO = MACHO ] 
+gccdir=/u1/1.0.3/tools/at386/macho
++ [ -d /u1/1.0.3/tools/at386/macho ] 
++ true 
+PATH=/u1/1.0.3/tools/at386/hostbin:/usr/ucb:/bin:/usr/bin
++ export PATH 
+OBJECT_FORMAT=A_OUT
++ export OBJECT_FORMAT 
+CCTYPE=host
++ export CCTYPE 
+CENV=-UMSG -D_BLD
+SITE=OSF
+OWNER=bin
+GROUP=bin
++ export CENV SITE OWNER GROUP 
+MAKEFILEPATH=${MAKETOP}usr/lib/makefiles
+SOURCEBASE=/u1/1.0.3/src
+SOURCEDIR=
+OBJECTDIR=../hostobj/at386
++ export MAKEFILEPATH SOURCEBASE SOURCEDIR OBJECTDIR 
++ [ -d /u1/1.0.3/hostobj/at386/usr ] 
++ mkdir /u1/1.0.3/hostobj/at386/usr 
++ [ -d /u1/1.0.3/hostobj/at386/usr ] 
++ true 
++ [ -d /u1/1.0.3/hostobj/at386/usr/ccs ] 
++ mkdir /u1/1.0.3/hostobj/at386/usr/ccs 
++ [ -d /u1/1.0.3/hostobj/at386/usr/ccs ] 
++ true 
++ [ -d /u1/1.0.3/hostobj/at386/usr/ccs/bin ] 
++ mkdir /u1/1.0.3/hostobj/at386/usr/ccs/bin 
++ [ -d /u1/1.0.3/hostobj/at386/usr/ccs/bin ] 
++ true 
++ [ -d /u1/1.0.3/hostobj/at386/usr/ccs/bin/make ] 
++ mkdir /u1/1.0.3/hostobj/at386/usr/ccs/bin/make 
++ [ -d /u1/1.0.3/hostobj/at386/usr/ccs/bin/make ] 
++ true 
++ cp usr/ccs/bin/make/Makefile usr/ccs/bin/make/bootstrap.sh usr/ccs/bin/make/defs.h usr/ccs/bin/make/dirs.c usr/ccs/bin/make/doname.c usr/ccs/bin/make/dosys.c usr/ccs/bin/make/dyndep.c usr/ccs/bin/make/environment.c usr/ccs/bin/make/files.c usr/ccs/bin/make/gram.y usr/ccs/bin/make/libs.c usr/ccs/bin/make/main.c usr/ccs/bin/make/make.msg usr/ccs/bin/make/misc.c usr/ccs/bin/make/rewinddir.c usr/ccs/bin/make/rules.c /u1/1.0.3/hostobj/at386/usr/ccs/bin/make 
++ cd /u1/1.0.3/hostobj/at386/usr/ccs/bin/make 
++ sh -x ./bootstrap.sh 
++ [  = NO_VFPRINTF ] 
+MISC_DEFS=
+LIBS_DEFS=-DASCARCH
+MAIN_DEFS=-DMACHINE="i386"
+RULES_DEFS=-Dtarget_MACHINE="TARGET_MACHINE=AT386" -Dtarget_machine="target_machine=at386" -Dthis_CPUTYPE="CPUTYPE=I386" -Dthis_cputype="cputype=i386"
+CFLAGS= -D_BLD -D_BSD -O
++ cc -c -D_BLD -D_BSD -O -DMACHINE="i386" main.c 
++ cc -c -D_BLD -D_BSD -O doname.c 
++ cc -c -D_BLD -D_BSD -O misc.c 
++ cc -c -D_BLD -D_BSD -O files.c 
++ cc -c -D_BLD -D_BSD -O dirs.c 
++ cc -c -D_BLD -D_BSD -O -DASCARCH libs.c 
++ cc -c -D_BLD -D_BSD -O -Dtarget_MACHINE="TARGET_MACHINE=AT386" -Dtarget_machine="target_machine=at386" -Dthis_CPUTYPE="CPUTYPE=I386" -Dthis_cputype="cputype=i386" rules.c 
++ cc -c -D_BLD -D_BSD -O dosys.c 
++ yacc gram.y 
++ mv y.tab.c gram.c 
++ cc -c -D_BLD -D_BSD -O gram.c 
++ cc -c -D_BLD -D_BSD -O dyndep.c 
++ cc -c -D_BLD -D_BSD -O environment.c 
++ cc -c -D_BLD -D_BSD -O rewinddir.c 
++ cc main.o doname.o misc.o files.o dirs.o libs.o rules.o dosys.o gram.o dyndep.o environment.o rewinddir.o -o make 
++ cp /u1/1.0.3/hostobj/at386/usr/ccs/bin/make/make /u1/1.0.3/tools/at386/hostbin/make 
++ cp /u1/1.0.3/hostobj/at386/usr/ccs/bin/make/environment.o /u1/1.0.3/tools/at386/lib/environment.o 
++ rm -rf /u1/1.0.3/hostobj/at386/usr/ccs 
++ cd usr/local/sdm/bin/genpath 
++ make -cEF CARGS=-DMACH -DCMU -DOSF -D_NO_PROTO _GENINC_=-I/u1/1.0.3/hostobj/at386/usr/include _GENLIB_= OFILES=genpath.o /u1/1.0.3/tools/at386/lib/environment.o LIBS= genpath 
+mkdir ../../../../../../hostobj/at386/usr/local
+mkdir ../../../../../../hostobj/at386/usr/local/sdm
+mkdir ../../../../../../hostobj/at386/usr/local/sdm/bin
+mkdir ../../../../../../hostobj/at386/usr/local/sdm/bin/genpath
+cd ../../../../../../hostobj/at386/usr/local/sdm/bin/genpath
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF -D_NO_PROTO   -I/u1/1.0.3/hostobj/at386/usr/include  ../../../../../../../src/usr/local/sdm/bin/genpath/genpath.c
+cc          -o genpath.X genpath.o /u1/1.0.3/tools/at386/lib/environment.o    
+mv genpath.X genpath
++ cp /u1/1.0.3/hostobj/at386/usr/local/sdm/bin/genpath/genpath /u1/1.0.3/tools/at386/hostbin/genpath 
++ rm -f /u1/1.0.3/tools/at386/lib/environment.o 
++ cd usr/local/sdm/bin/makepath 
++ make -cEF CARGS=-DMACH -DCMU -DOSF INCARGS=-I/u1/1.0.3/hostobj/at386/usr/include LIBS= makepath 
+mkdir ../../../../../../hostobj/at386/usr/local/sdm/bin/makepath
+cd ../../../../../../hostobj/at386/usr/local/sdm/bin/makepath
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF    `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../../src/usr/local/sdm/bin/makepath/makepath.c
+cc         `genpath   `  -o makepath.X makepath.o    
+mv makepath.X makepath
++ cp /u1/1.0.3/hostobj/at386/usr/local/sdm/bin/makepath/makepath /u1/1.0.3/tools/at386/hostbin/makepath 
++ cd usr/local/sdm/bin/release 
++ make -cEF CARGS=-DMACH -DCMU -DOSF INCARGS=-I/u1/1.0.3/hostobj/at386/usr/include OFILES=release.o LIBS= release 
+mkdir ../../../../../../hostobj/at386/usr/local/sdm/bin/release
+cd ../../../../../../hostobj/at386/usr/local/sdm/bin/release
+cc -c   -O  -UMSG -D_BLD  -D_BSD -DA_OUT  -DMACH -DCMU -DOSF    `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../../src/usr/local/sdm/bin/release/release.c
+cc         `genpath   `  -o release.X release.o    
+mv release.X release
++ cp /u1/1.0.3/hostobj/at386/usr/local/sdm/bin/release/release /u1/1.0.3/tools/at386/hostbin/release 
++ cd usr/include 
++ make -cEF NLchar.h NLctype.h 
+mkdir ../../../hostobj/at386/usr/include
+cd ../../../hostobj/at386/usr/include
+rm -f NLchar.h
+ln -s sys/NLchar.h NLchar.h
+sed  -e '' <../../../../src/usr/include/NLctype.h >./NLctype.h.X
+mv -f ./NLctype.h.X ./NLctype.h
++ cd usr/include/sys 
++ make -cEF NLchar.h localedef.h 
+mkdir ../../../../hostobj/at386/usr/include/sys
+cd ../../../../hostobj/at386/usr/include/sys
+sed  -e '' <../../../../../src/kernel/sys/NLchar.h >./NLchar.h.X
+mv -f ./NLchar.h.X ./NLchar.h
+sed  -e '' <../../../../../src/kernel/sys/localedef.h >./localedef.h.X
+mv -f ./localedef.h.X ./localedef.h
++ cd usr/bin/xmkcatdefs 
++ make -cEF INCARGS=-I/u1/1.0.3/hostobj/at386/usr/include xmkcatdefs 
+mkdir ../../../../hostobj/at386/usr/bin
+mkdir ../../../../hostobj/at386/usr/bin/xmkcatdefs
+cd ../../../../hostobj/at386/usr/bin/xmkcatdefs
+cc -c   -O  -UMSG -D_BLD  -UMSG      `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../src/usr/bin/xmkcatdefs/xmkcatdefs.c
+cc -c   -O  -UMSG -D_BLD  -UMSG      `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../src/usr/bin/xmkcatdefs/xsymtab.c
+cc -c   -O  -UMSG -D_BLD  -UMSG      `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../src/usr/bin/xmkcatdefs/xcatio.c
+cc         `genpath   `  -o xmkcatdefs.X xmkcatdefs.o xsymtab.o xcatio.o    
+mv xmkcatdefs.X xmkcatdefs
++ cp /u1/1.0.3/hostobj/at386/usr/bin/xmkcatdefs/xmkcatdefs /u1/1.0.3/tools/at386/hostbin/xmkcatdefs 
++ cd usr/bin/msg 
++ make -cEF MSGHDRS= INCARGS=-I/u1/1.0.3/hostobj/at386/usr/include gencat 
+mkdir ../../../../hostobj/at386/usr/bin/msg
+cd ../../../../hostobj/at386/usr/bin/msg
+cc -c   -O  -UMSG -D_BLD        `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../src/usr/bin/msg/gencat.c
+cc -c   -O  -UMSG -D_BLD        `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../src/usr/bin/msg/catio.c
+cc         `genpath   `  -o gencat.X gencat.o catio.o    
+mv gencat.X gencat
++ cp /u1/1.0.3/hostobj/at386/usr/bin/msg/gencat /u1/1.0.3/tools/at386/hostbin/gencat 
++ cd usr/bin/ctab 
++ make -cEF CARGS=-D_NO_PROTO INCARGS=-I/u1/1.0.3/hostobj/at386/usr/include ctab 
+mkdir ../../../../hostobj/at386/usr/bin/ctab
+cd ../../../../hostobj/at386/usr/bin/ctab
+xmkcatdefs ctab ../../../../../src/usr/bin/ctab/ctab.msg > ctab.cat.in
+mkcatdefs: ctab_msg.h created
+rm -f ../../../usr/lib/nls/msg/en_US.88591/ctab.cat
+makepath ../../../usr/lib/nls/msg/en_US.88591/ctab.cat
+../../../usr/lib: created directory
+../../../usr/lib/nls: created directory
+../../../usr/lib/nls/msg: created directory
+../../../usr/lib/nls/msg/en_US.88591: created directory
+gencat ../../../usr/lib/nls/msg/en_US.88591/ctab.cat ctab.cat.in
+rm -f ctab.cat.in
+cc -c   -O  -UMSG -D_BLD    -D_NO_PROTO    `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../src/usr/bin/ctab/ctab.c
+cc         `genpath   `  -o ctab.X ctab.o    
+mv ctab.X ctab
++ cp /u1/1.0.3/hostobj/at386/usr/bin/ctab/ctab /u1/1.0.3/tools/at386/hostbin/ctab 
++ cd usr/bin/libloc 
++ make -cEF CARGS=-D_NO_PROTO INCARGS=-I/u1/1.0.3/hostobj/at386/usr/include libloc 
+mkdir ../../../../hostobj/at386/usr/bin/libloc
+cd ../../../../hostobj/at386/usr/bin/libloc
+cc -c   -O  -UMSG -D_BLD    -D_NO_PROTO    `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../src/usr/bin/libloc/libloc.c
+cc         `genpath   `  -o libloc.X libloc.o    
+mv libloc.X libloc
++ cp /u1/1.0.3/hostobj/at386/usr/bin/libloc/libloc /u1/1.0.3/tools/at386/hostbin/libloc 
++ cd usr/include 
++ make -cEF mach_error.h 
+cd ../../../hostobj/at386/usr/include
+sed  -e '' <../../../../src/usr/include/mach_error.h >./mach_error.h.X
+mv -f ./mach_error.h.X ./mach_error.h
++ cd usr/include/mach 
++ make -cEF boolean.h error.h kern_return.h message.h port.h 
+mkdir ../../../../hostobj/at386/usr/include/mach
+cd ../../../../hostobj/at386/usr/include/mach
+sed  -e '' <../../../../../src/kernel/mach/boolean.h >./boolean.h.X
+mv -f ./boolean.h.X ./boolean.h
+sed  -e '' <../../../../../src/kernel/mach/error.h >./error.h.X
+mv -f ./error.h.X ./error.h
+sed  -e '' <../../../../../src/kernel/mach/kern_return.h >./kern_return.h.X
+mv -f ./kern_return.h.X ./kern_return.h
+sed  -e '' <../../../../../src/kernel/mach/message.h >./message.h.X
+mv -f ./message.h.X ./message.h
+sed  -e '' <../../../../../src/kernel/mach/port.h >./port.h.X
+mv -f ./port.h.X ./port.h
++ mkdir /u1/1.0.3/hostobj/at386/usr/include/mach/machine 
++ cp kernel/mach/i386/boolean.h /u1/1.0.3/hostobj/at386/usr/include/mach/machine 
++ cp kernel/mach/i386/kern_return.h /u1/1.0.3/hostobj/at386/usr/include/mach/machine 
++ cd usr/ccs/bin/mig 
++ make -cEF CARGS=-DMACH -DCMU -DOSF mig 
+mkdir ../../../../../hostobj/at386/usr/ccs
+mkdir ../../../../../hostobj/at386/usr/ccs/bin
+mkdir ../../../../../hostobj/at386/usr/ccs/bin/mig
+cd ../../../../../hostobj/at386/usr/ccs/bin/mig
+sed -e '1s;^#!;&;' -e t -e 's;^#\(.*\)\@SOURCEWARNING\@;\1THIS IS NOT A SOURCE FILE - DO NOT EDIT;' -e t  -e '/^[ 	]*[#:]/d' ../../../../../../src/usr/ccs/bin/mig/mig.sh >mig.X
+chmod +x mig.X
+mv -f mig.X mig
++ cp /u1/1.0.3/hostobj/at386/usr/ccs/bin/mig/mig /u1/1.0.3/tools/at386/hostbin/mig 
+PORTING_CARGS=
++ [ -n  ] 
++ cd usr/ccs/lib/migcom 
++ make -cEF INCARGS=-I. -I/u1/1.0.3/hostobj/at386/usr/include CARGS=-DMACH -DCMU -DOSF  migcom 
+mkdir ../../../../../hostobj/at386/usr/ccs/lib
+mkdir ../../../../../hostobj/at386/usr/ccs/lib/migcom
+cd ../../../../../hostobj/at386/usr/ccs/lib/migcom
+yacc  -d  ../../../../../../src/usr/ccs/lib/migcom/parser.y
+mv -f y.tab.c parser.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   parser.c
+if [ -f y.tab.h ]; then mv -f y.tab.h parser.h; fi
+lex  ../../../../../../src/usr/ccs/lib/migcom/lexxer.l
+1304/10000 nodes(%e), 3452/25000 positions(%p), 429/5000 (%n), 28569 transitions
+, 897/1000 packed char classes(%k), 2181/20000 packed transitions(%a), 1967/5000 output slots(%o)
+cc   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   -c lex.yy.c
+rm -f lex.yy.c
+mv -f lex.yy.o lexxer.o
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/migcom.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/error.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/string.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/type.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/routine.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/statement.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/global.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/header.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/user.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/server.c
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF     `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/lib/migcom/utils.c
+cc         `genpath   `  -o migcom.X parser.o lexxer.o migcom.o  error.o string.o type.o routine.o  statement.o global.o  header.o user.o server.o utils.o  -ll  
+mv migcom.X migcom
++ cp /u1/1.0.3/hostobj/at386/usr/ccs/lib/migcom/migcom /u1/1.0.3/tools/at386/lib/migcom 
+PORTING_CARGS=
++ [ -n  ] 
++ cd usr/local/sdm/bin/md 
++ make -cEF INCARGS=-I/u1/1.0.3/hostobj/at386/usr/include LIBS= CARGS=-DMACH -DCMU -DOSF -D_BSD  md 
+mkdir ../../../../../../hostobj/at386/usr/local/sdm/bin/md
+cd ../../../../../../hostobj/at386/usr/local/sdm/bin/md
+cc -c   -O  -UMSG -D_BLD    -DMACH -DCMU -DOSF -D_BSD     `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../../src/usr/local/sdm/bin/md/md.c
+cc         `genpath   `  -o md.X md.o    
+mv md.X md
++ cp /u1/1.0.3/hostobj/at386/usr/local/sdm/bin/md/md /u1/1.0.3/tools/at386/hostbin/md 
++ [ -n  ] 
++ cd usr/ccs/bin/yacc 
++ make -cEF INCARGS=-I/u1/1.0.3/hostobj/at386/usr/include yacc 
+mkdir ../../../../../hostobj/at386/usr/ccs/bin/yacc
+cd ../../../../../hostobj/at386/usr/ccs/bin/yacc
+xmkcatdefs yacc ../../../../../../src/usr/ccs/bin/yacc/yacc.msg > yacc.cat.in
+mkcatdefs: yacc_msg.h created
+rm -f ../../../../usr/lib/nls/msg/en_US.88591/yacc.cat
+makepath ../../../../usr/lib/nls/msg/en_US.88591/yacc.cat
+gencat ../../../../usr/lib/nls/msg/en_US.88591/yacc.cat yacc.cat.in
+rm -f yacc.cat.in
+cc -c   -O  -UMSG -D_BLD  -DWORD32      `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/bin/yacc/y1.c
+cc -c   -O  -UMSG -D_BLD  -DWORD32      `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/bin/yacc/y2.c
+cc -c   -O  -UMSG -D_BLD  -DWORD32      `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/bin/yacc/y3.c
+cc -c   -O  -UMSG -D_BLD  -DWORD32      `genpath -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/bin/yacc/y4.c
+cc         `genpath   `  -o yacc.X y1.o y2.o y3.o y4.o    
+mv yacc.X yacc
++ cp /u1/1.0.3/hostobj/at386/usr/ccs/bin/yacc/yacc /u1/1.0.3/tools/at386/hostbin/yacc 
++ cp usr/ccs/lib/yaccpar /u1/1.0.3/tools/at386/lib/yaccpar 
+YACCPAR=/u1/1.0.3/tools/at386/lib/yaccpar
++ export YACCPAR 
++ cd usr/ccs/bin/lex 
++ make -cEF INCARGS=-I. -I/u1/1.0.3/hostobj/at386/usr/include lex 
+mkdir ../../../../../hostobj/at386/usr/ccs/bin/lex
+cd ../../../../../hostobj/at386/usr/ccs/bin/lex
+xmkcatdefs lex ../../../../../../src/usr/ccs/bin/lex/lex.msg > lex.cat.in
+mkcatdefs: lex_msg.h created
+rm -f ../../../../usr/lib/nls/msg/en_US.88591/lex.cat
+makepath ../../../../usr/lib/nls/msg/en_US.88591/lex.cat
+gencat ../../../../usr/lib/nls/msg/en_US.88591/lex.cat lex.cat.in
+rm -f lex.cat.in
+cc -c   -O  -UMSG -D_BLD        `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/bin/lex/main.c
+yacc    ../../../../../../src/usr/ccs/bin/lex/parser.y
+cc   -O  -UMSG -D_BLD        `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   -c y.tab.c
+rm -f y.tab.c
+mv -f y.tab.o parser.o
+cc -c   -O  -UMSG -D_BLD        `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/bin/lex/sub1.c
+cc -c   -O  -UMSG -D_BLD        `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/bin/lex/sub2.c
+cc -c   -O  -UMSG -D_BLD        `genpath -I. -I/u1/1.0.3/hostobj/at386/usr/include  `   ../../../../../../src/usr/ccs/bin/lex/header.c
+cc         `genpath   `  -o lex.X main.o parser.o sub1.o sub2.o header.o    
+mv lex.X lex
++ cp /u1/1.0.3/hostobj/at386/usr/ccs/bin/lex/lex /u1/1.0.3/tools/at386/hostbin/lex 
++ cp usr/ccs/lib/ncform /u1/1.0.3/tools/at386/lib/ncform 
++ [ MACHO = MACHO ] 
++ cd usr/ccs/bin/ranlib 
++ make -cEF ranlib 
+mkdir ../../../../../hostobj/at386/usr/ccs/bin/ranlib
+cd ../../../../../hostobj/at386/usr/ccs/bin/ranlib
+sed -e '1s;^#!;&;' -e t -e 's;^#\(.*\)\@SOURCEWARNING\@;\1THIS IS NOT A SOURCE FILE - DO NOT EDIT;' -e t  -e '/^[ 	]*[#:]/d' ../../../../../../src/usr/ccs/bin/ranlib/ranlib.sh >ranlib.X
+chmod +x ranlib.X
+mv -f ranlib.X ranlib
++ cp /u1/1.0.3/hostobj/at386/usr/ccs/bin/ranlib/ranlib /u1/1.0.3/tools/at386/macho/ranlib 
++ exit 0 

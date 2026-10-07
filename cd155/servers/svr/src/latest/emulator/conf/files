@@ -1,0 +1,156 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#  Evidently any option that has an 
+#  "OPTIONS" line in this file will have an include file generated, any 
+#  others will be included as -D switches. 
+#			Dave Leslie 3/25/94
+######################################################################
+OPTIONS/bogus_memory	optional bogus_memory
+OPTIONS/bsd_a_out	optional bsd_a_out
+OPTIONS/bufcache_stats	optional bufcache_stats
+OPTIONS/com		optional com
+OPTIONS/cs_kdb		optional cs_kdb
+OPTIONS/cs_lint		optional cs_lint
+OPTIONS/cs_tty		optional cs_tty
+OPTIONS/cs_ttyloc	optional cs_ttyloc
+OPTIONS/dli		optional dli
+OPTIONS/fast_csw	optional fast_csw
+#OPTIONS/fullserver      optional fullserver
+OPTIONS/generic		optional generic
+OPTIONS/hw_ast		optional hw_ast
+OPTIONS/hw_footprint	optional hw_footprint
+OPTIONS/igmproto	optional igmproto
+OPTIONS/inet		optional inet define_dynamic
+OPTIONS/inocache_stats	optional inocache_stats
+OPTIONS/kji		optional kji
+OPTIONS/lock_stats	optional lock_stats
+OPTIONS/mach_afs	optional mach_afs
+OPTIONS/mach_afs_30	optional mach_afs_30
+OPTIONS/mach_assert	optional mach_assert
+OPTIONS/mach_co_info	optional mach_co_info
+OPTIONS/mach_co_stats	optional mach_co_stats
+OPTIONS/mach_compat	optional mach_compat
+OPTIONS/mach_debug	optional mach_debug
+OPTIONS/mach_device	optional mach_device
+OPTIONS/mach_emulation	optional mach_emulation
+OPTIONS/mach_fastlink	optional mach_fastlink
+OPTIONS/mach_host	optional mach_host
+OPTIONS/mach_ipc_sighack	optional mach_ipc_sighack
+OPTIONS/mach_ipc_stats	optional mach_ipc_stats
+OPTIONS/mach_ipc_tcache	optional mach_ipc_tcache
+OPTIONS/mach_ipc_wwa	optional mach_ipc_wwa
+OPTIONS/mach_ipc_xxxhack	optional mach_ipc_xxxhack
+OPTIONS/mach_kdb	optional mach_kdb
+OPTIONS/mach_km		optional mach_km
+OPTIONS/mach_ldebug	optional mach_ldebug
+OPTIONS/mach_load	optional mach_load
+OPTIONS/mach_ltracks	optional mach_ltracks
+OPTIONS/mach_nbc	optional mach_nbc
+OPTIONS/mach_net	optional mach_net
+OPTIONS/mach_no_kernel	optional mach_no_kernel
+OPTIONS/mach_np		optional mach_np
+OPTIONS/mach_old_vm_copy	optional mach_old_vm_copy
+OPTIONS/mach_pagemap	optional mach_pagemap
+OPTIONS/mach_sctimes	optional mach_sctimes
+OPTIONS/mach_syscall	optional mach_syscall
+OPTIONS/mach_time	optional mach_time
+OPTIONS/mach_vmtp	optional mach_vmtp
+OPTIONS/mach_xp		optional mach_xp
+OPTIONS/mach_xp_fpd	optional mach_xp_fpd
+OPTIONS/mach_xp_sc	optional mach_xp_sc
+OPTIONS/map_ether	optional map_ether
+OPTIONS/map_time	optional map_time
+#OPTIONS/map_uarea	optional map_uarea
+#OPTIONS/mapped_files	optional mapped_files
+OPTIONS/multibind	optional multibind
+OPTIONS/multicast	optional multicast
+OPTIONS/multicast_agent	optional multicast_agent
+OPTIONS/namei_macros	optional namei_macros
+OPTIONS/net_bugfix	optional net_bugfix
+#OPTIONS/nfs		optional nfs define_dynamic
+OPTIONS/norma_ipc	optional norma_ipc
+OPTIONS/remote_proc	optional remote_proc
+OPTIONS/ns		optional ns define_dynamic
+OPTIONS/osf_mach_o	optional osf_mach_o
+OPTIONS/profiling	optional profiling
+OPTIONS/quota		optional quota
+OPTIONS/sec_acl_posix	optional sec_acl_posix
+OPTIONS/sec_acl_sware	optional sec_acl_sware
+OPTIONS/sec_base	optional sec_base
+OPTIONS/sec_cmw		optional sec_cmw
+OPTIONS/sec_mac_ob	optional sec_mac_ob
+OPTIONS/sec_ncav	optional sec_ncav
+OPTIONS/sec_priv	optional sec_priv
+OPTIONS/sec_shw		optional sec_shw
+OPTIONS/ser_compat	optional ser_compat
+OPTIONS/simple_clock	optional simple_clock
+OPTIONS/slock_stats	optional slock_stats
+OPTIONS/stat_time	optional stat_time
+OPTIONS/streams		optional streams
+OPTIONS/streams_debug	optional streams_debug
+OPTIONS/strecho		optional strecho define_dynamic
+OPTIONS/strlog		optional strlog	define_dynamic
+OPTIONS/strnull		optional strnull define_dynamic
+OPTIONS/strpass		optional strpass define_dynamic
+OPTIONS/strsc		optional strsc define_dynamic
+OPTIONS/strtmux		optional strtmux define_dynamic
+OPTIONS/strsvvs		optional strsvvs define_dynamic
+OPTIONS/sun_lock	optional sun_lock
+OPTIONS/svtt		optional svtt define_dynamic
+OPTIONS/sysv_coff	optional sysv_coff
+OPTIONS/sysv_fs		optional sysv_fs define_dynamic
+OPTIONS/timod		optional timod define_dynamic
+OPTIONS/tirdwr		optional tirdwr define_dynamic
+OPTIONS/ttlcontrol	optional ttlcontrol
+#OPTIONS/ufs             optional ufs
+OPTIONS/ufs_nbc		optional ufs_nbc
+OPTIONS/ufs_nbc_debug	optional ufs_nbc_debug
+OPTIONS/uipc		optional uipc
+OPTIONS/unix_locks	optional unix_locks
+OPTIONS/unix_uni	optional unix_uni
+OPTIONS/vague_stats	optional vague_stats
+OPTIONS/vfs_vio		optional vfs_vio
+OPTIONS/wired_threads	optional wired_threads
+OPTIONS/xpr_debug	optional xpr_debug
+OPTIONS/xtiso		optional xtiso define_dynamic
+
+### START HERE FOR EMULATOR
+allocator.c		standard
+async_io.c		optional pfs
+bsd_user_side.c	standard
+emul_cache.c	standard
+emul_callback.c	standard
+emul_chkpnt.c	optional tnc
+emul_generic.c	standard
+emul_init.c		standard
+emul_mapped.c	standard
+emul_stack_alloc.c	standard
+fsvr2_user_side.c	standard
+fsvr_user_side.c	standard
+pfs2_user_side.c	optional pfs
+pfs_emath.c		optional pfs
+pfs_iomode.c	optional pfs
+pfs_msgutil.c	optional pfs
+pfs_spanning.c	optional pfs
+pfs_tokenmgt.c	optional pfs
+pfs_user_side.c	standard
+fsvr_user.c	standard
+bsd_1_user.c 	standard
+emul_call_reply_user.c	standard
+emul_call_server.c	standard
+emul_call_user.c	standard
+emul_sysent.c	standard
+fsvr2_user_receive.c	standard
+fsvr2_user_send.c	standard
+vers.c	standard
+pfs2_user_receive.c	optional pfs
+pfs2_user_send.c	optional pfs

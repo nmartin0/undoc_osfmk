@@ -1,0 +1,44 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+
+# Usage:
+#	munge_syscall input_file list_of_defines . . . 
+
+# Designed to munge a sys/syscall.h produced by the server build so that
+# it is fit for commands/libraries builds and for installation on a customer
+# Paragon.
+#
+# It is to be called from the Makefile in the C/L usr/include/sys directory.
+# 'list_of_defines' is defined as ADD_DEFINES in that Makefile.  The
+# input file should be a syscall.h in the server obj tree.
+#		Dave Leslie 3/24/94
+
+if [ $# -lt 2 ] ; then
+	echo "Usage: $0 input_file list_of_defines . . ."
+	exit 1
+fi
+infile=$1
+if [ ! -f $infile ] ; then
+	echo "$0: Can't find input file $infile"
+	exit 1
+fi
+while [ $# -gt 1 ] ; do
+	define=$2
+	shift
+	echo 
+	echo "#ifndef $define"
+	echo "#define $define"
+	echo "#endif"
+done
+echo
+cat $infile

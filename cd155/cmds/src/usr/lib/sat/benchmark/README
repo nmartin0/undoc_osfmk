@@ -1,0 +1,7 @@
+Standard Benchmarks
+
+This directory contains industry standard benchmarks. These are non-parallel
+programs run on a single processor. They demonstrate compiler capabilities
+as well as the performance of the actual hardware. Results are compared
+against expected performance levels for this system.
+

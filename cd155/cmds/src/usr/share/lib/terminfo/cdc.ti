@@ -1,0 +1,49 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+# 
+# 
+# OSF/1 Release 1.0
+
+#
+# "@(#)$RCSfile: cdc.ti,v $ $Revision: 1.2 $ (OSF) $Date: 1994/11/19 03:20:33 $"
+#
+# COMPONENT_NAME: (TERMINFO) Termifno
+#
+# FUNCTIONS:    cdc.ti
+#
+# ORIGINS: 3, 26, 27
+#
+# This module contains IBM CONFIDENTIAL code. -- (IBM
+# Confidential Restricted when combined with the aggregated
+# modules for this product)
+# OBJECT CODE ONLY SOURCE MATERIALS
+# (C) COPYRIGHT International Business Machines Corp. 1985, 1988
+# All Rights Reserved
+# Licensed Material - Property of IBM
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+# cdc.ti        1.4  com/terminfo,3.1,9013 10/16/89 23:05:45
+
+cdc456|cdc,
+	cr=^M, cud1=^J, ind=^J, bel=^G, lines#24, cols#80, clear=^Y^X,
+	cuf1=^L, cuu1=^Z, cub1=^H, cup=\E1%p1%' '%+%c%p2%' '%+%c, home=^Y,
+	il1=\E\114, dl1=\E\112, el=^V, ed=^X, am,
+
+cdc456tst,
+	cr=^M, cud1=^J, ind=^J, bel=^G,
+	lines#24, cols#80, clear=^y^x, cub1=^H, cup=\E1%p1%' '%+%c%p2%' '%+%c,
+	am,

@@ -1,0 +1,110 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+/*
+ * HISTORY
+ * $Log: mach_poly.defs,v $
+ * Revision 1.5  1994/11/18  20:53:48  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.4  1993/07/14  18:51:25  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.3  1993/05/06  19:30:02  stefan
+ * ad103+tnc merged with Intel code.
+ *
+ * Revision 1.1.1.3  1993/07/01  21:18:12  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.2  1992/11/30  23:02:21  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1  1992/11/05  23:50:07  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ *
+ * Revision 4.1  1992/11/04  01:02:49  cfj
+ * Bump major revision number.
+ *
+ * Revision 1.1.1.1  1993/05/03  17:58:15  cfj
+ * Initial 1.0.3 code drop
+ *
+ * Revision 2.2  1992/01/16  14:40:37  roy
+ * 	Initial revision (durriya).
+ *
+ */
+
+/*
+ * Matchmaker definitions file for polymorphic vm_set_default_memory_manager
+ * - This file may look very strange and indeed it is. The whole idea is to 
+ *   just allow the user side stub of vm_set_default_memory_manager pass an 
+ *   extra argument indicating whether you want the 'default_manager' port 
+ *   passed as MACH_MSG_TYPE_COPY_SEND or MACH_MSG_TYPE_MAKE_SEND
+ *   NOTE : This one starts with id of 2041, so that we can avoid a whole 
+ *          bunch of skips
+ */
+
+subsystem
+#if	KERNEL_USER
+	  KernelUser
+#endif	KERNEL_USER
+#if	KERNEL_SERVER
+	  KernelServer
+#endif	KERNEL_SERVER
+		       mach 2041;
+
+#ifdef	KERNEL_USER
+userprefix r_;
+#endif	KERNEL_USER
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+/*
+ *	Sets the default memory manager, the port to which
+ *	newly-created temporary memory objects are delivered.
+ *	[See (memory_object_default)memory_object_create.]
+ *	The old memory manager port is returned. If default_manager =
+ *      MACH_PORT_NULL on its way in, this call just returns the
+ */
+routine vm_set_default_memory_manager_poly(
+		host_priv	: host_priv_t;
+	inout	default_manager	: mach_port_send_t);
+
+
+
+

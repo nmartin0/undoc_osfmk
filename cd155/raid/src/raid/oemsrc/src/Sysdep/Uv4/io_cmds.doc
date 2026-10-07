@@ -1,0 +1,33 @@
+Filename: /tmp/test/io_cmds.doc
+
+This file is used to set up the mode and data sources for the io_test program. 
+
+Field definitions:
+	#1 = mode
+    		i = interactive mode
+		s = suppress cdb display in interactive mode
+	        a = auto return mode (no command display or interaction)
+	#2 = op code (* = default)     
+	#3 = page code (* = default)
+	#4 = command name
+	#5 = file containing return data    
+	#6 = file containing sense data
+
+-a  12   *  "Inquiry"            "/tmp/test/inquiry.doc"   "/tmp/test/sense.doc"
+-a  28   *  "Read"               "/tmp/test/read.doc"      "/tmp/test/sense.doc"
+-a  25   *  "Read Capacity"      "/tmp/test/readcap.doc"   "/tmp/test/sense.doc"
+-a  5a  01  "Mode Sense"         "/tmp/test/recovery.doc"  "/tmp/test/sense.doc"  
+-a  5a  2a  "Mode Sense"         "/tmp/test/phyarray.doc"  "/tmp/test/sense.doc"
+-a  5a  2b  "Mode Sense"         "/tmp/test/logarray.doc"  "/tmp/test/sense.doc" 
+-a  2a   *  "Write"              ""                    "/tmp/test/sense.doc"
+-a  3b   *  "Write Buffer"       ""                    "/tmp/test/sense.doc"
+-a  55   *  "Mode Select"        ""                    "/tmp/test/sense.doc"
+-a  1c   *  "Receive Diagnosis"  ""                    "/tmp/test/sense.doc"
+-a  03   *  "Request Sense"      ""                    "/tmp/test/sense.doc"
+-a  4c   *  "Log Select"         ""                    "/tmp/test/sense.doc"
+-a  4d   *  "Log Sense"          ""                    "/tmp/test/sense.doc"
+-a  2e   *  "Write and Verify"   ""                    "/tmp/test/sense.doc"
+-a  2f   *  "Verify"             ""                    "/tmp/test/sense.doc"
+-a  04   *  "Format"             ""                    ""
+-a   *   *  "Unknown"            ""                    ""
+

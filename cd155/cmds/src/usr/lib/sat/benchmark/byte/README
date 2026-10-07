@@ -1,0 +1,7 @@
+BYTE Benchmarks (byte)
+
+This public domain suite from BYTE magazine include benchmarks for
+arithmetic, dhrystones, spawning a process, file copy throughput,
+pipe-based context switching, and concurrent shell scripts.
+This suite includes tests from version 3.6 (5/15/91).
+

@@ -1,0 +1,187 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/benchmark/blas3/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# run just one thread
+DFLT_NCPUS=1
+export DFLT_NCPUS
+
+# Initialize local variables
+exitCode=0
+testError=1
+miscError=2
+abortCode=3
+title="`sed -n '1p' README`"
+
+# Source directory
+sourceDir=`pwd`
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+#        Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/blas3.scratch.$$
+programResultsFile=$SAT_USR_TMP/blas3.results.$$
+programErrorFile=$SAT_USR_TMP/blas3.errors.$$
+
+# Define temporary directory to run program in
+programWorkDir=$SAT_USR_TMP/blas3.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   # Remove temporary files
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+
+   # Remove temporary directory
+   cd $sourceDir
+   rm -fr $programWorkDir
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "blas3 sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Initialize empty results files
+touch $programScratchFile
+touch $programResultsFile
+
+# For each test
+for pgm in sblas3 dblas3 cblas3 zblas3
+do
+    PGM="`echo $pgm | tr '[a-z]' '[A-Z]'`"
+
+    # Define test titles
+    if test "$pgm" = "sblas3"
+    then
+       testTitle="Single-Precision Real $title"
+    fi
+    if test "$pgm" = "dblas3"
+    then
+       testTitle="Double-Precision Real $title"
+    fi
+    if test "$pgm" = "cblas3"
+    then
+       testTitle="Single-Precision Complex $title"
+    fi
+    if test "$pgm" = "zblas3"
+    then
+       testTitle="Double-Precision Complex $title"
+    fi
+
+    # Verify support file(s), input and comparison
+    if test ! -r $sourceDir/$pgm.in -o ! -r $sourceDir/$PGM.IPSC
+    then
+       echo "Required support files for \"$pgm\" not available." 1>&2
+       cleanup $miscError
+    fi
+
+    # Verify program is executable
+    if test -x $sourceDir/$pgm.x
+    then
+       # remove output file
+       rm -f $PGM.PER
+
+       # Execute program
+       if $sourceDir/$pgm.x < $sourceDir/$pgm.in > $programScratchFile 2> $programErrorFile
+       then
+          # Report PASS/FAIL results, PASS = no FAIL messages
+          if test -z "`egrep FAIL $PGM.PER`" -a ! -f core -a ! -d core
+          then
+             # Program PASSed, print message
+             echo "PASS: $testTitle."
+          else
+             # Program FAILed, cat scratch file back to sat
+             echo "FAIL: $testTitle."
+
+             cat $programScratchFile
+             cat $PGM.PER
+             cat $programErrorFile 1>&2
+
+             cleanup $testError
+          fi
+       else
+          # Non-zero test exit, pass to sat
+          exitCode=$?
+          echo "$sourceDir/$pgm.x exit code: $exitCode" >> $programScratchFile
+
+          cat $programScratchFile
+          cat $programErrorFile 1>&2
+
+          cleanup $testError
+       fi
+    else
+       echo "No \"$sourceDir/$pgm.x\" executable found." 1>&2
+       cleanup $miscError
+    fi
+done
+
+# Finish and exit
+cleanup $exitCode

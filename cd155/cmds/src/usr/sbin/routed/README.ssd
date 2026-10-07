@@ -1,0 +1,7 @@
+
+[ Mon Oct 14 16:58:53 PDT 1991 ] stan
+   af.h
+        see 'i860' for compiler bug: foo[] changed to *foo.
+	Compiler didn't like 'foo[]'.
+
+

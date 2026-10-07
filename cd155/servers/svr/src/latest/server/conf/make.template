@@ -1,0 +1,201 @@
+#!/bin/csh -f
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1990 Carnegie-Mellon University
+# Copyright (c) 1989 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#
+#
+# HISTORY
+# $Log: make.template,v $
+# Revision 1.11  1994/11/18  20:29:42  mtm
+# Copyright additions/changes
+#
+# Revision 1.10  1994/06/23  23:13:48  yazz
+#  Reviewer: Dave Leslie
+#  Risk: very lo
+#  Benefit or PTS #: 9988
+#  Testing: Building at LCC & by inspection
+#  Module(s): server/conf/make.template
+#             emulator/conf/make.template
+#
+# Retain user's original $LPATH value by appending it to new LPATH specification.
+#
+# Revision 1.9  1994/06/22  22:57:12  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: 9090 -- eliminate dependence on CPATH and LPATH
+# 	referring to local system paths on the build machine for
+# 	Suns
+#  Testing: built server, emulator on Sun and Mach X86
+#  Module(s):
+#         server/src/config/Makefile
+#         server/conf/make.template
+#         emulator/conf/make.template
+#         Makeconf
+#
+# Revision 1.8  1994/04/28  19:01:50  chrisp
+# Changes to allow non-NX, i386 builds.
+#
+#  Reviewer: dleslie, cfj
+#  Risk: M
+#  Benefit or PTS #: 9188
+#  Testing: Builds, builds, builds.
+#  Module(s): Makefile MASTER Makefile.i386 Makefile.i860
+#             Makefile.template make.template
+#
+# Revision 1.7  1994/01/03  20:49:02  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: allow 'lint' to be run on individual files or on
+# 	collections of files
+#  Testing: built, ran 'lint'
+#  Module(s): Makefile.template, make.template
+#
+# Revision 1.6  1993/12/10  17:57:07  dleslie
+#  Reviewer: none
+#  Risk: low
+#  Benefit or PTS #: enable 'make lint' for server/emulator
+#  Testing: ran 'make lint' successfully
+#  Module(s): Makefile, emulator/Makefile, server/conf/Makefile.template,
+# 	server/conf/make.template
+#
+# Revision 1.5  1993/11/18  17:36:02  dleslie
+#  Reviewer: None
+#  Risk: low
+#  Benefit or PTS #: find correct 'migcom' when building using a kernel release
+# 	tree built on a different architecture
+#  Testing: built on 486 and Sun
+#  Module(s): make.template
+#
+# Revision 1.4  1993/07/14  17:54:08  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.3  1993/07/01  19:12:32  cfj
+# Adding new code from vendor
+#
+# Revision 1.3  1993/05/06  19:14:36  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.1  1993/05/03  17:27:45  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.2  1992/11/30  22:19:19  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:18:26  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 2.10  1993/04/15  22:49:42  condict
+# 	Avoid setting HCPATH and HLPATH here.  This is now done in Makeconf,
+# 	where the settings can be imported from user's environment.  This
+# 	is to allow building in a Mach 2.5 environment that has been ported to
+# 	a different OS, e.g. OSF/1.
+#
+# Revision 2.9  92/04/07  13:44:05  pjg
+# 	Introduced new variables HCPATH and HLPATH used to build 
+# 	bsd_types_gen in cross-compilations since they need the native
+# 	libraries and not those from the micro-kernel (rabii)
+# 
+# Revision 2.8  92/03/20  11:42:00  pjg
+# 	Changed VPATH (jeff).
+# 
+# Revision 2.7  92/03/09  12:01:43  durriya
+# 	[Revision 3.6  92/02/25  17:48:30  condict]
+# 	Fix bug: VPATH undefined but referenced when SOURCEDIR not defined.
+# 
+# Revision 2.6  91/12/19  12:12:22  roy
+# 	Move ../include up front in CPATH.
+# 
+# Revision 2.5  91/12/18  15:45:57  roy
+# 	Get CPATH set up right.
+# 
+# Revision 2.4  91/12/18  12:46:29  roy
+# 	91/12/11  15:12:00  condict
+# 	Add MKINC to VPATH, to ensure that these files appear as relative 
+# 	paths in Makedep, instead of absolute paths.
+# 
+# 	91/11/15  15:31:39  condict
+# 	Fix up CPATH to find the server/machine/*.h files in the obj tree.
+# 
+# 	91/11/07  15:15:30  condict
+# 	Remove ":q" suffix from the exec command: OSF/1 csh can't handle it 
+# 	and it's unnecessary.
+# 
+# Revision 2.3  91/10/08  11:36:06  rabii
+# 	Added paul roy's changes to make shadowing work
+# 
+# Revision 2.2  91/08/31  13:30:29  rabii
+#	Initial V2.0 Checkin
+#
+#	91/08/27  15:29:31  barbou
+#	Upgrade to UX26.
+#	
+#	91/03/08  16:02:34  condict
+#	Modified to work with the OSF/1 header files
+#	
+# Revision 3.0  91/01/17  12:06:57  condict
+# Unchanged copy from Mach 3.0 BSD UNIX server
+# 
+# Revision 2.2  91/03/20  15:02:16  dbg
+# 	Fix so that shadowing works.
+# 	[90/11/02            dbg]
+# 
+# 	Altered for out-of-kernel use.
+# 	Add ${MKINC} to CPATH.  Add '../sys' to CPATH (temporarily).
+# 	Add ${MKLIB} to LPATH.
+# 	[89/05/24            dbg]
+# 
+# Revision 2.1  89/08/04  15:28:46  rwd
+# Created.
+# 
+# Revision 2.2  89/04/22  15:24:02  gm0w
+# 	Created from root Makefile.
+# 	[89/04/14            gm0w]
+# 
+
+if ( { \[ -z "@OBJECTDIR@" \] } ) then
+    set dirs=(`echo ..:@VPATH@ | sed -e "s;:; ;"`)
+else
+    set dirs=(`echo ../@VPATH@ | sed -e "s;:; ;"`)
+endif
+unsetenv MAKEDIR MAKEPSD MAKECWD OBJECTDIR
+
+if ($#dirs == 1 && $?USE_SOURCE_DIR) then
+    setenv CPATH ":..:../include:${dirs}"
+    setenv VPATH ""
+    set src="SOURCE_DIR=${dirs}"
+else
+    setenv CPATH ":..:../include"
+    setenv VPATH ""
+    set c=""
+    foreach d ($dirs)
+        setenv CPATH "${CPATH}:${d}"
+        setenv VPATH "${VPATH}${c}${d}/conf"
+        set c=":"
+    end
+    set src=""
+endif
+
+setenv CPATH "${CPATH}:${MKINC}"
+if ( ${?LPATH} == 0 ) setenv LPATH
+setenv LPATH "${MIGCOMDIR}":"${MKLIB}":"${LPATH}"
+
+set prog=$0
+set prog=$prog:t
+set makeargs=(-c)
+if ("$prog" == "pmake") set makeargs=""
+set newprog=(`wh $prog | fgrep -v -x "./$prog" | fgrep -v -x "$prog" | head -1`)
+exec $newprog $makeargs $src $*

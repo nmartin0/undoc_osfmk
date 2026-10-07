@@ -1,0 +1,43 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+
+case "$1" in
+'start')
+        set `who -r`
+        if [ $9 = "S" ]; then
+                [ -f /usr/sbin/snmpd -a -s /etc/mib.txt ] && {
+                	/usr/sbin/snmpd &
+                        echo "Internet management service started"
+                }
+        fi
+        ;;
+'stop')
+	pid=`/bin/ps -e | grep /usr/sbin/snmpd | grep -v grep | sed -e 's/^  *//' -e 's/ .*//' | head -1`
+	if [ "X$pid" != "X" ]
+	then
+		/bin/kill $pid
+	fi
+	;;
+*)
+        echo "usage: $0 {start|stop}"
+        ;;
+esac

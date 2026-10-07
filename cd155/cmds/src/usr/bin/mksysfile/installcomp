@@ -1,0 +1,448 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+# This script is used to install native C and FORTRAN compilers
+# as well as documentation. Documentation includes all the man pages.
+# This install assumes that the related compiler tar files are on
+# a remote system. It prompts user to get correct information.
+
+DEFAULTS_FILE=/etc/defaults/install
+DIST_ADDRESS=0.0.0.0
+DIST_NODENAME=unknown
+DIST_PATH=/distribution
+NATC_TAR=nat_c.tar
+NATCPP_TAR=nat_c++.tar
+NATF_TAR=nat_ftn.tar
+C_DOC_TAR=icc.doc.tar
+CPP_DOC_TAR=iCC.doc.tar
+FTN_DOC_TAR=if77.doc.tar
+DOC_TAR=doc.tar
+CFLAG=Y
+FFLAG=Y
+DFLAG=Y
+CPPFLAG=Y
+ASK_QUESTIONS=0
+
+
+###########################################################################
+# FUNCTION:     GetTarFiles
+#
+#       This function will go to the distribution system and retrieve the
+#       tar files. If a failure happens, the user will be given the chance
+#       to change the information.
+###########################################################################
+GetTarFiles()
+{
+        GET_COMPRESSED=1
+        Done=0
+        while [ $Done -eq 0 ]; do
+        	if [ "$FFLAG" = "Y" ]; then
+                	FGET="get $NATF_TAR.Z"
+              		FDGET="get $FTN_DOC_TAR.Z"
+           	fi
+           	if [ "$CFLAG" = "Y" ]; then
+                   	CGET="get $NATC_TAR.Z"
+                   	CDGET="get $C_DOC_TAR.Z"
+           	fi
+           	if [ "$DFLAG" = "Y" ]; then
+                   	DGET="get $DOC_TAR.Z"
+           	fi
+           	if [ "$CPPFLAG" = "Y" ]; then
+                   	CPPGET="get $NATCPP_TAR.Z"
+                   	CPPDGET="get $CPP_DOC_TAR.Z"
+           	fi
+                echo "Username for FTP'ing files from $DIST_NODENAME:[anonymous] \c"
+                read FTP_USER
+                if [ -z "$FTP_USER" ]; then
+                        FTP_USER=anonymous
+                fi
+                ftp -n -v $DIST_ADDRESS <<EOF1
+                        user $FTP_USER
+                        binary
+                        lcd /home
+                        cd $DIST_PATH
+                        $FGET
+                        $FDGET
+                        $CGET
+                        $CDGET
+                        $DGET
+                        $CPPGET
+                        $CPPDGET
+                        quit
+EOF1
+
+# Check to make sure each of the files has been copied down to the target
+# machine. If these files are not here, give the user a change to repeat.
+                Fail=0
+                if [ ! -f /home/$NATC_TAR.Z -a "$CFLAG" = "Y" ]; then
+                        echo "ERROR: $NATC_TAR.Z was not retrieved."
+                        Fail=1
+                fi
+                if [ ! -f /home/$NATF_TAR.Z -a "$FFLAG" = "Y" ]; then
+                        echo "ERROR: $NATF_TAR.Z was not retrieved."
+                        Fail=1
+                fi
+                if [ ! -f /home/$DOC_TAR.Z -a "$DFLAG" = "Y"  ]; then
+                        echo "ERROR: $DOC_TAR.Z was not retrieved."
+                        Fail=1
+
+                fi
+                if [ ! -f /home/$NATCPP_TAR.Z -a "$CPPFLAG" = "Y" ]; then
+                        echo "ERROR: $NATCPP_TAR.Z was not retrieved."
+                        Fail=1
+                fi
+
+                if [ $Fail -eq 0 ]; then
+
+# Uncompress the files we just retrieved.
+                        if [ $GET_COMPRESSED -eq 1 ]; then
+                                Fail=0
+                                if [ "$CFLAG" = "Y" ]; then
+                                	cd /home
+                                	echo "Uncompressing $NATC_TAR.Z..."
+                                	uncompress $NATC_TAR.Z
+                                	if [ $? -ne 0 ]; then
+                                       	 	Fail=1
+                                	fi
+					if [ $Fail -eq 0 ]; then
+						cd /
+                                		echo "Extracting $NATC_TAR..."
+						tar xf /home/$NATC_TAR
+                                		if [ $? -ne 0 ]; then
+                                       	 		Fail=1
+                                		fi
+						rm -f /home/$NATC_TAR
+						rm -f /mklinks_c
+                                		if [ $Fail -eq 0 ]; then
+                                			echo "Done installing C compiler."
+							echo
+						fi
+					fi
+					if [ $Fail -eq 0 ]; then
+                			  if [ ! -f /home/$C_DOC_TAR.Z ]; then
+                        			echo "WARNING: $C_DOC_TAR.Z is not available to install documentation for C compiler."
+					  else
+						echo "Uncompressing $C_DOC_TAR.Z..."
+						cd /home
+                                		uncompress $C_DOC_TAR.Z
+                                		if [ $? -ne 0 ]; then
+                        				echo "WARNING: Problem uncompressing $C_DOC_TAR.Z"
+						else
+							cd /usr/share
+                                			echo "Extracting $C_DOC_TAR..."
+							tar xf /home/$C_DOC_TAR
+                                			if [ $? -ne 0 ]; then
+								echo "WARNING: Problem extracting $C_DOC_TAR"
+							else
+								echo "Done installing online documentation for C compiler"
+                                			fi
+							echo
+							rm -f /home/$C_DOC_TAR
+                                		fi
+					  fi
+                			fi
+				fi
+                                if [ "$CPPFLAG" = "Y" ]; then
+                                	cd /home
+                                	echo "Uncompressing $NATCPP_TAR.Z..."
+                                	uncompress $NATCPP_TAR.Z
+                                	if [ $? -ne 0 ]; then
+                                       	 	Fail=1
+                                	fi
+					if [ $Fail -eq 0 ]; then
+						cd /
+                                		echo "Extracting $NATCPP_TAR..."
+						tar xf /home/$NATCPP_TAR
+                                		if [ $? -ne 0 ]; then
+                                       	 		Fail=1
+                                		fi
+						CPP_Fail=0
+                                                ./install_c++/c++_install /
+						if [ $? -ne 0 ]; then
+							echo "The /install_c++/c++_install script checks for the existence"
+							echo "of tools and libraries that C++ requires.  Install the C compiler, then"
+							echo "execute the following commands to complete the C++ installation."
+							echo "    cd /"
+							echo "    ./install_c++/c++_install /"  
+							echo
+							CPP_Fail=1
+                                                fi
+						rm -f /home/$NATCPP_TAR
+                                		if [ $Fail -eq 0 ]; then
+							if [ $CPP_Fail -eq 0 ]; then
+                                				echo "Done installing C++ compiler."
+							else
+								echo "Driver configuration for iCC was not completed."
+							fi
+							echo
+						fi
+					fi
+					if [ $Fail -eq 0 ]; then
+                			  if [ ! -f /home/$CPP_DOC_TAR.Z ]; then
+                        			echo "WARNING: $CPP_DOC_TAR.Z is not available to install documentation for C++ compiler."
+					  else
+						echo "Uncompressing $CPP_DOC_TAR.Z..."
+						cd /home
+                                		uncompress $CPP_DOC_TAR.Z
+                                		if [ $? -ne 0 ]; then
+                        				echo "WARNING: Problem uncompressing $CPP_DOC_TAR.Z"
+						else
+							cd /usr/share
+                                			echo "Extracting $CPP_DOC_TAR..."
+							tar xf /home/$CPP_DOC_TAR
+                                			if [ $? -ne 0 ]; then
+								echo "WARNING: Problem extracting $CPP_DOC_TAR"
+							else
+								echo "Done installing online documentation for C++ compiler"
+                                			fi
+							echo
+							rm -f /home/$CPP_DOC_TAR
+                                		fi
+					  fi
+                			fi
+				fi
+                                if [ $Fail -eq 0 -a "$FFLAG" = "Y" ]; then
+                                	cd /home
+                                	echo "Uncompressing $NATF_TAR.Z..."
+                                	uncompress $NATF_TAR.Z
+                                	if [ $? -ne 0 ]; then
+                                       	 	Fail=1
+                                	fi
+					if [ $Fail -eq 0 ]; then
+						cd /
+                                		echo "Extracting $NATF_TAR..."
+						tar xf /home/$NATF_TAR
+                                		if [ $? -ne 0 ]; then
+                                       	 		Fail=1
+                                		fi
+						rm -f /home/$NATF_TAR
+						rm -f /mklinks_f
+                                		if [ $Fail -eq 0 ]; then
+                                			echo "Done installing Fortran compiler."
+							echo
+						fi
+					fi
+					if [ $Fail -eq 0 ]; then
+                			  if [ ! -f /home/$FTN_DOC_TAR.Z ]; then
+                        			echo "WARNING: $FTN_DOC_TAR.Z is not available to install documentation for Fortran compiler."
+					  else
+						echo "Uncompressing $FTN_DOC_TAR.Z..."
+						cd /home
+                                		uncompress $FTN_DOC_TAR.Z
+                                		if [ $? -ne 0 ]; then
+                        				echo "WARNING: Problem uncompressing $FTN_DOC_TAR.Z"
+						else
+							cd /usr/share
+                                			echo "Extracting $FTN_DOC_TAR..."
+							tar xf /home/$FTN_DOC_TAR
+                                			if [ $? -ne 0 ]; then
+								echo "WARNING: Problem extracting $FTN_DOC_TAR"
+							else
+								echo "Done installing online documentation for Fortran compiler"
+                                			fi
+							echo
+							rm -f /home/$FTN_DOC_TAR
+                                		fi
+					  fi
+                			fi
+				fi
+                                if [ $Fail -eq 0 -a "$DFLAG" = "Y" ]; then
+                                        cd /home
+                                        echo "Uncompressing $DOC_TAR.Z..."
+                                        uncompress $DOC_TAR.Z
+                                        if [ $? -ne 0 ]; then
+                                                Fail=1
+                                        fi
+                                        if [ $Fail -eq 0 ]; then
+                                                cd /usr/share
+                                		echo "Extracting $DOC_TAR..."
+                                                tar xf /home/$DOC_TAR
+                                                if [ $? -ne 0 ]; then
+                                                        Fail=1
+                                                fi
+                                                rm -f /home/$DOC_TAR
+                                		if [ $Fail -eq 0 ]; then
+                                			echo "Done installing online documentation for system software."
+							echo
+						fi
+                                        fi
+                                fi
+                                if [ $Fail -eq 1 ]; then
+                                        echo "ERROR: At least one of the tar files was corrupt!"
+                                fi
+                        fi
+                fi
+                if [ $Fail -eq 1 ]; then
+                        echo "\n"
+                        echo "There were errors retrieving or uncompressing the tar files."
+                        Confirm=1
+			rm -f /home/$NATC_TAR.Z /home/$NATC_TAR /home/$NATF_TAR.Z /home/$NATF_TAR /home/$C_DOC_TAR.Z /home/$C_DOC_TAR /home/$FTN_DOC_TAR.Z /home/$FTN_DOC_TAR /home/$DOC_TAR.Z /home/$DOC_TAR
+
+                        while [ $Confirm -eq 1 ]; do
+                                echo "\n"
+                echo "================= RESPONSE SUMMARY ==============================="
+                echo "Install C compiler and its docs:         "$CFLAG
+                echo "Install C++ compiler and its docs:       "$CPPFLAG
+                echo "Install FORTRAN compiler and its docs:   "$FFLAG
+                echo "Install system software documentation:   "$DFLAG
+                echo "Distribution Node:                       "$DIST_NODENAME
+                echo "Distribution IP Addr:                    "$DIST_ADDRESS
+                echo "Distribution Path:                       "$DIST_PATH
+                echo "------------------------------------------------------------------"
+                                echo "Is the above information correct? (y/n/q)[y]\c "; read ans
+                                if [ -z "$ans" ]; then
+                                        ans=Y
+                                fi
+                                if [ $ans = "n" -o $ans = "N" ]; then
+                        		Done=0
+                                        Confirm=0
+                                        AskQuestions
+                                elif [ $ans = "q" -o $ans = "Q" ]; then
+                        		Done=1
+                                        Confirm=0
+                                else
+                                        Confirm=0
+                                fi
+                        done
+
+                else
+                        Done=1
+                fi
+        done
+}
+
+###########################################################################
+# FUNCTION:     AskQuestions()
+#
+#       Ask questions to get all the info
+###########################################################################
+AskQuestions()
+{
+        Qdone=0
+        while [ $Qdone -eq 0 ]; do
+             FGET=""
+             FDGET=""
+             CGET=""
+             CDGET=""
+             DGET=""
+             CPPGET=""
+             CPPDGET=""
+             if [ $ASK_QUESTIONS -eq 1 ]; then
+
+		   echo "Would you like to install C compiler and its documentation? (y/n)[y]\c "; read ans
+		   if [ -z "$ans" ]; then
+			ans=y
+		   fi
+		   if [ $ans != "y" -a $ans != "Y" ]; then 
+			CFLAG=N
+		   else
+			CFLAG=Y
+		   fi
+
+		   echo "Would you like to install C++ compiler and its documentation? (y/n)[y]\c "; read ans
+		   if [ -z "$ans" ]; then
+			ans=y
+		   fi
+		   if [ $ans != "y" -a $ans != "Y" ]; then 
+			CPPFLAG=N
+		   else
+			CPPFLAG=Y
+		   fi
+
+		   echo "Would you like to install FORTRAN compiler and its documentation? (y/n)[y]\c "; read ans
+		   if [ -z "$ans" ]; then
+        		ans=y
+		   fi
+		   if [ $ans != "y" -a $ans != "Y" ]; then 
+        		FFLAG=N
+		   else
+			FFLAG=Y
+		   fi
+		   echo "Would you like to install system software documentation? (y/n)[y]\c "; read ans
+		   if [ -z "$ans" ]; then
+        		ans=y
+		   fi
+		   if [ $ans != "y" -a $ans != "Y" ]; then 
+        		DFLAG=N
+		   else
+			DFLAG=Y
+		   fi
+		   if [ "$CFLAG" = "N" -a "$CPPFLAG" = "N" -a "$FFLAG" = "N" -a "$DFLAG" = "N" ]; then
+			echo
+			echo "No files were retrieved to install compilers or documentation."
+			echo
+			exit 1
+		   fi
+                   echo "Distribution Node Name [$DIST_NODENAME]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_NODENAME=$ans
+                   fi
+                   echo "Distribution IP Address [$DIST_ADDRESS]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_ADDRESS=$ans
+                   fi
+                   echo "Distribution Path [$DIST_PATH]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_PATH=$ans
+                   fi
+
+		fi
+		ASK_QUESTIONS=1
+                echo "\n"
+                echo "================= RESPONSE SUMMARY ==============================="
+                echo "Install C compiler and its docs:         "$CFLAG
+                echo "Install C++ compiler and its docs:       "$CPPFLAG
+                echo "Install FORTRAN compiler and its docs:   "$FFLAG
+                echo "Install system software documentation:   "$DFLAG
+                echo "Distribution Node:                       "$DIST_NODENAME
+                echo "Distribution IP Addr:                    "$DIST_ADDRESS
+                echo "Distribution Path:                       "$DIST_PATH
+                echo "------------------------------------------------------------------"
+                echo "Is the above information correct? (y/n/q)[n] \c "
+                read ans
+                if [ -z "$ans" ]; then
+                        ans="N"
+                fi
+                if [ $ans = "y" -o $ans = "Y" ]; then
+                        Qdone=1
+                fi
+                if [ $ans = "q" -o $ans = "Q" ]; then
+                        Qdone=1
+                        Done=1
+                fi
+        done
+}
+###########################################################################
+#                      S T A R T  O F  I N S T A L L A T I O N
+###########################################################################
+
+if [ -f $DEFAULTS_FILE ]; then
+	DIST_ADDRESS=`grep DIST_ADDRESS $DEFAULTS_FILE | cut -f2 -d' '`
+	DIST_NODENAME=`grep DIST_NODENAME $DEFAULTS_FILE | cut -f2 -d' '`
+	DIST_PATH=`grep DIST_PATH $DEFAULTS_FILE | cut -f2 -d' '`
+fi
+if [ -z "$DIST_ADDRESS" ]; then
+	DIST_ADDRESS=0.0.0.0
+	ASK_QUESTIONS=1
+fi
+if [ -z "$DIST_NODENAME" ]; then
+	DIST_NODENAME=unknown
+	ASK_QUESTIONS=1
+fi
+if [ -z "$DIST_PATH" ]; then
+	DIST_PATH=/distribution
+	ASK_QUESTIONS=1
+fi
+
+AskQuestions
+if [ $ans != "q" -a $ans != "Q" ]; then
+   GetTarFiles
+fi

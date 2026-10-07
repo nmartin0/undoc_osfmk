@@ -1,0 +1,135 @@
+subsystem alloc 750;
+
+#include <mach/mach_types.defs>
+#include "alloc_types.defs"
+
+routine init_appl(    server_port  : mach_port_t;
+                       in  uid           : uid_t;
+                       in  e_uid         : uid_t;
+                       in  gid           : gid_t;
+                       in  e_gid         : gid_t;
+                       in  nx_acctid     : gid_t;
+		       in  nx_info       : NX_INIT_T;
+		       out rows	 : int;
+		       out cols	 : int;
+                       in  pgroup        : pid_t;
+		       in selector_cnt	 : int;
+		       in selector	 : MIG_BITMAP_T;
+                       out  lp_map       : LP_MAP_T;
+                       out retcode       : int);
+
+routine remove_nx_appl(server_port : mach_port_t;
+			in  pgroup : pid_t;
+			out retcode : int);
+
+routine set_nx_pri(server_port : mach_port_t;
+		   in pgroup   : pid_t;
+		   in pri      : int;
+		   out retcode : int);
+
+routine allocator_mkpart(    server_port  : mach_port_t;
+		       in    uid 	  : uid_t;
+		       in    gid 	  : gid_t;
+		       in    buffer	  : MIG_BITMAP_T;
+		       out   num_nodes    : int;
+                       out   retcode      : int);
+
+routine part_remove(        server_port   : mach_port_t;
+		       in   pathname      : string;
+		       in   inode	  : ino_t;
+		       in   uid		  : uid_t;
+		       in   gid		  : gid_t;
+                       in   fflg          : int;
+                      out   retcode         : int);
+
+
+routine chpart(		server_port	: mach_port_t;
+			in	buffer	: string;
+			in	uid	: uid_t;
+			in	gid	: gid_t;
+			out	retcode      : int);
+
+routine pspart(serv_port : mach_port_t;
+		in inode : ino_t;
+		in uid	 : uid_t;
+		in gid	 : gid_t;
+		out app_list : MIG_BITMAP_T,dealloc;
+		out retcode : int);
+
+routine register_daemon_allocator(server_port   : mach_port_t;
+		       in   daemon_id	  : int;
+                       in   socket        : smd_iface_t;
+                      out   retcode       : int);
+
+routine lock_part(    server_port   : mach_port_t;
+                      out   locked  : int;
+                      out   retcode : int);
+
+routine unlock_part(  server_port   : mach_port_t;
+                      out   retcode : int);
+
+routine get_part_attributes( server_port : mach_port_t;
+		       in 	inode	      : ino_t;
+		       in	uid	      : uid_t;
+		       in	gid	      : gid_t;
+                       out   	partinfo      : PARTREQ_T; 
+		       out	retcode	      : int);
+
+routine get_part_node_list( server_port : mach_port_t;
+		       in 	inode	      : ino_t;
+		       in	uid	      : uid_t;
+		       in	gid	      : gid_t;
+		       out	nd_list	      : LP_MAP_T,dealloc;
+		       out	retcode	      : int);
+
+routine get_part_bitmap( server_port : mach_port_t;
+		       in 	inode	      : ino_t;
+		       in	uid	      : uid_t;
+		       in	gid	      : gid_t;
+		       out	bitmap	      : MIG_BITMAP_T,dealloc;
+		       out	retcode	      : int);
+
+routine get_matching_bitmap( server_port : mach_port_t;
+		       in	uid	      : uid_t;
+		       in	gid	      : gid_t;
+		       out	bitmap	      : MIG_BITMAP_T,dealloc;
+		       in	selector_buf  : MIG_BITMAP_T;
+		       in	exact	      : int;
+		       out	retcode	      : int);
+
+routine get_nx_app_info( server_port : mach_port_t;
+			in	pgroup		: pid_t;
+			in	uid		: uid_t;
+			in	gid		: gid_t;
+			out	app_attr	: nx_app_info_t;
+			out	retcode		: int);
+
+routine get_app_node_list( server_port : mach_port_t;
+			in	pgroup		: pid_t;
+			in	uid		: uid_t;
+			in	gid		: gid_t;
+			out	nd_list		: LP_MAP_T,dealloc;
+			out	retcode		: int);
+
+routine get_part_free_nodes( server_port : mach_port_t;
+			in	inode		: ino_t;
+			in	uid		: uid_t;
+			in	gid		: gid_t;
+			out	bitmap		: MIG_BITMAP_T,dealloc;
+			out	retcode		: int);
+
+#ifdef PARACORE
+routine get_nx_app_part( server_port : mach_port_t;
+			in	pgroup		: pid_t;
+			in	uid		: uid_t;
+			in	gid		: gid_t;
+			out	app_attr	: nx_app_info_t;
+			out   	partinfo	: PARTREQ_T; 
+			out	retcode		: int);
+
+routine nx_appl_dumping_core(server_port : mach_port_t;
+			in  pgroup : pid_t;
+			out retcode : int);
+#endif /* PARACORE */
+
+

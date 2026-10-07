@@ -1,0 +1,11 @@
+
+[ Fri May  1 08:54:14 PDT 1992 ] stan file: inet
+  comment out OSF approach to finding subnet, didn't work. Use static route
+  to rainier.
+
+Added script to start allocator. 
+Remove nfs from Makefile since nfs server has problem.
+Fri Apr 17 07:51:17 PDT 1992 - Shala
+
+Changed motd to grep for 'OSF/1 Release' in startup file.
+Mon Apr 20 13:49:41 PDT 1992 - Shala

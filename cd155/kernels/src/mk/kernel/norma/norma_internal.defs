@@ -1,0 +1,299 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1991 , 1994, 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+
+/*
+ * SSD HISTORY
+ * $Log: norma_internal.defs,v $
+ * Revision 1.7  1994/11/18  20:56:20  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.6  1994/07/12  19:24:51  andyp
+ * Merge of the NORMA2 branch back to the mainline.
+ *
+ * Revision 1.5.8.1  1994/05/18  17:51:32  stans
+ *   Added NORMA_IPC conditionals to skip if NORMA_IPC == 0
+ *
+ * Revision 1.5  1993/07/22  02:21:05  andyp
+ * Recovered OSF's logs.  Removed uneeded files that were in the
+ * repository for some reason.  Included changes resulting
+ * from rwd@osf.org's visit (correctly functioning backoff logic,
+ * don't overwrite a pending CTL_ACK, first-cut at cogestion handling).
+ * Reconfigured default settings for timeouts and ticks.
+ *
+ * Revision 1.4  1993/06/30  22:51:08  dleslie
+ * Adding copyright notices required by legal folks
+ *
+ * Revision 1.3  1993/04/27  20:46:17  dleslie
+ * Copy of R1.0 sources onto main trunk
+ *
+ * Revision 1.1.10.3  1993/04/27  00:19:53  dleslie
+ * Patch release of April 23
+ *
+ * Revision 1.2  1993/04/16  05:16:58  SSD
+ * third drop of code for page flow control fixes.
+ *
+ * END SSD HISTORY
+ */
+/*
+ * @OSF_FREE_COPYRIGHT@
+ */
+/*
+ * HISTORY
+ * Log: norma_internal.defs,v
+ * Revision 1.2.4.2  1993/04/16  16:09:48  mmp
+ * 	Changed port accounting on norma_copy_create call.
+ * 	[93/04/15            sjs]
+ *
+ * Revision 1.2  1992/11/25  01:15:19  robert
+ * 	integrate changes below for norma_14
+ * 
+ * 	Alan Langerman (alan) at Open Software Foundation
+ * 	Define norma_ipc_node_set to update root node's notion of
+ * 	a port's current location.
+ * 	[1992/11/13  19:39:44  robert]
+ * 
+ * Revision 1.1  1992/09/30  02:23:10  robert
+ * 	Initial revision
+ * 
+ * $EndLog$
+ */
+/* CMU_HIST */
+/*
+ * Revision 2.2.2.6  92/09/15  17:34:56  jeffreyh
+ * 	Fold norma_ipc_node_fproxy_cancel into norma_ipc_node_dnnotify.
+ * 	[92/09/15            dlb]
+ * 	Add norma_ipc_fproxy_cancel
+ * 	[92/08/07            dlb]
+ * 
+ * 	Remove has_dnrequest argument from norma_ipc_pull_receive.
+ * 	Add source node argument to norma_ipc_node_dnnotify.
+ * 	[92/08/06            dlb]
+ * 
+ * Revision 2.2.2.5  92/06/24  18:06:03  jeffreyh
+ * 	Change arguments to norma_ipc_pull_receive to take the
+ * 	host_paging port instead of the host_priv port
+ * 	[92/06/17            jeffreyh]
+ * 
+ * Revision 2.2.2.4  92/05/27  00:53:49  jeffreyh
+ * 	Add routines to request and perform dead name requests among nodes.
+ * 	Delete dnrequest fields from norma_ipc_pull_receive, and just
+ * 	pass a boolean indicating whether source has outstanding dnrequests.
+ * 	[92/05/25            dlb]
+ * 
+ * 	Added another out parameter to norma_ipc_stransit_request used
+ * 	for retargeting nodes.
+ * 	[92/05/21            sjs]
+ * 
+ * Revision 2.2.2.3.1.2  92/05/08  10:18:53  jeffreyh
+ * 	atrium_msg_count --> moved_msg_count for readability.
+ * 	[92/05/07            dlb]
+ * 
+ * Revision 2.2.2.3.1.1  92/05/06  17:42:46  jeffreyh
+ * 	Add atrium_msg_count argument to pull_receive call to allow
+ * 	puller to synchronize with arrival of all atrium messages.
+ * 	[92/05/05            dlb]
+ * 
+ * Revision 2.2.2.3  92/04/08  15:46:39  jeffreyh
+ * 	Change norma_ipc_no_local_senders to norma_ipc_yield_transits
+ * 	and add sotransit argument.
+ * 	[92/04/07            dlb]
+ * 
+ * Revision 2.2.2.2  92/02/21  11:25:21  jsb
+ * 	Added norma_xmm_object_release.
+ * 	[92/02/16  14:30:43  jsb]
+ * 
+ * 	Added norma_xmm_object_by_memory_object.
+ * 	[92/02/10  17:04:44  jsb]
+ * 
+ * Revision 2.2.2.1  92/01/03  16:38:34  jsb
+ * 	In norma_ipc_pull_receive, seqno and qlimit are shorts, not ints.
+ * 	[91/12/26  18:27:24  jsb]
+ * 
+ * 	Replaced simpleroutines norma_ipc_start_migrating_messages and
+ * 	norma_ipc_all_messages_migrated with routine norma_ipc_pull_receive.
+ * 	[91/12/25  16:46:19  jsb]
+ * 
+ * 	Added norma_ipc_no_local_senders and norma_ipc_stransit_request.
+ * 	Removed norma_token_deliver.
+ * 	[91/12/24  14:30:01  jsb]
+ * 
+ * Revision 2.2  91/12/13  14:10:54  jsb
+ * 	First checkin. Split off from mach/mach_norma.defs.
+ * 
+ */
+/* CMU_ENDHIST */
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+/*
+ */
+
+subsystem
+#if	KERNEL_USER
+	  KernelUser
+#endif	KERNEL_USER
+#if	KERNEL_SERVER
+	  KernelServer
+#endif	KERNEL_SERVER
+		       norma_internal 556000;
+#ifdef	KERNEL_USER
+userprefix r_;
+#endif	KERNEL_USER
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+#if     KERNEL
+#include <norma_ipc.h>
+#endif  KERNEL
+
+/*
+ * Create a task with no inherited address space on the given node.
+ * Used between per-node kernels to implement task_create_remote,
+ * when there is no parent task available (otherwise we could just
+ * use norma_task_create with inherit_memory=FALSE).
+ */
+routine norma_task_allocate(
+		host_priv	: host_priv_t;
+	out	task		: task_t);
+
+/*
+ * Returns the current value of all inherited ports in task.
+ * XXX should name port0, etc. as exception, etc.
+ */
+routine task_get_inherited_ports(
+		task		: task_t;
+	out	port0		: mach_port_t;
+	out	port1		: mach_port_t;
+	out	port2		: mach_port_t;
+	out	port3		: mach_port_t;
+	out	exception	: mach_port_t;
+	out	bootstrap	: mach_port_t);
+
+/*
+ * Returns the current value of all inherited ports in task.
+ */
+routine task_set_inherited_ports(
+		task		: task_t;
+		port0		: mach_port_t;
+		port1		: mach_port_t;
+		port2		: mach_port_t;
+		port3		: mach_port_t;
+		exception	: mach_port_t;
+		bootstrap	: mach_port_t);
+
+/*
+ * Create a memory object representing given range of memory
+ * in given task. Useful for lazy address space copies.
+ */
+routine norma_copy_create(
+		task		: vm_task_t;
+		start		: vm_offset_t;
+		size		: vm_size_t;
+	out	memory_object	: mach_port_t);
+
+#if	NORMA_IPC
+
+routine norma_ipc_pull_receive(
+		host_paging	: host_paging_t;
+		uid		: int;
+		dest_node	: int;
+	out	stransit	: int;
+	out	sotransit	: int;
+	out	nsrequest	: mach_port_move_send_once_t;
+	out	pdrequest	: mach_port_move_send_once_t;
+	out	seqno		: short;
+	out	qlimit		: short;
+	out	moved_msg_count: int);
+
+simpleroutine norma_ipc_yield_transits(
+		host_priv	: host_priv_t;
+		uid		: int;
+		stransit	: int;
+		sotransit	: int);
+
+routine norma_ipc_stransit_request(
+		host_priv	: host_priv_t;
+		uid		: int;
+	out	stransit	: int;
+	out	retarget_node	: int);
+
+#else	/* NORMA_IPC */
+
+skip;
+skip;
+skip;
+
+#endif	/* NORMA_IPC */
+
+
+routine	norma_xmm_object_by_memory_object(
+		host_priv	: host_priv_t;
+		memory_object	: mach_port_copy_send_t;
+	out	xmm_object	: mach_port_move_send_t);
+
+simpleroutine	norma_xmm_object_release(
+		host_priv	: host_priv_t;
+		memory_object	: mach_port_copy_send_t);
+
+/*
+ *	Routines to request and report dead name notifications.
+ */
+
+#if	NORMA_IPC
+
+simpleroutine	norma_ipc_node_dnrequest(
+		host_priv	: host_priv_t;
+		uid		: int;
+		node		: int);
+
+simpleroutine	norma_ipc_node_dnnotify(
+		host_priv	: host_priv_t;
+		uid		: int;
+		source_node	: int;
+		release_forward	: boolean_t);
+
+routine norma_ipc_node_set(
+		host_priv	: host_priv_t;
+		uid		: int;
+		node		: int);
+
+#else	/* NORMA_IPC */
+
+skip;
+skip;
+skip;
+
+#endif	/* NORMA_IPC */

@@ -1,0 +1,802 @@
+#! /bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, 1991, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0.2
+
+echo 
+echo "======================================================================="
+echo "                  OSF/1 Rev 1.0 Postinstall Process"
+echo
+
+
+USAGE="usage: postinstall.sh [-noconfig] [-nodev] [-X11] [-gcc] [-security] <targetroot>"
+DOCONFIG="yes"
+DODEV="yes"
+DODEBUG="no"
+DOX11="no"
+DOGCC="no"
+DOSECURITY="no"
+INSTALLBASE=""
+
+if [ $# = 0 ]
+then
+  echo "ERROR: Incorrect number of arguments:"
+  echo $USAGE
+  exit 1
+fi
+
+while [ "$#" -gt 0 ] 
+do
+  arg=$1
+  shift
+  case "$arg" 
+  in
+    -noconfig) DOCONFIG="no";;
+    -nodev) DODEV="no";;
+    -X11) DOX11="yes";;
+    -gcc) DOGCC="yes";;
+    -debug) DODEBUG="yes";;
+    -security) DOSECURITY="yes";;
+
+    *) if [ "$INSTALLBASE" = "" ] 
+       then
+         INSTALLBASE=$arg
+         if [ ! -d ${INSTALLBASE} ]
+         then
+           echo $USAGE
+           echo "ERROR: Directory ${INSTALLBASE} not found."
+           echo "   Please correct and rerun postinstall.sh"
+           exit 1
+         fi
+       else
+         echo $USAGE
+         echo "$arg unknown argument" 
+         exit 1
+       fi;;
+  esac
+done
+
+if [ "$INSTALLBASE" = ""  ]
+then
+  echo "ERROR: no <targetroot> specified"
+  echo $USAGE
+  exit 1
+fi
+
+cd ${INSTALLBASE}
+
+
+if [ $DOCONFIG = "yes" ]
+then
+#
+# local variables
+#
+config="etc/rc.config.tmp"
+real_config="etc/rc.config"
+fstab="etc/fstab.tmp"
+real_fstab="etc/fstab"
+#
+# Truncate the config files
+#
+> $config
+> $fstab
+
+#
+# termination handler
+#
+trap 'echo "\nAborting..."; rm -f $config $fstab; exit 1' 1 2 3 15
+
+#
+# Setup defaults
+#
+DISPLAYTYPE="notset"
+HOSTNAME="notset"
+HOSTID="notset"
+NETMASK="255.255.255.0"
+NETDEV="notset"
+PAGEMINSZ="notset"
+PAGEMAXSZ="notset"
+PAGEFILE="notset"
+PAGEPARTITION="notset"
+PAGEPARTITIONTYPE="notset"
+ROOTPARTITION="notset"
+VARPARTITION="notset"
+USRPARTITION="notset"
+TZ="EST5EDT"
+#
+#
+#
+if [ -f ${real_config} ]
+then
+  OVERWRITE="n"
+  echo "An ${real_config} already exists.  Do you wish to overwrite it? (y/n) [$OVERWRITE] "
+  read OVERWRITE
+else
+  OVERWRITE=y
+fi
+
+if [ "$OVERWRITE" = y ]
+then
+
+  if [ -f ${real_config} ]
+  then
+    echo "copying $real_config to ${real_config}.bak"
+    cp $real_config ${real_config}.bak
+  fi # -f ${real_config}
+
+echo "#" > $config
+echo "# DISPLAYTYPE={none,mono,color} type of monitor" >> $config
+echo "# HOSTNAME={unknown}  the Internet name of your system" >> $config
+echo "# HOSTID={130.105.255.255}  Internet address in dot format of your system" >> $config
+echo "# NETMASK={network netmask} - default: 255.255.255.0" >> $config
+echo "# NETDEV={se0,en0} - pmax=se0, mmax=en0" >> $config
+echo "# PAGEFILE={/paging/space, other}  the name of the paging file" >> $config
+echo "# PARTITION={rz[0-3]b} the paging partition if PAGEFILE=/paging/space" >> $config
+echo "# PARTITIONTYPE={RZ23,RZ55,...} disk type containing the paging partition" >> $config
+echo "# PAGEMINSZ={16M,32M}  low-water point for paging file - default: 32M" >> $config
+echo "# PAGEMAXSZ={32M,64M}  high-water point for paging file - default: 64M" >> $config
+echo "# TZ={EST5EDT}  locale timezone info - default: EST5EDT" >> $config
+echo "#" >> $config
+
+
+#
+# Query the user for the hostname
+#
+  thishost=`hostname`
+  echo "What is the Internet host name of this system ? [$thishost]: "
+  while [ "$HOSTNAME" = "notset" ]
+  do
+    read hostname
+    case $hostname in
+      "")     HOSTNAME="$thishost";;
+      *)      HOSTNAME="$hostname";;
+    esac
+  done
+
+#
+# Query the user for the hostid
+#
+  thishostid=""
+  echo "What is the Internet host address of \"$HOSTNAME\" ? [$thishostid]: "
+  while [ "$HOSTID" = "notset" ]
+  do
+    read hostid
+    case $hostid in
+      "") echo "There is no default, you must enter a valid address. Try again: ";;
+      *.*.*.*) HOSTID="$hostid";;
+      *)      echo "You must specify the address in dot format. Try again: ";;
+    esac    
+  done
+
+#
+# Find out the root device
+#
+  echo "What is the device and partition for the root (rz3a, md0b, etc) ? [rz3a]: "
+  while [ "$ROOTPARTITION" = "notset" ]
+  do
+    read rootpartition
+    case $rootpartition in
+      "")     ROOTPARTITION="rz3a";;
+      ????)   ROOTPARTITION="$rootpartition";;
+      *)      echo "You specified an incorrect device. Try again: ";;
+    esac
+  done
+
+#
+# Find out the usr device
+#
+  echo "What is the device and partition for /usr (rz3a, rz0b, "nfs") ? [nfs]: "
+  while [ "$USRPARTITION" = "notset" ]
+  do
+    read usrpartition
+    case $usrpartition in
+      "" | nfs | NFS ) usrnfs=1
+        USRPARTITION="nfs"
+        ;;
+      ????)   USRPARTITION="$usrpartition";;
+      *)      echo "You specified an incorrect device. Try again: ";;
+    esac
+    if [ "$USRPARTITION" = "$ROOTPARTITION" ]; then
+      echo "You cannot have the root and usr on the same device. Try again: "
+      USRPARTITION="notset"
+    fi
+  done
+
+  if [ "$usrnfs" = "1" ]; then
+    releasearea="notset"
+    echo "What is the network mount point for /usr ?  "
+    while [ "$releasearea" = "notset" ]
+    do
+      read usrpartitiontype
+      case $usrpartitiontype in
+      "")  ;;
+      *)  releasearea="$usrpartitiontype";;
+      esac
+    done
+  fi # [ "$usrnfs" = "1" ]
+
+#
+# Find out the var partition
+#
+  echo "What is the device and partition for /var (rzxx, mdxx, "usr",...) ? [rz3g]: "
+  while [ "$VARPARTITION" = "notset" ]
+  do
+    read varpartition
+    case $varpartition in
+      "")     VARPARTITION="rz3g";;
+      usr)    if [ "$usrnfs" = "1" ]; then
+          echo "You cannot have a NFS var partition."
+        else # [ "$usrnfs" = "1" ]
+          usrvar=1
+          # Make a link on the root
+          VARPARTITION="usr"
+        fi # [ "$usrnfs" = "1" ]
+        ;;
+      ????)   VARPARTITION="$varpartition"
+        ;;
+      *)      echo "You specified an incorrect device. Try again: ";;
+    esac
+  done
+
+#
+# Query the user for the name of the paging file
+#
+  echo "What is the path name for the paging file (/paging/space, /usr/tmp/.paging, etc) ? [/paging/space]: "
+  while [ "$PAGEFILE" = "notset" ]
+  do
+    read pagefile
+    case $pagefile in
+      "")     PAGEFILE="/paging/space";;
+      /usr/*) if [ "$usrnfs" = "1" ]; then
+          echo "/usr is a NFS filesystem. Your paging file should be local. Try again: "
+          PAGEFILE="notset"
+         fi # [ "$usrnfs" = "1" ]
+         ;;
+
+      /paging/*) if [ "$pagefile" != "/paging/space" ]; then
+          echo "You should call the file /paging/space. Try again: "
+          PAGEFILE="notset"
+           else # [ "$pagefile" != "/paging/space" ]
+          PAGEFILE="$pagefile"
+           fi # [ "$pagefile" != "/paging/space" ]
+           ;;
+
+      /*)     PAGEFILE="$pagefile";;
+      *)      echo "You must use an absolute path name. Try again: "
+        PAGEFILE="notset"
+        ;;
+    esac
+  done
+
+#
+# If the user answered "/paging/space" for a PAGEFILE then we
+# assume this is to be a special partition - usually the b one.
+# Now we need to ask for the partition device and device type
+# for the newfs call in rc
+#
+  if [ "$PAGEFILE" = "/paging/space" ]; then
+    echo "What is the device and partition for /paging ? [rz3b]: "
+    while [ "$PAGEPARTITION" = "notset" ]
+    do
+      read pagepartition
+      case $pagepartition in
+      "")     PAGEPARTITION="rz3b";;
+      ????)   PAGEPARTITION="$pagepartition";;
+      *)      echo "You specified an incorrect device. Try again: ";;
+      esac
+    done
+
+    # find out the partition type
+    echo "What is the drive type for /paging (/dev/$PAGEPARTITION) (RZ23, RZ55, etc)? [$ROOTPARTITIONTYPE]: "
+    while [ "$PAGEPARTITIONTYPE" = "notset" ]
+    do
+      read pagepartitiontype
+      case $pagepartitiontype in
+      "")     PAGEPARTITIONTYPE="$ROOTPARTITIONTYPE";;
+      ????) PAGEPARTITIONTYPE="$pagepartitiontype";;
+      *)      echo "You specified an incorrect device. Try again: ";;
+      esac
+    done
+    # Make sure the /paging directory exists
+    if [ ! -d paging ]; then
+        if [ -f paging ]; then
+          mv paging paging.old
+        fi
+      mkdir paging
+    fi # [ ! -d paging ]
+  else # [ "$PAGEFILE" = "/paging/space" ]
+    PAGEPARTITION=""
+    PAGEPARTITIONTYPE=""
+    nopagepartition=1
+  fi # [ "$PAGEFILE" = "/paging/space" ]
+
+#
+# Query the user for the low and high water points for the paging file
+#
+  valueok="0"
+  while [ "$valueok" = "0" ]
+  do
+    echo "What is the low size limit for the paging file in Mb ? [16]: "
+    read pageminsz
+    case $pageminsz in
+      "")     PAGEMINSZ="16";;
+      [0-9]*) PAGEMINSZ="$pageminsz";;
+      *)      echo "Numeric value expected for low limit. Try again: ";;
+    esac
+
+    echo "What is the high size limit for the paging file in Mb ? [64]: "
+    read pagemaxsz
+    case $pagemaxsz in
+      "")     PAGEMAXSZ="64";;
+      [0-9]*) PAGEMAXSZ="$pagemaxsz";;
+      *)      echo "Numeric value expected for HIGH limit. Try again: ";;
+    esac
+    if [ $PAGEMINSZ -gt $PAGEMAXSZ ]; then
+      echo "Low limit cannot be greater than high limit. Try again."
+    else # [ $PAGEMINSZ -gt $PAGEMAXSZ ]
+      valueok="1"
+    fi # [ $PAGEMINSZ -gt $PAGEMAXSZ ]
+    PAGEMINSZ="${PAGEMINSZ}M"
+    PAGEMAXSZ="${PAGEMAXSZ}M"
+  done
+
+#
+# Query the user for the network device type
+#
+  echo "What type of network adapter are you using (pmax=se0, mmax=en0) ? [se0]: "
+  while [ "$NETDEV" = "notset" ]
+  do
+    read netdev
+    case $netdev in
+      "")     NETDEV="se0";;
+      *)      NETDEV=$netdev;;
+    esac
+  done
+
+#
+# Query the user for the display type
+#
+  echo "What type of display are you using (mono,color,none,foreign) ? [none]: "
+  while [ "$DISPLAYTYPE" = "notset" ]
+  do
+    read displaytype
+    case $displaytype in
+      mono)   DISPLAYTYPE="mono";;
+      color)  DISPLAYTYPE="color";;
+      none)   DISPLAYTYPE="none";;
+          foreign) DISPLAYTYPE="foreign";;
+      "")     DISPLAYTYPE="none";;
+      *)      echo "Your choices are (mono,color,none,foreign) - try again: ";;
+    esac
+  done
+
+
+#
+# Write the config file
+#
+  echo "DISPLAYTYPE=$DISPLAYTYPE" >> $config
+  echo "HOSTNAME=$HOSTNAME" >> $config
+  echo "HOSTID=$HOSTID" >> $config
+  echo "NETMASK=$NETMASK" >> $config
+  echo "NETDEV=$NETDEV" >> $config
+  echo "PAGEFILE=$PAGEFILE" >> $config
+  echo "PARTITION=$PAGEPARTITION" >> $config
+  echo "PARTITIONTYPE=$PAGEPARTITIONTYPE" >> $config
+  echo "PAGEMINSZ=$PAGEMINSZ" >> $config
+  echo "PAGEMAXSZ=$PAGEMAXSZ" >> $config
+  echo "TZ=$TZ" >> $config
+  echo "export DISPLAYTYPE HOSTNAME HOSTID NETMASK NETDEV TZ" >> $config
+  echo "export PAGEFILE PARTITION PARTITIONTYPE PAGEMINSZ PAGEMAXSZ" >> $config
+#
+# Copy the tmp file into place
+#
+  cp $config $real_config
+else # [ "$OVERWRITE" = y ]
+  echo "$real_config exists, reading..."
+  . $real_config
+fi # [ "$OVERWRITE" = y ]
+#
+#
+echo
+echo "Making etc/fstab..."
+if [ -f etc/fstab ]
+then
+  OVERWRITE="n"
+  echo "An etc/fstab already exists.  Do you wish to replace it? (y/n) [$OVERWRITE] "
+  read OVERWRITE
+else
+  OVERWRITE="y"
+fi
+
+if [ "$OVERWRITE" = yes -o "$OVERWRITE" = y ]
+then
+
+#
+# Write the fstab file
+#
+echo "/dev/$ROOTPARTITION		/	ufs rw 0 1" >> $fstab
+if [ "X$usrvar" = "X" ]; then
+        echo "/dev/$VARPARTITION		/var	ufs rw 0 2" >> $fstab
+fi
+
+if [ "$usrnfs" = "1" ]; then
+        echo "$releasearea	/usr	nfs ro 0 0" >> $fstab
+else
+        echo "/dev/$USRPARTITION		/usr	ufs rw 0 3" >> $fstab
+fi
+  cp $fstab $real_fstab
+fi
+#
+#
+#
+echo
+echo "Making etc/hosts..."
+if [ -f etc/hosts ]
+then
+  OVERWRITE="n"
+  echo "An etc/hosts already exists.  Do you wish to overwrite it? (y/n) [$OVERWRITE] "
+  read OVERWRITE
+else
+  OVERWRITE="y"
+fi
+
+if [ "$OVERWRITE" = yes -o "$OVERWRITE" = y ]
+then
+  
+  echo "#  Minimal Host file...."  > etc/hosts.new
+  echo "#" >> etc/hosts
+  echo "127.0.0.1    localhost" >> etc/hosts.new
+  echo "$HOSTID  $HOSTNAME" >> etc/hosts.new
+
+  if [ -f etc/hosts ]
+  then
+    echo "Original etc/hosts moved to etc/hosts.old"
+    mv etc/hosts etc/hosts.old
+  fi
+
+  mv etc/hosts.new etc/hosts
+
+fi
+
+if [ ! -f etc/exports ]
+then
+  touch etc/exports
+fi
+
+rm -f $config $fstab   # remove .tmp files...
+
+fi  # if [ DOCONFIG ]
+#
+#
+#
+if [ $DODEV = "yes" ]
+then
+  echo "Making devices..."
+  if [ -d dev ]
+  then
+    cd dev
+    sh ./MAKEDEV std
+    cd ..
+  fi
+fi
+
+echo "Making additional directories..."
+
+dirlist="var/mail var/news var/preserve var/tmp \
+	 var/adm/crash var/spool/crontab var/named var/spool/cron/atjobs \
+	 var/spool/lpd var/spool/mail var/spool/mqueue var/spool/uucp \
+	 var/run var/rwho var/adm/syslog \
+	 usr/share/man home mnt tmp sbin/rc0.d sbin/rc2.d sbin/rc3.d"
+
+for d in $dirlist
+do
+  if [ ! -d $d ]
+  then
+    mkdir $d
+  elif [ $DODEBUG = "yes" ]
+  then
+    echo "DEBUG: Directory $d already exists."
+  fi
+done
+
+echo "Setting protection on tmp directories to 777..."
+
+dirlist="tmp var/tmp"
+
+for d in $dirlist
+do
+  if [ -d $d ]
+  then
+    chmod 777 $d
+  fi
+done
+
+if [ $DOSECURITY = "yes" -a -x /tcb/bin/mkmultdir ]
+then
+  echo "Making some directories in multilevel-directories"
+  for i in tmp var/tmp var/preserv var/spool/cron/atjobs var/spool/crontab
+  do
+    test $i && /tcb/bin/mkmultdir $i
+  done
+fi
+
+echo "Symbolic links will now be created..."
+echo " - Links for usr/... to var/... files"
+ln -s ../var/adm usr/adm
+ln -s ../var/mail usr/mail
+ln -s ../var/news usr/news
+ln -s ../var/preserve usr/preserve
+ln -s ../var/spool usr/spool
+ln -s ../var/tmp usr/tmp
+
+#
+# Links for init/rc files
+#
+echo " - Links for init/rc files"
+ln -s ../init.d/enlogin  	./sbin/rc0.d/K00enlogin
+ln -s ../init.d/lpd  		./sbin/rc0.d/K05lpd
+ln -s ../init.d/inetd  		./sbin/rc0.d/K10inetd
+ln -s ../init.d/snmpd  		./sbin/rc0.d/K15snmpd
+ln -s ../init.d/ntpd  		./sbin/rc0.d/K20ntpd
+ln -s ../init.d/sendmail  	./sbin/rc0.d/K25sendmail
+ln -s ../init.d/nfs  		./sbin/rc0.d/K30nfs
+ln -s ../init.d/nfsmount  	./sbin/rc0.d/K35nfsmount
+ln -s ../init.d/named  		./sbin/rc0.d/K40named
+ln -s ../init.d/syslog  	./sbin/rc0.d/K45syslog
+ln -s ../init.d/inet  		./sbin/rc0.d/K50inet
+ln -s ../init.d/cron 		./sbin/rc0.d/K60cron
+#
+ln -s ../init.d/lpd  		./sbin/rc2.d/K00lpd
+ln -s ../init.d/inetd  		./sbin/rc2.d/K05inetd
+ln -s ../init.d/snmpd  		./sbin/rc2.d/K10snmpd
+ln -s ../init.d/ntpd  		./sbin/rc2.d/K15ntpd
+ln -s ../init.d/cron    	./sbin/rc2.d/K20cron
+ln -s ../init.d/sendmail  	./sbin/rc2.d/K30sendmail
+ln -s ../init.d/nfs  		./sbin/rc2.d/K35nfs
+ln -s ../init.d/nfsmount  	./sbin/rc2.d/K40nfsmount
+ln -s ../init.d/named  		./sbin/rc2.d/K45named
+ln -s ../init.d/syslog  	./sbin/rc2.d/K50syslog
+ln -s ../init.d/inet  		./sbin/rc2.d/K55inet
+ln -s ../init.d/savecore  	./sbin/rc2.d/S00savecore
+ln -s ../init.d/paging    	./sbin/rc2.d/S05paging
+ln -s ../init.d/recpasswd  	./sbin/rc2.d/S10recpasswd
+ln -s ../init.d/uucp  		./sbin/rc2.d/S15uucp
+ln -s ../init.d/enlogin  	./sbin/rc2.d/S25enlogin
+#
+ln -s ../init.d/inet    	./sbin/rc3.d/S00inet
+ln -s ../init.d/settime    	./sbin/rc3.d/S05settime
+ln -s ../init.d/syslog    	./sbin/rc3.d/S10syslog
+ln -s ../init.d/named    	./sbin/rc3.d/S15named
+ln -s ../init.d/nfsmount  	./sbin/rc3.d/S20nfsmount
+ln -s ../init.d/loader  	./sbin/rc3.d/S22loader
+ln -s ../init.d/preserve  	./sbin/rc3.d/S25preserve
+ln -s ../init.d/rmtmpfiles  	./sbin/rc3.d/S30rmtmpfiles
+ln -s ../init.d/nfs   	 	./sbin/rc3.d/S35nfs
+ln -s ../init.d/sendmail  	./sbin/rc3.d/S40sendmail
+ln -s ../init.d/ntpd    	./sbin/rc3.d/S45ntpd
+ln -s ../init.d/snmpd    	./sbin/rc3.d/S50snmpd
+ln -s ../init.d/inetd    	./sbin/rc3.d/S55inetd
+ln -s ../init.d/cron    	./sbin/rc3.d/S57cron
+ln -s ../init.d/motd    	./sbin/rc3.d/S60motd
+ln -s ../init.d/lpd    		./sbin/rc3.d/S65lpd
+#
+# Link compiler compnents to common locations from /usr/ccs
+#
+echo " - Links for compile tools"
+ln -s ../ccs/bin/ar     ./usr/bin/ar
+ln -s ../ccs/bin/as     ./usr/bin/as
+ln -s ../ccs/bin/cb     ./usr/bin/cb
+ln -s ../ccs/bin/cc     ./usr/bin/cc
+ln -s ../ccs/bin/cflow     ./usr/bin/cflow
+ln -s ../ccs/bin/cxref     ./usr/bin/cxref
+ln -s ../ccs/bin/error     ./usr/bin/error
+ln -s ../ccs/bin/gcc     ./usr/bin/gcc
+ln -s ../ccs/bin/gdb     ./usr/bin/gdb
+ln -s ../ccs/bin/indent   ./usr/bin/indent
+ln -s ../ccs/bin/ld     ./usr/bin/ld
+ln -s ../ccs/bin/lex     ./usr/bin/lex
+ln -s ../ccs/bin/lint     ./usr/bin/lint
+ln -s ../ccs/bin/lorder   ./usr/bin/lorder
+ln -s ../ccs/bin/m4     ./usr/bin/m4
+ln -s ../ccs/bin/make     ./usr/bin/make
+ln -s ../ccs/bin/mig     ./usr/bin/mig
+ln -s ../ccs/bin/mkstr     ./usr/bin/mkstr
+ln -s ../ccs/bin/odump     ./usr/bin/odump
+ln -s ../ccs/bin/nm     ./usr/bin/nm
+ln -s ../ccs/bin/ranlib   ./usr/bin/ranlib
+ln -s ../ccs/bin/size     ./usr/bin/size
+ln -s ../ccs/bin/strings   ./usr/bin/strings
+ln -s ../ccs/bin/strip   ./usr/bin/strip
+ln -s ../ccs/bin/tsort     ./usr/bin/tsort
+ln -s ../ccs/bin/xpass     ./usr/bin/xpass
+ln -s ../ccs/bin/xstr     ./usr/bin/xstr
+ln -s ../ccs/bin/yacc     ./usr/bin/yacc
+ln -s ../ccs/lib/cpp    ./usr/lib/cpp
+#
+# Link /usr/lib/* to /usr/ccs/lib/*
+#
+echo " - Link libraries in /usr/ccs/lib to /usr/lib"
+ln -s  ../ccs/lib/libAF.a  ./usr/lib/libAF.a
+ln -s  ../ccs/lib/libPW.a  ./usr/lib/libPW.a
+ln -s  ../ccs/lib/libbsd.a  ./usr/lib/libbsd.a
+ln -s  ../ccs/lib/libc.a  ./usr/lib/libc.a
+ln -s  ../ccs/lib/libc_g.a  ./usr/lib/libc_g.a
+ln -s  ../ccs/lib/libcurses.a  ./usr/lib/libcurses.a
+ln -s  ../ccs/lib/libdbm.a  ./usr/lib/libdbm.a
+ln -s  ../ccs/lib/libg.a  ./usr/lib/libg.a
+ln -s  ../ccs/lib/libl.a  ./usr/lib/libl.a
+ln -s  ../ccs/lib/libld.a  ./usr/lib/libld.a
+ln -s  ../ccs/lib/libln.a  ./usr/lib/libln.a
+ln -s  ../ccs/lib/libm.a  ./usr/lib/libm.a
+ln -s  ../ccs/lib/libmach.a  ./usr/lib/libmach.a
+ln -s  ../ccs/lib/libmp.a  ./usr/lib/libmp.a
+ln -s  ../ccs/lib/libpthreads.a  ./usr/lib/libpthreads.a
+ln -s  ../ccs/lib/libresolv.a  ./usr/lib/libresolv.a
+ln -s  ../ccs/lib/librpc.a  ./usr/lib/librpc.a
+ln -s  ../ccs/lib/libsecurity.a  ./usr/lib/libsecurity.a
+ln -s  ../ccs/lib/libsys5.a  ./usr/lib/libsys5.a
+ln -s  ../ccs/lib/libtermcap.a  ./usr/lib/libtermcap.a
+ln -s  ../ccs/lib/libtermlib.a  ./usr/lib/libtermlib.a
+ln -s  ../ccs/lib/libtli.a  ./usr/lib/libtli.a
+ln -s  ../ccs/lib/libutil.a  ./usr/lib/libutil.a
+ln -s  ../ccs/lib/libxti.a  ./usr/lib/libxti.a
+ln -s  ../ccs/lib/liby.a  ./usr/lib/liby.a
+ln -s  ../ccs/lib/yaccpar  ./usr/lib/yaccpar
+#
+# Set up mail links and set directory protection
+#
+chgrp mail ./usr/spool/mail
+chmod 775 ./usr/spool/mail
+echo " - Link mail program"
+ln -s  ../sbin/sendmail  ./usr/lib/sendmail
+#
+# Shared directory structure
+#
+echo " - Link to /usr/shared"
+ln -s  ../share/lib/adb    ./usr/lib/adb
+ln -s  ../share/lib/lib.b  ./usr/lib/lib.b
+ln -s  ../share/lib/macros  ./usr/lib/macros
+ln -s  ../share/lib/me    ./usr/lib/me
+ln -s  ../share/lib/more.help  ./usr/lib/more.help
+ln -s  ../share/lib/ms    ./usr/lib/ms
+ln -s  ../share/lib/nterm  ./usr/lib/nterm
+ln -s  ../share/lib/term  ./usr/lib/term
+ln -s  ../share/lib/terminfo  ./usr/lib/terminfo
+ln -s  ../usr/share/lib/termcap  ./etc/termcap
+ln -s  ../share/lib/tmac  ./usr/lib/tmac
+ln -s  share/man    ./usr/man
+
+#
+# Links from root directories to /usr directories
+#
+
+ln -s  usr/lib    ./lib
+ln -s  usr/bin    ./bin
+ln -s  bin        usr/ucb
+ln -s  ../stand   usr/mdec
+
+#
+# Create links for X11
+#
+if [ $DOX11 = "yes" ]
+then
+  echo " - Links for X11"
+  mkdir usr/X11
+  ln -s  ../X11/bin		./usr/bin/X11
+  ln -s  ../X11/lib/X11		./usr/lib/X11
+  ln -s  ../X11/lib/libMrm.a	./usr/lib/libMrm.a
+  ln -s  ../X11/lib/libX11.a	./usr/lib/libX11.a
+  ln -s  ../X11/lib/libXau.a	./usr/lib/libXau.a
+  ln -s  ../X11/lib/libXaw.a	./usr/lib/libXaw.a
+  ln -s  ../X11/lib/libXdmcp.a	./usr/lib/libXdmcp.a
+  ln -s  ../X11/lib/libXext.a	./usr/lib/libXext.a
+  ln -s  ../X11/lib/libXinput.a	./usr/lib/libXinput.a
+  ln -s  ../X11/lib/libXm.a	./usr/lib/libXm.a
+  ln -s  ../X11/lib/libXmu.a	./usr/lib/libXmu.a
+  ln -s  ../X11/lib/libXt.a	./usr/lib/libXt.a
+  ln -s  ../X11/lib/liboldX.a	./usr/lib/liboldX.a
+fi 
+#
+# Links from /usr/ccs/bin to /usr/ccs/gcc
+#
+if [ $DOGCC = "yes" ]
+then
+  echo " - Links to use gcc"
+  ln -s  ../gcc/as	./usr/ccs/bin/as
+  ln -s  ../gcc/cc1	./usr/ccs/lib/gcc-cc1
+  ln -s  ../gcc/cpp	./usr/ccs/lib/gcc-cpp
+  ln -s  ../gcc/cc1	./usr/ccs/lib/cc1
+  ln -s  ../gcc/cpp	./usr/ccs/lib/cpp
+  ln -s  ../gcc/cpp	./usr/ccs/bin/cpp
+  ln -s  ../gcc/gcc	./usr/ccs/bin/cc
+  ln -s  ../gcc/gcc	./usr/ccs/bin/gcc
+  ln -s  ../gcc/gdb	./usr/ccs/bin/gdb
+  ln -s  ../gcc/gnulib	./usr/ccs/lib/gnulib
+  ln -s  ../gcc/ld	./usr/ccs/bin/ld
+fi
+
+if [ $DOSECURITY = "yes" ]
+then
+
+  echo "Performing tasks to support security install"
+
+  echo " - Making links"
+  ln -s ../../usr/bin/login	./tcb/lib/login
+  ln -s ../../usr/sbin/getty	./tcb/lib/getty
+  ln -s ../../sbin/init		./tcb/bin/init
+  ln -s ../../usr/bin/passwd	./tcb/bin/passwd
+
+  echo " - Making the devices for the system policy daemons"
+  for i in 0 1 2 3
+  do 
+    mknod ${INSTALLBASE}/dev/spd$i c 18 $i
+  done
+  mknod ${INSTALLBASE}/dev/spdcontrol c 18 255
+
+  echo " - Making the devices for the audit daemon"
+  mknod ${INSTALLBASE}/dev/auditr c 17 0
+  mknod ${INSTALLBASE}/dev/auditw c 17 1
+
+  echo " - Making security directories"
+
+  dirlist="a b c d e f g h i j k l m n o p q r s t u v w x y z"
+  for d in $dirlist
+  do
+    if [ ! -d tcb/files/auth/$d ]
+    then
+      mkdir tcb/files/auth/$d
+    elif [ $DODEBUG = "yes" ]
+    then
+     echo "DEBUG: Directory tcb/files/auth/$d already exists."
+    fi
+  done
+
+  dirlist="tcb/files/audit tcb/files/auditrparms tcb/files/skel"
+  for d in $dirlist
+  do
+    if [ ! -d $d ]
+    then
+      mkdir $d
+    elif [ $DODEBUG = "yes" ]
+    then
+     echo "DEBUG: Directory $d already exists."
+    fi
+  done
+
+  echo " - Creating synonyms database"
+  ${INSTALLBASE}/tcb/bin/mandsyn -d ${INSTALLBASE}/etc/policy/mac/synonyms.db \
+                   -r ${INSTALLBASE}/etc/policy/mac/synonyms
+
+  echo " - Setting file protections"
+  ${INSTALLBASE}/tcb/bin/setfiles -p ${INSTALLBASE}/
+
+fi
+
+echo "************************************************************************"
+echo "Post Install done.  Please remember to do the following before trying"
+echo "to reboot."
+echo
+echo "  - review and edit if needed etc/rc.config and etc/fstab"
+echo "  - run installk.sh to install a kernel if not already done"
+echo "  - Install the boot program for your computer on the root partition"
+echo ""
+echo "After you boot OSF/1 into multiuser mode you will need to run"
+echo "/postboot program to create the databases that can only be created when"
+echo "OSF/1 is running.  The postboot program only has to be run once and"
+echo "then can be deleted."
+echo 
+exit 0

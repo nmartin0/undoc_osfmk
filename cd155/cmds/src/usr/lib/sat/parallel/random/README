@@ -1,0 +1,6 @@
+Random Message Passing (random)
+
+This is a parallel random message passing test that measures latency and
+bandwidth for random NX message passing patterns.  It is designed to verify
+basic functionality and to check communication performance level.
+

@@ -1,0 +1,36 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test12" README
+===============
+
+Source: node.c errexit.c
+
+Desc:	"node.c" tests to write 31 datasets with the use of "tget_blk_id" when
+   	calling "tdsopen" and "tdsclose" for each dataset
+
+Invoke:	load [0] node.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use 1 scratch tape
+	* "test12.sh" calls "node.rx" 
+	* log is on "test12.SLr0" 
+	* result is on "test12.SRr0" 
+	* tape will not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+	* use "test11" for verify reading
+
+Algo:   * write 31 dataset with the use of "tget_blk_id" when calling
+	  "tdsopen" and "tdsclose" for each dataset
+	* print the block id after each call of "tget_blk_id"
+	* no user exit
+	* IMAX=100 (i.e. truncated blocks)
+	  JMAX=2
+	  

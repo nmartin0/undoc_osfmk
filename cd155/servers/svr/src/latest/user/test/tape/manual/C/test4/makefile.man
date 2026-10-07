@@ -1,0 +1,29 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+#	Makefile for C esize test used for compiling without
+#	t90. This is for 860 (RX) architecture only.
+#
+
+CC=  icc
+MODULES=/usr/eval/t90/Manual/lib
+
+all:    node.rx
+
+node.rx:  node.c 
+	  $(CC) -o node.rx node.c $(MODULES)/errexit.c -node -l 3480
+
+clean:
+	  rm -f *.S* scratch
+
+allclean:
+	  rm -f *.o node.rx *.S* scratch

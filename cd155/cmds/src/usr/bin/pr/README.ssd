@@ -1,0 +1,4 @@
+
+Fixed pr.c, so it handles end of file correclty rather than
+exiting with "page-buffer overflow" error message.
+Wed Apr 22 14:00:40 PDT 1992 - Shala

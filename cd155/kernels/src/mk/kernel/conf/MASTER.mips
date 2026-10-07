@@ -1,0 +1,222 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#
+#  
+# HISTORY
+# $Log: MASTER.mips,v $
+# Revision 1.5  1994/11/18  20:27:53  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:19:04  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:16:54  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:16:24  dleslie
+# First R1_0 release
+#
+# Revision 2.16  91/08/28  11:10:07  jsb
+# 	Added support for lineno build option. This option is now required
+# 	to get filename and line number debugging info.
+# 	[91/08/26  11:25:33  jsb]
+# 
+# Revision 2.15  91/08/24  11:54:24  af
+# 	Changes for kmin, including one more ASC scsi interface, and a new
+# 	driver: the SCC serial line one (substitutes the DZ)
+# 	[91/07/05            af]
+# 
+# Revision 2.14  91/06/19  15:01:16  rvb
+# 	dz got renamed dz_, because the driver was renamed.
+# 	ln got renamed se_, because the driver was renamed.
+# 	[91/06/07            rvb]
+# 
+# Revision 2.13  91/05/18  14:28:59  rpd
+# 	Removed the COMPACTED (tag "mod_bits") option.
+# 	[91/03/19            rpd]
+# 
+# Revision 2.12  91/05/14  15:25:40  mrt
+# 	Correcting copyright
+# 
+# Revision 2.11  91/05/13  06:02:06  af
+# 	Define explicitly how many scsi busses we config, which is
+# 	two for PMAX: the SII and the ASC.
+# 	[91/05/12  15:45:34  af]
+# 
+# Revision 2.10  91/02/05  17:02:23  mrt
+# 	Changed to new copyright
+# 	[91/01/28  14:46:07  mrt]
+# 
+# Revision 2.9  91/01/08  15:08:48  rpd
+# 	Disabled ref_bits.  Again.
+# 	[91/01/04            rpd]
+# 
+# Revision 2.8  90/12/05  23:27:20  af
+# 	Merge problems.
+# 
+# Revision 2.7  90/12/05  20:42:04  af
+# 	Split and documented the various screen drivers tags.
+# 
+# 	Earthquake for new, copyright free PMAX device drivers.
+# 	I tried to make things a little bit flexible and
+# 	'standard looking': there is now here a pseudo-device
+# 	declaration for each major piece of PMAX hardware
+# 	rather than just the switches in the STD.. configs.
+# 	Note that the "gx" driver is a collective name for
+# 	the fancy 2d/3d graphics options on 3maxen.
+# 
+# 	Added <kmax> conditional for 3maxen, use it to identify
+# 	files that are not needed elsewhere [not that you can really
+# 	cut them all out yet].
+# 
+# 	Enabled ref_bits.
+# 	Added R3000 and fixed old R2000 defs for supported cpus.
+# 
+# 	Configure two ethernet boards by default to accomodate
+# 	3maxen where the thick ether is a separate option board.
+# 	[90/12/03  22:52:29  af]
+# 
+# Revision 2.6  90/10/12  18:07:17  rpd
+# 	Removed ref_bits from STD.  The new software reference bit
+# 	code works better.
+# 	[90/10/09            rpd]
+# 
+# Revision 2.5  90/09/28  16:35:59  jsb
+# 	Made reference bits standard.
+# 	[90/09/21            rpd]
+# 
+# Revision 2.4  90/06/02  14:45:57  rpd
+# 	Added TRAP_HISTORY (tag "thist").
+# 	[90/05/12            rpd]
+# 	Compile with -g3 to get symbol table info.
+# 	[90/04/23            rpd]
+# 	Cleaned up.
+# 	[90/03/26  21:34:18  rpd]
+# 
+# Revision 2.3  90/01/22  23:04:21  af
+# 	I finally understood (I think) how this magic config process
+# 	works, so I cleaned up a little this file.  Three types of
+# 	basic configurations are defined now: a stable one (ANY & friends),
+# 	a more experimental one (TEST & friends), and one that really
+# 	does not work yet (NOTYET) because it contains being-developped
+# 	code.
+# 	[89/12/14            af]
+# 
+# Revision 2.2  89/11/29  14:08:01  af
+# 	Long overdue fix: pm ->pmdev not to conflict with pagemap option.
+# 	[89/10/29  14:25:43  af]
+# 
+# 	Fixed for pure kernel, removed MSERIES support and related
+# 	copyright restrictions.
+# 	[89/10/28            af]
+# 
+# Revision 2.4.2.1  89/09/25  11:28:53  af
+# 	Made assembly silent.
+# 
+# Revision 2.5  89/09/25  22:20:20  mja
+# 	Add standard ANY, WS and MF macros (same as PMAX for now).
+# 	[89/09/22  18:00:07  mja]
+# 
+# Revision 2.4  89/05/30  17:04:56  rvb
+# 	Add PMAX.
+
+#	STD	= [ mips_code ]
+#
+#	ANY	= [ pmax kmax kmin ]
+#	WS	= [ pmax kmax kmin ]
+#	MF	= [ pmax kmax kmin ]
+#
+conftype	mips
+
+platform	PMAX						# <pmax>
+platform	KMAX						# <kmax>
+platform	KMIN						# <kmin>
+platform	DECSTATION					# <pmax,kmax,kmin>
+config		mach_kernel	swap generic			# <pmax>
+
+options		REF_BITS					# <ref_bits>
+options		MIPS_CODE					# <mips_code>
+options		COUNTERS					# <measure>
+options		TRAP_HISTORY					# <thist>
+
+makeoptions	ENDIAN="-EL"					# <pmax>
+makeoptions	GPSIZE=32					# <pmax>
+makeoptions	CC="cc"
+makeoptions	LD="ld"
+makeoptions	SIZE="size"
+makeoptions	CCOPTS="-O2"
+makeoptions	ASOPTS="-w"
+makeoptions	CLINENO="-g3"					# <lineno>
+
+#
+#		PMAX DEVICES
+#
+# MC146818 clock chip
+pseudo-device	mc			1			# <pmax,kmax,kmin>
+
+# Generic console driver
+pseudo-device	constty			4			# <pmax,kmax,kmin>
+
+# DC7085 serial line controller (console)
+pseudo-device	dz_			1			# <pmax,kmax>
+
+# Z8530 serial line controller (console)
+pseudo-device	scc			2			# <kmin>
+
+# LK201 keyboard driver
+pseudo-device	lk			1			# <pmax,kmax,kmin>
+
+# Bitmapped screen(s):
+#	bm	is the generic bitmapped screen layer
+#	fb	is the pmax monochrome/color framebuffer
+#	mfb	is the 3max/3min monchrome framebuffer
+#	cfb	is the 3max simple color framebuffer (needs fb)
+#	gx	is the driver for the 2d/3d graphic engines
+pseudo-device	bm			1			# <pmax,kmax,kmin>
+pseudo-device	fb			1			# <pmax,kmax,kmin>
+pseudo-device	mfb			1			# <kmax,kmin>
+pseudo-device	cfb			1			# <kmax,kmin>
+pseudo-device	gx			2			# <kmax,kmin>
+
+# AMD7990 ethernet controller
+pseudo-device	ln			2			# <pmax,kmax,kmin>
+
+# SCSI driver: total HBAs
+pseudo-device	scsi			5			# <pmax,kmax,kmin>
+# DC7061 SCSI HBA
+pseudo-device	sii			1			# <pmax>
+# NCR 53C94 SCSI HBA
+pseudo-device	asc			4			# <kmax,kmin>

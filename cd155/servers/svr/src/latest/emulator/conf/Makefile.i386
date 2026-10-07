@@ -1,0 +1,56 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1989 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+###############################################################################
+#BEGIN	Machine dependent Makefile fragment for the i386
+###############################################################################
+C_RULE_2_P=true
+
+#tmp
+
+SYS_RULE_2=-@
+SYS_RULE_3=-@
+SYS_RULE_4=-@
+
+KCPP=cc -ES -Ui386 -Di386
+
+# The master Makeconf file may have defined OPTIMIZE_I860.  If so we
+# set OPTIMIZE accordingly; if not we use the OPTIMIZE_DEFAULT value
+# we get from the Makefile.template file.
+#
+OPTIMIZE=${OPTIMIZE_I386?$(OPTIMIZE_I386):$(OPTIMIZE_DEFAULT)}
+
+MD=md
+
+# Note that COMPILER_RT contains a hard-coded pathname.
+# It is now defined in the master Makeconf file.
+#
+#LIBS_P=-lc_p
+LIBS=-lthreads -lmach_sa ${COMPILER_RT}
+
+LDFLAGS= -x -e __start -L${MKLIB}
+#
+#
+#
+###############################################################################
+#END	Machine dependent Makefile fragment for the i386
+###############################################################################
+
+
+
+
+
+

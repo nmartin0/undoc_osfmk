@@ -1,0 +1,301 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/* 
+ * Mach Operating System
+ * Copyright (c) 1990 Carnegie-Mellon University
+ * Copyright (c) 1989 Carnegie-Mellon University
+ * All rights reserved.  The CMU software License Agreement specifies
+ * the terms and conditions for use and redistribution.
+ */
+/*
+ * Copyright (c) 1991, Locus Computing Corporation
+ * All rights reserved
+ */
+/*
+ * HISTORY
+ * $Log: bsd_types.defs,v $
+ * Revision 1.12  1994/11/18  20:47:13  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.11  1994/06/02  22:35:06  chrisp
+ * RPCs bsd_rforkmulti and rforkmulti_long parameters change:  file
+ * ports added; child task and thread ports eliminated.  Boolean boot
+ * magic variable TNC_RFORKMULTI_BINARY_TREE added to determine the
+ * spanning tree scheme rforkmulti is to use; it defaults to true i.e.
+ * binary tree.  Parameter added for RPC fsvr_file_ref to specify the
+ * required change in reference count. Previously, this operation
+ * incremented counts by 1 only; now n can be specify and note that
+ * n can be negative.
+ *
+ *  Reviewer: cfj
+ *  Risk: M
+ *  Benefit or PTS #: 6463
+ *  Testing:
+ *  Module(s): boot_config.c bsd_1.defs bsd_types.defs bsd_types.h fsvr.defs
+ *             fsvr_server_side.c
+ *
+ * Revision 1.10  1994/03/14  02:07:52  slk
+ * Checkpoint Restart Code Drop
+ *  Reviewer: Stefan Tritscher
+ *  Risk: Medium
+ *  Benefit or PTS #: Enhancement
+ *  Testing: Locus VSTNC, EATS TCP-IP, Individual Checkpoint/Restart tests.
+ *  Module(s):
+ *
+ * Revision 1.9  1993/11/15  23:46:07  dbm
+ *  Reviewer:None
+ *  Risk:Low
+ *  Benefit or PTS #:7140, Added extra field to pfs_stat_t definition
+ * 		        to allow for the file mode value to be
+ * 			returned.  This allows for checking the
+ * 			type of file when setting a PFS I/O mode.
+ *  Testing: Verified the fix using the test gave given.
+ *  Module(s):bsd_types.defs
+ *
+ * Revision 1.8  1993/07/14  18:39:53  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.4  1993/07/01  20:58:55  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.7  1993/05/07  20:09:24  cfj
+ * Delete references to fast_path_i.
+ *
+ * Revision 1.6  1993/05/07  18:14:05  nandy
+ * Resolved a merge conflict.
+ *
+ * Revision 1.5  1993/05/06  19:25:19  nandy
+ * ad103+tnc merged with Intel code.
+ *
+ * Revision 1.4  1993/04/03  03:11:16  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ * Revision 1.1.1.2  1993/05/03  17:50:54  cfj
+ * Initial 1.0.3 code drop
+ *
+ * Revision 1.1.2.2.2.3  1992/12/16  22:55:04  dbm
+ * Added PFS token functionality.
+ *
+ * Revision 1.3  1992/11/30  22:53:04  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.2.2.2  1992/11/26  00:01:40  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.1.2.2.2.1  1992/11/25  23:16:24  brad
+ * Added first cut at PFS file striping capability.
+ * 
+ * Revision 1.1.2.2  1992/11/06  20:34:10  dleslie
+ * Merged bug drop from Locus November 3, 1992, with NX development
+ * 
+ * Revision 1.1.2.1  1992/11/05  23:42:02  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ *
+ * Revision 2.23  92/11/02  12:27:27  roman
+ * Add types necessary for version of rforkmulti() using out-of-line memory.
+ * 
+ * Revision 2.22  92/10/28  15:59:44  roman
+ * Add types for TNC-specific system calls.
+ * 
+ * Revision 2.26  93/06/16  15:27:56  klh
+ * 	Revision 2.18  93/06/02  17:12:44  rabii
+ * 		Added definition for acct_t (rabii)
+ * 
+ * Revision 2.25  93/06/02  12:34:20  yazz
+ * For Sys V IPC under TNC define data type "long" as well as data type
+ * "key_t" as a long.
+ * 
+ * 	Revision 2.17  93/03/30  16:09:10  roy
+ * 		Remove fast_path_io definitions.
+ * 		[93/02/18            roy]
+ *
+ * Revision 2.23  92/11/02  12:27:27  roman
+ * Add types necessary for version of rforkmulti() using out-of-line memory.
+ * 
+ * Revision 2.22  92/10/28  15:59:44  roman
+ * Add types for TNC-specific system calls.
+ * 
+ * Revision 2.21  92/10/06  12:16:25  roman
+ * Delete types that already appear in other .defs files.
+ * 
+ * Revision 2.20  92/10/01  10:36:11  roman
+ * Fix up types for clean compilation under gcc.
+ * 
+ * Revision 2.19  92/09/29  08:24:02  roman
+ * Change type of multi_pid_array_t for cleaner compilations.
+ * 
+ * Revision 2.18  92/06/10  10:11:18  klh
+ * 	Revision 2.15  92/06/08  18:27:09  pjg
+ * 		Define stat_t using STAT_SIZE instead of "magic" number. Add
+ * 		FAST_PATH_IO definitions (pjg).
+ * 
+ * Revision 2.17  92/04/14  10:45:03  roman
+ * Add types necessary for TNC rforkmulti() system call.
+ * 
+ * Revision 2.16  92/04/06  19:10:10  klh
+ * For OSF merge, update version # to match LCC#
+ * 
+ * Revision 2.13  92/04/05  17:06:00  pjg
+ * 	Got rid of statb_t (pjg).
+ * 
+ * 	Added defn of stat_t which exactly corresponds to struct stat.
+ * 	Added defn of devstat_t corresponding to struct devstat (durriya)
+ * 
+ * Revision 2.12  92/02/11  21:46:39  pjg
+ * 	Add type of pid_t (roman@locus.com).
+ * 
+ * Revision 2.11  92/01/17  17:27:18  roy
+ * 	Added transaction_id_t (loverso).
+ * 
+ * Revision 2.10  91/12/13  10:24:42  roy
+ * 	statb_t changed to 15 ints (was 13).  Fix from pjg.
+ * 
+ * Revision 2.9  91/11/22  15:20:15  rabii
+ * 	Added definition of rusage_dev_t (used by remote pvproc reap process)
+ * 	(klh)
+ * 
+ * Revision 2.8  91/10/17  13:04:57  roy
+ * Fix revision history.
+ * 
+ * Revision 2.7  91/10/17  10:06:08  sjs
+ * more RCS fixes
+ * 
+ * Revision 2.6  91/10/17  10:03:29  sjs
+ * fixed RCS comments
+ * 
+ * Revision 2.5  91/10/14  13:35:51  sjs
+ * 91/10/04  16:42:50  sp
+ * Add support for auxiliary vector
+ * 
+ * Revision 2.4  91/10/04  15:17:37  chrisp
+ * Add in Locus copyright. Get rid of duplicate definition of rusage_t 
+ * (integration was incorrectly done).
+ *
+ * Revision 2.3  91/09/17  09:19:39  sjs
+ * integrate Locus changes	roman
+ * Declarations added for credentials types.
+ *
+ * Revision 2.2  91/08/31  14:24:38  rabii
+ *	Initial V2.0 Checkin
+ *
+ * Revision 3.1  91/05/15  17:57:35  barbou
+ * Declaration of type "sigaction_t" used by osf1_sigaction().
+ *
+ * Revision 3.0  91/01/17  12:05:49  condict
+ * Unchanged copy from Mach 3.0 BSD UNIX server
+ *
+ * Revision 2.4  90/06/02  15:27:03  rpd
+ * 	Converted to new IPC.
+ * 	[90/03/26  20:09:29  rpd]
+ * 
+ * Revision 2.3  90/05/29  20:24:50  rwd
+ * 	Change path_name_t to a varying-length inline array, to shorten
+ * 	messages.
+ * 	[90/04/06            dbg]
+ * 
+ * 	Added cfname_t to return command processor name and args from
+ * 	exec.
+ * 	[90/03/22            dbg]
+ * 
+ * Revision 2.2  90/05/21  14:01:20  dbg
+ * 	Change path_name_t to a varying-length inline array, to shorten
+ * 	messages.
+ * 	[90/04/06            dbg]
+ * 
+ * 	Added cfname_t to return command processor name and args from
+ * 	exec.
+ * 	[90/03/22            dbg]
+ * 
+ * $EndLog$
+ */
+/*
+ * Types for BSD kernel interface.
+ */
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types_gen.h>
+
+type	small_char_array= array[*:SMALL_ARRAY_LIMIT] of char;
+type	char_array	= ^array[] of char;
+type	path_name_t	= array[*:PATH_LENGTH] of char;
+type	timeval_t	= struct[2] of int;
+type	timeval_2_t	= array[2] of timeval_t;
+type	timeval_3_t	= array[3] of timeval_t;
+type    stat_t          = struct[STAT_SIZE] of int;
+type	sockarg_t	= array[*:128] of char;
+type	fd_set		= struct[FD_SET_LIMIT] of int;
+type	entry_array	= array[*:16] of vm_address_t;
+type	gidset_t	= array[GROUPS_LIMIT] of int;
+type	rlimit_t	= array[2] of int;
+type	sigvec_t	= struct[3] of int;
+type	sigaction_t	= struct[3] of int;
+type	sigstack_t	= struct[2] of int;
+type	timezone_t	= struct[2] of int;
+type	itimerval_t	= struct[4] of int;
+type	hostname_t	= (MACH_MSG_TYPE_STRING_C, 8*HOST_NAME_LIMIT);
+type	domainname_t	= (MACH_MSG_TYPE_STRING_C, 8*DOMAIN_NAME_LIMIT);
+type	cfname_t	= (MACH_MSG_TYPE_STRING_C, 8*64);
+type	cred_t		= struct[CRED_SIZE] of int;
+type	rusage_t	= struct[RUSAGE_SIZE] of int;
+type	rlimit_array_t	= array[RLIMIT_TOTAL_ARRAY_SIZE] of int;
+type	rusage_dev_t	= array[RUSAGE_DEV_SIZE] of int;
+type	pid_t		= int;
+
+type	auxv_type_t	= struct[2] of int;
+type	auxv_mig_t	= array[*:10] of auxv_type_t;
+type	auxv_strings_t	= array[*:4096] of char;
+
+type	transaction_id_t = int;
+type    devstat_t       = struct[5] of int;
+type    acct_t          = struct[10] of int;
+#ifdef	PFS
+type    pfs_stat_t		= struct[5] of int;
+type	esize_t			= struct[2] of int;
+#endif
+
+#ifdef	TNC
+
+/* types used for rforkmulti() system call */
+type	node_t		     = int;
+type	multi_int_array_t    = array[*:MAX_MULTI_LIST_SIZE] of int;
+type	multi_pid_array_t    = array[*:MAX_MULTI_LIST_SIZE] of pid_t;
+type	multi_node_array_t   = array[*:MAX_MULTI_LIST_SIZE] of node_t;
+type	multi_name_array_t   = array[*:MAX_MULTI_LIST_SIZE] 
+						of mach_port_name_t;
+type	multi_port_array_t   = array[*:MAX_MULTI_LIST_SIZE] 
+						of mach_port_copy_send_t;
+type	multi_vproc_array_t  = array[*:MAX_MULTI_LIST_SIZE] 
+						of mach_port_move_send_t;
+
+type	long_multi_int_array_t    = ^array[*] of int;
+type	long_multi_pid_array_t    = ^array[*] of pid_t;
+type	long_multi_node_array_t   = ^array[*] of node_t;
+type	long_multi_name_array_t   = ^array[*] of mach_port_name_t;
+type	long_multi_port_array_t   = ^array[*] of mach_port_copy_send_t;
+type	long_multi_vproc_array_t  = ^array[*] of mach_port_move_send_t;
+
+#ifdef  CHKPNT
+type	chkpnt_file_state_t	  = ^array[*] of char;
+
+#endif  CHKPNT
+#endif	/* TNC */
+
+/*
+ * Types for System V IPC under TNC.
+ */
+type	long			   = int;	/* "long" not on std list */
+type	key_t			   = long;
+
+import <uxkern/bsd_types.h>;

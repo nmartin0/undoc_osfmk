@@ -1,0 +1,541 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1991,1990,1989 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#  
+#
+# HISTORY
+# 28-Sep-92  Philippe Bernadat (bernadat) at gr.osf.org
+#	Added EISA & HIMEM options
+#
+# $Log: MASTER.i386,v $
+# Revision 1.6  1994/11/18  20:27:32  mtm
+# Copyright additions/changes
+#
+# Revision 1.5  1993/07/01  15:31:10  terry
+# source sync with nmk13.25
+#
+# Revision 1.2.5.2  1993/06/08  15:40:23  condict
+# 	Change C_RULE_n from empty string to ":" command, to avoid sh bug.
+# 	[1993/06/08  14:34:06  condict]
+#
+# Revision 1.4  1993/06/30  22:18:49  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:16:34  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:16:03  dleslie
+# First R1_0 release
+#
+# Revision 2.19.3.8  92/09/15  17:14:04  jeffreyh
+# 	Added "profile" to WS, COROLLARY, COMPAQ and Z1000
+# 	configurations.
+# 	[92/07/17            bernadat]
+# 
+# Revision 2.19.3.7  92/05/27  01:13:25  jeffreyh
+# 	Fix merge problem. Add mcmsg option from Intel.
+# 
+# Revision 2.19.3.5  92/04/30  12:28:15  bernadat
+# 	Fixed SYSDEPS for Corollary and SystemPro
+# 	[92/04/30            bernadat]
+# 	Added COMPAQ Systempro configuration
+# 	[92/04/08            bernadat]
+# 
+# Revision 2.19.3.4  92/03/28  10:03:55  jeffreyh
+# 	On iPSC use esp scsi driver instead of sd
+# 	[92/03/27            jeffreyh]
+# 	Moved OSF_LOCAL option to MASTER.
+# 	Added generic scsi option (esp) for iPSC386
+# 	[92/03/19            jeffreyh]
+# 	Configure more disk & controllers for Sequent
+# 	[92/03/04            bernadat]
+# 
+# Revision 2.19.3.3  92/03/03  16:13:07  jeffreyh
+# 	Picked up floating-point emulation support from MK68
+# 	[92/02/26  10:57:25  jeffreyh]
+# 
+# Revision 2.19.3.2  92/02/18  18:36:57  jeffreyh
+# 	Adapted Corollary configuration with new scsi driver
+# 	Increased number of scsi devices
+# 	Changed mach_mp_debug option to be a machine independant option
+# 	Configure two ethernet boards for Sequent
+# 	[91/09/27            bernadat]
+# 
+# 	Added option for high resolution clock on Corollary MP
+# 	(Jimmy Benjamin @ gr.osf.org)
+# 	[91/09/17            bernadat]
+# 
+# 	Configured 2 ns8390 boards, to run two servers
+# 	[91/08/30            bernadat]
+# 
+# 	Build slave_boot_code.c for the cbus in the obj directory
+# 	[91/07/04            bernadat]
+# 
+# 	Support for SCSI and Corollary MP
+# 	[91/06/25            bernadat]
+# 	Add OSFPART for different ipsc disk config. Will go away.
+# 	[92/02/13  12:27:58  jeffreyh]
+# 
+# Revision 2.19.3.1  92/01/09  18:43:25  jsb
+# 	Allow for two wd's.
+# 	[92/01/09  09:30:36  jsb]
+# 
+# Revision 2.19  91/12/10  16:29:26  jsb
+# 	Fixes from Intel
+# 	[91/12/10  15:51:24  jsb]
+# 
+# Revision 2.18  91/10/09  15:55:57  af
+# 	Revision 2.17.1.1  91/09/23  23:00:23  rvb
+# 		Allow for 4 hd's and 4 fd's
+# 	Revision 2.17.2.1  91/10/05  13:01:18  jeffreyh
+# 		Deleted "-x" option from LDFLAGS to keep static symbol information.
+# 		[91/08/29            tak]
+# 
+# Revision 2.17.1.1  91/09/23  23:00:23  rvb
+# 	Allow for 4 hd's and 4 fd's
+# 
+# Revision 2.17.2.1  91/10/05  13:01:18  jeffreyh
+# 	Deleted "-x" option from LDFLAGS to keep static symbol information.
+# 	[91/08/29            tak]
+# 
+# Revision 2.17  91/08/28  11:10:04  jsb
+# 	Added support for lineno build option.
+# 	[91/08/26  11:11:55  jsb]
+# 
+# Revision 2.16  91/08/24  11:53:28  af
+# 	Added SCSI driver "aha".
+# 	[91/08/02  02:34:39  af]
+# 
+# Revision 2.15  91/08/01  15:26:33  dbg
+# 	Add microsecond timing to Sequent configuration.
+# 	[91/08/01            dbg]
+# 
+# Revision 2.14  91/08/01  14:34:17  dbg
+# 	Define mach_machine_routines to call mach_i386_server.
+# 	[91/08/01            dbg]
+# 
+# Revision 2.13  91/06/19  11:54:34  rvb
+# 	cputypes.h->platforms.h
+# 	[91/06/12  13:44:24  rvb]
+# 
+# Revision 2.12  91/05/14  15:24:28  mrt
+# 	Correcting copyright
+# 
+# Revision 2.11  91/05/08  12:21:18  dbg
+# 	Remove '-fno-function-cse' from compilation options - i386 never
+# 	used the 'inline' program.
+# 	[91/04/30            dbg]
+# 
+# 	Add Sequent.  Remove options files for CPU types.
+# 	Sequent includes SYS rules to make mach.boot from mach_kernel.
+# 	[91/04/26  14:25:14  dbg]
+# 
+# Revision 2.10  91/02/05  17:02:04  mrt
+# 	Changed to new copyright
+# 	[91/01/28  14:45:43  mrt]
+# 
+# 	Add 3com 3c501 ether [bernadat]
+# 	Add @ to <coff> SWAPSYS macro.
+# 	[90/02/28            rvb]
+# 	You must "config" vmunix, mach has nasty side effects.
+# 	SWAPSYS must be @ not to have (null command) complaint.
+# 	[90/01/23            rvb]
+# 	SWAPSYS is not coff only.
+# 	[90/01/02  13:55:45  rvb]
+# 
+# 	Flush makevariables LIBS=...-gnulib
+# 	[89/12/26            rvb]
+# 	Define WS configuration.
+# 	Make "coff" configuration for kernel vs a.out.
+# 	[89/12/21  17:10:46  rvb]
+# 
+# 	Bring back optimization.
+# 	[89/09/26            rvb]
+# 
+# Revision 2.9  91/01/08  17:31:45  rpd
+# 	Switch wd8003 -> ns8390
+# 	[91/01/04  12:13:52  rvb]
+# 
+# Revision 2.8  90/12/04  14:45:30  jsb
+# 	Eliminated ipsc2 in favor of ipsc or ipsc386 where appropriate.
+# 	[90/12/04  11:38:51  jsb]
+# 
+# Revision 2.7  90/11/26  14:48:29  rvb
+# 	Put com back.  kd_mouse needs it.
+# 	[90/11/26  11:20:42  rvb]
+# 
+# Revision 2.6  90/11/24  15:14:36  jsb
+# 	Added support for i386ipsc2 cnp ethernet driver.
+# 	[90/11/24  12:05:34  jsb]
+# 
+# Revision 2.5  90/10/01  14:22:34  jeffreyh
+# 	Added wd8003 ethernet driver
+# 	[90/09/27  18:24:50  jeffreyh]
+# 
+# Revision 2.4  90/09/23  17:45:05  jsb
+# 	Added ipsc2 support.
+# 	[90/09/21  16:36:01  jsb]
+# 
+# Revision 2.3  90/06/19  22:56:30  rpd
+# 	Added -x to LDFLAGS.
+# 	[90/06/03            rpd]
+# 
+# Revision 2.2  90/05/03  15:16:48  dbg
+# 	Config mach_kernel for pure kernel.
+# 	[90/03/30            dbg]
+# 
+# Revision 2.9  89/09/25  15:46:36  rvb
+# 	fp defaults off for now.
+# 	[89/09/25            rvb]
+# 
+# Revision 2.8  89/09/25  12:20:05  rvb
+# 	fp configurable and qt -> wt
+# 	[89/09/23            rvb]
+# 
+# Revision 2.7  89/09/20  17:26:12  rvb
+# 	Don't optimize during compiles for now.
+# 	[89/09/20            rvb]
+# 
+# Revision 2.6  89/09/09  15:19:02  rvb
+# 	Allow blit device and make more devices configureable
+# 	[89/09/07            rvb]
+# 
+# Revision 2.5  89/07/17  10:34:36  rvb
+# 	New Devices: pccom and qd.
+# 	[89/07/10            rvb]
+# 
+# Revision 2.4  89/04/05  12:57:04  rvb
+# 	Must define AT386 now in X78
+# 	Add <gcc> stuff.
+# 	[89/03/04            rvb]
+# 
+# Revision 2.3  89/02/25  17:37:51  gm0w
+# 	Changes for cleanup.
+# 
+# Revision 2.2  89/01/23  22:11:06  af
+#	Created.
+#	
+#
+#  Master I386 configuration file (see the master machine independent
+#  configuration file for a description of the file format).
+#
+#	
+#	#####################################################################
+#	
+#	  I386 (PSEUDO-)DEVICES (select any combination)
+#	fpe	floating-point emulation support
+#
+#	  CPU TYPE (select exactly one)
+#	AT		at bus
+#	MBII		multibus II bus
+#	iPSC		Intel Hypercube
+#	SQT		Sequent Symmetry
+#	COROLLARY	Corollary Cbus 386/486 MP
+#	Z1000		Zenith flavor of Corollary MP
+#	
+#	#####################################################################
+#
+#	I386 Devices
+#
+#	for an AT bus:
+#
+#		hd		Hard Disk
+#		fd		Floppy Disk
+#		blit		Blit Screen
+#		pc586		PC 586 Ethernet card
+#		3c		3Com Ethernet card
+#		com		Serial Lines 0 and 1 (DOS 1 and 2)
+#		wt		Streamer Tape
+# 		scsi		Adaptec and/or SCSI boards
+#        *esp and sd are mutually exlusive
+#
+#
+#	for an Intel Hypercube:
+#
+#		sd		Old SCSI Driver
+#		esp		New generic SCSI driver		
+#		usm
+#		dcm
+#		cnp
+#
+#	for a Sequent Symmetry:
+#
+#		mbad		Multibus devices:
+#		    xy		Xylogics disk
+#		    zt		Xylogics tape
+#		    st		Systech terminal board
+#		    sl		Systech line printer board
+#
+#		sec		SCSI/Ethernet devices:
+#		    se		Ethernet
+#		    sc		SCSI disk
+#		    ts		SCSI streamer tape
+#		    sm		SCSI shared memory (not needed on Symmetry)
+#
+#		zd		ZDC disk
+#
+#	for a Corollary:
+#
+#		hd		Hard Disk
+#		fd		Floppy Disk
+#		blit		Blit Screen
+#		pc586		PC 586 Ethernet card
+#		3c		3Com Ethernet card
+#		com		Serial Lines 0 and 1 (DOS 1 and 2)
+#		wt		Streamer Tape
+# 		scsi		Adaptec and/or SCSI boards
+#		eisa		EISA bus support for DMA (floppy)
+#		himem		No CBUS windows on EISA model, must use himem
+#
+#	i386at specific
+#
+#		himem		Support for memory above 16 megs for
+#				devices using ISA based DMA
+#		eisa		EISA bus
+#
+#	#####################################################################
+#	
+#	  Standard Mach Research Configurations:
+#	  -------- ---- -------- ---------------
+#	
+#	  BOOT	   = [ hd bsmall ]
+#
+#	  STD	   = [ gcc ]
+#	
+#	  MACH     = [ en ]
+#	
+#	  WS	   = [ at hd com blit fd pc586 qd wt 3c wd scsi fpe profile]
+#
+#	  iPSC     = [ ipsc esp usm dcm cnp md ]
+#
+#	  SQT	   = [ sqt sec sc se zd timing multi32 ]
+#
+#	  COROLLARY= [ at cbus com fd pc586 qd wt 3c wd scsi profile eisa himem]
+#
+#	  Z1000    = [ at cbus com fd pc586 qd wt 3c wd scsi z1000 profile]
+#
+#	  COMPAQ   = [ at mbus com fd wd hd profile eisa]
+#
+#         HI_RES_CLOCK = [mp_slave_as_clk]
+#
+#	#####################################################################
+#
+
+conftype	"i386"		# <at,ipsc>
+conftype	"sqt"		# <sqt>
+
+platform	"AT386"		# <at>
+platform	"iPSC386"	# <ipsc>
+platform	SYMMETRY	# <sqt>
+platform	CBUS		# <cbus>
+platform	Z1000		# <z1000>
+platform	MBUS		# <mbus>
+
+config		mach_kernel	swap generic
+
+options 	MACH_LOAD	# 
+options		MACH_MACHINE_ROUTINES
+options 	MP_SLAVE_AS_CLK	# high resolution clock		# <mp_slave_as_clk>
+
+options		"iPSC386"	# <ipsc>
+### XXX The following will go away after intel has scsi disk lables
+options               OSF_PARTITION   # <osfpart>
+
+options               "MCMSG"         # <mcmsg>
+
+options		FPE		# <fpe>
+options		EISA		# <eisa>
+options		HIMEM		# <himem>
+
+#
+#  Devices for AT bus
+#
+pseudo-device	blit		# <blit>
+device		hd0		# <hd>
+device		hd1		# <hd>
+device		hd2		# <hd>
+device		hd3		# <hd>
+device		fd0		# <fd>
+device		fd1		# <fd>
+device		fd2		# <fd>
+device		fd3		# <fd>
+pseudo-device	fp		# <fp>
+pseudo-device	"pc586"		# <pc586>
+pseudo-device	"at3c501"	# <3c,eli>
+pseudo-device	"ns8390" 2	# <wd,elii>
+device		com0		# <com>
+device		com1		# <com>
+device		com2		# <com>
+device		com3		# <com>
+##device		qd0		# <qd>
+##device		qd1		# <qd>
+##device		wt0		# <wt>
+# SCSI driver: total HBAs
+pseudo-device	scsi			7			# <scsi>
+# Adaptec
+pseudo-device	aha			1			# <scsi>
+
+#
+#	Devices for iPSC
+#
+pseudo-device scsi	1	# <esp>
+pseudo-device esp	1	# <esp>
+device		sd0		# <sd>
+device		usm0		# <usm>
+device		dcm0		# <dcm>
+device		cnp0		# <cnp>
+device		md0		# <md>
+
+#
+#	Devices for Sequent Symmetry
+#
+
+#
+# Multibus Adapters
+#
+controller	mbad0	at slot ?		# <mbad>
+#controller	mbad1	at slot ?		# <mbad>
+#
+# SCSI/Ether Controllers
+#
+controller	sec0	at slot ?		# <sec>
+controller	sec1	at slot ?		# <sec>
+#
+# ZDC Controllers
+#
+controller	zdc0	at slot ?		# <zd>
+#controller	zdc1	at slot ?		# <zd>
+#
+# Multibus Xylogics 450 Disk Controllers
+#
+#device		xy0	at mbad? csr 0x100 maps 34 bin 5 intr 0	    # <xy>
+#device		xy1	at mbad? csr 0x110 maps 34 bin 5 intr 1     # <xy>
+#device		xy2	at mbad? csr 0x120 maps 34 bin 5 intr 2	    # <xy>
+#
+# Systech multibus terminal boards
+#
+device		st0	at mbad? csr 0x200 maps  0 bin 4 intr 3	    # <st>
+device		st1	at mbad? csr 0x210 maps  0 bin 4 intr 4	    # <st>
+#device		st2	at mbad? csr 0x220 maps  0 bin 4 intr 5	    # <st>
+#device		st3	at mbad? csr 0x230 maps  0 bin 4 intr 3	    # <st>
+#device		st4	at mbad? csr 0x240 maps  0 bin 4 intr 4	    # <st>
+#device		st5	at mbad? csr 0x250 maps  0 bin 4 intr 5	    # <st>
+#
+# Multibus Xylogics 472 Tape Controllers
+#
+#device		zt0	at mbad? csr 0x300 maps 34 bin 5 intr 7	    # <zt>
+#
+# Systech multibus line printer boards
+#
+#device		sl0	at mbad? csr 0x400 maps  8 bin 5 intr 6	    # <sl>
+#
+# Console devices on SEC
+#
+device		co0	at sec0 req 4 doneq 4 bin 4 unit 0	    # <sec>
+device		co0	at sec0 req 4 doneq 4 bin 4 unit 1	    # <sec>
+device		co1	at sec0 req 4 doneq 4 bin 4 unit 2	    # <sec>
+device		co1	at sec0 req 4 doneq 4 bin 4 unit 3	    # <sec>
+#device		co2	at sec1 req 4 doneq 4 bin 4 unit 0	    # <sec>
+#device		co2	at sec1 req 4 doneq 4 bin 4 unit 1	    # <sec>
+#device		co3	at sec1 req 4 doneq 4 bin 4 unit 2	    # <sec>
+#device		co3	at sec1 req 4 doneq 4 bin 4 unit 3	    # <sec>
+#
+# Ether devices on SEC
+#
+#device		se0	at sec0 req 200 doneq 200 bin 6 unit 0	    # <se>
+device		se0	at sec0 req  20 doneq  20 bin 6 unit 0	    # <se>
+device		se0	at sec0 req  10 doneq  10 bin 6 unit 1	    # <se>
+device		se1	at sec1 req  20 doneq  20 bin 6 unit 0	    # <se>
+device		se1	at sec1 req  10 doneq  10 bin 6 unit 1	    # <se>
+#
+# SCSI disk on SEC
+#
+device		sd0	at sec? req 4 doneq 4 bin 5 unit ? target ? # <sc>
+device		sd1	at sec? req 4 doneq 4 bin 5 unit ? target ? # <sc>
+#
+# SCSI streamer tape on SEC
+#
+device		ts0	at sec? req 4 doneq 4 bin 5 unit ? target 4 # <ts>
+#
+# SCSI memory driver on SEC
+#
+device		sm0	at sec0 req 3 doneq 3 bin 4 unit 0	    # <sm>
+#device		sm1	at sec1 req 3 doneq 3 bin 4 unit 0	    # <sm>
+#
+# ZDC Drives
+#
+device		zd0	at zdc? drive ? drive_type ?		# <zd>
+device		zd1	at zdc? drive ? drive_type ?		# <zd>
+device		zd2	at zdc? drive ? drive_type ?		# <zd>
+device		zd3	at zdc? drive ? drive_type ?		# <zd>
+device		zd4	at zdc? drive ? drive_type ?		# <zd>
+device		zd5	at zdc? drive ? drive_type ?		# <zd>
+device		zd6	at zdc? drive ? drive_type ?		# <zd>
+device		zd7	at zdc? drive ? drive_type ?		# <zd>
+
+
+
+#
+#	OVERRIDES FOR GCC
+#
+
+makevariables	TEXTORG="c0100000"				# <at>
+makevariables	TEXTORG="c0100000"				# <exl>
+makevariables	TEXTORG="c0100000"				# <ipsc>
+makevariables	TEXTORG="c0000000"				# <sqt>
+makevariables	TEXTORG="c4100000"				# <cbus>
+
+makevariables	CC="	gcc"					# <!coff>
+makevariables	GAS="	gas"					# <!coff>
+makevariables	LDFLAGS="-e _pstart -T ${TEXTORG}"		# <!coff>
+makevariables	SWAPSYS="@"					# <!coff>
+
+makevariables	VOLATILE=					# <gcc>
+makevariables	FORCE_VOLATILE="-fvolatile "	 		# <gcc>
+makevariables	"C_RULE_1A"="${KCC} -c ${CFLAGS} "		# <gcc>
+makevariables	"C_RULE_2"=":"					# <gcc>
+makevariables	"C_RULE_3"=":"					# <gcc>
+makevariables	"C_RULE_4"=":"					# <gcc>
+
+makevariables	CLINENO="-g"					# <lineno>
+
+#
+#	Additional rules for Sequent
+#
+makevariables	MAKEBOOT=" PATH=../bin:$$PATH makeboot"		# <sqt>
+makevariables	"SYS_RULE_2"="$(MAKEBOOT) -sequent -o mach.boot $@" # <sqt>
+makevariables	SYSDEPS="../bin/makeboot"			# <sqt>
+makevariables	SYSDEPS="../i386at/boot/boot"			# <at>
+

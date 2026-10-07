@@ -1,0 +1,55 @@
+#! /sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+# Control the loader: shared library installation and preloading
+
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+
+loaderdir=/var/adm/loader
+
+#
+# Cleanup any old preload files
+#
+set `who -r`
+if [ $9 != "S" ]
+then
+        exit
+fi
+
+echo "Clearing old preload files"
+if [ ! -d $loaderdir ]; then
+	mkdir $loaderdir
+fi
+rm -f $loaderdir/ldr[0-9]*
+
+#
+# Now start the loader
+#
+if [ ! -d /usr/shlib ]; then
+      exit
+fi
+
+if [ -f /etc/lib_admin.conf ]; then
+	if /sbin/lib_admin -v /etc/lib_admin.conf; then
+		echo "Global libraries installed"
+	else
+		echo "Unable to install global libraries"
+	fi
+fi

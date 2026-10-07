@@ -1,0 +1,56 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+PATH=/sbin:/usr/sbin:/usr/bin
+export PATH
+SL=/var/adm/syslog
+mklog_pid_file=/var/run/mklogd.pid
+
+case "$1" in
+'start')
+        set `who -r`
+        if [ $9 = "S" ]; then
+ 		# create the MK log fifo so mklog can write remote MK's
+		# printf() strings and syslogd can read em.
+		/sbin/rm -f /dev/klog $mklog_pid_file
+		/sbin/mkfifo -m 0664 /dev/klog
+		#
+		# save some versions of the kern.log file
+		#
+		rm -f $SL/kern.log.2
+        	if [ -r $SL/kern.log.1 ]; then
+			mv $SL/kern.log.1 $SL/kern.log.2
+		fi
+        	if [ -r $SL/kern.log ]; then
+			mv $SL/kern.log $SL/kern.log.1
+		fi
+		touch -f $SL/kern.log
+		/sbin/mklogd
+		if [ $? -ne 0 ]; then
+			# remove fifo so syslogd will NOT hang on fifo open
+			/sbin/rm -f /dev/klog $mklog_pid_file
+                        echo "Cannot start Remote Micro-Kernel console logger"
+		else
+			echo "Remote Micro-Kernel console logger started"
+		fi
+        fi
+        ;;
+'stop')
+        if [ -r $mklog_pid_file ]; then
+                kill `cat $mklog_pid_file`
+        else
+                echo "ERROR: cannot find $mklog_pid_file to kill mklogd."
+        fi
+        ;;
+*)
+        echo "usage: $0 {start|stop}"
+        ;;
+esac

@@ -1,0 +1,68 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+# 
+# 
+# OSF/1 Release 1.0
+
+#
+# "@(#)$RCSfile: hardcopy.ti,v $ $Revision: 1.2 $ (OSF) $Date: 1994/11/19 03:20:39 $"
+#
+# COMPONENT_NAME: (TERMINFO) Termifno
+#
+# FUNCTIONS:    hardcopy.ti
+#
+# ORIGINS: 3, 26, 27
+#
+# This module contains IBM CONFIDENTIAL code. -- (IBM
+# Confidential Restricted when combined with the aggregated
+# modules for this product)
+# OBJECT CODE ONLY SOURCE MATERIALS
+# (C) COPYRIGHT International Business Machines Corp. 1985, 1988
+# All Rights Reserved
+# Licensed Material - Property of IBM
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+# hardcopy.ti        1.4  com/terminfo,3.1,9013 10/16/89 23:08:32
+
+#
+# NAME:         hardcopy (HARDCOPY)
+#
+# EXECUTION ENVIRONMENT:
+#
+#       This used to say "de#001202" which presumably refers to the stty
+#       bits that need to be set for some version of Unix.  We need the
+#       real delay requirements here.
+#
+
+cdi|cdi1203,
+	am, cub1=^H, hc, os, cols#80,
+	cr=^M$<200>, cud1=^J, ind=^J, bel=^G,
+
+ep48|ep4080|execuport 4080,
+	am, cub1=^H, os, cols#80, hu=\036, hd=\034,
+	cr=^M, cud1=^J, ind=^J, bel=^G,
+
+ep40|ep4000|execuport 4000,
+	am, cub1=^H, os, cols#136, hu=\036, hd=\034,
+	cr=^M, cud1=^J, ind=^J, bel=^G,
+
+mw2|multiwriter 2,
+	cr=^M, cud1=^J, ind=^J, bel=^G, cols#132, hc, os,
+
+terminet1200|terminet300|tn1200|tn300|terminet|ge terminet 1200,
+	cols#120, hc, os,
+	cr=^M, cud1=^J, ind=^J, bel=^G,

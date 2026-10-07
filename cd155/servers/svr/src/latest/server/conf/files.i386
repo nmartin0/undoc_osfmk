@@ -1,0 +1,119 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1988 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement specifies
+# the terms and conditions for use and redistribution.
+#
+# HISTORY
+# $Log: files.i386,v $
+# Revision 1.7  1994/11/18  20:29:37  mtm
+# Copyright additions/changes
+#
+# Revision 1.6  1993/07/14  17:54:00  cfj
+# OSF/1 AD 1.0.4 code drop from Locus.
+#
+# Revision 1.1.1.3  1993/07/01  19:12:25  cfj
+# Adding new code from vendor
+#
+# Revision 1.5  1993/05/06  19:14:29  cfj
+# ad103+tnc merged with Intel code.
+#
+# Revision 1.1.1.1  1993/05/03  17:27:36  cfj
+# Initial 1.0.3 code drop
+#
+# Revision 1.4  1993/04/03  03:05:32  brad
+# Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+# Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+#
+# Revision 1.1.2.1.2.1  1992/12/16  05:59:43  brad
+# Merged trunk (as of the Main_After_Locus_12_1_92_Bugdrop_OK tag)
+# into the PFS branch.
+#
+# Revision 1.3  1992/12/11  02:55:59  cfj
+# Merged 12-1-92 bug drop from Locus.
+#
+# Revision 1.2  1992/11/30  22:19:15  dleslie
+# Copy of NX branch back into main trunk
+#
+# Revision 1.1.2.1  1992/11/05  23:18:22  dleslie
+# Local changes for NX through noon, November 5, 1992.
+#
+# Revision 2.6  1992/11/17  19:48:01  loverso
+# 	Add user_bcopy.s  (mmp)
+#
+# Revision 2.5  92/05/24  14:22:36  pjg
+# 	    Revision 3.9  92/03/07  18:00:14  sp
+# 	    Delete cruft inherited from the BSD server
+# 
+# Revision 2.4  92/04/05  16:52:34  pjg
+# 	Add file slock.s
+# 
+# Revision 2.3  91/12/16  14:08:46  roy
+# 	91/11/26  15:33:04  sp
+# 	Upgrade to 1.0.3
+# 
+# 	91/11/07  15:15:27  condict
+# 	Replace bcopy.c with bcopy.s (> 2X speedup in bcopy performance).
+# 
+# Revision 2.2  91/08/31  13:29:54  rabii
+# 	Initial V2.0 Checkin
+# 
+#	Revision 3.5  91/08/05  11:59:03  jose
+#	added i386/mach_o_hdr.c
+#	
+#	Revision 3.4  91/06/25  17:05:26  condict
+#	Added networking files and miscellaneous other stuff.
+#	
+#	Revision 3.3  91/05/29  14:30:08  condict
+#	Add full set of OPTIONS/ lines from OSF/1.
+#	
+#	Revision 3.2  91/04/12  13:58:42  condict
+#	Add the new files for the OSF/1 file system;
+#	Get rid of unused files (stubs from the old ufs_* file system).
+#	
+#	
+#	Revision 3.1  91/01/17  17:19:16  condict
+#	Fix file name.
+#	
+# Revision 3.0  91/01/17  12:06:54  condict
+# Unchanged copy from Mach 3.0 BSD UNIX server
+# 
+# Revision 2.2  90/05/21  13:51:36  dbg
+# 	Created.
+# 	[90/05/03            dbg]
+# 
+#
+# Machine-dependent files for out-of-kernel version
+#
+OPTIONS/syscalltrace		optional syscalltrace
+OPTIONS/stack_limit_check	optional stack_limit_check
+OPTIONS/itrace			optional itrace
+OPTIONS/idebug			optional idebug
+
+netns/ns_cksum.c		optional ns
+i386/in_cksum.c			optional inet
+i386/bcopy.s			standard
+i386/slock.s			standard
+i386/bsd_machdep.c		standard
+i386/mach_o_hdr.c		optional osf_mach_o
+i386/conf.c			standard
+i386/i386_exception.c		optional mach
+i386/libc.c			standard
+i386/misc_routines.c		standard
+i386/ntoh.s			standard
+i386/queue.c			standard
+i386/xenix/stub.c		standard
+i386/user_bcopy.s		standard
+# Added by us to allow a second server to run under another BSD server:
+i386/second_syscalls.s		optional second_server

@@ -1,0 +1,83 @@
+/*
+ * 
+ * $Copyright
+ * Copyright 1993, 1994 , 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ * 
+ */
+ 
+/*
+ * @OSF_COPYRIGHT@
+ */
+/*
+ * HISTORY
+ * $Log: emul_call_reply.defs,v $
+ * Revision 1.5  1994/11/18  20:47:44  mtm
+ * Copyright additions/changes
+ *
+ * Revision 1.4  1993/07/14  18:41:07  cfj
+ * OSF/1 AD 1.0.4 code drop from Locus.
+ *
+ * Revision 1.1.1.3  1993/07/01  21:00:42  cfj
+ * Adding new code from vendor
+ *
+ * Revision 1.3  1993/04/03  03:11:29  brad
+ * Merge of PFS branch (tagged PFS_End) into CVS trunk (tagged
+ * Main_Before_PFS_Merge).  The result is tagged PFS_Merge_Into_Main_April_2.
+ *
+ * Revision 1.2  1992/11/30  22:53:57  dleslie
+ * Copy of NX branch back into main trunk
+ *
+ * Revision 1.1.2.1.2.1  1992/11/26  00:01:56  brad
+ * Fixed HISTORY comments.
+ *
+ * Revision 1.1.2.1  1992/11/05  23:42:48  dleslie
+ * Local changes for NX through noon, November 5, 1992.
+ * 
+ * Revision 4.1  1992/11/04  00:51:46  cfj
+ * Bump major revision number.
+ *
+ * Revision 2.4  93/06/16  13:48:09  klh
+ * 	Revision 2.4  93/05/16  20:58:41  loverso
+ * 		Remove placeholder for token_get_size().
+ * 
+ * Revision 2.3  92/10/08  11:33:49  roman
+ * Get rid of placeholders for eliminated TNC MiG calls in emul_call.defs.
+ *
+ * Revision 2.2  92/08/26  12:13:37  loverso
+ * 	Created.
+ * 	This contains asynchonous reply messages for some emul_call RPCs.
+ * 
+ * $EndLog$
+ */
+
+/*
+ * Async reply interface for selected emulator calls
+ */
+subsystem emul_reply 	105100;		/* matches reply in emul_call.defs */
+
+UserPrefix	uemul_;
+ServerPrefix	semul_;
+
+#include <mach/mach_types.defs>
+#include <uxkern/bsd_types.defs>
+
+type reply_port_t = polymorphic | MACH_MSG_TYPE_PORT_SEND_ONCE
+	ctype: mach_port_t;
+
+
+skip; /* forward_signal */
+
+skip; /* token_revoke */
+
+simpleroutine release_state_reply(
+		reply_port		: reply_port_t;
+	in	return_code		: kern_return_t);
+
+skip; /* at_barrier */
+

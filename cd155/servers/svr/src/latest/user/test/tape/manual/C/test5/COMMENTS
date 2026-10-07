@@ -1,0 +1,25 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test5" COMMENTS
+================
+
+
+******************* Step to run this test *******************************
+
+1. make -f makefile.man all
+
+2. <testname>.sh dim
+
+   This test requires human intervention.  The user will need to hit 2**dim
+   number of time of the RETURN key.
+
+   THE TEST TAKES ~2 MINUTES TO RUN ON A "d5" MACHINES

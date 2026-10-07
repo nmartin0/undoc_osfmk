@@ -1,0 +1,10 @@
+Level 2 BLAS (blas2)
+
+The level 2 BLAS SAT consist of 4 FORTRAN files that exercise the
+performance and correctness of the single and double precision real,
+and single and double precision complex level 2 BLAS. The tuned
+BLAS routines are contained in libkmath.a.  
+
+A customized dclock routine is used to reflect the use of Fab 7
+boards. A different dclock should be linked if Fab 5 boards are
+used.

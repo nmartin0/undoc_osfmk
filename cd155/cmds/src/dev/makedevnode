@@ -1,0 +1,181 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Make special devices for specified IO node:
+#
+# 	Args are <ionode> <channel> <device><unit> [.. <device><unit>].
+#
+# 	Devices are created in the subdirectory "io<ionode>/ch<channel>"
+#	where ionode is logical node number in the range 0..M, assigned
+#	to nodes in next-available order.  M is equal to the number of
+#	nodes with MIO or SIO cards less 1.  The bootnode always uses
+#	the io0 subdirectory.
+#
+# Available devices are:
+#	rmt*	Tape (4mm DAT)
+#	rz*	RAID disk array
+#	scsi*	SCSI passthrough device
+#
+# Major numbers:
+# 	Disks 	block 3, char 23
+# 	Tapes 	compressed char 7, uncompressed char 8
+#
+# Minor numbers:
+#	All Devices:		<channel> * 128 + <unit> * 16 + <offset>
+#	where offset is:
+#		RAID 		<partition offset>
+#		SCSI passthru 	15
+#		rewind tape 	0
+#		norewind tape 	8 
+#
+#
+umask 77
+
+cmd=rmknod
+
+# get args
+node=$1
+shift $i
+chan=$1
+shift $i
+
+#
+# make node-specific directory
+#	if node already has io mapping in /etc/devtab
+#		return io number
+#	else
+#		determine next io number
+#		record new mapping in devtab
+#		return io number
+#	fi
+#	create new io subdirectory if necessary
+#
+ionode=`mkdevtab $node`
+if [ $ionode -lt 0 ]
+then
+	echo "Cannot assign io node number to node $node"
+	exit
+fi
+if [ ! -d io${ionode} ]
+then
+	mkdir io${ionode}
+	chmod 755 io${ionode}
+fi
+if [ ! -d io${ionode}/ch${chan} ]
+then
+	mkdir io${ionode}/ch${chan}
+	chmod 755 io${ionode}/ch${chan}
+fi
+cd io${ionode}/ch${chan}
+
+for i
+do
+case $i in
+
+rmt*)
+        umask 0 ; unit=`expr $i : '...\(.*\)'`
+	echo "Making raw magnetic tape devices for unit $unit"
+        case $i in
+        rmt*) name=rmt; cchr=7; uchr=8;;
+        esac
+        case $unit in
+        0|1|2|3|4|5|6|7)
+		rew=0
+		norew=`expr $rew + 8`
+                $cmd ${name}c${unit}  c $cchr `expr $chan '*' 128 + $unit '*' 16 + $rew` $node
+                $cmd n${name}c${unit} c $cchr `expr $chan '*' 128 + $unit '*' 16 + $norew` $node
+                $cmd ${name}${unit}   c $uchr `expr $chan '*' 128 + $unit '*' 16 + $rew` $node
+                $cmd n${name}${unit}  c $uchr `expr $chan '*' 128 + $unit '*' 16 + $norew` $node
+                umask 77
+                ;;
+	*)
+                echo "Bad unit number in: $i; use rmt0 thru rmt7"
+                ;;
+        esac
+        ;;
+
+rz*)
+        unit=`expr $i : '..\(.*\)'`
+	echo "Making RAID devices for unit $unit"
+        case $i in
+	rz*) name=rz; blk=3; chr=23;;
+        esac
+        case $unit in
+        0|1|2|3|4|5|6|7)
+	        $cmd ${name}${unit}a      b $blk `expr $chan '*' 128 + $unit '*' 16 + 0` $node
+        	$cmd ${name}${unit}b      b $blk `expr $chan '*' 128 + $unit '*' 16 + 1` $node
+        	$cmd ${name}${unit}c      b $blk `expr $chan '*' 128 + $unit '*' 16 + 2` $node
+        	$cmd ${name}${unit}d      b $blk `expr $chan '*' 128 + $unit '*' 16 + 3` $node
+        	$cmd ${name}${unit}e      b $blk `expr $chan '*' 128 + $unit '*' 16 + 4` $node
+        	$cmd ${name}${unit}f      b $blk `expr $chan '*' 128 + $unit '*' 16 + 5` $node
+        	$cmd ${name}${unit}g      b $blk `expr $chan '*' 128 + $unit '*' 16 + 6` $node
+        	$cmd ${name}${unit}h      b $blk `expr $chan '*' 128 + $unit '*' 16 + 7` $node
+        	$cmd ${name}${unit}i      b $blk `expr $chan '*' 128 + $unit '*' 16 + 8` $node
+        	$cmd ${name}${unit}j      b $blk `expr $chan '*' 128 + $unit '*' 16 + 9` $node
+        	$cmd ${name}${unit}k      b $blk `expr $chan '*' 128 + $unit '*' 16 + 10` $node
+        	$cmd ${name}${unit}l      b $blk `expr $chan '*' 128 + $unit '*' 16 + 11` $node
+        	$cmd ${name}${unit}m      b $blk `expr $chan '*' 128 + $unit '*' 16 + 12` $node
+        	$cmd ${name}${unit}n      b $blk `expr $chan '*' 128 + $unit '*' 16 + 13` $node
+        	$cmd ${name}${unit}o      b $blk `expr $chan '*' 128 + $unit '*' 16 + 14` $node
+        	$cmd r${name}${unit}a     c $chr `expr $chan '*' 128 + $unit '*' 16 + 0` $node
+        	$cmd r${name}${unit}b     c $chr `expr $chan '*' 128 + $unit '*' 16 + 1` $node
+        	$cmd r${name}${unit}c     c $chr `expr $chan '*' 128 + $unit '*' 16 + 2` $node
+        	$cmd r${name}${unit}d     c $chr `expr $chan '*' 128 + $unit '*' 16 + 3` $node
+        	$cmd r${name}${unit}e     c $chr `expr $chan '*' 128 + $unit '*' 16 + 4` $node
+        	$cmd r${name}${unit}f     c $chr `expr $chan '*' 128 + $unit '*' 16 + 5` $node
+        	$cmd r${name}${unit}g     c $chr `expr $chan '*' 128 + $unit '*' 16 + 6` $node
+        	$cmd r${name}${unit}h     c $chr `expr $chan '*' 128 + $unit '*' 16 + 7` $node
+        	$cmd r${name}${unit}i     c $chr `expr $chan '*' 128 + $unit '*' 16 + 8` $node
+        	$cmd r${name}${unit}j     c $chr `expr $chan '*' 128 + $unit '*' 16 + 9` $node
+        	$cmd r${name}${unit}k     c $chr `expr $chan '*' 128 + $unit '*' 16 + 10` $node
+        	$cmd r${name}${unit}l     c $chr `expr $chan '*' 128 + $unit '*' 16 + 11` $node
+        	$cmd r${name}${unit}m     c $chr `expr $chan '*' 128 + $unit '*' 16 + 12` $node
+        	$cmd r${name}${unit}n     c $chr `expr $chan '*' 128 + $unit '*' 16 + 13` $node
+        	$cmd r${name}${unit}o     c $chr `expr $chan '*' 128 + $unit '*' 16 + 14` $node
+                ;;
+        *)
+                echo "Bad unit number in: $i; use rz0 thru rz7"
+                ;;
+        esac
+
+        ;;
+
+scsi*)
+        unit=`expr $i : '....\(.*\)'`
+	echo "Making SCSI passthru device for unit $unit"
+        case $i in
+	scsi*) name=scsi; chr=23;;
+        esac
+        case $unit in
+        0|1|2|3|4|5|6|7)
+        	$cmd ${name}${unit}       c $chr `expr $chan '*' 128 + $unit '*' 16 + 15` $node
+                ;;
+        *)
+                echo "Bad unit number in: $i; use scsi0 thru scsi7"
+                ;;
+        esac
+        ;;
+
+local)
+	if [ -e MAKEDEV.local ]
+	then
+		sh MAKEDEV.local
+	fi
+	;;
+
+*)
+	echo "I don't know how to MAKEDEV $i"
+	;;
+esac
+done
+

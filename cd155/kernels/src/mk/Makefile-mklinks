@@ -1,0 +1,136 @@
+# 
+# $Copyright
+# Copyright 1991, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1992 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon 
+# the rights to redistribute these changes.
+#  
+# HISTORY
+# $Log: Makefile-mklinks,v $
+# Revision 1.5  1994/11/18  20:23:57  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:15:20  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:12:52  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.6.2  1993/04/22  18:11:44  dleslie
+# First R1_0 release
+#
+# Revision 2.3.4.1  92/03/28  10:00:32  jeffreyh
+# 	From MK71
+# 	[92/03/26  11:31:51  jeffreyh]
+# 
+# Revision 2.3  92/03/05  22:45:40  rpd
+# 	Changed to use double-colon rules.
+# 	[92/02/28            rpd]
+# 
+# Revision 2.2  92/02/20  13:35:04  elf
+# 	Created from Makefile-common.
+# 	[92/02/10            rpd]
+# 
+
+# Makefile-mklinks has definitions and rules useful to Makefiles
+# which must create 'machine' links in the install or release directories.
+
+
+# The mkilinks target can be used to create 'machine' links
+# in the install directory.  It is normally used with
+#
+#	MKILINKS = ...
+#
+#	install :: mkilinks ...
+
+mkilinks ::
+	@-for dir in ${MKILINKS;.*;${INSTALLDIR}/&}; do \
+	  [ -d $${dir}/.pmax_mach -o ! -d $${dir}/mips ] || \
+	  { echo "linking $${dir}/.pmax_mach"; \
+	    ln -s mips $${dir}/.pmax_mach; }; \
+	  [ -d $${dir}/.i386_mach -o ! -d $${dir}/i386 ] || \
+	  { echo "linking $${dir}/.i386_mach"; \
+	    ln -s i386 $${dir}/.i386_mach; }; \
+	  [ -d $${dir}/.vax_mach -o ! -d $${dir}/vax ] || \
+	  { echo "linking $${dir}/.vax_mach"; \
+	    ln -s vax $${dir}/.vax_mach; }; \
+	  [ -d $${dir}/.sun3_mach -o ! -d $${dir}/sun3 ] || \
+	  { echo "linking $${dir}/.sun3_mach"; \
+	    ln -s sun3 $${dir}/.sun3_mach; }; \
+	  [ -d $${dir}/.i860_mach -o ! -d $${dir}/i860 ] || \
+	  { echo "linking $${dir}/.i860_mach"; \
+	    ln -s i860 $${dir}/.i860_mach; }; \
+	  [ -d $${dir}/.mac2_mach -o ! -d $${dir}/mac2 ] || \
+	  { echo "linking $${dir}/.mac2_mach"; \
+	    ln -s mac2 $${dir}/.mac2_mach; }; \
+	  [ -d $${dir}/.luna88k_mach -o ! -d $${dir}/luna88k ] || \
+	  { echo "linking $${dir}/.luna88k_mach"; \
+	    ln -s luna88k $${dir}/.luna88k_mach; }; \
+	  [ -d $${dir}/machine ] || \
+	  { echo "linking $${dir}/machine"; \
+	    ln -s .$${ATSYS-@sys} $${dir}/machine; } \
+	done
+
+# The mkrlinks target can be used to create 'machine' links
+# in the release directory.  It is normally used with
+#
+#	MKRLINKS = ${MKILINKS}
+#
+#	release :: mkrlinks ...
+
+mkrlinks ::
+	@-for dir in ${MKRLINKS;.*;${TRELEASEDIR}/&}; do \
+	  [ -d $${dir}/.pmax_mach -o ! -d $${dir}/mips ] || \
+	  { echo "linking $${dir}/.pmax_mach"; \
+	    ln -s mips $${dir}/.pmax_mach; }; \
+	  [ -d $${dir}/.i386_mach -o ! -d $${dir}/i386 ] || \
+	  { echo "linking $${dir}/.i386_mach"; \
+	    ln -s i386 $${dir}/.i386_mach; }; \
+	  [ -d $${dir}/.vax_mach -o ! -d $${dir}/vax ] || \
+	  { echo "linking $${dir}/.vax_mach"; \
+	    ln -s vax $${dir}/.vax_mach; }; \
+	  [ -d $${dir}/.sun3_mach -o ! -d $${dir}/sun3 ] || \
+	  { echo "linking $${dir}/.sun3_mach"; \
+	    ln -s sun3 $${dir}/.sun3_mach; }; \
+	  [ -d $${dir}/.i860_mach -o ! -d $${dir}/i860 ] || \
+	  { echo "linking $${dir}/.i860_mach"; \
+	    ln -s i860 $${dir}/.i860_mach; }; \
+	  [ -d $${dir}/.mac2_mach -o ! -d $${dir}/mac2 ] || \
+	  { echo "linking $${dir}/.mac2_mach"; \
+	    ln -s mac2 $${dir}/.mac2_mach; }; \
+	  [ -d $${dir}/.luna88k_mach -o ! -d $${dir}/luna88k ] || \
+	  { echo "linking $${dir}/.luna88k_mach"; \
+	    ln -s luna88k $${dir}/.luna88k_mach; }; \
+	  [ -d $${dir}/machine ] || \
+	  { echo "linking $${dir}/machine"; \
+	    ln -s .$${ATSYS-@sys} $${dir}/machine; } \
+	done

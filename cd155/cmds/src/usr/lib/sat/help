@@ -1,0 +1,30 @@
+The sat command provides a demonstration of system performance and
+capabilities. It is run as an application program with the operating system
+booted for normal, multiuser operation. It is fully automated and runs on
+all standard Paragon configurations.
+
+The sat command may be run from an interactive shell or from shell scripts.
+It does not request input from the user while running. Arguments to the
+command select particular tests, the number of iterations, and other options.
+
+By default, tests execute in the service partition and the entire compute
+partition.  All processors in the system may be tested. With the system
+otherwise idle, the tests run in a predictable, repeatable sequence
+producing deterministic results.
+
+Tests are stored in a directory hierarchy rooted by default at /usr/lib/sat.
+This hierarchy contains subdirectories for each test with a well-defined
+structure for sources, makefiles and run scripts. Tests also may be contained
+in other directories that conform to the same structure, allowing users to
+extend the acceptance test. The structure is documented in the manual.
+
+Tests are self-configuring and run with appropriate parameters for the system
+being tested. Non-parallel tests are executed in the service partition.
+Parallel tests are executed on the largest set of nodes they will work on
+in the compute partition. Test results include pass/fail status, performance
+statistics, and any error messages.
+
+A transcript is written during operation, allowing a user to track progress
+and determine when errors occur. The transcript may optionally be written
+to a log file. After completion, a detailed report of test results and
+operating parameters may optionally be written to an output file.

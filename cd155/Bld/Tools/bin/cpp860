@@ -1,0 +1,6 @@
+#!/bin/sh
+#exec cc -E -Mnodebug -Mnostdinc -Di860 $* `cpath`
+cpp=`wh -Lq cpp`
+#args="-P -D_PGC -Di860 -Usun -D__i860__ $*"
+args="-D_PGC -Di860 -Usun -D__i860__ $*"
+$cpp $args

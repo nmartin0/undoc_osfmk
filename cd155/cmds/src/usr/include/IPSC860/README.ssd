@@ -1,0 +1,17 @@
+
+These IPSC860 specific files end up in usr/include/*.h
+
+[ Mon May  3 13:56:01 PDT 1993 ] stan
+	mach O files added to keep libld.a build happy. Building libld.a is
+	a loss as we do NOT use it or support Mach O file format.
+
+Unused files:
+
+math.h
+
+
+Changed i860 to __i860__ in setjmp.h, scnhdr.h files.
+
+Kirk
+Mon Mar 30 12:27:18 PST 1992
+						

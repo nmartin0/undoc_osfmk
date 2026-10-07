@@ -1,0 +1,42 @@
+/*
+ *
+ * $Copyright
+ * Copyright 1992, 1993, 1994, 1995 Intel Corporation
+ * INTEL CONFIDENTIAL
+ * The technical data and computer software contained herein are subject
+ * to the copyright notices; trademarks; and use and disclosure
+ * restrictions identified in the file located in /etc/copyright on
+ * this system.
+ * Copyright$
+ *
+ */ 
+subsystem 
+#if     KERNEL_USER
+          KernelUser
+#endif  KERNEL_USER
+#if     KERNEL_SERVER
+          KernelServer
+#endif  KERNEL_SERVER
+		mcmsg_info 750;
+
+#include <mach/mach_types.defs>
+
+import <i860paragon/mcmsg/mcmsg_appl.h>;
+
+type APPLINFO_T =  struct [24] of MACH_MSG_TYPE_INTEGER_32;
+type LP_MAP_T =    ^ array [*] of int;
+
+routine nx_task_put_info(    
+			     server_port	   : mach_port_t;
+                       in    nodelist              : LP_MAP_T;
+                       in    applinfo              : APPLINFO_T;
+                       in    task                  : task_t;
+                       in    pid                   : int );
+
+
+routine nx_task_get_info(   
+			     server_port	   : mach_port_t;
+                       in    task                  : task_t;
+                       out   applinfo              : APPLINFO_T;
+                       out   nodelist              : LP_MAP_T,dealloc);
+

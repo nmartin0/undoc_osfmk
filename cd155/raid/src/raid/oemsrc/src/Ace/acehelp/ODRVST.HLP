@@ -1,0 +1,14 @@
+     OVERVIEW OF THE OPTIONS IN THE DRIVE WINDOW
+ 
+     NOTE:  Press <Tab> to toggle between the logical unit window
+            and the drive window.
+ 
+     Use the drive window to perform the following tasks:
+ 
+          - Add a drive
+          - Delete a drive
+          - Fail a drive
+          - Reconstruct the data on a drive in a RAID 1, 3, or 5
+            logical unit
+          - Format a drive (any RAID level)
+          - View the drive statuses in ace

@@ -1,0 +1,11 @@
+Add nroff subdirectory.
+Add nroff to Makefile
+Shala
+Wed Mar 25 16:16:53 PST 1992
+
+Remove nslookup from the Makefile because of the compiler bug.
+Shala
+Thu Apr  9 08:00:59 PDT 1992
+
+Added ntp, lspart
+Thu Apr 23 15:50:05 PDT 1992 - Shala

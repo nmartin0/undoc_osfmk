@@ -1,0 +1,118 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+#
+echo 
+echo "======================================================================="
+echo "                  OSF/1 Rev 1.0 Postboot Process"  
+echo
+echo "This script will preform final configuration of your"
+echo "OSF/1 system."
+echo ""
+echo "The tasks it will perform are:"
+echo ""
+echo "  - Create the terminfo databases"
+echo "  - Create the spell dictionaries"
+echo "  - Create the lint libraries"
+echo ""
+echo "Before each task is preformed you will have the chance to"
+echo "pecify that you do not want the task performed."
+echo ""
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Creating terminfo databases...."
+echo ""
+echo "Do you wish to procced with creating terminfo databases (y/n)? [y] "
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Terminfo databases not made."
+else
+  if [ ! -d /usr/share/lib/terminfo ] 
+  then
+    echo "Directory /usr/share/lib/terminfo does not exist."
+    echo "Creation of terminfo databases aborted."
+  else
+    echo "cd /usr/share/lib/terminfo"
+    cd /usr/share/lib/terminfo
+    echo "Running tic...."
+    tic *.ti
+  fi
+fi
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Creating spell dictionaries...."
+echo ""
+echo "Do you wish to procced with creating spell dictionaries (y/n)? [y] "
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Spell dictionaries not made."
+else
+  if [ ! -d /usr/lbin/spell ] 
+  then
+    echo "Directory /usr/lbin/spell does not exist."
+    echo "Creation of spell dictionaries aborted."
+  elif [ ! -f /usr/lbin/spell/Mkf.native ]
+  then
+    echo "/usr/lbin/spell/Mkf.native not found."
+    echo "Creation of spell dictionaries aborted."
+  else
+    echo "cd /usr/lbin/spell"
+    cd /usr/lbin/spell
+    echo "Making dictionaries...."
+    make -f Mkf.native
+  fi
+fi
+
+
+
+echo "-----------------------------------------------------------"
+echo ""
+echo "Creating lint libraries...."
+echo ""
+echo "To succefully complete this task, you must have the C compiler"
+echo "installed.  If you do not have the C compiler in place, please"
+echo "answer no to the next question, install the compiler, and rerun"
+echo "this script."
+echo ""
+echo "Do you wish to procced with creating the lint libraries (y/n)? [y] "
+read answer
+
+if [ "$answer" = "n" -o "$answer" = "N" ] 
+then
+  echo "Lint libraries not made."
+else
+  if [ ! -d /usr/ccs/lib/lint ] 
+  then
+    echo "Directory /usr/ccs/lib/lint does not exist."
+    echo "Creation of lint libraries aborted."
+  elif [ ! -f /usr/ccs/lib/lint/Mkf.native ]
+  then
+    echo "/usr/ccs/lib/lint/Mkf.native not found."
+    echo "Creation of lint libraries aborted."
+  else
+    echo "cd /usr/ccs/lib/lint"
+    cd /usr/ccs/lib/lint
+    echo "Making lint libraries...."
+    make -f Mkf.native
+  fi
+fi

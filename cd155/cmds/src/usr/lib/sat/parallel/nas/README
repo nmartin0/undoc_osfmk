@@ -1,0 +1,5 @@
+NAS
+
+This directory organizes the NAS parallel benchmark programs.  Each has
+been placed in its own subdirectory.  See the individual README files
+for more information about each NAS benchmark program.

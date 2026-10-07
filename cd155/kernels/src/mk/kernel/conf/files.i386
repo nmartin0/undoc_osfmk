@@ -1,0 +1,371 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1991,1990 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#
+#
+# HISTORY
+# 28-Sep-92  Philippe Bernadat (bernadat) at gr.osf.org
+#	Added i386at/himem.c & i386at/eisa.c
+#
+# 24-Sep-92  Philippe Bernadat (bernadat) at gr.osf.org
+#	Removed cbus_debug.c
+#
+# $Log: files.i386,v $
+# Revision 1.6  1994/11/18  20:28:21  mtm
+# Copyright additions/changes
+#
+# Revision 1.5  1993/06/30  22:19:43  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.4  1993/06/23  18:33:54  stans
+#    Added ctrap_history line to generate a ctrap_history.h file in the
+#    build directory.
+#
+# Revision 1.3  1993/04/27  20:17:32  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:17:23  dleslie
+# First R1_0 release
+#
+# Revision 2.21.5.4  92/04/30  11:45:53  bernadat
+# 	COMPAQ Systempro configuration
+# 	Reorganize mp code for i386at based architectures
+# 	[92/04/08            bernadat]
+# 
+# Revision 2.21.5.3  92/03/28  10:04:11  jeffreyh
+# 	Addwd  i386ipsc/esp_dma.c, i386ipsc/disk_label.c and  
+# 	scsi/adapters/scsi_53C90_hdw.c for generic scsi support on i386iPSC
+# 	[92/03/20            jerrie]
+# 
+# Revision 2.21.5.2  92/03/03  16:13:11  jeffreyh
+# 	Pick up i386/fpe.b, i386/fpe_linkage.c and i386/user_ldt.c
+# 	Deleted i386/io_map_interface.c 
+# 	[92/02/24            jeffreyh]
+# 
+# Revision 2.21.5.1  92/02/18  18:38:03  jeffreyh
+# 	Suppressed old scsi driver files
+# 	Moved i386_lock.s form cbus/ to i386/
+# 	Changed mach_mp_debug option to be a machine independant option
+# 	[91/09/27            bernadat]
+# 
+# 	Added cbus/clock.s for high resolution clock
+# 	(Jimmy Benjamin @ osf.org)
+# 	[91/09/17            bernadat]
+# 
+# 	Build slave_boot_code.c for the cbus in the obj directory
+# 	[91/07/04            bernadat]
+# 
+# 	Support for SCSI and Corollary MP
+# 	[91/06/25            bernadat]
+# 	add ipsc/cubestart.c for new boot time config.
+# 	[92/02/13  12:29:20  jeffreyh]
+# 
+# Revision 2.21  91/12/10  16:29:40  jsb
+# 	Fixes from Intel
+# 	[91/12/10  15:51:34  jsb]
+# 
+# Revision 2.20  91/10/07  17:24:44  af
+# 	From 2.5, switch over to fd.c vs *765*
+# 	[91/09/04  22:03:09  rvb]
+# 
+# Revision 2.19  91/08/24  11:55:00  af
+# 	Added SCSI driver files and new autoconf code.
+# 	[91/08/02  02:36:35  af]
+# 
+# Revision 2.18  91/08/03  18:17:13  jsb
+# 	ipsc/dev_forward_name.c now triggered by norma_device.
+# 	[91/07/27  18:18:36  jsb]
+# 
+# Revision 2.17  91/07/31  17:28:57  dbg
+# 	Added mach_i386_server.c and io_map_interface.c.
+# 	[91/07/30  16:42:09  dbg]
+# 
+# Revision 2.16  91/06/18  20:49:50  jsb
+# 	Moved i386ipsc/if_cnp.c into cnp subdirectory for licensing reasons.
+# 	[91/06/18  20:21:15  jsb]
+# 
+# Revision 2.15  91/06/06  17:03:43  jsb
+# 	Moved read_fault.c from i386 to intel.
+# 	Split i386ipsc/dcm.c into dcm_{input,output}.c.
+# 	[91/06/06  16:18:09  jsb]
+# 
+# Revision 2.14  91/05/14  15:29:37  mrt
+# 	Correcting copyright
+# 
+# Revision 2.13  91/05/08  12:24:40  dbg
+# 	Rearrange files to add Sequent and put model-dependent files in
+# 	model-dependent directories.  Build cswitch.s, locore.s, start.s
+# 	as standard files.
+# 	[91/04/26  14:28:46  dbg]
+# 
+# Revision 2.12  91/02/05  17:05:14  mrt
+# 	Changed to new copyright
+# 	[91/01/28  14:47:43  mrt]
+# 
+# Revision 2.11  91/01/08  17:31:50  rpd
+# 	Switch wd8003 -> ns8390
+# 	[91/01/04  12:14:06  rvb]
+# 
+# Revision 2.10  90/12/14  10:59:25  jsb
+# 	ipsc/dev_forward_table.c -> ipsc/dev_forward_name.c
+# 	[90/12/14  09:01:30  jsb]
+# 
+# 	Added ipsc/dev_forward_table.c (for cross-node device support).
+# 	[90/12/14  08:26:54  jsb]
+# 
+# Revision 2.9  90/12/04  14:45:48  jsb
+# 	Replaced ipsc2 with ipsc386. Replaced i386ipsc2/ with i386ipsc/.
+# 	Moved rtc.c and usm.c to ipsc/, and pmap.c to intel/.
+# 	Added ipsc/node.c
+# 	[90/12/04  11:40:54  jsb]
+# 
+# Revision 2.8  90/11/26  14:48:31  rvb
+# 	Merge in I386q devices for autoconf.c
+# 	[90/11/26  11:12:12  rvb]
+# 
+# Revision 2.7  90/11/24  15:14:40  jsb
+# 	Added support for i386ipsc2 cnp ethernet driver.
+# 	[90/11/24  12:02:37  jsb]
+# 
+# Revision 2.6  90/10/01  14:22:42  jeffreyh
+# 	added wd8003 ethernet driver
+# 	[90/09/27  18:25:22  jeffreyh]
+# 
+# Revision 2.5  90/09/23  17:45:08  jsb
+# 	Fixed screwed up history messages.
+# 	[90/09/21  16:35:15  jsb]
+# 
+# 	Added files for ipsc2. Changed some other files from standard to at386.
+# 	[90/09/21  16:31:24  jsb]
+# 
+# Revision 2.4  90/08/27  21:47:26  dbg
+# 	Use idt.s instead of idt.c
+# 	[90/07/26            dbg]
+# 
+# 	Switch to new kernel debugger.
+# 	[90/07/20            dbg]
+# 
+# Revision 2.3  90/05/21  13:26:16  dbg
+# 	Add keyboard event driver, mouse, iopl device and io instruction
+# 	emulation.
+# 	[90/05/17            dbg]
+# 
+# Revision 2.2  90/05/03  15:19:01  dbg
+#	Created.
+# 
+
+OPTIONS/fpe		optional fpe
+OPTIONS/eisa		optional eisa
+OPTIONS/himem		optional himem
+OPTIONS/ctrap_history	optional ctrap_history
+
+cbus/cbus.c		optional cbus
+cbus/cbus_init.c	optional cbus
+cbus/clock.s            optional mp_slave_as_clk
+./slave_boot_code.c	optional cbus
+./slave_boot_code.c	optional mbus
+
+chips/busses.c		optional at386
+chips/busses.c          optional esp ipsc386 device-driver |${FORCE_VOLATILE}
+
+intel/pmap.c		standard
+intel/read_fault.c	standard
+
+./mach/mach_i386_server.c standard
+
+i386/_setjmp.s		standard
+i386/ast_check.c	optional at386
+i386/ast_check.c	optional ipsc386
+i386/ast_check.c	optional symmetry
+i386/bcopy.s		standard
+i386/bzero.s		standard
+i386/cswitch.s		standard
+i386/db_disasm.c	optional mach_kdb
+i386/db_interface.c	optional mach_kdb
+i386/db_trace.c		optional mach_kdb
+i386/fpe.b		optional fpe
+i386/fpe_linkage.c	optional fpe
+i386/exec.c		standard
+i386/fpu.c		standard
+i386/gcc.s		standard
+i386/gdt.c		standard
+i386/hardclock.c	standard
+i386/i386_lock.s	optional mach_mp_debug
+i386/idt.s		standard
+i386/interrupt.s	optional at386
+i386/interrupt.s	optional ipsc386
+i386/io_emulate.c	standard
+i386/io_map.c		standard
+i386/iopb.c		standard
+i386/ktss.c		standard
+i386/ldt.c		standard
+i386/locore.s		standard
+i386/loose_ends.c	standard
+i386/mp_desc.c		standard
+i386/ntoh.s		standard
+i386/pcb.c		standard
+i386/phys.c		standard
+i386/pic.c		optional at386
+i386/pic.c		optional ipsc386
+i386/pit.c		optional at386
+i386/pit.c		optional ipsc386
+i386/setroot.c		optional at386
+i386/setroot.c		optional ipsc386
+i386/spl.s		optional at386
+i386/spl.s		optional ipsc386
+i386/start.s		standard
+i386/trap.c		standard
+i386/user_ldt.c		standard
+
+i386at/autoconf.c	optional at386
+i386at/blit.c		optional blit device-driver |${FORCE_VOLATILE}
+i386at/com.c		optional com device-driver
+i386at/conf.c		optional at386
+i386at/eisa.c		optional eisa
+i386at/fd.c		optional fd device-driver
+i386at/hd.c		optional hd
+i386at/himem.c		optional himem
+i386at/if_3c501.c	optional at3c501 device-driver
+i386at/if_ns8390.c	optional ns8390 device-driver
+i386at/if_par.c		optional par device-driver
+i386at/if_pc586.c	optional pc586 device-driver |${VOLATILE}
+i386at/if_wd8003.c	optional wd8003 device-driver
+i386at/iopl.c		optional at386
+i386at/kd.c		optional at386
+i386at/kdasm.s		optional at386
+i386at/kd_event.c	optional at386
+i386at/kd_mouse.c	optional at386
+i386at/kd_queue.c	optional at386
+i386at/lpr.c		optional lpr device-driver
+i386at/model_dep.c	optional at386
+i386at/mp/mp.c		optional cbus
+i386at/mp/mp.c		optional mbus
+i386at/pic_isa.c	optional at386
+i386at/qd.c		optional qd device-driver
+i386at/rtc.c		optional at386
+i386at/wt.c		optional wt device-driver
+
+i386orc/ec.c		optional ec device-driver
+i386orc/evc1.c		optional evc device-driver
+i386orc/evc1font.c	optional evc device-driver
+
+i386ipsc/autoconf.c	optional ipsc386
+i386ipsc/conf.c		optional ipsc386
+i386ipsc/dcm_input.c	optional dcm device-driver |${FORCE_VOLATILE}
+i386ipsc/dcm_output.c	optional dcm device-driver |${FORCE_VOLATILE}
+i386ipsc/dcm_route.s	optional dcm device-driver
+i386ipsc/iopl.c		optional ipsc386
+i386ipsc/led.c		optional ipsc386 device-driver |${FORCE_VOLATILE}
+i386ipsc/model_dep.c	optional ipsc386
+i386ipsc/pic_ipsc.c	optional ipsc386
+# sd is qualified by ipsc386 because of name clash with SQT driver
+i386ipsc/sd.c		optional sd ipsc386 device-driver |${FORCE_VOLATILE}
+i386ipsc/sdintr.c	optional sd ipsc386 device-driver |${FORCE_VOLATILE}
+i386ipsc/esp_dma.c	optional esp ipsc386 device-driver |${FORCE_VOLATILE}
+i386ipsc/disk_label.c	optional esp ipsc386 device-driver |${FORCE_VOLATILE}
+
+i386ipsc/cnp/if_cnp.c	optional cnp device-driver
+i386ipsc/md.c		optional md device-driver
+
+ipsc/bootenv.c		optional ipsc386
+ipsc/cubestart.c	optional ipsc386
+ipsc/rtc.c		optional ipsc386
+ipsc/dev_forward_name.c	optional ipsc386 norma_device
+ipsc/usm.c		optional usm device-driver |${FORCE_VOLATILE}
+
+i386at/grab_bob_label.c	optional scsi device-driver
+
+mbus/mbus.c		optional mbus
+
+scsi/adapters/scsi_aha15_hdw.c	optional aha device-driver
+scsi/adapters/scsi_53C90_hdw.c	optional esp ipsc386 device-driver
+scsi/rz.c		optional scsi device-driver
+scsi/rz_cpu.c		optional scsi device-driver
+scsi/rz_disk.c		optional scsi device-driver
+scsi/rz_disk_bbr.c	optional scsi device-driver
+scsi/rz_host.c		optional scsi device-driver
+scsi/rz_labels.c	optional scsi device-driver
+scsi/rz_tape.c		optional scsi device-driver
+scsi/scsi.c		optional scsi device-driver
+scsi/scsi_alldevs.c	optional scsi device-driver
+scsi/scsi_comm.c	optional scsi device-driver
+scsi/scsi_cpu.c		optional scsi device-driver
+scsi/scsi_disk.c	optional scsi device-driver
+scsi/scsi_jukebox.c	optional scsi device-driver
+scsi/scsi_optical.c	optional scsi device-driver
+scsi/scsi_printer.c	optional scsi device-driver
+scsi/scsi_rom.c		optional scsi device-driver
+scsi/scsi_scanner.c	optional scsi device-driver
+scsi/scsi_tape.c	optional scsi device-driver
+scsi/scsi_worm.c	optional scsi device-driver
+
+sqt/_boot.s		optional symmetry ordered
+sqt/autoconf.c		optional symmetry
+sqt/clock.c		optional symmetry
+sqt/consio.c		optional symmetry
+sqt/interrupt.s		optional symmetry
+sqt/memory.c		optional symmetry
+sqt/misc.s		optional symmetry
+sqt/model_dep.c		optional symmetry
+sqt/mutex.s		optional symmetry
+sqt/sema.c		optional symmetry
+sqt/setconf.c		optional symmetry
+sqt/slic.c		optional symmetry
+sqt/spl.s		optional symmetry
+sqt/stubs.c		optional symmetry
+
+sqtconf/conf.c		optional symmetry
+sqtconf/conf_co.c	optional symmetry
+sqtconf/conf_if_se.c	optional se
+sqtconf/conf_led.c	optional symmetry
+sqtconf/conf_sd.c	optional sd symmetry
+sqtconf/conf_vec.c	optional symmetry
+sqtconf/conf_zd.c	optional zd
+sqtconf/sqtparam.c	optional symmetry
+
+sqtsec/co.c		optional sec
+sqtsec/if_se.c		optional se
+# sd is qualified by symmetry because of name clash with iPSC driver
+sqtsec/sd.c		optional sd symmetry
+sqtsec/sec.c		optional sec
+
+sqtzdc/zd.c		optional zd
+sqtzdc/zdinit.c		optional zd
+#
+# Dummy devices for now
+OPTIONS/ln		optional ln
+OPTIONS/ec		optional ec
+OPTIONS/mp_slave_as_clk optional mp_slave_as_clk
+

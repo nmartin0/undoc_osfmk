@@ -1,0 +1,44 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+set `who -r`
+if [ $9 != "S" ]
+then
+        exit
+fi
+
+#
+# attempt to rationally recover the passwd file if needed
+#
+
+if [ -s /etc/ptmp ]; then
+        if [ -s /etc/passwd ]; then
+		ls -l /etc/passwd /etc/ptmp
+ 	        rm -f /etc/ptmp         # should really remove the shorter
+        else
+        	echo 'passwd file recovered from ptmp'
+	       	mv /etc/ptmp /etc/passwd
+        fi
+else
+        [ -r /etc/ptmp ] && {
+       		echo 'removing passwd lock file'
+        	rm -f /etc/ptmp
+       	}
+fi
+

@@ -1,0 +1,63 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Mach Operating System
+# Copyright (c) 1986 Carnegie-Mellon University
+# All rights reserved.  The CMU software License Agreement
+# specifies the terms and conditions for use and redistribution.
+#  
+######################################################################
+#
+#  Master Macintosh II configuration file (see the master machine independent
+#  configuration file for a description of the file format).
+#
+######################################################################
+# HISTORY
+# $Log: MASTER.mac2,v $
+# Revision 1.5  1994/11/18  20:27:50  mtm
+# Copyright additions/changes
+#
+# Revision 1.4  1993/06/30  22:19:01  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.3  1993/04/27  20:16:48  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.2.2.2  1993/04/22  18:16:20  dleslie
+# First R1_0 release
+#
+# Revision 2.2  91/09/12  16:35:46  bohman
+# 	Created.
+# 	[91/09/11  16:56:07  bohman]
+# 
+######################################################################
+#
+#  CPU TYPE
+#	mac2 = Macintosh II{,x,cx,ci,fx} or SE/30
+#
+# MSTD = [ fixpri ]
+#
+######################################################################
+#
+#  Standard configurations
+#
+# MACMACH = [ MSTD small ipc_compat mdebug ]
+#
+######################################################################
+#
+
+conftype	"mac2"
+platform	"mac2"
+
+config		mach_kernel	swap generic
+
+options		MACH_MACHINE_ROUTINES

@@ -1,0 +1,9 @@
+
+Add
+# undef         HZ              /* in case they've included <sys/param.h> */
+to curses.h include file - Shala  3/25/92
+
+Changed i860 to __i860__ in stdio.h file.
+
+Kirk
+Mon Mar 30 12:29:59 PST 1992

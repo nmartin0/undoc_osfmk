@@ -1,0 +1,17 @@
+     OVERVIEW OF THE OPTIONS IN THE LOGICAL UNIT WINDOW
+ 
+     NOTE:  Press <Tab> to toggle between the logical unit window
+            and the drive window.
+ 
+ 
+     Use the logical unit window, to perform the following tasks:
+ 
+          - Create a logical unit by configuring "spare" drives or 
+            configuring available drives in an existing drive group
+          - Delete a logical unit
+          - Modify logical unit parameters
+          - Display logical unit parameters
+          - Format a logical unit
+          - Determine the status of logical units (LUN status)
+ 
+ 

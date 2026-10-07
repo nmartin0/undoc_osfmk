@@ -1,0 +1,255 @@
+# 
+# $Copyright
+# Copyright 1991 , 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+#
+
+# 
+# $Id: files.i860,v 2.44 1995/03/14 23:40:36 jerrie Exp $
+#
+
+# 
+# Mach Operating System
+# Copyright (c) 1991,1990 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS" 
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon
+# the rights to redistribute these changes.
+#
+OPTIONS/ctrap_history   optional ctrap_history
+OPTIONS/console_logging	optional console_logging
+
+intel/pmap.c		standard
+
+i860/ast_check.c	standard
+i860/slock.s		standard
+i860/_setjmp.s		standard
+i860/ttrap.s		standard
+i860/bcopy.s		standard
+i860/bzero.s		standard
+i860/misc.s		standard
+i860/exec.c		standard
+i860/loose_ends.c	standard
+i860/ntoh.s		standard
+i860/phys.c		standard
+i860/user.s		standard
+i860/hardclock.c	standard
+i860/cswitch.s		standard
+i860/pcb.c		standard
+i860/trap.c		standard
+i860/ctrap.c		standard
+i860/fpeh.c		optional oldfpe
+i860/fpehutils.c	optional oldfpe
+i860/fpehutila.s	optional oldfpe
+i860/fpe/fpe_prims.s	optional newfpe
+i860/fpe/fpe_chk.c	optional newfpe
+i860/fpe/fpe_debug.c	optional newfpe
+i860/fpe/fpe_deno.c	optional newfpe
+i860/fpe/fpe_fadd.c	optional newfpe
+i860/fpe/fpe_fmul.c	optional newfpe
+i860/fpe/fpe_main.c	optional newfpe
+i860/fpe/fpe_ops.c	optional newfpe
+i860/fpe/fpe_result.c	optional newfpe
+i860/fpe/fpe_source.c	optional newfpe
+i860/fpe/fpe_utils.c	optional newfpe
+i860/fpe/fpe_vars.c	optional newfpe
+i860/db_disasm.c	optional mach_kdb
+i860/db_interface.c	optional mach_kdb
+i860/db_trace.c		optional mach_kdb
+i860/db_coff_sym.c	optional mach_kdb
+
+i860/i860rt.s		optional gcc
+
+# Paragon files
+chips/busses.c		optional paragon860
+chips/serial_console.c	optional constty device-driver
+scsi/adapters/scsi_53C94_hdw.c	optional asc device-driver
+scsi/adapters/scsi_53C720_hdw.c	optional siop device-driver
+scsi/rz.c		optional scsi device-driver
+scsi/rz_cpu.c		optional scsi device-driver
+scsi/rz_disk.c		optional scsi device-driver
+scsi/rz_disk_bbr.c	optional scsi device-driver
+scsi/rz_host.c		optional scsi device-driver
+scsi/rz_jukebox.c	optional scsi device-driver
+scsi/rz_labels.c	optional scsi device-driver
+scsi/rz_tape.c		optional scsi device-driver
+scsi/scsi.c		optional scsi device-driver
+scsi/scsi_alldevs.c	optional scsi device-driver
+scsi/scsi_comm.c	optional scsi device-driver
+scsi/scsi_cpu.c		optional scsi device-driver
+scsi/scsi_disk.c	optional scsi device-driver
+scsi/scsi_jukebox.c	optional scsi device-driver
+scsi/scsi_optical.c	optional scsi device-driver
+scsi/scsi_printer.c	optional scsi device-driver
+scsi/scsi_rom.c		optional scsi device-driver
+scsi/scsi_scanner.c	optional scsi device-driver
+scsi/scsi_tape.c	optional scsi device-driver
+scsi/scsi_worm.c	optional scsi device-driver
+scsi/scsi_queue.c	optional scsi device-driver
+i860paragon/i860xp.s	optional i860xp
+i860paragon/model_dep.c	optional paragon860
+i860paragon/node.c	optional paragon860
+i860paragon/spl.c	optional paragon860
+i860paragon/interrupt.c	optional paragon860
+i860paragon/conf.c	optional paragon860
+i860paragon/autoconf.c	optional paragon860
+i860paragon/led.c	optional paragon860
+i860paragon/nic.c	optional paragon860
+ipsc/bootenv.c		optional paragon860
+ipsc/cubestart.c	optional paragon860
+ipsc/rtc.c		optional paragon860
+ipsc/dev_forward_name.c	optional paragon860
+i860paragon/md.c	optional md device-driver
+i860paragon/cons.c	optional constty device-driver
+i860paragon/rpm.c	optional rpm device-driver
+i860paragon/fscan.c	optional paragon860
+i860paragon/conslog.c	optional console_logging
+i860paragon/mio/miocopy.s optional mio device-driver
+i860paragon/mio/mio.c	optional mio device-driver
+i860paragon/mio/com.c	optional com device-driver
+i860paragon/mio/if_mioe.c	optional mioe device-driver
+i860paragon/enet.c	optional mioe device-driver
+i860paragon/enet.c	optional sdbe device-driver
+i860paragon/mio/asc.c	optional asc device-driver
+i860paragon/hippi/hippi.c optional hippi device-driver
+i860paragon/hippi/hctlr.c optional hippi device-driver
+i860paragon/hippi/rhippi.c optional hippi device-driver
+i860paragon/hippi/if_hippi.c optional hippi device-driver
+i860paragon/hippi/hdc.c optional hdc device-driver
+ipi/ipi.c               optional ipi device-driver
+ipi/ipi_master.c        optional ipi device-driver
+ipi/ipi_disk.c          optional ipi device-driver
+ipi/ipi_optical.c       optional ipi device-driver
+ipi/ipi-3.c             optional ipi device-driver
+ipi/ipi_labels.c        optional ipi device-driver
+ipi/ipi_bbr.c           optional ipi device-driver
+ipi/ipi_tape.c          optional ipi device-driver
+ipi/ipi-4.c             optional ipi device-driver
+ipi/ipi_misc.c          optional ipi device-driver
+ipi/ipi_vendor.c        optional ipi device-driver
+ipi/gen-4.c             optional ipi device-driver
+i860paragon/sdb/sdb.c			optional sdb  device-driver
+i860paragon/sdb/x24c02.c		optional sdb  device-driver
+i860paragon/sdb/sdb_serial.c		optional sdbs device-driver
+i860paragon/sdb/sdb_ether.c		optional sdbe device-driver
+i860paragon/sdb/siop.c			optional siop device-driver
+i860paragon/sdb/script/siop0_script.c	optional siop device-driver
+i860paragon/sdb/script/siop1_script.c	optional siop device-driver
+
+# Kernel Profile (time tracing), rkl
+# to time trace a file add " | -W0,-profile " to the end of a file line.
+# trailing " " <space> is required.
+# example: "i860/trap.c             standard | -W0,-profile "
+#
+i860paragon/time_trace.c optional time_trace
+i860paragon/rout.s	optional time_trace
+
+# MP3
+i860paragon/mp.c	standard
+i860paragon/mp_start.s	standard
+i860paragon/baton.c	optional asmp
+i860paragon/baton_asm.s	optional asmp
+
+# iPSC/860 files
+i860ipsc/model_dep.c	optional ipsc860
+i860ipsc/spl.c		optional ipsc860
+i860ipsc/intr.c		optional ipsc860
+i860ipsc/led.c		optional ipsc860
+i860ipsc/autoconf.c	optional ipsc860
+i860ipsc/conf.c		optional ipsc860
+i860ipsc/dcm_input.c	optional dcm
+i860ipsc/dcm_output.c	optional dcm
+i860ipsc/dcm.s		optional dcm
+
+./mach/mcmsg_info_server.c	optional mcmsg
+i860paragon/mcmsg/mcmsg_appl.c		optional nx
+i860paragon/mcmsg/mcmsg_boot.c		optional mcmsg
+i860paragon/mcmsg/mcmsg_config.c	optional mcmsg
+i860paragon/mcmsg/mcmsg_console.c	optional mcmsg
+i860paragon/mcmsg/mcmsg_ext.c		optional mcmsg
+i860paragon/mcmsg/mcmsg_flick.c		optional mcmsg
+i860paragon/mcmsg/mcmsg_init.c		optional nx
+i860paragon/mcmsg/mcmsg_ipc.c		optional norma
+i860paragon/mcmsg/mcmsg_mp.c		optional mcmsg
+# i860paragon/mcmsg/mcmsg_post_fast.s	optional mcmsg_eng
+i860paragon/mcmsg/mcmsg_nx.c		optional nx
+i860paragon/mcmsg/mcmsg_nxport.c	optional nx
+i860paragon/mcmsg/mcmsg_trace.c		optional mcmsg
+i860paragon/mcmsg/mcmsg_vc.c		optional vc
+i860paragon/mcmsg/mcmsg_rpc.c		optional mcmsg_eng
+i860paragon/mcmsg/mcmsg_rdma.c		optional mcmsg_eng
+i860paragon/msgp/msgp_atdt.c		optional nx
+i860paragon/msgp/msgp_boot.c		optional mcmsg
+i860paragon/msgp/msgp_console.c		optional mcmsg
+i860paragon/msgp/msgp_vc.c		optional vc
+i860paragon/msgp/msgp_hw.s		optional mcmsg
+i860paragon/msgp/msgp_hwi.c		optional mcmsg device-driver
+i860paragon/msgp/msgp_hwr1.c		optional mcmsg
+i860paragon/msgp/msgp_hwr2.c		optional mcmsg device-driver
+i860paragon/msgp/msgp_hws1.c		optional mcmsg
+i860paragon/msgp/msgp_hws2.c		optional mcmsg device-driver
+i860paragon/msgp/msgp_task.c		optional nx
+i860paragon/msgp/msgp_seq.c		optional nx
+i860paragon/msgp/msgp_ptype.c		optional nx
+i860paragon/msgp/msgp_inq.c		optional nx
+i860paragon/msgp/msgp_intr.c		optional mcmsg
+i860paragon/msgp/msgp_ipc.c		optional norma
+i860paragon/msgp/msgp_malloc.c		optional nx
+i860paragon/msgp/msgp_mp.c		optional mcmsg
+i860paragon/msgp/msgp_dispatch.s	optional mcmsg
+i860paragon/msgp/msgp_nxdat.c		optional nx
+i860paragon/msgp/msgp_nx.s		optional nx
+i860paragon/msgp/msgp_nxctl.c		optional nx
+i860paragon/msgp/msgp_provide.c		optional nx
+i860paragon/msgp/msgp_rk.c		optional nx
+i860paragon/msgp/msgp_select.c		optional nx
+i860paragon/msgp/msgp_sel.s		optional nx
+i860paragon/msgp/msgp_trace.c		optional mcmsg
+i860paragon/msgp/msgp_puma.c		optional puma
+i860paragon/msgp/msgp_rpc.c		optional mcmsg_eng
+i860paragon/msgp/msgp_rdma.c		optional mcmsg_eng
+i860paragon/msgp/msgp_reg.c		optional reg
+i860paragon/msgp/msgp_urdma.c		optional urdma
+i860paragon/vcf/vcf_aux.c		optional vcf
+i860paragon/vcf/vcf_cnic.c		optional vcf
+i860paragon/vcf/vcf_msgin.c		optional vcf
+i860paragon/vcf/vcf_msgout.c		optional vcf
+i860paragon/vcf/vcf_pmachine.c		optional vcf
+i860paragon/vcf/vcf_system.c		optional vcf
+i860paragon/vcf/vcf_user.c		optional vcf
+i860paragon/vcf/vcf_dispatch.s		optional vcf
+i860paragon/vcf/vcf_handle_rd.s		optional vcf
+i860paragon/vcf/vcf_handle_rda.s		optional vcf
+i860paragon/vcf/vcf_handle_rdac.s		optional vcf
+i860paragon/vcf/vcf_send.s		optional vcf
+i860paragon/vcf/vcf_xmit_rd.s		optional vcf
+i860paragon/vcf/vcf_xmit_rda.s		optional vcf
+
+ipsc/bootenv.c		optional ipsc860
+ipsc/cubestart.c	optional ipsc860
+ipsc/rtc.c		optional ipsc860
+ipsc/dev_forward_name.c	optional ipsc860
+ipsc/usm.c		optional usm device-driver |${FORCE_VOLATILE}
+

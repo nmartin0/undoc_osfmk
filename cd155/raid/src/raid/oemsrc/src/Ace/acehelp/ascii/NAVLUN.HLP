@@ -1,0 +1,103 @@
+     NOTE:  The logical unit window is the window in which the cursor 
+            is always placed when you select the Array Configuration 
+            Editor.
+ 
+ 
+     EXPLANATION OF OPTION
+ 
+     The following table gives the keys you use to navigate in either 
+     the drive or logical unit window.
+ 
+     ===============================================================
+      NAVIGATION     |               DESCRIPTION OF KEY'S USE
+         KEY         +----------------------------------------------
+                     | In Drive Window  | In Logical Unit Window
+     ----------------+------------------+---------------------------
+                     | Moves the cursor |  Moves the cursor
+         <Tab>       | to the logical   |  to the drive
+                     | unit window.     |  window.
+     ===============================================================
+ 
+ 
+                                (CONTINUED)
+     ===============================================================
+      NAVIGATION     |               DESCRIPTION OF KEY'S USE
+         KEY         +----------------------------------------------
+                     | In Drive Window  | In Logical Unit Window
+     ----------------+------------------+---------------------------
+                     | Moves the cursor | Moves the cursor down
+       <Space Bar>   | to all available | in the logical unit
+                     | drives in the    | display.
+                     | drive matrix.    |
+     ----------------+------------------+---------------------------     
+                     | Moves the cursor | - Moves the cursor down
+                     | down in the drive|   in the logical unit
+       <Down-arrow>  | matrix.          |   display.
+                     |                  |
+                     |                  | - Moves the cursor to
+                     |                  |   each logical unit  
+                     |                  |   parameter that can 
+                     |                  |   be changed.        
+     ===============================================================
+ 
+ 
+                                (CONTINUED)
+     ===============================================================
+      NAVIGATION     |               DESCRIPTION OF KEY'S USE
+         KEY         +----------------------------------------------
+                     | In Drive Window  | In Logical Unit Window
+     ----------------+------------------+---------------------------
+                     | Moves the cursor | Moves the cursor up
+                     | up in the drive  | in the logical unit
+       <Up-arrow>    | matrix.          | display.
+                     |                  |
+     ----------------+------------------+---------------------------
+                     | Moves the cursor |
+       <Right-arrow> | right in the     |
+                     | drive matrix.    |
+                     |                  |        N/A
+     ----------------+------------------+
+                     | Moves the cursor |
+       <Left-arrow>  | left in the      |
+                     | drive matrix.    |
+     ===============================================================
+ 
+ 
+                                (CONTINUED)
+     ===============================================================
+      NAVIGATION     |               DESCRIPTION OF KEY'S USE
+         KEY         +----------------------------------------------
+                     | In Drive Window  | In Logical Unit Window
+     ----------------+------------------+---------------------------
+                     | Moves the cursor | - Moves the cursor to
+                     | to each drive in |   each logical unit
+                     | a drive group.   |   parameter that can
+                     |                  |   be changed.
+                     |                  |
+        <Return>     |                  | - Executes certain
+                     |                  |   actions.  For example,
+                     |                  |   when you change the
+                     |                  |   logical unit parameters,
+                     |                  |   you type "y" and press
+                     |                  |   <Return>.
+     ===============================================================
+ 
+ 
+ 
+ 
+                               (CONTINUED)
+ 
+     ===============================================================
+      NAVIGATION     |               DESCRIPTION OF KEY'S USE
+         KEY         +----------------------------------------------
+                     | In Drive Window  | In Logical Unit Window
+     ----------------+----------------------------------------------
+                     |Quits the following:                           
+         <Q>         | - Ace (the Array Configuration Editor)        
+                     | - The window for selecting a RAID level       
+                     | - The window for selecting the Channel and ID 
+                     |   of drives                                  
+                     | - "Modify/Display Parameters" option         
+                     | - Help                                       
+     ===============================================================
+ 

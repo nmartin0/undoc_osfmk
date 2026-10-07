@@ -1,0 +1,6 @@
+NAS Kernels (nasker)
+
+This set of computational kernels comes from applications at NASA Ames.
+It demonstrates the compiler's ability to vectorize floating point
+operations as well as processor speed.
+

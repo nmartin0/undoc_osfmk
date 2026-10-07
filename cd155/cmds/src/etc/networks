@@ -1,0 +1,25 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+#
+# This file contains only sample data
+#
+# This file should get replaced with the site local networks
+# configuration file. 
+#
+#
+loopback	127
+sun-ether	192.9.200	sunether ethernet localnet
+sun-oldether	125		sunoldether
+#
+# Internet networks
+#
+arpanet		10		arpa
+ucb-ether	46		ucbether

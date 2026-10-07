@@ -1,0 +1,5 @@
+NAS Embarrassingly Parallel (embas)
+
+Contained herein is an implementation of the embarrassingly parallel benchmark
+from the NAS Parallel Benchmarks. It runs on any number of nodes of the Paragon
+supercomputer.

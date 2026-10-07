@@ -1,0 +1,33 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test5" README
+==============
+
+Source: node.c errexit.c
+
+Desc:	test the calling of "alloc" and "dealloc" function with multi-nodes
+
+Invoke:	load node.rx [/cfs/ctape0]
+
+Note:	* tape is optional
+	* run the test with a cube > d0
+	* the test must be run manually
+	* log is on "test5.SLr0"
+	* result is on "test5.SRr0"
+
+Algo:   * "tapealloc" will be successfully for node calling it first in the
+	  "pop" loop;  
+	  Other nodes will get an error code TERR_COULD_NOT_RESERVE_TAPE and
+	  wait until that successful node exit;
+        * the program will ask the user to hit RETURN before exit the node;
+	* except node 0, all the node will call "tapedealloc" before exit;
+

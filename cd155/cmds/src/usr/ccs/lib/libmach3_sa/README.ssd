@@ -1,0 +1,5 @@
+
+[ Tue May 12 16:48:24 PDT 1992 ]
+
+Copy Mach mk stand-Alone libmach_sa.a to our export lib dir as libmach3_sa.a .
+libmach3_sa.a contains useful exported norma routines.

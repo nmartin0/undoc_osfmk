@@ -1,0 +1,7 @@
+
+Change ENET from 200 to 400 in file.c
+
+#define       NENT    400  
+
+Shala - 3/19/92
+

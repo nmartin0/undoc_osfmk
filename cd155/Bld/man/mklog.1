@@ -1,0 +1,55 @@
+.TH DF 1V "6 March 1995"
+.SH NAME
+mklog \- create a log file
+.SH SYNOPSIS
+.B mklog 
+[
+.B \-help
+]
+[
+.B \-version
+]
+.IR filename
+.SH DESCRIPTION
+.B mklog
+creates a new file by the specified name. If a file already exists with the 
+specified name, that file is named by adding a numerical suffix to the files
+name.  The numerical suffix is incremented until there is no longer a name
+conflict.
+.LP
+In the following example a request is made for a new file with the name of
+'foo'.  The existing 'foo' is given a numerical suffix which is incremented
+until an unused name is found.  In this example the numerical suffix turns
+out to be '3' (there already is a 'foo.1' and a 'foo.2').
+.LP
+.RS
+.nf
+.ft B
+example% ls -l foo*
+-rwxrwxr-x  1 example       18417 Jan 30 12:29 foo 
+-rwxrwxr-x  1 example         735 Jan 30 12:29 foo.1
+-rwxrwxr-x  1 example        9208 Jan 30 12:29 foo.2
+example% mklog foo
+example% ls -l foo*
+-rwxrwxr-x  1 example           0 Jan 30 12:29 foo 
+-rwxrwxr-x  1 example         735 Jan 30 12:29 foo.1
+-rwxrwxr-x  1 example        9208 Jan 30 12:29 foo.2
+-rwxrwxr-x  1 example       18417 Jan 30 12:29 foo.3
+.ft R
+.fi
+.RE
+.LP
+.SH OPTIONS
+.TP
+.B \-help
+Print out a usage message and exit with status 0.
+.TP
+.B \-version
+Report the CVS version number of the command invoked.
+Print
+.SH FILES
+.PD 0
+.TP 20
+.B none
+.PD
+.SH "SEE ALSO"

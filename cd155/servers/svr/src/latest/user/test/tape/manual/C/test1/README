@@ -1,0 +1,99 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test1" README
+==============
+
+Source: node_a2.c node_b2.c node_c2.c          
+        node_a6.c node_b6.c node_c6.c errexit.c
+
+Desc:	"node_a2.c" tests the reading of 31 different datasets in sequence;
+		data have been written by "test2"
+	"node_b2.c" tests the reading of 31 different datasets in random;
+		data have been written by "test2"
+	"node_c2.c" tests the reading of 31 different datasets using blocknum
+		in random; data have been written by "test2"
+     	"node_a6.c" tests the reading of 31 different datasets in sequence;
+		data have been written by "test6"
+	"node_b6.c" tests the reading of 31 different datasets in random;
+		data have been written by "test6"
+	"node_c6.c" tests the reading of 31 different datasets using blocknum
+		in random; data have been written by "test6"
+
+Invoke:	load [0] node_a.rx [/cfs/ctape0 [TEST01]]
+	load [0] node_b.rx [/cfs/ctape0 [TEST01]]
+	load [0] node_c.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use 1 tape from "test2" or "test6"
+	* ASSUME "test2" or "test6" has written data into the tape already
+	* "test1a.sh" calls "node_a.rx" and 
+	  "test1b.sh" calls "node_b.rx" and
+	  "test1c.sh" calls "node_c.rx"
+	* log is on "test1a.SLr0", "test1b.SLr0" and "test1c.SLr0" respectively
+	* result is on "test1a.SRr0", "test1b.SRr0" and "test1c.SRr0" respectively
+	* to run both "test1a.sh", "test1b.sh" and "test1c.sh", call "test1.sh" 
+	  and the result will be on "test1.SRr0" with the 
+	  1st line for "test1a", 2nd line for "test1b" and 3rd line for "test1c"
+	* tape will be not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+
+Algo:	"node_a2.c" and "node_a6.c"
+	* read 31 datasets in sequence
+	* user exit call are used in right location (at EOF or close)
+	* each dataset contains JMAX * IMAX numbers of record (i.e. JMAX * IMAX
+	  "twrite" is called) with JMAX = 2 and IMAX = 101
+	* UEXITRET = 1  (value to return when user exit is called) if data are
+		written by "test2" because "test2" has user exit routine;
+	  UEXITRET = 0 if data are written by "test6" because "test6" does not 
+		have user exit routine
+	  VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)
+	* ZEROREAD = 1 (set to call "tread" after "tdsclose" to check if the
+			return number of bytes is zero)
+
+
+
+     	"node_b2.c" and "node_b6.c"
+	* read 31 datasets in random
+	* user exit call are used in right location (at EOF or close)
+	* also test negative returned "tdsopen" value if using incorrect dataset
+	  name and reading dataset beyond EOV
+	* each dataset contains JMAX * IMAX numbers of record (i.e. JMAX * IMAX
+	  "twrite" is called) with JMAX = 2 and IMAX = 101
+	* UEXITRET = 1  (value to return when user exit is called) if data are
+		written by "test2" because "test2" has user exit routine;
+	  UEXITRET = 0 if data are written by "test6" because "test6" does not 
+		have user exit routine
+	  VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)
+	* ZEROREAD = 1 (set to call "tread" after "tdsclose" to check if the
+			return number of bytes is zero)
+
+
+
+
+     	"node_c2.c" and "node_c6.c"
+	* read 31 datasets using blocknum in random
+	* user exit call are used in right location (at EOF or close)
+	* also test negative returned "tdsopen" value if using invalid 
+	  blocknum
+	* each dataset contains JMAX * IMAX numbers of record (i.e. JMAX * IMAX
+	  "twrite" is called) with JMAX = 2 and IMAX = 101.  THIS 2 VALUES MUST
+	  NOT BE CHANGED OR ELSE TEST WON'T WORK!!
+	* UEXITRET = 1  (value to return when user exit is called) if data are
+		written by "test2" because "test2" has user exit routine;
+	  UEXITRET = 0 if data are written by "test6" because "test6" does not 
+		have user exit routine
+	  VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)
+	* ZEROREAD = 1 (set to call "tread" after "tdsclose" to check if the
+			return number of bytes is zero)
+

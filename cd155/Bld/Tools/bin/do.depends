@@ -1,0 +1,9 @@
+#!/bin/sh
+# used by 'usr/lib/makefiles/standard.mk' to determine if 'md' (make depends)
+# pgm needs to be run.
+#
+f="`/usr/bin/find . -name '*.d' -print`"
+if [ -z "$f" ] ; then
+	exit
+fi
+$* `/bin/ls *.d`

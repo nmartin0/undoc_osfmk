@@ -1,0 +1,37 @@
+# $Copyright
+# Copyright 1992, 1993, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+#  Lines from here on down are used for SCCS (Source_Code_Control_System)
+#  retrieval of .c and .h files within the project directory hierarchy.
+
+SCCSCMD	= /usr/ucb/sccs
+
+GREPSTR	= echo $@ | sed -e "s,^\./,$(FROMTOP)/," \
+	-e "s,^\([a-zA-Z]\),$(FROMTOP)/\1," \
+	-e "s,\.\./,,g" -e "s,^\([a-zA-Z]\),./\1,"
+
+MKSCCSREL= (cat $(TOPDIR)/$(PROJREL) 2>/dev/null \
+	|| cat $(TOPDIR)/PR_history/$(PROJREL) ) \
+	| (grep \	\`$(GREPSTR)\` || echo "NIL NIL") \
+	| awk '{print $$2}'
+
+GET	= @ SCCSREL=`$(MKSCCSREL)`; \
+	cd $(@D); \
+	echo "*** Retrieving $(PROJREL)/$$SCCSREL Release of '$@'" 1>&2; \
+	$(SCCSCMD) get -r$$SCCSREL
+
+DEPEND	= @ echo "*** Doing 'make depend' for $(THISMK).mk" 1>&2; \
+	cp $(THISMK).mk $(THISMK).mk~; \
+	cat $(THISMK).mk \
+	  | sed -e "/^#__DEPENDLIST__/,\$$d" > $(THISMK).mk.new; \
+	echo "#__DEPENDLIST__" >> $(THISMK).mk.new; \
+	make -f $(THISMK).mk dependlist \
+	  | sed -e "/^\*\*\* Error/d" \
+	  | sed -e "/^	/d" \
+	  | sed -e "/^[ra] - /d" >> $(THISMK).mk.new; \
+	mv $(THISMK).mk.new $(THISMK).mk

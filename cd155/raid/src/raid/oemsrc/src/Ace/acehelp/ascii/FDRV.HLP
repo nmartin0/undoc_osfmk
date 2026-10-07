@@ -1,0 +1,60 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to fail a drive through software.
+ 
+     NOTE:  A procedure for failing a drive is included in the 
+            help screens following the explanation of option.
+ 
+ 
+     WHAT "FAIL" MEANS:  Failing a drive through software causes the 
+     array controller to change the drive status from "Optimal" (0) or 
+     "Warning" (5) to "Failed" (3).  Once a drive is failed, the array 
+     controller can NOT access that drive's data until you replace the 
+     drive and restore the logical unit.
+ 
+     IMPORTANT NOTE:  Do NOT fail a drive in a RAID 0 logical unit
+                      because there is no parity.  Do NOT fail a 
+                      drive in a RAID 1, 3, or 5 logical unit if
+                      the logical unit is degraded.
+ 
+ 
+ 
+                                (CONTINUED)
+     WHEN TO FAIL A DRIVE:  Fail a drive in the following 
+     circumstances:
+ 
+          - If the drive status is "Warning" (5) and you want
+            to replace the drive.  You should fail the drive
+            before you replace it.
+ 
+          - When you want to format a drive in a logical unit.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     PROCEDURE -- FAILING A DRIVE
+ 
+     IMPORTANT NOTE:  Before you fail a drive, back-up any
+                      data on the logical unit file-by-file.  
+                      Remember, do NOT fail a drive in a RAID 0 
+                      logical unit because there is no parity.  
+                      Do NOT fail a drive in a RAID 1, 3, or 5 
+                      logical unit if the logical unit is already 
+                      degraded.
+ 
+     1.   Select a drive by pressing the arrow keys.
+ 
+     2.   Press "f" to fail the drive.
+ 
+     3.   If necessary, press "c" to confirm that you want to continue
+          with the operation you selected, or press "q" to quit.

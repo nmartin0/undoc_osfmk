@@ -1,0 +1,102 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+PATH=/bin:/usr/sbin:/sbin:/usr/bin
+export PATH
+
+#
+# Read configuration for NFS parameters
+#
+NUM_NFSD=4; NUM_NFSIOD=4
+if [ -f /etc/rc.config ] ; then
+	. /etc/rc.config
+else
+	echo "ERROR: /etc/rc.config defaults file MISSING"
+fi
+export NUM_NFSD NUM_NFSIOD
+
+case "$1" in
+'start')
+        set `who -r`
+        if [ "$9" = "S" ]; then        
+                if /usr/sbin/portmap; then
+                        echo "NFS portmap service started"
+                        if /usr/sbin/mountd && /usr/sbin/nfsd $NUM_NFSD; then
+                                echo "NFS export service started"
+                        else
+                                echo "Unable to export NFS service"
+                        fi
+                else
+                        echo "Unable to provide NFS service"
+                fi
+
+                if /usr/sbin/nfsiod $NUM_NFSIOD; then
+                        echo "NFS IO service started"
+                else
+                        echo "Unable to provide NFS IO service"
+                fi
+        fi
+        ;;
+
+'stop')
+
+	echo "NFS shutdown: \c"
+
+	#
+	# Do the ps first to get a list of all processes
+	#
+	gps -ef  2>/dev/null > /tmp/ps$$
+
+	#
+	# Now, kill the NFS daemons
+	#
+
+	PIDS=`(
+	for proc in mountd nfsd nfsiod
+	do
+	 	cat /tmp/ps$$ | /bin/grep $proc | \
+		/bin/grep -v grep | /usr/bin/awk '{ print $2 }'
+	done )`
+
+ 	if [ "$PIDS" != "" ]
+ 	then
+ 		/bin/kill -9 $PIDS 2> /dev/null
+		sleep 10
+ 	fi
+
+	PIDS=`(
+	for proc in portmap
+	do
+	 	cat /tmp/ps$$ | /bin/grep $proc | \
+		/bin/grep -v grep | /usr/bin/awk '{ print $2 }'
+	done )`
+
+	rm -f /tmp/ps$$
+
+ 	if [ "$PIDS" != "" ]
+ 	then
+ 		/bin/kill -9 $PIDS 2> /dev/null
+ 	fi
+
+	echo "[NFS Shutdown Complete]"
+
+	;;
+*)
+        echo "usage: $0 {start|stop}"
+        ;;
+esac

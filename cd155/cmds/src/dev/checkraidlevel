@@ -1,0 +1,83 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+#	checkraidlevel
+#
+# Check on the RAIDs level and reconfigure if needed. 
+#
+#
+
+node=$1
+channel=$2
+id=$3
+ionode=`/sbin/mkdevtab $node`
+if [ "$ionode" -lt 0 ]
+then
+        echo "Cannot get io node number for node $node"
+        exit 1
+fi
+SCSI_BUS=$channel
+DISK_ID=$id
+RAID_OKAY=0
+SCSI_DEVICE=/dev/io${ionode}/ch${SCSI_BUS}/scsi${DISK_ID}
+VALID_RAID3="disk NCR"
+
+/sbin/inquire $SCSI_DEVICE > /dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+#        echo "Unable to query the scsi device for channel $channel scsi id $id."
+        exit 1
+fi
+label=`/sbin/inquire $SCSI_DEVICE`
+echo $label | grep "$VALID_RAID3" > /dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+        echo $label
+#        echo "This is not a supported RAID3 controller!."
+        exit 1
+fi
+state=`/sbin/acf -u -zm${node}b${SCSI_BUS}p${DISK_ID} -Ud`
+state=`echo $state | /usr/bin/cut -f4 -d' '`
+echo "Raid State = "${state}
+if [ "$state" = "Optimal:" -o "$state" = "Degraded:" ]; then
+ 	level=`/sbin/acf -u -zm${node}b${SCSI_BUS}p${DISK_ID} -rd`
+        level=`echo $level | /usr/bin/cut -f5 -d' '`
+        echo "Raid Level = "${level}
+        if [ "$level" = "3" ]; then
+             RAID_OKAY=1
+        fi
+fi
+if [ "$RAID_OKAY" -eq 0 ]; then
+echo "WARNING: The RAID drives are either configured as RAID5, or are otherwise"
+echo "         in need of initialization. This procedure will destroy any data"
+echo "         currently on the drive. Do you want to continue? (y/n)[n] \c"
+        read ans
+        if [ -z "$ans" ]; then
+                ans="N"
+        fi
+        if [ "$ans" != "y" -a "$ans" != "Y" ]; then
+                echo "Exiting..."
+                exit 1
+        fi
+#Give one last chance!
+        echo ""
+        echo "ARE YOU SURE? (y/n)[n] \c"
+        read ans
+        if [ -z "$ans" ]; then
+                ans="N"
+        fi
+        if [ "$ans" != "y" -a "$ans" != "Y" ]; then
+                echo "Exiting..."
+                exit 1
+        fi
+         echo "Formatting Drives. This will take about 15 minutes...."
+        /sbin/acf -c -zm${node}b${SCSI_BUS}p${DISK_ID} -b
+fi

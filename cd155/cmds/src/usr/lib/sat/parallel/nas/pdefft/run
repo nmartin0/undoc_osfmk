@@ -1,0 +1,271 @@
+#!/bin/sh
+#
+# This file: /usr/lib/sat/parallel/fftpde/run
+#
+
+if [ x"${SAT_DEBUG-0}" != x0 ] ; then
+   echo "*** SAT_DEBUG Environmental variable = $SAT_DEBUG"
+   echo "Environment is:"
+   env
+fi
+
+# Initialize local variables
+exitCode=0                     # Successful termination
+testError=1                    # Test failed to terminate correctly
+miscError=2                    # SAT or run script failures
+abortCode=3
+title="`sed -n '1p' README`"   # Test name, first line of README
+
+computeNodes=0                 # Number of nodes in compute partition
+fftpdeSize=0                   # Number of nodes to use
+minNodes=32                    # Minimum number of nodes required
+fftpdePart="fftpde$$"          # Name of temporary working partition
+partName=$1                    # Partition name to be used by test
+scratchPart=""                 # Temporary partition and abs path to run test in
+execDir=`pwd`                  # Current working directory
+
+# working directory for sats (default is /usr/tmp)
+SAT_USR_TMP=${SAT_USR_TMP-/usr/tmp}
+
+# Define temporary scratch files
+# Must be in "$SAT_USR_TMP" and allow for multiple invocations
+programScratchFile=$SAT_USR_TMP/fftpde.scratch.$$
+programResultsFile=$SAT_USR_TMP/fftpde.results.$$
+programErrorFile=$SAT_USR_TMP/fftpde.errors.$$
+
+# Define temporary directory to run program in
+programWorkDir=$SAT_USR_TMP/pdefft.$$
+
+#
+# Signal handling - trap typical signals and special signal from sat driver
+#
+# Leave logs alone if interrupted for debugging purposes. Tell sat driver
+# we were interrupted via special exit code.
+#
+trap "Interrupt 1" 1
+trap "Interrupt 2" 2
+trap "Interrupt 3" 3
+trap "Interrupt 15" 15
+trap "Interrupt 30" 30  # sat wants us to abort
+
+Interrupt() {
+
+        echo "SAT run shell script interrupted by signal $1"
+	cleanup $abortCode
+}
+
+# Remove temporary file(s) function: expected cleanup
+removeFiles() {
+
+   rm -f $programScratchFile
+   rm -f $programResultsFile
+   rm -f $programErrorFile
+
+   cd $execDir
+   rm -rf $programWorkDir
+}
+
+# Remove compute partition function: expected cleanup
+removePartition() {
+
+   if test -n "$scratchPart" -a "$scratchPart" != ".compute"
+   then
+      rmpart -f -r $scratchPart > /dev/null 2>&1
+   fi
+}
+
+# General cleanup and exit routine (optional arg 1 is exit code)
+cleanup() {
+
+   removePartition
+
+   case "$#" in
+   0)  exitCode=$miscError;;
+   *)  exitCode=$1;;
+   esac
+
+   if test -f $programWorkDir/core -o -d $programWorkDir/core
+   then
+      echo "fftpde sat dumped core" 1>&2
+      coreinfo $programWorkDir/core 1>&2
+   fi
+
+   if [ x"${SAT_DEBUG-0}" = x0 -o "$exitCode" -eq 0 -o \
+	 "$#" -ge 2 -a "$2" = nosave ]; then
+      removeFiles
+   fi
+
+   exit $exitCode
+}
+
+
+# Prepare
+removeFiles
+
+# Create and change to temporary directory
+if mkdir $programWorkDir
+then
+   cd $programWorkDir
+else
+   echo "Cannot create temporary directory \"$programWorkDir\"" 1>&2
+   cleanup $miscError
+fi
+
+# Check for compute partition name, passed from sat command
+if test -z "$1"
+then
+   echo "No partition argument supplied." 1>&2
+   cleanup $miscError
+fi
+
+# Partition size analysis and adjustment
+lspart -r . | awk 'BEGIN { dir = "" }
+                   index($1,":") == length($1) { dir = substr($1,1,length($1)-1) "."
+                                                 if (substr(dir,1,2) == "..")
+                                                    dir = substr(dir,2)
+                                                 next
+                                               }
+                   { fullname = dir $NF
+                     if (substr(fullname,1,1) == ".")
+                        print fullname, $4
+                   }' > $programScratchFile
+if test "`echo $1 | cut -c1`" = "."
+then
+   # Absolute partition pathname
+   partName=$1
+else
+   # Relative partition pathname
+   partName=.compute.$1
+fi
+computeString=`grep "^$partName " $programScratchFile`
+
+if test -z "$computeString"
+then
+   echo "Compute partition $partName does not exist." 1>&2
+   lspart -r . >> $programScratchFile
+   if [ ! -d $SAT_USR_TMP/failures ] ; then 
+     mkdir -p $SAT_USR_TMP/failures
+   fi
+   cp $programScratchFile $SAT_USR_TMP/failures
+
+   cleanup $miscError
+fi
+
+computeNodes="`echo $computeString | awk '{ print $2 ; exit }'`"
+
+# Check compute node size
+if test -z "$computeNodes"
+then
+   echo "Could not determine number of compute nodes." 1>&2
+   cleanup $miscError
+fi
+
+# Check for minimum size partition
+if test $computeNodes -lt $minNodes
+then
+   echo "$partName partition has less than minimum nodes required, $minNodes." 1>&2
+   cleanup $miscError nosave
+fi
+
+# Check for existing partition name
+if test -n "`grep '^${partName}.${fftpdePart} ' $programScratchFile`"
+then
+   echo "Compute partition ${partName}.${fftpdePart} already exists." 1>&2
+   lspart -r $partName | grep $fftpdePart
+
+   cleanup $miscError
+fi
+
+# Calculate required partition size
+if test $computeNodes -ge 128
+then
+   fftpdeSize=128
+elif test $computeNodes -ge 64
+then
+   fftpdeSize=64
+elif test $computeNodes -ge 32
+then
+   fftpdeSize=32
+fi
+echo "fftpdeSize: $fftpdeSize"
+
+# Verify partition size
+if test $fftpdeSize -lt $minNodes
+then
+   echo "$partName partition size less than minimum required, $minNodes." 1>&2
+   cleanup $miscError
+fi
+
+scratchPart=${partName}.${fftpdePart}
+
+# Allocate required partition
+mkpart -sz $fftpdeSize $scratchPart >> $programScratchFile 2>> $programErrorFile
+if test $? -ne 0
+then
+   echo "Failed to make partition $scratchPart." 1>&2
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $miscError
+fi
+
+# Verify program is executable
+if test -x ${execDir}/fftpde
+then
+   # Execute program
+   if ${execDir}/fftpde $SAT_NX_ARGS -pn $scratchPart -sz $fftpdeSize > $programScratchFile 2> $programErrorFile
+   then
+      # Get results, for Number of Patches and MFLOPS from scratch file
+      grep 'CPU TIME =' $programScratchFile > $programResultsFile
+   else
+      # Non-zero test exit, pass to sat
+      exitCode=$?
+      echo "fftpde exit code: $exitCode" >> $programScratchFile
+
+      cat $programScratchFile
+      cat $programErrorFile 1>&2
+
+      cleanup $testError
+   fi
+else
+   echo "No \"fftpde\" executable found." 1>&2
+   cleanup $miscError
+fi
+
+# Report PASS/FAIL results
+# Checksum must agree to 13 digits
+
+result="`grep 6CHECKSUM $programScratchFile`"
+rs1="`echo $result | cut -d' ' -f5 | cut -c1-14`"
+rs2="`echo $result | cut -d' ' -f6 | cut -c1-14`"
+
+case $fftpdeSize in
+   32)
+      cs1="510.0508589684"
+      cs2="511.3307088328"
+      ;;
+   64 | 128)
+      cs1="509.1487099959"
+      cs2="510.7917842802"
+      ;;
+esac
+
+if test "$rs1" = "$cs1" -a "$rs2" = "$cs2" -a ! -f core -a ! -d core
+then
+   # Program PASSed, report performance
+   echo "PASS: $title."
+
+   cat $programResultsFile
+else
+   # Program FAILed, cat scratch file back to sat
+   echo "FAIL: $title."
+
+   cat $programScratchFile
+   cat $programErrorFile 1>&2
+
+   cleanup $testError
+fi
+
+# Finish and exit
+cleanup $exitCode

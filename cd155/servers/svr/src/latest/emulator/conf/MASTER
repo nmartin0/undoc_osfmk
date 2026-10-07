@@ -1,0 +1,255 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+
+#######################################################################
+#
+#	Master machine independent configuration file.
+#
+#	Specific configuration files are created based on this and
+#	the machine specific master file using the doconf script.
+#
+#	Any changes to the master configuration files will affect all
+#	other configuration files based upon it.
+#
+#######################################################################
+#
+#	To build a configuration, execute "doconf <configuration>."
+#	Configurations are specified in the "Configurations:" section
+#	of the MASTER and MASTER.* files as follows:
+#
+#	<configuration> = [ <attribute0> <attribute1> ... <attributeN> ]
+#
+#	Lines in the MASTER and MASTER.* files are selected based on
+#	the attribute selector list, found in a comment at the end of
+#	the line.  This is a list of attributes separated by commas.
+#	The "!" operator selects the line if none of the attributes are
+#	specified.
+#
+#	For example:
+#
+#	<foo,bar>	selects a line if "foo" or "bar" are specified.
+#	<!foo,bar>	selects a line if neither "foo" nor "bar" is
+#			specified.
+#
+#	Lines with no attributes specified are selected for all
+#	configurations.
+#
+#######################################################################
+#
+#  STANDARD CONFIGURATION OPTIONS (select any combination)
+#  SMALL     = [mach sysv_fs i386 wthrds small svrsmall loop mtime muarea second sl]
+
+#
+#	debug   = extra kernel level debugging support
+#	mach    = Mach support 
+#	unix    = a UNIX perspective on the world
+#
+#  EXPERIMENTAL CONFIGURATION OPTIONS (select any combination, carefully)
+#
+#	nbc     = no buffer cache support
+#
+#  PSEUDO-DEVICES (select any combination)
+#
+#	sl   = Serial line IP support
+#	mi   = Mach IPC pseudo interface driver
+#
+#  MULTI-PROCESSOR CONFIGURATION (select at most one)
+#
+#	multi16 = enable 16 multi-processors
+#	multi32 = enable 32 multi-processors
+#	multi64 = enable 64 multi-processors
+#
+#  SYSTEM SIZE CONFIGURATION (select no more than one)
+#
+#	xlarge = extra large scale system configuration
+#	large  = large scale system configuration
+#	medium = medium scale system configuration
+#	small  = small scale system configuration
+#	xsmall = extra small scale system configuration
+#	bsmall = special extra small scale system configuration for
+#		 (e.g. for boot floppies)
+#
+#######################################################################
+#
+#  DEPRECATED CONFIGURATION OPTIONS (select any combination, reluctantly)
+#
+#	oldfs   = 4.1 file system support
+#	oldipc  = old CMU IPC support
+#
+#  DEPRECATED PSEUDO-DEVICES (select any combination, reluctantly)
+#
+#	fe   = CMU CS Front End terminal support
+#	ild  = INGRES lock device support
+#
+#######################################################################
+#  
+#
+#  Standard Configuration Components:
+#  -------- ------------- ----------
+#
+#
+#  NX        = [nx pfs sll]
+#  STD       = [mach unix small MSTD fullserver ufs nfs mtime norma_ipc mapped_files muarea prof tnc MFILES NX emulator ]
+#  LITE       = [STD]
+#  RAMDISK   = [mach unix BS MSTD mtime norma_ipc muarea ramdisk ufs fullserver emulator ]
+#
+#
+#  mach_emulation = [ me ]
+#
+#######################################################################
+#
+ident		OSF
+
+# Added for emulator (don't really understand this yet . . . )
+options		SLLCOMPAT	# <sll>
+options		_EMULATOR	# <emulator>
+
+# From server
+options		BSD_A_OUT	# format of load files		# <!mmax>
+options		BUFCACHE_STATS  # <!svrsmall>
+options		BUG_COMPAT  	# enable allow_page_0_access	# <page0>
+options		COMPAT_43	# Compatibility with BSD 4.3
+options		CHKPNT		# TNC checkpoint/restart	# <chkpnt>
+#options		FULLSERVER	# Full server support           # <fullserver>
+options		GENERIC		# <!bsmall>
+options		IGMPROTO	# IGMP code			# <ipmcast,vmtp>
+options		INET
+options		INOCACHE_STATS	# <!svrsmall>
+options		MACH		# Standard Mach features	# <mach>
+options		MACH_AFS	# in-kernel andrew file system	# <afs>
+options		MACH_AFS_30	# AFS 3.0 compatibility		# <afs>
+options		MACH_ASSERT	# Compile in assertions		# <test>
+options		MACH_COMPAT	# Vendor syscall compatibility  # <mach>
+options		MACH_DB		# new kernel debugger		# <db>
+options		MACH_FASTLINK
+options		MACH_IPC_STATS	# <!svrsmall>
+options		MACH_IPC_TCACHE
+options		MACH_IPC_WWA
+options		MACH_IPC_XXXHACK
+options		MACH_LDEBUG	# Keep debug info for locks	# <ldebug>
+options         MACH_LTRACKS    # Keep track of lock owner      # <ldebug>
+options		MACH_PAGEMAP
+options		MACH_VMTP	# versatile msg trans. protocol	# <vmtp>
+options		MACH_XP		# external pager support	# <mach>
+options		MACH_XP_FPD	# copy data direct from user	# <mach>
+options		MACH_XP_SC
+options		MAP_ETHER	# Use mapped ethernet		# <map_ether>
+options		MAP_TIME	# Use mapped time from kernel	# <mtime>
+options		MAP_UAREA	# Use shared memory region	# <muarea>
+options		MAPPED_FILES    # Use mapping for Unix file I/O # <mapped_files>
+options		MULTICAST	# Class D addressing		# <ipmcast,vmtp>
+options		MULTICAST_AGENT	# Multicast Agent code		# <ipmcast>
+#options	NAMEI_MACROS	# @sys/@cpu expansion		# <atsys>
+options		NFS		# Network File System		# <nfs>
+options		NORMA_IPC	# Use kernel norma support	# <norma_ipc>
+options		OSF1_ADFS
+options		OSF1_ADFS_DEBUG	# debug output for ADFS code 	# <adfs_debug>
+options		OSF1_SERVER
+options		OSF_MACH_O	# OSF/1 format for exec.	# <i386>
+options		PFS		# Parallel File System		# <pfs>
+options		PROFILING	# User profiling		# <prof,kprof>
+options		QUOTA		# <quota>
+options		REMOTE_PROC	# Non-TNC fork does remote tasks # <rproc>
+options		RFC_1323	# Large Window TCP/IP			# <rfc_1323>
+options		RAMDISK		# To build a small server	# <ramdisk>
+options		SECOND_SERVER	# Usable as second server	# <second>
+options		SER_COMPAT	# handle unparallelized subsyst # <afs>
+options		STACK_LIMIT_CHECK
+options		STAT_TIME
+options		STREAMS		# <str>
+options		STREAMS_DEBUG	# <strdebug>
+options		STRECHO		# <str>
+options		STRNULL		# <str>
+options		STRPASS		# <str>
+options		STRSC		# <str>
+options		STRTMUX		# <str>
+options		SVTT		# <str>
+options		SYSV_COFF	# format of load files		# <mmax,mips,at,exl,i386,i860>
+options		SYSV_FS		# System V file system		# <sysv_fs>
+options		TIMOD		# <str>
+options		TIRDWR		# <str>
+options		TTLCONTROL	# New ioctl to set IP TTL	# <ipmcast,vmtp>
+options		TNC		# tnc support			# <tnc>
+#options         UFS	        # ufs support                   # <ufs>
+options		UFS_NBC		# nbc for file data (ufs only)	# <ufs_nbc>
+options		UFS_NBC_DEBUG				        # <ufs_nbc_debug>
+options		UIPC
+options		UNIX_LOCKS	#				# <!uniproc>
+options		VAGUE_STATS
+options		VFS_VIO         # vnode layer VIO module	# <vfs_vio>
+options		WIRED_THREADS	# All server threads wired	# <wthrds,test>
+options		XPR_DEBUG	# kernel tracing		# <test>
+options		XTISO		# <str>
+
+timezone	5 dst
+maxdsiz		33554432	# 32 Megabytes
+maxusers	64		# <xlarge>
+maxusers	50		# <large>
+maxusers	32		# <medium>
+maxusers	16		# <small>
+maxusers	8		# <xsmall>
+maxusers	2		# <bsmall>
+maxusers	1		# <tiny>
+
+#
+#  Multi-processor selection
+#
+pseudo-device	cpus		64	# <multi64>
+pseudo-device	cpus		32	# <multi32>
+pseudo-device	cpus		16	# <multi16>
+pseudo-device	cpus		2	# <!multi64,multi32,multi16,uniproc>
+pseudo-device	cpus		1	# <uniproc>
+#
+#  CMU pseudo terminal service
+#
+#
+# VICE file system support
+#
+pseudo-device	vicefs	3		# <vice>
+#
+#  Ethernet (ARP)
+#
+pseudo-device	ether
+#
+#  CMU Front End service
+#
+pseudo-device	fe	1		# <fe>
+#
+#  INGRES lock device
+#
+pseudo-device	ild			# <ild>
+#
+#   SL-IP
+#
+pseudo-device	sl			# <sl>
+#
+# Mach IPC device
+#
+pseudo-device	mi	1		# <mi>
+#
+#  Network loopback device
+#
+pseudo-device	loop			# <loop>
+#
+# Number of communication ttys:
+#
+pseudo-device	com	2
+#
+#  UCB pseudo terminal service
+#
+pseudo-device	pty	80			# <!bsmall>
+pseudo-device	netthreads	2
+pseudo-device	mbclusters	256
+#
+# Logical Volume Manager
+#
+pseudo-device	lv	2		# <lv>

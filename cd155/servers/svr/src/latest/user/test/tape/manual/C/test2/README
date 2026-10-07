@@ -1,0 +1,59 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test2" README
+==============
+
+Source: node_a.c node_b.c errexit.c
+
+Desc:	"node_a.c" tests the writing of 31 different datasets;
+	"node_b.c" tests the writing of 31 different datasets + tests the 
+		reading (and verifying) of some of the datasets   
+
+Invoke:	load [0] node_a.rx [/cfs/ctape0 [TEST01]]
+	load [0] node_b.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use 1 scratch tape
+	* "test2a.sh" calls "node_a.rx" and 
+	  "test2b.sh" calls "node_b.rx"
+	* log is on "test2a.SLr0" and "test2b.SLr0" respectively
+	* result is on "test2a.SRr0" and "test2b.SRr0" respectively
+	* to run both "test2a.sh" and "test2b.sh", call "test2.sh" 
+	  and the result will be on "test2.SRr0" with the 
+	  1st line for "test2a" and 2nd line for "test2b"
+	* tape will be not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+	* use "test1a", "test1b", "test1c" to verify the reading.  The source
+	  is "node_a2.c", "node_b2.c", and "node_c2.c"
+
+Algo:	"node_a.c"
+	* write 31 dataset using different "data control block" settings
+	* each dataset contains JMAX * IMAX numbers of record (i.e. JMAX * IMAX
+	  "twrite" is called) with JMAX = 2 and IMAX = 101
+	* UEXITRET = 1  (value to return when user exit is called)
+	* use "test1[abc].c" to verify (read) the tape content (with UEXITRET=1)
+
+
+
+
+     	"node_b.c"
+	* write 31 dataset using different "data control block" settings
+	* after writing datasets, read and verify some other datasets.  The
+	  datasets being read are 1, 4, 10, and 14 
+	* each dataset contains JMAX * IMAX numbers of record (i.e. JMAX * IMAX
+	  "twrite" is called) with JMAX = 2 and IMAX = 101
+	* UEXITRET = 1  (value to return when user exit is called)
+	  VERIFY = 1    (set verification to TRUE so that the dataset being 
+			 read is verified)
+	* also to use "test1[abc].c" to fully verify (read) the tape content
+
+
+

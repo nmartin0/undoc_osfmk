@@ -1,0 +1,1718 @@
+   1                             ; scsi16.ss:  NCR 53c720 scripts source for the Intel SSD Scsi-16 board
+   2                             ; consists of: (1) debug message announcing entry/exit to/from every module,
+   3                             ;              (2) test modules to check that the request table in CLRAM
+   4                             ;                  is not corrupted
+   5                             ;              (3) assert to check expected vs. true data or condition
+   6                             ;
+   7                             ; Written Apr-May 1994 Wally Kramer, Step Technology, Portland, Oregon
+   8                             ;
+   9                             ; Purpose:
+  10                             ;      This code performs the specific functions of a "scsi initiator" on
+  11                             ;      behalf of a host processor.  Host I/O requests are translated into
+  12                             ;      command, message_out, data_in or data_out, message_in, status
+  13                             ;      sequences to accomplish the requested I/O.  When I/O is complete,
+  14                             ;      the host is signaled so it can perform the complete_io portion of
+  15                             ;      the driver.
+  16                             ;
+  17                             ; Conventions:
+  18                             ;      Generally, instructions changed by runtime modification "patching"
+  19                             ;      (not to be confused with what NCR calls "patching" which is really
+  20                             ;      load time relocation) have the PATCH symbol used in the instruction
+  21                             ;      as a place holder.  Generally such an instruction has a label of
+  22                             ;      the form xxx_n where xxx is describes the functional procedure as a
+  23                             ;      unique but suggestive name and n is a digit, always increasing down
+  24                             ;      the file.  This saves creative effort and helps identify where
+  25                             ;      patches are done.
+  26                             ;
+  27                             ;      ??? indicates things which may need further research or testing
+  28                             ;      to determine validity or appropriateness.  So far, these have all
+  29                             ;      been NCR questions.
+  30                             
+  31                             ;      !! indicates code which was changed to allow debugging.
+  32                             ;
+  33                             ; Modifications:
+  34                             ;      27 June 1994, Wally Kramer
+  35                             ; Since 21 June, added sigp bit clear instruction in schedular; added lots of
+  36                             ; assert statements (presently commented), added LED control; moved assign of
+  37                             ; req_tbl_ptr to before selection for selection timeout host error processing.
+  38                             ;
+  39                             ;      29 June 1994, Wally Kramer
+  40                             ; Added write of req_tbl_ptr into req_done_q in io_complete.
+  41                             ;
+  42                             ;      30 June 1994, Wally Kramer
+  43                             ; Removed debugger stuff
+  44                             ;
+  45                             ;      26 July 1994, Jerrie Coffman and Vineet Kumar
+  46                             ; Clean up more debugger stuff that Wally left in by mistake.
+  47                             ; Added more asserts.
+  48                             ;
+  49                             ;      11 August 1994, Jerrie Coffman
+  50                             ; Using absolutes for bss label accesses does not produce releative
+  51                             ; addressing in the output code.  Replaced absolute names with bss?+n
+  52                             ; lables to allow code to be relocatable.  Updated and cleaned up
+  53                             ; some comments.
+  54                             ;
+  55                             ;      23 August 1994, Jerrie Coffman and Vineet Kumar
+  56                             ; A selection does not halt the script processor.  The script processor
+  57                             ; will continue running until another instruction is executed which
+  58                             ; requires the SCSI bus or a select timeout occurs.  Added a "jump when"
+  59                             ; instruction following the selection to force a pause until the selection
+  60                             ; phase is complete.
+  61                             ;
+  62                             ;      18 November 1994, Jerrie Coffman
+  63                             ; Corrected a coding error in save data pointers following a phase mismatch.
+  64                             ; The calulation for the new scatter/gather entry length and address fields
+  65                             ; was incorrect.  They were being adjusted by the amount remaining to be
+  66                             ; transferred instead of the amount that was just transferred. 
+  67                             ;
+  68                             ;      7 December 1994, Jerrie Coffman
+  69                             ; Added a global labels "msg_sent" and "cmd_sent" placed immediately after
+  70                             ; the SCSI message out and command transfer instructions.  These can be used
+  71                             ; by the interrupt handler to detect a phase mismatch during message out or
+  72                             ; command phase and recover by simply restarting the script from the current
+  73                             ; location.
+  74                             ;
+  75                             ;      11 March 1995, Jerrie Coffman
+  76                             ; Added jump to bad_error if actual phase does not match expected phase
+  77                             ; following a selection.
+  78                             
+  79                                    arch    720             ; 53c720
+  80                             
+  81                             ;absolute dsa      = 0x10 + REG_BASE   ; DSA (data structure address) register
+  82                             ;absolute scratcha = 0x34 + REG_BASE   ; SCRATCH A register
+  83                             ;absolute scratchb = 0x5c + REG_BASE   ; SCRATCH B register
+  84                             absolute BYTE_LANE_1   = 1
+  85                             absolute BYTE_LANE_2   = 2
+  86                             absolute BYTE_LANE_3   = 3
+  87                             
+  88                             absolute PATCH = 0             ; visual place holder for patched locations
+  89                             
+  90                             ; These values from ...Kernel/src/mk/kernel/scsi/adapters/scsi_53C720.h
+  91                             
+  92                             absolute ERROR_STAT_NOT_GOOD   = 1
+  93                             absolute ERROR_REQ_DONE_Q_FULL = 2
+  94                             absolute ERROR_UNKNOWN_PHASE   = 3
+  95                             absolute ERROR_RESELECT_ID     = 4
+  96                             absolute ERROR_OTHER_MSG       = 5     ; not an error, but handled like one
+  97                             absolute ERROR_WRONG_PHASE     = 6
+  98                             
+  99                             
+ 100                             ; Constants for gpreg to make blinkenlightsgo.
+ 101                             
+ 102                             absolute LED_OFF       = 0x18
+ 103                             absolute LED_GREEN     = 0x10
+ 104                             absolute LED_RED       = 8
+ 105                             absolute LED_RED_GREEN = 0     ; both on
+ 106                             
+ 107                             
+ 108                             ; For host-based debugging support:  a collection of identifiers present
+ 109                             ; during an interrupt for the host to verify 720 conditions at strategic
+ 110                             ; points.
+ 111                             
+ 112                             absolute DEBUG_INIT_ENTRY              = 0xc0de0065
+ 113                             absolute DEBUG_INIT_EXIT               = 0xc0de0066    ; initialization done
+ 114                             absolute DEBUG_SCHEDULAR_ENTRY         = 0xc0de0067
+ 115                             absolute DEBUG_SCHEDULE_READY          = 0xc0de0068    ; schedular has entry
+ 116                             absolute DEBUG_SELECT_ATN              = 0xc0de0069
+ 117                             absolute DEBUG_SELECT_NO_ATN           = 0xc0de006a
+ 118                             absolute DEBUG_CNTRLR_Q_ZAP            = 0xc0de006b    ; sched to clear entry
+ 119                             absolute DEBUG_CNTRLR_Q_INC_DONE       = 0xc0de006c    ; ++cntrlr_q_p performed
+ 120                             absolute DEBUG_SCHEDULAR_EXIT          = 0xc0de006d
+ 121                             absolute DEBUG_MSG_OUT_ENTRY           = 0xc0de006e
+ 122                             absolute DEBUG_MSG_OUT_EXIT            = 0xc0de006f
+ 123                             absolute DEBUG_RESELECTED_ENTRY                = 0xc0de0070
+ 124                             absolute DEBUG_NOT_USED                        = 0xc0de0071    ; targ resel but no ent
+ 125                             absolute DEBUG_RESELECTED_EXIT         = 0xc0de0072
+ 126                             absolute DEBUG_MAIN_ENTRY              = 0xc0de0073
+ 127                             absolute DEBUG_CMD_ENTRY               = 0xc0de0074
+ 128                             absolute DEBUG_CMD_EXIT                        = 0xc0de0075
+ 129                             absolute DEBUG_DATA_IN_ENTRY           = 0xc0de0076
+ 130                             absolute DEBUG_DATA_IN_EXIT            = 0xc0de0077
+ 131                             absolute DEBUG_DATA_OUT_ENTRY          = 0xc0de0078
+ 132                             absolute DEBUG_DATA_OUT_EXIT           = 0xc0de0079
+ 133                             absolute DEBUG_STATUS_ENTRY            = 0xc0de007a
+ 134                             absolute DEBUG_STATUS_EXIT             = 0xc0de007b
+ 135                             absolute DEBUG_MSG_IN_ENTRY            = 0xc0de007c
+ 136                             absolute DEBUG_MSG_DISCONNECT          = 0xc0de007d
+ 137                             absolute DEBUG_MSG_CMD_COMPLETE                = 0xc0de007e
+ 138                             absolute DEBUG_MSG_IGNORE_WIDE         = 0xc0de007f
+ 139                             absolute DEBUG_MSG_EXTENDED            = 0xc0de0080
+ 140                             absolute DEBUG_MSG_EXTENDED_BIT_BUCKET = 0xc0de0081
+ 141                             absolute DEBUG_MSG_SAVE_DATA_PTRS      = 0xc0de0082
+ 142                             absolute DEBUG_MSG_SAVE_DATA_PTRS_EXIT = 0xc0de0083
+ 143                             absolute DEBUG_IO_COMPLETE_ENTRY       = 0xc0de0084
+ 144                             absolute DEBUG_IO_COMPLETE_EXIT                = 0xc0de0085
+ 145                             absolute DEBUG_COPY_ENTRY_ENTRY                = 0xc0de0086
+ 146                             absolute DEBUG_COPY_ENTRY_EXIT_TRUE    = 0xc0de0087
+ 147                             absolute DEBUG_COPY_ENTRY_EXIT_FALSE   = 0xc0de0088
+ 148                             absolute DEBUG_ISZERO32_ENTRY          = 0xc0de0089
+ 149                             absolute DEBUG_ISZERO32_EXIT_FALSE     = 0xc0de008a
+ 150                             absolute DEBUG_ISZERO32_EXIT_TRUE      = 0xc0de008b
+ 151                             absolute DEBUG_SUB32_ENTRY             = 0xc0de008c
+ 152                             absolute DEBUG_SUB32_2s_COMP           = 0xc0de008d
+ 153                             absolute DEBUG_ADD32_ENTRY             = 0xc0de008e
+ 154                             absolute DEBUG_ADD32_EXIT              = 0xc0de008f
+ 155                             absolute DEBUG_CMP32_ENTRY             = 0xc0de0090
+ 156                             absolute DEBUG_CMP32_EXIT_TRUE         = 0xc0de0091
+ 157                             absolute DEBUG_CMP32_EXIT_FALSE                = 0xc0de0092
+ 158                             absolute DEBUG_ID_TO_ADDR_ENTRY                = 0xc0de0093
+ 159                             absolute DEBUG_ID_TO_ADDR_EXIT         = 0xc0de0094
+ 160                             absolute DEBUG_DISCONNECT_EXIT         = 0xc0de0095
+ 161                             absolute DEBUG_STAT_NOT_GOOD_EXIT      = 0xc0de0096
+ 162                             absolute DEBUG_IGNORE_WIDE_EXIT                = 0xc0de0097
+ 163                             absolute DEBUG_OTHER_MSG_EXIT          = 0xc0de0098
+ 164                             absolute DEBUG_SUCCESSFUL_SELECTION    = 0xc0de0099
+ 165                             absolute DEBUG_GENERAL_PURPOSE_1       = 0xc0de009a            ; spare
+ 166                             absolute DEBUG_GENERAL_PURPOSE_2        = 0xc0de009b            ; spare
+ 167                             absolute DEBUG_GENERAL_PURPOSE_3        = 0xc0de009c            ; spare
+ 168                             absolute DEBUG_MSG_REJECT              = 0xc0de009d
+ 169                             
+ 170                             absolute ASSERT_RESELECT_TBL_PTR       = 0xc0de012d
+ 171                             absolute ASSERT_DATA_PTR_SAVED         = 0xc0de012e     
+ 172                             absolute ASSERT_SELECT_TBL_PTR          = 0xc0de012f   
+ 173                             absolute ASSERT_GENERAL_PURPOSE_1       = 0xc0de0130
+ 174                             absolute ASSERT_GENERAL_PURPOSE_2       = 0xc0de0131
+ 175                             absolute ASSERT_GENERAL_PURPOSE_3       = 0xc0de0132
+ 176                             
+ 177                             ; following values are written in the DSP register through "INT value" when
+ 178                             ; SIOP detects corrupted data. Values are:
+ 179                             absolute DATA_CORRUPTED                 = 0xdead0000
+ 180                             
+ 181                             ; These values from scsi-2 spec, table 5-2
+ 182                             
+ 183                             absolute MSG_COMMAND_COMPLETE  = 0
+ 184                             absolute MSG_DISCONNECT                = 4
+ 185                             absolute MSG_EXTENDED          = 1
+ 186                             absolute MSG_REJECT            = 7
+ 187                             absolute MSG_IGNORE_WIDE_RESIDUE = 0x23
+ 188                             absolute MSG_SAVE_DATA_PTRS    = 2
+ 189                             
+ 190                             ; This offset matches the layout of a scatter gather entry.
+ 191                             ; Offset zero is assumed to contain the length of the entry.
+ 192                             
+ 193                             absolute OFFSETOF_SG_ENT_PTR   = 4
+ 194                             
+ 195                             absolute SIZEOF_REQ_DONE_ENT   = 4     ; sizeof (req_done_q [0])
+ 196                             absolute SIZEOF_SG_ENTRY       = 8     ; size of scatter gather entry (cnt,ptr)
+ 197                             absolute SIZEOF_STRUCT_SDC     = 12    ; sizeof (cntrlr_buf[0].scat_gath0)
+ 198                             absolute SIZEOF_CNTRLR_BUF     = 44    ; sizeof (CNTRLR_Q[0]))
+ 199                             absolute OFFSETOF_REQ_TBL      = 4
+ 200                             absolute OFFSETOF_REQ_DEST     = 8
+ 201                             absolute OFFSETOF_MSG_OUT_LEN  = 8
+ 202                             absolute OFFSETOF_DSA_SG_PTR   = 44
+ 203                             
+ 204                             ; Following are offsets used by modules that test the integrity of data in
+ 205                             ; CLRAM, DPRAM, or the node memory. These modules can be used even when
+ 206                             ; debugging is turned off in the host. They check the integrity of data and
+ 207                             ; INT the host if data are inconsistent. The host then stops the other SIOP
+ 208                             ; which did not INT and then hits a panic or an assert itself
+ 209                             ; This way all three uPs (two 53C720s and one 80860) stop and the logic
+ 210                             ; analyzer does not catch any unnecessary data on the local bus
+ 211                             absolute OFFSETOF_PTR_MSG_OUT   = 12    ; relative to start of request table
+ 212                             absolute OFFSETOF_BYTES_MSG_OUT = 16    ; relative to start of request table
+ 213                             
+ 214                             ; This TABLE directive must match the host "request_table" structure in
+ 215                             ; ...Kernel/src/mk/kernel/scsi/adapters/scsi_53C720.h
+ 216                             
+ 217                             ;  dsa_dummy = 1{??},
+ 218                             ;  dsa_sxfer_value = 1{??},
+ 219                             ;  dsa_dest_id_val = 1{??},
+ 220                             ;  dsa_scntrl3_val = 1{??},
+ 221                             
+ 222                             TABLE dsa_relative_table       \
+ 223 00000000:                     dsa_dummy = {0, 0, 0, 0},    \
+ 224 00000008:                     dsa_msg_out_len = {0, 0, 0, 0},      \ ;dsa_msg_out_ptr = {0, 0, 0, 0},
+ 225 00000010:                     dsa_msg_out_buf = {0, 0, 0, 0,  0, 0, 0, 0}, \
+ 226 00000018:                     dsa_cmd_len = {0, 0, 0, 0},          \ ;dsa_cmd_ptr = {0, 0, 0, 0},
+ 227 00000020:                     dsa_cmd_buf = 12{0},         \
+ 228 00000028:                     dsa_sg_ptr = 4{0}                    ; offset not used
+ 229                             
+ 230                             
+ 231                             
+ 232                             ; shmem_bytes
+ 233                             ;absolute      no_work_to_do   = SHMEM_BASE+0  ; one byte
+ 234                             ;absolute      halt_reason     = SHMEM_BASE+1  ; one byte
+ 235                             ;absolute      status_buf      = SHMEM_BASE+2  ; one byte
+ 236                             ;absolute      msg_in_cnt      = SHMEM_BASE+3  ; one byte
+ 237                             ;absolute      msg_in_buf      = SHMEM_BASE+4  ; 8 byte length
+ 238                             ;absolute      next_addr       = SHMEM_BASE+12 ; (4 bytes) from host
+ 239                             ;absolute      req_tbl_ptr     = SHMEM_BASE+16 ; (4 bytes) ptr to cur i/o req
+ 240                             
+ 241                             
+ 242                             
+ 243                                    entry   init, main, schedular   ; globals for host to use
+ 244                             
+ 245                                    ; debug access only
+ 246                                    entry   cntrlr_q_p, sel_no_atn, sched_empty, got_reselected
+ 247                                    entry   msg_sent, cmd_phase, cmd_sent, data_in_phase, data_out_phase
+ 248                                    entry   status_phase, msg_in_phase, err_unknown_phase, copy_buf
+ 249                                    entry   ignore_wide_flag, copy_entry, iszero32, add32, cmp32
+ 250                                    entry   req_done_ptr, targ_id_q_tag_to_addr
+ 251                                     entry   data_analyzer_trig
+ 252                             
+ 253                             ; * * * * * *    Variables    * * * * * *
+ 254                             
+ 255                                    ; CNTRLR_Q_P inited to &cntrlr_q [0]
+ 256                             
+ 257 00000000:                   cntrlr_q_p:
+ 258 00000000: 80000000 00000000        nop     ; word to hold address into cntrlr_q
+ 259                                            ; of next element to wait for an item to get.
+ 260                                            ; Note:  cntrlr_q_p is not advanced until the target
+ 261                                            ; receives the request.
+ 262                             
+ 263 00000008:                   req_done_ptr:
+ 264 00000008: 80000000 00000000        nop             ; pointer into circular queue of request done I/Os
+ 265                             
+ 266 00000010:                   ignore_wide_flag:
+ 267 00000010: 80000000 00000000        nop
+ 268                             
+ 269 00000018:                   copy_buf:
+ 270 00000018: 80000000 00000000        nop             ; 12-byte area to deal with src,dst,cnt descript
+ 271 00000020: 80000000 00000000        nop
+ 272 00000028: 80000000 00000000        nop
+ 273                             
+ 274 00000030:                   data_analyzer_trig:
+ 275 00000030: 80000000 00000000         nop
+ 276                             
+ 277 00000038:                   garbage:
+ 278 00000038: 80000000 00000000        nop;            ; pointer to garbage data
+ 279                             
+ 280                             ; This is NOT code!  It is data.
+ 281                             
+ 282 00000040: C0000000 00000000 00000001 bss0: move memory 0, 0, 1             ; provide zero and true
+ 283                             
+ 284 0000004C: C0000000 00000000 00000000 bss1: move memory 0, pass(CNTRLR_Q), pass(&CNTRLR_Q[CNTRLR_Q_SIZE])
+ 285 00000058: C0000000 00000000 00000000 bss2: move memory 0, pass(REQ_DONE_Q), pass(&REQ_DONE_Q[REQ_DONE_Q_SIZE])
+ 286 00000064: C0000000 00000000 00000000 bss3: move memory 0, pass(RESELECT_TBL), 0
+ 287                             
+ 288                             ; Would like to use these absolute definitions for bss access but
+ 289                             ; they don't produce relative addressing in the code, just a hard
+ 290                             ; coded offset from zero.
+ 291                             ;absolute      zero = bss0+4
+ 292                             ;absolute      true = bss0+8
+ 293                             ;absolute      startof_cntrlr_q = bss1+4       
+ 294                             ;absolute      limitof_cntrlr_q = bss1+8
+ 295                             ;absolute      startof_req_done_q = bss2+4
+ 296                             ;absolute      limitof_req_done_q = bss2+8
+ 297                             ;absolute      baseof_reselect_tbl = bss3+4
+ 298                             
+ 299                             
+ 300                             
+ 301 00000070:                   init:
+ 302 00000070: 98080000 C0DE0065        int     DEBUG_INIT_ENTRY
+ 303                             
+ 304                             ; init .word initialized pointers
+ 305 00000078: C0000004 00000050 00000000       move    memory 4, bss1+4, cntrlr_q_p
+ 306 00000084: C0000004 0000005C 00000008       move    memory 4, bss2+4, req_done_ptr
+ 307                             
+ 308                                     ; write 0xdeadbeef to data_analyzer_trig location
+ 309 00000090: 7837DE00 00000000         move    0xde to scratcha3
+ 310 00000098: 7836AD00 00000000         move    0xad to scratcha2
+ 311 000000A0: 7835BE00 00000000         move    0xbe to scratcha1
+ 312 000000A8: 7834EF00 00000000         move    0xef to scratcha0
+ 313 000000B0: C0000004 00000000 00000030         move    memory 4, pass(REG_BASE+0x34), data_analyzer_trig
+ 314                             
+ 315 000000BC: 80880000 00000000        jump    rel (schedular)         ; starting point is with nothing to do
+ 316                             
+ 317                             
+ 318                             ; schedular:  checks request queue for work to do
+ 319                             ; Usage:
+ 320                             ;      jmp schedular
+ 321                             ;
+ 322                             ; Input:
+ 323                             ;      None, except globals in cntrlr_q
+ 324                             ;
+ 325                             ; Output:
+ 326                             ;      None, except side effects
+ 327                             ;
+ 328                             ; Uses:
+ 329                             ;      everything
+ 330                             ;
+ 331                             ; Desc:
+ 332                             ;      Checks current element of cntrlr_q which is pointed to by CNTRLR_Q_P.
+ 333                             ;      If entry is empty, the queue must be empty.  The host is notified
+ 334                             ;      and we go to sleep until something happens.
+ 335                             ;
+ 336                             ;      If the next cntrlr_q entry is valid, schedular copies request
+ 337                             ;      and scatter-gather pointers from host to SIOP local ram.  CNTRLR_Q_P is
+ 338                             ;      incremented regarding cntrlr_q as an N-entry circular buffer.
+ 339                             ;      Doing the increment only after successfully selecting a target
+ 340                             ;      allows reselections to preempt without forgetting to try to start
+ 341                             ;      the i/o later.
+ 342                             ;
+ 343                             ; Data:
+ 344                             ;      cntrlr_q:
+ 345                             ;              uchar   queue_tag;      // target_id & queue_tag are arranged
+ 346                             ;              uchar   target_id;      // for 720 easy access
+ 347                             ;              ushort  filler;
+ 348                             ;              struct {
+ 349                             ;                      void *source;
+ 350                             ;                      void *dest;
+ 351                             ;                      long count;
+ 352                             ;              } req_tbl, scat_gath [N];
+ 353                             
+ 354                             
+ 355                             
+ 356 000000C4:                   schedular:
+ 357 000000C4: 98080000 C0DE0067        int     DEBUG_SCHEDULAR_ENTRY
+ 358 000000CC: 721A0000 00000000        move    ctest2 to sfbr                  ; clear sigp
+ 359                             
+ 360 000000D4: C0000004 00000000 00000000       move    memory 4, cntrlr_q_p, pass(REG_BASE+0x34)       ; scratchA = &next entry
+ 361 000000E0: 7E340400 00000000        move    scratcha0 + OFFSETOF_REQ_TBL to scratcha0
+ 362 000000E8: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 363 000000F0: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 364 000000F8: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry ; A = &cntrl_q [X].req_tbl
+ 365                             
+ 366                             ; If source address is nonzero, there is work to do.  Try to copy entry
+ 367                             ; from host memory to local memory.  If it is empty (zero source),
+ 368                             ; copy_entry returns with carry set.
+ 369                             
+ 370 00000100: 88880000 00000CA4        call    rel (copy_entry)
+ 371 00000108: 80A80000 000003A4        jump    rel (sched_empty), if carry     ; if zero, nothing to do
+ 372                             
+ 373                             ; Here if a valid entry; the sched_ready code expects the DSA to point to
+ 374                             ; the first destination address.  This (non-modular) fetch from COPY_BUF
+ 375                             ; (set as a side effect of copy_entry) is quite expedient.  :-)
+ 376                             
+ 377 00000110: C0000004 0000001C 00000000       move    memory 4, copy_buf+4, pass(REG_BASE+0x10)       ; set DSA to request_tbl
+ 378                             
+ 379                             ; Copy the subsequent entries (scatter/gather tables) until a zero entry.
+ 380                             ; The pseudo code is approximately:
+ 381                             ;      do {
+ 382                             ;              scratchA += 12;
+ 383                             ;              copy (*(scratchA+0) to *(scratchA+4), length *(scratchA+8));
+ 384                             ;      } while (*(scratchA+0) != 0)
+ 385                             
+ 386 0000011C:                   sched_loop:
+ 387 0000011C: 7E340C00 00000000        move    scratcha0 + SIZEOF_STRUCT_SDC to scratcha0
+ 388 00000124: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 389 0000012C: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 390 00000134: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry
+ 391 0000013C: 88880000 00000C68        call    rel (copy_entry)                ; copy scat_gath entry
+ 392 00000144: 80A00000 FFFFFFD0        jump    rel (sched_loop), if not carry
+ 393                             
+ 394                             ; start of test module -------------------------------------------------------
+ 395                             ; test module checks that the request table in CLRAM is not corrupted
+ 396 0000014C: C0000004 00000000 00000000         move    memory 4, pass(REG_BASE+0x10), pass(REG_BASE+0x34)
+ 397 00000158: 7E340C00 00000000         move    scratcha0 + OFFSETOF_PTR_MSG_OUT to scratcha0
+ 398 00000160: 7F350000 00000000         move    scratcha1 + 0 to scratcha1 with carry
+ 399 00000168: 7F360000 00000000         move    scratcha2 + 0 to scratcha2 with carry
+ 400 00000170: 7F370000 00000000         move    scratcha3 + 0 to scratcha3 with carry ; scratchA=&msg_out_ptr
+ 401 00000178: C0000004 00000000 00000188         move    memory 4, pass(REG_BASE+0x34), test_2+4
+ 402 00000184: C0000004 00000000 00000000 test_2: move    memory 4, PATCH, pass(REG_BASE+0x5c)    ; scratchB =
+ 403                                                                                     ; *(msg_out_ptr) =
+ 404                                                                                     ;       &msg_out_bytes
+ 405 00000190: 7E340400 00000000         move    scratcha0 + 0x04 to scratcha0
+ 406 00000198: 7F350000 00000000         move    scratcha1 + 0 to scratcha1 with carry
+ 407 000001A0: 7F360000 00000000         move    scratcha2 + 0 to scratcha2 with carry
+ 408 000001A8: 7F370000 00000000         move    scratcha3 + 0 to scratcha3 with carry ; scratchA=&msg_out_bytes
+ 409 000001B0: 88880000 00000E24         call    rel (cmp32)             ; *(msg_out_ptr) == &msg_out_bytes
+ 410 000001B8: 80A80000 00000024         jump    rel (test_2_pass), if carry  ; branch if equal => test passes
+ 411 000001C0: C0000004 00000030 80000038         move    memory 4, data_analyzer_trig, 0x80000038 ; trig logic analyzer
+ 412 000001CC: 78070800 00000000         move    LED_RED to gpreg
+ 413 000001D4: 98080000 DEAD0000         int     DATA_CORRUPTED
+ 414 000001DC: 80880000 FFFFFFF8 itself_2: jump  rel (itself_2)  ;preventive step, should'nt get here
+ 415 000001E4:                   test_2_pass:
+ 416                             ; end of test module -------------------------------------------------------
+ 417                             
+ 418                             ; sched_ready:  Determine whether to select with ATN or not.  Decided by
+ 419                             ; whether or not msg_out is present.  This is probably directly related to
+ 420                             ; the target being SCSI-1 or SCSI-2, but maybe not.  msg_out phase is
+ 421                             ; apparently entered if the target receives the ATN signal.
+ 422                             ;
+ 423                             ; Though DSA points to the request, the 720 doesn't have a memory to memory
+ 424                             ; move which makes use of DSA.  So indirection is done via runtime patching.
+ 425                             ;
+ 426                             ; Pseudo code for the next 5 instructions:
+ 427                             ;      scratcha = *(dsa+4)
+ 428                             ; where "4" is "offsetof_msg_out_len"
+ 429                             
+ 430 000001E4: 98080000 C0DE0068        int     DEBUG_SCHEDULE_READY
+ 431 000001EC: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x10), pass(REG_BASE+0x34)
+ 432 000001F8: 7E340800 00000000        move    scratcha0 + OFFSETOF_MSG_OUT_LEN to scratcha0
+ 433 00000200: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 434 00000208: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 435 00000210: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry
+ 436                             
+ 437 00000218: C0000004 00000000 00000228       move    memory 4, pass(REG_BASE+0x34), sch_0+4  ; patch source addr
+ 438 00000224: C0000004 00000000 00000000 sch_0:        move    memory 4, PATCH, pass(REG_BASE+0x34)    ; move *(dsa+4) to scratcha
+ 439                             
+ 440 00000230: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x10), pass(REQ_TBL_PTR)        ; save i/o request pointer
+ 441                             
+ 442                             ; pseudo code for the next 5 instructions:
+ 443                             ;      if (scratcha0)
+ 444                             ;              select target with    atn
+ 445                             ;      else    select target without atn
+ 446                             
+ 447 0000023C: 72340000 00000000        move    scratcha0 to sfbr
+ 448 00000244: 808C0000 00000028        jump    rel (sel_no_atn), if 0          ; jump if no msg_out
+ 449                             
+ 450                             ; Both these "select" instructions implicitly set the SXFER and SCNTL3
+ 451                             ; from DSA+0.
+ 452                             
+ 453 0000024C: 98080000 C0DE0069        int     DEBUG_SELECT_ATN
+ 454 00000254: 47000000 0000027C        select  ATN from 0, rel (got_reselected)
+ 455 0000025C: 868B0000 00000038        jump    rel (selected) when msg_out
+ 456 00000264: 78350600 00000000        move    ERROR_WRONG_PHASE to scratcha1  ; jump if not expected phase
+ 457 0000026C: 80880000 00000428        jump    rel (bad_error)
+ 458                             
+ 459 00000274:                   sel_no_atn:
+ 460 00000274: 98080000 C0DE006A        int     DEBUG_SELECT_NO_ATN
+ 461 0000027C: 46000000 00000254        select  from 0, rel (got_reselected)
+ 462 00000284: 828B0000 00000010        jump    rel (selected) when cmd
+ 463 0000028C: 78350600 00000000        move    ERROR_WRONG_PHASE to scratcha1  ; jump if not expected phase
+ 464 00000294: 80880000 00000400        jump    rel (bad_error)
+ 465                             
+ 466                             ; Successfully selected scsi target.  (If we didn't, we were reselected by
+ 467                             ; some target and jumped to "got_reselected".)
+ 468                             
+ 469 0000029C:                   selected:
+ 470 0000029C: 98080000 C0DE012F        int     ASSERT_SELECT_TBL_PTR
+ 471 000002A4: 98080000 C0DE0099        int     DEBUG_SUCCESSFUL_SELECTION
+ 472 000002AC: 78071000 00000000        move    LED_GREEN to gpreg
+ 473                             
+ 474                             
+ 475                             ; ---- Begin section that could be moved to disconnect handler ----
+ 476                             ; Save request pointer for possible later reselection.
+ 477                             ; pseudo code:
+ 478                             ;
+ 479                             ;      reselect_tbl [target_id << 8 + queue_tag] = cntrlr_q [X].req_tbl.dest
+ 480                             ;
+ 481                             ; written directly for the 720 environment:
+ 482                             ;      *(reselect_tbl + ((ushort) *cntrlr_q_p << 2)) = *(cntrlr_q_p+8)
+ 483                             
+ 484                             ; evaluate right address
+ 485 000002B4: C0000004 00000000 00000000       move    memory 4, cntrlr_q_p, pass(REG_BASE+0x34)
+ 486 000002C0: 7E340800 00000000        move    scratcha0 + OFFSETOF_REQ_DEST to scratcha0
+ 487 000002C8: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 488 000002D0: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 489 000002D8: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry
+ 490                             
+ 491 000002E0: C0000004 00000000 0000031C       move    memory 4, pass(REG_BASE+0x34), sch_3+4  ; patch source address
+ 492                             
+ 493                             ; evaluate left address
+ 494 000002EC: C0000004 00000000 000002FC       move    memory 4, cntrlr_q_p, sch_2+4
+ 495 000002F8: C0000002 00000000 00000000 sch_2:        move    memory 2, PATCH, pass(REG_BASE+0x34)    ; scratcha = targ_id<<8 + q_tag
+ 496 00000304: 88880000 00000DA8        call    rel (targ_id_q_tag_to_addr)     ; scratcha = &resel_tbl[x]
+ 497 0000030C: C0000004 00000000 00000320       move    memory 4, pass(REG_BASE+0x34), sch_3+8  ; fill in destination address
+ 498                             
+ 499 00000318: C0000004 00000000 00000000 sch_3:        move    memory 4, PATCH, PATCH          ; save request pointer
+ 500                             ; ---- End section that could be moved to disconnect handler ----
+ 501                             
+ 502                             
+ 503                             ; Mark the cntrlr_q entry available by setting req_tbl.src to zero.
+ 504                             ;
+ 505                             ;      *(cntrlr_q_p+4) = 0;
+ 506                             
+ 507 00000324: C0000004 00000000 00000000       move    memory 4, cntrlr_q_p, pass(REG_BASE+0x34)
+ 508 00000330: 7E340400 00000000        move    scratcha0 + OFFSETOF_REQ_TBL to scratcha0
+ 509 00000338: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 510 00000340: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 511 00000348: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry ; A = &cntrl_q [X].req_tbl
+ 512 00000350: C0000004 00000000 0000036C       move    memory 4, pass(REG_BASE+0x34), sch_4+8  ; fix next "move"
+ 513 0000035C: 98080000 C0DE006B        int     DEBUG_CNTRLR_Q_ZAP
+ 514 00000364: C0000004 00000044 00000000 sch_4:        move    memory 4, bss0+4, PATCH         ; set first element zero
+ 515                             
+ 516                             ; Finish the pointer increment with modulus:
+ 517                             ;      struct cntrlr_q *cntrlr_q_p;
+ 518                             ;
+ 519                             ;      if (++cntrlr_q_p == &cntrlr_q [N-1])
+ 520                             ;              cntrlr_q_p = &cntrlr_q [0];
+ 521                             
+ 522 00000370: C0000004 00000000 00000000       move    memory 4, cntrlr_q_p, pass(REG_BASE+0x34)
+ 523 0000037C: 7E342C00 00000000        move    scratcha0 + SIZEOF_CNTRLR_BUF to scratcha0
+ 524 00000384: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 525 0000038C: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 526 00000394: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry
+ 527                                                                            ; scratcha += sizeof (cntrlr_q)
+ 528 0000039C: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x34), cntrlr_q_p ; update cntrlr_q_p
+ 529                             
+ 530 000003A8: C0000004 00000054 00000000       move    memory 4, bss1+8, pass(REG_BASE+0x5c)
+ 531 000003B4: 88880000 00000C20        call    rel (cmp32)                     ; scratchb == end of cntrlr_q?
+ 532                                            ; would like that to be "a<=b" to catch incrementing past end
+ 533                             
+ 534 000003BC: 80A00000 0000000C        jump    rel (sch_no_wrap), if not carry ; branch if not equal
+ 535                             
+ 536 000003C4: C0000004 00000050 00000000       move    memory 4, bss1+4, cntrlr_q_p ; wrap to beginning
+ 537 000003D0:                   sch_no_wrap:
+ 538                             
+ 539 000003D0: 98080000 C0DE006C         int     DEBUG_CNTRLR_Q_INC_DONE
+ 540                             
+ 541                             ; start of test module -------------------------------------------------------
+ 542                             ; test module checks that the request table in CLRAM is not corrupted
+ 543 000003D8: C0000004 00000000 00000000         move    memory 4, pass(REQ_TBL_PTR), pass(REG_BASE+0x34)
+ 544 000003E4: 7E340C00 00000000         move    scratcha0 + OFFSETOF_PTR_MSG_OUT to scratcha0
+ 545 000003EC: 7F350000 00000000         move    scratcha1 + 0 to scratcha1 with carry
+ 546 000003F4: 7F360000 00000000         move    scratcha2 + 0 to scratcha2 with carry
+ 547 000003FC: 7F370000 00000000         move    scratcha3 + 0 to scratcha3 with carry ; scratchA=&msg_out_ptr
+ 548 00000404: C0000004 00000000 00000414         move    memory 4, pass(REG_BASE+0x34), test_0+4
+ 549 00000410: C0000004 00000000 00000000 test_0: move    memory 4, PATCH, pass(REG_BASE+0x5c)    ; scratchB =
+ 550                                                                                     ; *(msg_out_ptr) =
+ 551                                                                                     ;       &msg_out_bytes
+ 552 0000041C: 7E340400 00000000         move    scratcha0 + 0x04 to scratcha0
+ 553 00000424: 7F350000 00000000         move    scratcha1 + 0 to scratcha1 with carry
+ 554 0000042C: 7F360000 00000000         move    scratcha2 + 0 to scratcha2 with carry
+ 555 00000434: 7F370000 00000000         move    scratcha3 + 0 to scratcha3 with carry ; scratchA=&msg_out_bytes
+ 556 0000043C: 88880000 00000B98         call    rel (cmp32)             ; *(msg_out_ptr) == &msg_out_bytes
+ 557 00000444: 80A80000 00000024         jump    rel (test_0_pass), if carry  ; branch if equal => test passes
+ 558 0000044C: C0000004 00000030 80000038         move    memory 4, data_analyzer_trig, 0x80000038 ; trig logic analyzer
+ 559 00000458: 78070800 00000000         move    LED_RED to gpreg
+ 560 00000460: 98080000 DEAD0000         int     DATA_CORRUPTED
+ 561 00000468: 80880000 FFFFFFF8 itself_0: jump  rel (itself_0)  ;preventive step, should'nt get here
+ 562 00000470:                   test_0_pass:
+ 563                             ; end of test module -------------------------------------------------------
+ 564                             
+ 565                             
+ 566                             ; Wait for message out phase.  If valid phase is not message out, then it's
+ 567                             ; almost certainly not a scsi-2 target, so just skip onto whatever phase it
+ 568                             ; wants.  Those are all handled beginning at "main".
+ 569                             
+ 570 00000470: 98080000 C0DE006D        int     DEBUG_SCHEDULAR_EXIT
+ 571 00000478: 86830000 000001DC        jump    rel (main), when not msg_out
+ 572                             
+ 573                             
+ 574                             ; Here if msg_out
+ 575 00000480:                   msg_out_phase:
+ 576 00000480: 98080000 C0DE006E        int     DEBUG_MSG_OUT_ENTRY
+ 577 00000488: C0000004 00000000 00000000       move    memory 4, pass(REQ_TBL_PTR), pass(REG_BASE+0x10)
+ 578 00000494: 1E000000 00000008        move    from dsa_msg_out_len, when msg_out
+ 579 0000049C:                   msg_sent:      ; this label is used to detect phase mismatch during msg out
+ 580 0000049C: 60000008 00000000        clear   atn     ; ??? ncr:  why don't their examples show this?
+ 581 000004A4: 98080000 C0DE006F        int     DEBUG_MSG_OUT_EXIT
+ 582 000004AC: 80880000 000001A8        jump    rel (main)
+ 583                             
+ 584                             
+ 585                             
+ 586                             ; If our controller queue is empty, notify the host.  Desirable for the
+ 587                             ; (rather common) case where:
+ 588                             ; - the host filled up the controller queue
+ 589                             ; - the 720 starts servicing the requests
+ 590                             ; - host is busy with other things and doesn't notice new slots available
+ 591                             ; - 720 depletes the queue without attracting notice from host (e.g., io_done)
+ 592                             
+ 593 000004B4:                   sched_empty:
+ 594 000004B4: C0000001 00000048 00000000       move    memory 1, bss0+8, pass(NO_WORK_TO_DO) ; indicate our hunger
+ 595                                                                                  ; to the host
+ 596                             
+ 597 000004C0: 98180000 00000000        intfly  0                               ; rattle the host & don't halt;
+ 598                                                                            ; value required, but useless
+ 599 000004C8: 78071800 00000000        move    LED_OFF to gpreg
+ 600 000004D0: 50000000 000000C4        wait    reselect schedular              ; wait for target reselect
+ 601                                                                            ; if sigp, goto schedular
+ 602                             
+ 603                             ; Here if reselected by target.
+ 604                             ;
+ 605                             ; Reestablish request context by getting the queue tag from the target.
+ 606                             ; Use the target id bit-concatenated with the queue tag i.d. to form a 12-bit
+ 607                             ; index into a table of pointers.  Each pointer is the address of the
+ 608                             ; beginning of the corresponding request table for this target and queue tag.
+ 609                             ;
+ 610                             ; If a target doesn't support queue tags, the host will assign all i/o to
+ 611                             ; queue tag zero so it's important to clear the memory receiving the queue
+ 612                             ; tag so that when the target doesn't provide a queue tag, we still use
+ 613                             ; zero.
+ 614                             
+ 615 000004D8:                   got_reselected:
+ 616 000004D8: 98080000 C0DE0070        int     DEBUG_RESELECTED_ENTRY
+ 617 000004E0: 78071000 00000000        move    LED_GREEN to gpreg
+ 618 000004E8: C0000004 00000044 00000000       move    memory 4, bss0+4, pass(REG_BASE+0x34) ; prepare to hold id:t_l_q
+ 619 000004F4: 720A0000 00000000        move    ssid to sfbr
+ 620 000004FC: 6C350F00 00000000        move    sfbr & 15 to scratcha1          ; target number in bits 8-12
+ 621                             
+ 622                             ; Get 2 messages from the target:  The first is 1 byte and the second 2 bytes.
+ 623                             ; The first message is IDENTIFY.  It contains the message code (80) plus the
+ 624                             ; lun in bits 0-2.  We don't care about luns so we just toss the byte.
+ 625                             ;
+ 626                             ; The second message is the SIMPLE QUEUE TAG message:  the first byte is the
+ 627                             ; message code (22) and the second byte is the queue_tag.
+ 628                             
+ 629                             ; This sequence guards against phase mismatch.
+ 630                             
+ 631 00000504: 0F000001 00000000        move    1, pass(REG_BASE+0x5c),  when msg_in    ; don't care about IDENTIFY
+ 632                                                                            ; which contains LUN
+ 633 0000050C: 60000040 00000000        clear   ack
+ 634 00000514: 87830000 00000020        jump    rel (resel_x), when not msg_in
+ 635 0000051C: 0F000001 00000000        move    1, pass(REG_BASE+0x5c+0), when msg_in   ; discard 0x22
+ 636 00000524: 60000040 00000000        clear   ack
+ 637 0000052C: 87830000 00000008        jump    rel (resel_x), when not msg_in
+ 638 00000534: 0F000001 00000000        move    1, pass(REG_BASE+0x34+0), when msg_in   ; scratchA0 = q_tag
+ 639 0000053C:                   resel_x:
+ 640 0000053C: 60000040 00000000        clear   ack
+ 641 00000544: 88880000 00000B68        call    rel (targ_id_q_tag_to_addr)
+ 642 0000054C: C0000004 00000000 0000055C       move    memory 4, pass(REG_BASE+0x34), res_0+4  ; A = &resel_tbl[targ<<8|q_tag]
+ 643 00000558: C0000004 00000000 00000000 res_0:        move    memory 4, PATCH, pass(REG_BASE+0x34)    ; A = resel_tbl[targ<<8|q_tag]
+ 644                             
+ 645 00000564: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x34), pass(REG_BASE+0x10)              ; dsa = resel_tbl[targ<<8|q_tag]
+ 646                             
+ 647 00000570: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x34), pass(REQ_TBL_PTR)
+ 648                             
+ 649 0000057C: 98080000 C0DE012D        int     ASSERT_RESELECT_TBL_PTR
+ 650                             
+ 651 00000584:                   resel_1:
+ 652                             
+ 653                             ; Reload scsi control registers for this target.
+ 654                             ;
+ 655                             ; sxfer and scntl3 are normally automagically loaded for "select" but not
+ 656                             ; for "reselect"--go figure.  Runtime patching is used because there's no
+ 657                             ; "move memory from" variation to use indirection through the DSA reg.
+ 658                             
+ 659 00000584: C0000004 00000000 00000594       move    memory 4, pass(REG_BASE+0x34), res_2+4
+ 660 00000590: C0000004 00000000 00000000 res_2:        move    memory 4, PATCH, pass(REG_BASE+0x5c)
+ 661                             
+ 662 0000059C: 725D0000 00000000        move    scratchb1 to sfbr
+ 663 000005A4: 6A050000 00000000        move    sfbr to sxfer
+ 664                             
+ 665 000005AC: 725F0000 00000000        move    scratchb3 to sfbr
+ 666 000005B4: 6A030000 00000000        move    sfbr to scntl3
+ 667                             
+ 668 000005BC: 98080000 C0DE0072        int     DEBUG_RESELECTED_EXIT
+ 669                             
+ 670                             ; fall into main
+ 671                             
+ 672                             
+ 673                             ; start of test module -------------------------------------------------------
+ 674                             ; test module checks that the request table in CLRAM is not corrupted
+ 675 000005C4: C0000004 00000000 00000000         move    memory 4, pass(REQ_TBL_PTR), pass(REG_BASE+0x34)
+ 676 000005D0: 7E340C00 00000000         move    scratcha0 + OFFSETOF_PTR_MSG_OUT to scratcha0
+ 677 000005D8: 7F350000 00000000         move    scratcha1 + 0 to scratcha1 with carry
+ 678 000005E0: 7F360000 00000000         move    scratcha2 + 0 to scratcha2 with carry
+ 679 000005E8: 7F370000 00000000         move    scratcha3 + 0 to scratcha3 with carry ; scratchA=&msg_out_ptr
+ 680 000005F0: C0000004 00000000 00000600         move    memory 4, pass(REG_BASE+0x34), test_1+4
+ 681 000005FC: C0000004 00000000 00000000 test_1: move    memory 4, PATCH, pass(REG_BASE+0x5c)  ; scratchB =
+ 682                                                                                   ; *(msg_out_ptr) =
+ 683                                                                                   ;       &msg_out_bytes
+ 684 00000608: 7E340400 00000000         move    scratcha0 + 0x04 to scratcha0
+ 685 00000610: 7F350000 00000000         move    scratcha1 + 0 to scratcha1 with carry
+ 686 00000618: 7F360000 00000000         move    scratcha2 + 0 to scratcha2 with carry
+ 687 00000620: 7F370000 00000000         move    scratcha3 + 0 to scratcha3 with carry ; scratchA=&msg_out_bytes
+ 688 00000628: 88880000 000009AC         call    rel (cmp32)             ; *(msg_out_ptr) == &msg_out_bytes
+ 689 00000630: 80A80000 00000024         jump    rel (test_1_pass), if carry  ; branch if equal => test passes
+ 690 00000638: C0000004 00000030 80000038         move    memory 4, data_analyzer_trig, 0x80000038 ; trig logic analyzer
+ 691 00000644: 78070800 00000000         move    LED_RED to gpreg
+ 692 0000064C: 98080000 DEAD0000         int     DATA_CORRUPTED
+ 693 00000654: 80880000 FFFFFFF8 itself_1: jump  rel (itself_1)  ;preventive step, should'nt get here
+ 694 0000065C:                   test_1_pass:
+ 695                             ; end of test module -------------------------------------------------------
+ 696                             
+ 697                             
+ 698                             
+ 699                             
+ 700                             
+ 701 0000065C:                   main:
+ 702 0000065C: 98080000 C0DE0073        int     DEBUG_MAIN_ENTRY
+ 703 00000664: 828B0000 00000054        jump    rel (cmd_phase),        when cmd
+ 704 0000066C: 818A0000 000000C8        jump    rel (data_in_phase),    if data_in
+ 705 00000674: 808A0000 00000188        jump    rel (data_out_phase),   if data_out
+ 706 0000067C: 838A0000 0000024C        jump    rel (status_phase),     if status
+ 707 00000684: 878A0000 00000264        jump    rel (msg_in_phase),     if msg_in
+ 708 0000068C: 868A0000 FFFFFDEC        jump    rel (msg_out_phase),    if msg_out
+ 709                             
+ 710                             ; Illegal phase.
+ 711                             
+ 712 00000694:                   err_unknown_phase:
+ 713 00000694: 78350300 00000000        move    ERROR_UNKNOWN_PHASE to scratcha1
+ 714 0000069C:                   bad_error:
+ 715 0000069C: C0000001 00000000 00000000       move    memory 1, pass(REG_BASE+0x34+1), pass(HALT_REASON)
+ 716                             
+ 717                             ; This INT ceases script execution; something requires host attention.
+ 718                             ; Let the host recognize it and reset us.
+ 719                             
+ 720 000006A8: 78070800 00000000        move    LED_RED to gpreg
+ 721 000006B0: 98080000 00000000        int     0
+ 722 000006B8: 80880000 FFFFFFDC        jump    rel (bad_error)         ; preventative in case DSP rewritten
+ 723                                                                    ; We shouldn't ever need this.
+ 724                             
+ 725                             
+ 726 000006C0:                   cmd_phase:
+ 727 000006C0: 98080000 C0DE0074        int     DEBUG_CMD_ENTRY
+ 728 000006C8: C0000004 00000000 00000000       move    memory 4, pass(REQ_TBL_PTR), pass(REG_BASE+0x10)
+ 729 000006D4: 1A000000 00000018        move    from dsa_cmd_len,       when cmd
+ 730 000006DC:                   cmd_sent:      ; this label is used to detect phase mismatch during cmd phase
+ 731                             
+ 732                             ; Some devices (e.g., Maxtor-1240S) issues a save data pointer message right
+ 733                             ; after a queue tag command.
+ 734                             ; To operate correctly, set DSA to the current scatter-gather entry before
+ 735                             ; handling either msg_in or data_X phase.  Also, zero NEXT_ADDR so
+ 736                             ; save_data_ptr doesn't get confused whether a phase mismatch occurred.
+ 737                             
+ 738 000006DC: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x10), pass(REG_BASE+0x34)
+ 739 000006E8: 7E342C00 00000000        move    scratcha0 + OFFSETOF_DSA_SG_PTR to scratcha0
+ 740 000006F0: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 741 000006F8: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 742 00000700: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry   ; scratchA = &sg_ptr
+ 743                             
+ 744 00000708: C0000004 00000000 00000718       move    memory 4, pass(REG_BASE+0x34), cmd_1+4
+ 745 00000714: C0000004 00000000 00000000 cmd_1:        move    memory 4, PATCH, pass(REG_BASE+0x10)            ; dsa = sg_ptr
+ 746                             
+ 747 00000720: C0000004 00000044 00000000       move    memory 4, bss0+4, pass(NEXT_ADDR)       ; show no phase mismatch
+ 748 0000072C: 98080000 C0DE0075        int     DEBUG_CMD_EXIT
+ 749 00000734: 80880000 FFFFFF20        jump    rel (main)
+ 750                             
+ 751                             
+ 752                             
+ 753                             
+ 754 0000073C:                   data_in_phase:
+ 755 0000073C: 98080000 C0DE0076        int     DEBUG_DATA_IN_ENTRY
+ 756                             
+ 757                             ; Compute address of first scatter-gather entry.  This is pointed to by the
+ 758                             ; dsa_sg_ptr entry in the i/o request.  It might have been updated
+ 759                             ; by a save data pointers message, if previously processed.
+ 760                             
+ 761 00000744: C0000004 00000000 00000000       move    memory 4, pass(REQ_TBL_PTR), pass(REG_BASE+0x10)
+ 762 00000750: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x10), pass(REG_BASE+0x34)
+ 763 0000075C: 7E342C00 00000000        move    scratcha0 + OFFSETOF_DSA_SG_PTR to scratcha0
+ 764 00000764: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 765 0000076C: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 766 00000774: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry   ; scratchA = &sg_ptr
+ 767                             
+ 768 0000077C: C0000004 00000000 0000078C       move    memory 4, pass(REG_BASE+0x34), din_0+4
+ 769 00000788: C0000004 00000000 00000000 din_0:        move    memory 4, PATCH, pass(REG_BASE+0x10)            ; dsa = sg_ptr
+ 770                             
+ 771 00000794: C0000004 00000044 00000010       move    memory 4, bss0+4, ignore_wide_flag ; init flag
+ 772 000007A0: C0000004 00000044 00000000       move    memory 4, bss0+4, pass(NEXT_ADDR)  ; indicate no phase mismatch
+ 773                             
+ 774 000007AC: 7C187F00 00000000        move    ctest0 & 127 to ctest0          ; disable CDIS cache burst dsbl;
+ 775                                                                            ; i.e. enable cache bursting
+ 776 000007B4:                   data_in_loop:
+ 777                             ; Advance current scat-gath ptr to next entry.  This scheme keeps DSA
+ 778                             ; always pointing to the current entry if a phase mismatch occurs.
+ 779                             ;
+ 780                             ; Also a copy of the current descriptor is used in case a phase mismatch
+ 781                             ; causes us to update the entry to continue from the right place, but not
+ 782                             ; update the original scat-gath entry unless a save data pointers message
+ 783                             ; arrives.
+ 784                             
+ 785                             ; If a phase mismatch occurs, the 720 is halted and interrupts the host--all
+ 786                             ; beyond our control (and against our desires).  This happens when a target
+ 787                             ; disconnects mid transfer (changes to msg_in phase to send a disconnnect
+ 788                             ; message, maybe because it wants to seek a different track, or, for a raid
+ 789                             ; controller, talk to a different drive).
+ 790                             ;
+ 791                             ; To gracefully recover, the host checks for a phase mismatch interrupt,
+ 792                             ; executes the phase_mismatch C code (below) and sets us (the 720) running.
+ 793                             ; If we had our druthers, the "chmov" instruction would accept an alternate
+ 794                             ; label to jump to for a phase change, analogous to a "select" or "reselect"
+ 795                             ; instruction.
+ 796                             
+ 797 000007B4: 11000000 00000000        chmov   from dsa_dummy, when data_in    ; "dsa_dummy" == 0
+ 798                             ; i.e. chmov   from 0,         when data_in
+ 799                             
+ 800                             
+ 801 000007BC: 7E100800 00000000        move    dsa0+SIZEOF_SG_ENTRY to dsa0    ; dsa += 8;
+ 802 000007C4: 7F110000 00000000        move    dsa1+0 to dsa1 with carry
+ 803 000007CC: 7F120000 00000000        move    dsa2+0 to dsa2 with carry
+ 804 000007D4: 7F130000 00000000        move    dsa3+0 to dsa3 with carry
+ 805                             
+ 806                             ; If an i/o request specifies an odd number of bytes and it is a 16-bit scsi
+ 807                             ; device, getting the last byte to the target is a problem.  The 720 will not
+ 808                             ; send the last byte unless it is paired up with another to fill the 16-bit
+ 809                             ; pathway.  If a solution is implemented, it will be done by the host when it
+ 810                             ; creates the last scatter gather entry in the list.  The command should
+ 811                             ; contain the actual byte count (an odd value, otherwise it's no problem) but
+ 812                             ; the last scatter gather entry should have one added to it so an even number
+ 813                             ; of bytes are "sent" to the target.  The target will dutifully ignore the
+ 814                             ; extra eight bits since it knows they aren't part of the command.  Failure
+ 815                             ; to pad with an extra byte would make the 720 hang waiting for the target to
+ 816                             ; phase change while the target is waiting for the last byte.
+ 817                             ;
+ 818                             ; The bottom line is the 720 code does nothing special for this case.
+ 819                             ; There's nothing for the 720, except this long comment.
+ 820                             
+ 821 000007DC: 818B0000 FFFFFFD0        jump    rel (data_in_loop),     when data_in
+ 822                             
+ 823 000007E4: 7A188000 00000000        move    ctest0 | 128 to ctest0          ; disable cache bursting
+ 824 000007EC: 98080000 C0DE0077        int     DEBUG_DATA_IN_EXIT
+ 825 000007F4: 838A0000 000000D4        jump    rel (status_phase),     if status
+ 826 000007FC: 80880000 FFFFFE58        jump    rel (main)
+ 827                             
+ 828                             
+ 829                             
+ 830                             
+ 831                             
+ 832 00000804:                   data_out_phase:
+ 833 00000804: 98080000 C0DE0078        int     DEBUG_DATA_OUT_ENTRY
+ 834                             
+ 835                             ; This code is identical to that of data_in_phase, except, of course, it
+ 836                             ; is for data_out phase.
+ 837                             
+ 838 0000080C: C0000004 00000000 00000000       move    memory 4, pass(REQ_TBL_PTR), pass(REG_BASE+0x10)
+ 839 00000818: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x10), pass(REG_BASE+0x34)
+ 840 00000824: 7E342C00 00000000        move    scratcha0 + OFFSETOF_DSA_SG_PTR to scratcha0
+ 841 0000082C: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+ 842 00000834: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+ 843 0000083C: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry   ; scratchA = &sg_ptr
+ 844                             
+ 845 00000844: C0000004 00000000 00000854       move    memory 4, pass(REG_BASE+0x34), dout_0+4
+ 846 00000850: C0000004 00000000 00000000 dout_0:       move    memory 4, PATCH, pass(REG_BASE+0x10)
+ 847                             
+ 848 0000085C: C0000004 00000044 00000010       move    memory 4, bss0+4, ignore_wide_flag
+ 849 00000868: C0000004 00000044 00000000       move    memory 4, bss0+4, pass(NEXT_ADDR)
+ 850 00000874: 7C187F00 00000000        move    ctest0 & 127 to ctest0          ; enable cache bursting
+ 851                             
+ 852 0000087C:                   data_out_loop:
+ 853 0000087C: 10000000 00000000        chmov   from dsa_dummy, when data_out
+ 854                             
+ 855 00000884: 7E100800 00000000        move    dsa0+SIZEOF_SG_ENTRY to dsa0
+ 856 0000088C: 7F110000 00000000        move    dsa1+0 to dsa1 with carry
+ 857 00000894: 7F120000 00000000        move    dsa2+0 to dsa2 with carry
+ 858 0000089C: 7F130000 00000000        move    dsa3+0 to dsa3 with carry
+ 859                             
+ 860 000008A4: 808B0000 FFFFFFD0        jump    rel (data_out_loop),    when data_out
+ 861                             
+ 862                             ; XXX The DMA read FIFO flush can be removed when handled by the DMA hardware.
+ 863 000008AC: C0000004 00000000 00000038       move    memory 4, pass(SDB_DMA_FLUSH_RD), garbage ; flush DMA FIFO
+ 864                             
+ 865 000008B8: 7A188000 00000000        move    ctest0 | 128 to ctest0          ; disable cache bursting
+ 866 000008C0: 98080000 C0DE0079        int     DEBUG_DATA_OUT_EXIT
+ 867 000008C8: 83820000 FFFFFD8C        jump    rel (main),             if not status
+ 868                             
+ 869                             ; Fall through to status phase...
+ 870                             
+ 871                             
+ 872                             
+ 873 000008D0:                   status_phase:
+ 874 000008D0: 98080000 C0DE007A        int     DEBUG_STATUS_ENTRY
+ 875 000008D8: 0B000001 00000000        move    1, pass(STATUS_BUF),    when status
+ 876 000008E0: 98080000 C0DE007B        int     DEBUG_STATUS_EXIT
+ 877 000008E8: 87830000 FFFFFD6C        jump    rel (main),             when not msg_in
+ 878                             
+ 879                             
+ 880                             
+ 881 000008F0:                   msg_in_phase:
+ 882 000008F0: 98080000 C0DE007C        int     DEBUG_MSG_IN_ENTRY
+ 883                             
+ 884                             ; Read first byte of message in to determine what type of message it is.
+ 885                             
+ 886 000008F8: 0F000001 00000000        move    1, pass(MSG_IN_BUF),    when msg_in
+ 887 00000900: 80840004 00000030        jump    rel (mi_1),     if not MSG_DISCONNECT
+ 888                             
+ 889                             ; DISCONNECT message from target
+ 890                             
+ 891 00000908: 98080000 C0DE007D        int     DEBUG_MSG_DISCONNECT
+ 892 00000910: 7C027F00 00000000        move    scntl2 & 127 to scntl2          ; allow disconnect without intr
+ 893 00000918: 60000040 00000000        clear   ack
+ 894 00000920: 48000000 00000000        wait    disconnect
+ 895                             
+ 896                             ; Scntl2 bit 7 is reasserted with every select/reselect operation.  So no
+ 897                             ; need to turn it back on.
+ 898                             
+ 899                             ; Place to add code to mark expectation of reconnection (probably not needed)
+ 900                             
+ 901 00000928: 98080000 C0DE0095        int     DEBUG_DISCONNECT_EXIT
+ 902 00000930: 80880000 FFFFF78C        jump    rel (schedular)
+ 903                             
+ 904                             
+ 905                             
+ 906                             ; Save data pointers is complicated, so it is elsewhere.
+ 907                             
+ 908 00000938: 808C0002 00000214 mi_1:  jump    rel (do_save_data_ptrs), if MSG_SAVE_DATA_PTRS
+ 909                             
+ 910 00000940: 80840000 00000054        jump    rel (mi_2), if not MSG_COMMAND_COMPLETE
+ 911                             
+ 912                             ; COMMAND COMPLETE  message from target
+ 913                             
+ 914 00000948: 98080000 C0DE007E        int     DEBUG_MSG_CMD_COMPLETE
+ 915 00000950: 7C027F00 00000000        move    scntl2 & 127 to scntl2  ; prevent 720 disconnect interrupt
+ 916 00000958: 60000040 00000000        clear   ack
+ 917 00000960: 48000000 00000000        wait    disconnect
+ 918                             
+ 919                             ; Check status byte.  Refer to Table 6-6 in scsi-2 spec.
+ 920                             
+ 921 00000968: C0000001 00000000 00000000       move    memory 1, pass(STATUS_BUF), pass(REG_BASE+0x34+2)
+ 922 00000974: 74363E00 00000000        move    scratcha2 & 0x3e to sfbr        ; bits 1-5 only matter
+ 923 0000097C: 808C0000 00000358        jump    rel (io_complete), if 0
+ 924                             
+ 925                             ; Error status is not "good".  (Queue_full, busy or check_condition are the
+ 926                             ; ones the host will react to; others are handled more drastically.)
+ 927                             
+ 928 00000984: 78350100 00000000        move    ERROR_STAT_NOT_GOOD to scratcha1
+ 929 0000098C: 98080000 C0DE0096        int     DEBUG_STAT_NOT_GOOD_EXIT
+ 930 00000994: 80880000 FFFFFD00        jump    rel (bad_error)
+ 931                             
+ 932                             
+ 933 0000099C: 80840023 00000044 mi_2:  jump    rel (mi_3), if not MSG_IGNORE_WIDE_RESIDUE
+ 934                             
+ 935 000009A4: 98080000 C0DE007F        int     DEBUG_MSG_IGNORE_WIDE
+ 936                             
+ 937                             ; IGNORE WIDE RESIDUE message from target
+ 938                             ; Read the second byte, the second byte will "always" have 1 in it
+ 939                             ; meaning "ignore bits 8-15".
+ 940                             
+ 941                             ; Have to save the presence of this message.  Signal save data ptrs for
+ 942                             ; receive handler to discard the last byte.  (I.e. 1000 bytes arrived,
+ 943                             ; but byte #1000 is not part of the data.)
+ 944                             
+ 945 000009AC: 60000040 00000000        clear   ack             ; got "ignore wide" byte
+ 946                             
+ 947 000009B4: 0F000001 00000000        move    1, pass(MSG_IN_BUF+1), when msg_in
+ 948 000009BC: 60000040 00000000        clear   ack
+ 949                             
+ 950                             ; Flag the save data pointers routine to not count the last byte received.
+ 951                             ; This is done by making ignore_wide_flag nonzero.
+ 952                             
+ 953 000009C4: C0000001 00000048 00000010       move    memory 1, bss0+8, ignore_wide_flag
+ 954 000009D0: 98080000 C0DE0097        int     DEBUG_IGNORE_WIDE_EXIT
+ 955 000009D8: 878B0000 FFFFFF10        jump    rel (msg_in_phase), when msg_in
+ 956 000009E0: 80880000 FFFFFC74        jump    rel (main)
+ 957                             
+ 958 000009E8: 785F0100 00000000 mi_3:  move    1 to scratchb3                  ; one byte of "other" or
+ 959                                                                            ; extended msg_in
+ 960 000009F0: 80840007 00000018         jump    rel (mi_4), if not MSG_REJECT
+ 961 000009F8: 98080000 C0DE009D         int     DEBUG_MSG_REJECT
+ 962 00000A00: 60000040 00000000         clear   ack                             ; got "msg_reject" byte
+ 963 00000A08: 80880000 00000120         jump    rel (mi_5)
+ 964                             
+ 965                             
+ 966 00000A10: 80840001 00000118 mi_4:  jump    rel (mi_5), if not MSG_EXTENDED
+ 967                             
+ 968 00000A18: 60000040 00000000        clear   ack                             ; got "msg_extended" byte
+ 969                             
+ 970                             ; EXTENDED message from target
+ 971                             
+ 972 00000A20: 98080000 C0DE0080        int     DEBUG_MSG_EXTENDED
+ 973                             
+ 974                             ; As simple as this should be, it's not simple.  The 720 does *not* provide
+ 975                             ; a way of "move as many bytes as there are from the target".  So this is a
+ 976                             ; bit more circuitous.  It also provides scratchb3 with the message(s) length.
+ 977 00000A28: 785F0200 00000000        move    2 to scratchb3
+ 978 00000A30: 0F000001 00000000        move    1, pass(MSG_IN_BUF+1), when msg_in
+ 979 00000A38: 60000040 00000000        clear   ack
+ 980 00000A40: 87830000 000000E8        jump    rel (msg_in_done), when not msg_in
+ 981                             
+ 982 00000A48: 785F0300 00000000        move    3 to scratchb3
+ 983 00000A50: 0F000001 00000000        move    1, pass(MSG_IN_BUF+2), when msg_in
+ 984 00000A58: 60000040 00000000        clear   ack
+ 985 00000A60: 87830000 000000C8        jump    rel (msg_in_done), when not msg_in
+ 986                             
+ 987 00000A68: 785F0400 00000000        move    4 to scratchb3
+ 988 00000A70: 0F000001 00000000        move    1, pass(MSG_IN_BUF+3), when msg_in
+ 989 00000A78: 60000040 00000000        clear   ack
+ 990 00000A80: 87830000 000000A8        jump    rel (msg_in_done), when not msg_in
+ 991                             
+ 992 00000A88: 785F0500 00000000        move    5 to scratchb3
+ 993 00000A90: 0F000001 00000000        move    1, pass(MSG_IN_BUF+4), when msg_in
+ 994 00000A98: 60000040 00000000        clear   ack
+ 995 00000AA0: 87830000 00000088        jump    rel (msg_in_done), when not msg_in
+ 996                             
+ 997 00000AA8: 785F0600 00000000        move    6 to scratchb3
+ 998 00000AB0: 0F000001 00000000        move    1, pass(MSG_IN_BUF+5), when msg_in
+ 999 00000AB8: 60000040 00000000        clear   ack
+1000 00000AC0: 87830000 00000068        jump    rel (msg_in_done), when not msg_in
+1001                             
+1002 00000AC8: 785F0700 00000000        move    7 to scratchb3
+1003 00000AD0: 0F000001 00000000        move    1, pass(MSG_IN_BUF+6), when msg_in
+1004 00000AD8: 60000040 00000000        clear   ack
+1005 00000AE0: 87830000 00000048        jump    rel (msg_in_done), when not msg_in
+1006                             
+1007 00000AE8: 785F0800 00000000        move    8 to scratchb3
+1008 00000AF0: 0F000001 00000000        move    1, pass(MSG_IN_BUF+7), when msg_in
+1009 00000AF8: 60000040 00000000        clear   ack
+1010 00000B00: 87830000 00000028        jump    rel (msg_in_done), when not msg_in
+1011                             
+1012 00000B08: 98080000 C0DE0081        int     DEBUG_MSG_EXTENDED_BIT_BUCKET
+1013 00000B10:                   mi_loop:
+1014 00000B10: 7E5F0100 00000000        move    scratchb3 + 1 to scratchb3
+1015 00000B18: 0F000001 00000000        move    1, pass(REG_BASE+0x5c), when msg_in
+1016 00000B20: 60000040 00000000        clear   ack
+1017 00000B28: 878B0000 FFFFFFE0        jump    rel (mi_loop),  when msg_in
+1018                             
+1019 00000B30:                   msg_in_done:
+1020                             
+1021                             ; Here for an unexpected or extended message from target.
+1022                             ; Give it to the host.
+1023                             
+1024 00000B30:                   mi_5:
+1025 00000B30: C0000001 00000000 00000000       move    memory 1, pass(REG_BASE+0x5c+3), pass(MSG_IN_CNT) ; save count for host
+1026                             
+1027                             ; Give the extended message or other messages to the host.
+1028                             
+1029 00000B3C: 78350500 00000000        move    ERROR_OTHER_MSG to scratcha1
+1030 00000B44: 98080000 C0DE0098        int     DEBUG_OTHER_MSG_EXIT
+1031 00000B4C: 80880000 FFFFFB48        jump    rel (bad_error)
+1032                             
+1033                             
+1034                             
+1035 00000B54:                   do_save_data_ptrs:
+1036 00000B54: 98080000 C0DE0082        int     DEBUG_MSG_SAVE_DATA_PTRS
+1037 00000B5C: 60000040 00000000        clear   ack
+1038                             
+1039                             ; Steps to perform:
+1040                             ; (1) If no phase mismatch occurred, save DSA in the request desc_ptr.
+1041                             ; (2) If a phase mismatch occurred, save DSA in the request desc_ptr
+1042                             ;     and update the current entry to reflect the i/o performed so far.
+1043                             ; In either case, DSA points to the next scat-gath entry to do i/o.
+1044                             ;
+1045                             ; The presense of a phase mismatch is determined by whether "next_addr"
+1046                             ; is nonzero.
+1047                             
+1048 00000B64: C0000004 00000000 00000000       move    memory 4, pass(REQ_TBL_PTR), pass(REG_BASE+0x34)        ; scratchA = cur_i_o_request
+1049 00000B70: 7E342C00 00000000        move    scratcha0 + OFFSETOF_DSA_SG_PTR to scratcha0
+1050 00000B78: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+1051 00000B80: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+1052 00000B88: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry   ; scratchA = &sg_ptr
+1053                             
+1054 00000B90: C0000004 00000000 00000BA4       move    memory 4, pass(REG_BASE+0x34), dsp_1+8  ; patch dest addr of next instr
+1055 00000B9C: C0000004 00000000 00000000 dsp_1:        move    memory 4, pass(REG_BASE+0x10), PATCH            ; update sg_ptr
+1056                             
+1057 00000BA8: C0000004 00000000 00000000       move    memory 4, pass(NEXT_ADDR), pass(REG_BASE+0x34)  ; check for phase mismatch
+1058 00000BB4: 88880000 000002C0        call    rel (iszero32)
+1059 00000BBC: 80A80000 FFFFFA98        jump    rel (main), if carry            ; jump if no phase mismatch
+1060                                                                            ; save_data_ptr message complete
+1061                             
+1062                             
+1063                             ; Here for phase mismatch leading to reception of save_data_ptrs message.
+1064                             ; Update current scat-gath entry.  The entry is updated with
+1065                             ;      xferred = (next_addr - orig_addr) - ignore_wide_flag;
+1066                             ;      sg.len -= xferred;
+1067                             ;      sg.ptr += xferred;
+1068                             
+1069                             
+1070                             ; Get current ptr (at offset 4 from DSA)
+1071 00000BC4: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x10), pass(REG_BASE+0x34)
+1072 00000BD0: 7E340400 00000000        move    scratcha0 + OFFSETOF_SG_ENT_PTR to scratcha0
+1073 00000BD8: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+1074 00000BE0: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+1075 00000BE8: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry   ; scratchA = 4 + dsa;
+1076                             
+1077 00000BF0: C0000004 00000000 00000CC0       move    memory 4, pass(REG_BASE+0x34), dsp_6+8  ; fix cur_desc.ptr ref
+1078 00000BFC: C0000004 00000000 00000C9C       move    memory 4, pass(REG_BASE+0x34), dsp_5+4
+1079 00000C08: C0000004 00000000 00000C18       move    memory 4, pass(REG_BASE+0x34), dsp_2+4
+1080 00000C14: C0000004 00000000 00000000 dsp_2:        move    memory 4, PATCH, pass(REG_BASE+0x5c)    ; scratchB = *(dsa+4)
+1081                                                                            ;          = orig_ptr
+1082                             
+1083 00000C20: C0000004 00000000 00000000       move    memory 4, pass(NEXT_ADDR), pass(REG_BASE+0x34)  ; scratchA = next_addr
+1084 00000C2C: 88880000 000002C0        call    rel (sub32)                     ; scratchA = next_addr - orig_p
+1085                                                                            ;          = "n"
+1086                             
+1087 00000C34: C0000004 00000010 00000000       move    memory 4, ignore_wide_flag, pass(REG_BASE+0x5c)
+1088 00000C40: 88880000 000002AC        call    rel (sub32)                     ; scratchA = n - ignore_wide
+1089                                                                            ;          = xferred
+1090 00000C48: C0000004 00000000 00000018       move    memory 4, pass(REG_BASE+0x34), copy_buf ; save copy of xferred
+1091                             
+1092 00000C54: C0000004 00000000 00000000       move    memory 4, pass(REG_BASE+0x34), pass(REG_BASE+0x5c)      ; scratchB = xferred
+1093                             
+1094                             ; Have xferred; update scatter-gather length
+1095                             
+1096 00000C60: C0000004 00000000 00000C7C       move    memory 4, pass(REG_BASE+0x10), dsp_3+4  ; fix count source address
+1097 00000C6C: C0000004 00000000 00000C94       move    memory 4, pass(REG_BASE+0x10), dsp_4+8  ; and count rewrite address
+1098 00000C78: C0000004 00000000 00000000 dsp_3:        move    memory 4, PATCH, pass(REG_BASE+0x34)
+1099 00000C84: 88880000 00000268        call    rel (sub32)                     ; scratchA = sg.len - xfer_len
+1100                             
+1101 00000C8C: C0000004 00000000 00000000 dsp_4:        move    memory 4, pass(REG_BASE+0x34), PATCH    ; update sg entry count
+1102                             
+1103                             
+1104                             ; update scatter-gather pointer
+1105                             
+1106 00000C98: C0000004 00000000 00000000 dsp_5:        move    memory 4, PATCH, pass(REG_BASE+0x34)    ; scratchA = sg.ptr
+1107 00000CA4: C0000004 00000018 00000000       move    memory 4, copy_buf, pass(REG_BASE+0x5c)
+1108 00000CB0: 88880000 0000028C        call    rel (add32)                     ; scratchA = sg.ptr + xferred
+1109                             
+1110 00000CB8: C0000004 00000000 00000000 dsp_6:        move    memory 4, pass(REG_BASE+0x34), PATCH    ; update sg entry pointer
+1111                             
+1112                             ; save_data_ptr message complete
+1113 00000CC4: 98080000 C0DE012E        int     ASSERT_DATA_PTR_SAVED
+1114 00000CCC: 98080000 C0DE0083        int     DEBUG_MSG_SAVE_DATA_PTRS_EXIT
+1115 00000CD4: 80880000 FFFFF980        jump    rel (main)
+1116                             
+1117                             
+1118                             
+1119                             
+1120                             ; I/O Complete:  put pointer of completed i/o req_tbl_ptr in next place in
+1121                             ;              req_done_q.  If the queue is full, give error and halt.
+1122                             ;
+1123                             ; The queue is full if the entry which req_done_ptr points to is nonzero.
+1124                             
+1125 00000CDC:                   io_complete:
+1126 00000CDC: 98080000 C0DE0084        int     DEBUG_IO_COMPLETE_ENTRY
+1127 00000CE4: C0000004 00000008 00000CF4       move    memory 4, req_done_ptr, iod_1+4
+1128                             
+1129 00000CF0: C0000004 00000000 00000000 iod_1:        move    memory 4, PATCH, pass(REG_BASE+0x34)    ; scratchA = *req_done_p
+1130 00000CFC: 88880000 00000178        call    rel (iszero32)
+1131 00000D04: 80A00000 00000090        jump    rel (iod_full), if not carry    ; jump if full
+1132                             
+1133 00000D0C: C0000004 00000008 00000D20       move    memory 4, req_done_ptr, iod_2+8
+1134 00000D18: C0000004 00000000 00000000 iod_2:        move    memory 4, pass(REQ_TBL_PTR), PATCH      ; *req_done_p = req_tbl_ptr
+1135                             
+1136 00000D24: C0000004 00000008 00000000       move    memory 4, req_done_ptr, pass(REG_BASE+0x34); scratchA = req_done_p
+1137                             
+1138                             ; increment req_done_ptr
+1139 00000D30: 7E340400 00000000        move    scratcha0 + SIZEOF_REQ_DONE_ENT to scratcha0
+1140 00000D38: 7F350000 00000000        move    scratcha1 + 0 to scratcha1 with carry
+1141 00000D40: 7F360000 00000000        move    scratcha2 + 0 to scratcha2 with carry
+1142 00000D48: 7F370000 00000000        move    scratcha3 + 0 to scratcha3 with carry ; scratchA = ++req_done_p
+1143 00000D50: C0000004 00000000 00000008       move    memory 4, pass(REG_BASE+0x34), req_done_ptr
+1144                             
+1145 00000D5C: C0000004 00000060 00000000       move    memory 4, bss2+8, pass(REG_BASE+0x5c)
+1146                             
+1147 00000D68: 88880000 0000026C        call    rel (cmp32)             ; scratchb == end of req_done_q?
+1148                                            ; would like that to be "a<=b" to catch incrementing past end
+1149                             
+1150 00000D70: 80A00000 0000000C        jump    rel (iod_nowrap), if not carry  ; branch if not equal
+1151                             
+1152                             ; pointer is past end of queue, wrap back to beginning
+1153 00000D78: C0000004 0000005C 00000008       move    memory 4, bss2+4, req_done_ptr
+1154                             
+1155 00000D84:                   iod_nowrap:
+1156 00000D84: 98180000 00000000        intfly  0
+1157 00000D8C: 98080000 C0DE0085        int     DEBUG_IO_COMPLETE_EXIT
+1158 00000D94: 80880000 FFFFF328        jump    rel (schedular)
+1159                             
+1160                             
+1161                             ; No room in req_done_q
+1162 00000D9C:                   iod_full:
+1163 00000D9C: 78350200 00000000        move    ERROR_REQ_DONE_Q_FULL to scratcha1
+1164 00000DA4: 80880000 FFFFF8F0        jump    rel (bad_error)
+1165                             
+1166                             
+1167                             
+1168                             
+1169                             ; copy_entry:  memory to memory move with operands in descriptor
+1170                             ; Usage:
+1171                             ;      (set scratchA to address of src,dst,cnt)
+1172                             ;      call copy_entry
+1173                             ;
+1174                             ; Input:
+1175                             ;      scratcha:  address of copy descriptor
+1176                             ;
+1177                             ; Output:
+1178                             ;      none, except side effects
+1179                             ;
+1180                             ; Returns:
+1181                             ;      carry bit is set if the source address is zero (no copy performed)
+1182                             ;      carry bit clear means the copy completed.
+1183                             ;
+1184                             ; Uses:
+1185                             ;      sfbr, scratchb
+1186                             ;
+1187                             ; Bugs:
+1188                             ;      Only the 24 least significant bits of count are used.
+1189                             ;      ??? Not sure what a zero count does.
+1190                             ;      The 2 least significant bits of source and destination must
+1191                             ;      be the same, unless source is zero.
+1192                             ;
+1193                             ; Desc:
+1194                             ;      ScratchA points to a table of 3 32-bit words:
+1195                             ;              .long   source_address
+1196                             ;              .long   dest_address
+1197                             ;              .long   byte_count
+1198                             
+1199 00000DAC:                   copy_entry:
+1200 00000DAC: 98080000 C0DE0086        int     DEBUG_COPY_ENTRY_ENTRY
+1201 00000DB4: C0000004 00000000 00000DC4       move    memory 4, pass(REG_BASE+0x34), copy0+4  ; patch inst. to get source addr
+1202 00000DC0: C000000C 00000000 00000018 copy0:        move    memory 12, PATCH, copy_buf      ; put descr in buffer so not so
+1203                                                                            ; much more patching
+1204 00000DCC: C0000004 00000018 00000000       move    memory 4, copy_buf, pass(REG_BASE+0x5c) ; scratchB = src_addr
+1205                             
+1206                             ; Would like to call iszero, but nested procs aren't supported
+1207                             ; If nonzero, jump to copy1
+1208                             
+1209 00000DD8: 725C0000 00000000        move    scratchb0 to sfbr
+1210 00000DE0: 80840000 00000048        jump    rel (copy1), if not 0
+1211 00000DE8: 725D0000 00000000        move    scratchb1 to sfbr
+1212 00000DF0: 80840000 00000038        jump    rel (copy1), if not 0
+1213 00000DF8: 725E0000 00000000        move    scratchb2 to sfbr
+1214 00000E00: 80840000 00000028        jump    rel (copy1), if not 0
+1215 00000E08: 725F0000 00000000        move    scratchb3 to sfbr
+1216 00000E10: 80840000 00000018        jump    rel (copy1), if not 0
+1217                             
+1218                             ; return with carry set to indicate empty entry
+1219 00000E18: 58000400 00000000        set     carry
+1220 00000E20: 98080000 C0DE0087        int     DEBUG_COPY_ENTRY_EXIT_TRUE
+1221 00000E28: 90080000 00000000        return
+1222                             
+1223 00000E30:                   copy1:
+1224                             ; Set up to perform copy.
+1225                             ; The objective is to do the following (non-existent) operation:
+1226                             ;      move    memory *(scratcha+8), *(scratcha+0), *(scratcha+4)
+1227                             ;
+1228                             ; It's easy to do the equivalent of:
+1229                             ;      move    memory *cnt, *src, *dst
+1230                             ; This uses four memory moves (3 to modify a move instruction and one to do
+1231                             ; it).  But including the offsets requires a bit more.  To simplify the
+1232                             ; whole thing, the 3 values were moved to "copy_buf" to reduce runtime
+1233                             ; patching.  This reduces, somewhat counterintuitively, to 3 instructions.
+1234                             
+1235 00000E30: C0000008 00000018 00000E54       move    memory 8, copy_buf, copy2+4             ; patch source/dest addr
+1236 00000E3C: C0000003 00000020 00000E50       move    memory 3, copy_buf+8, copy2             ; patch 24-bit count
+1237                             
+1238 00000E48: 7C187F00 00000000        move    ctest0 & 127 to ctest0                  ; enable cache bursting
+1239 00000E50: C0000000 00000000 00000000 copy2:        move    memory PATCH, PATCH, PATCH              ; do the copy
+1240 00000E5C: 7A188000 00000000        move    ctest0 | 128 to ctest0                  ; disable cache bursts
+1241                             
+1242 00000E64: 60000400 00000000        clear   carry
+1243 00000E6C: 98080000 C0DE0088        int     DEBUG_COPY_ENTRY_EXIT_FALSE
+1244 00000E74: 90080000 00000000        return
+1245                             
+1246                             
+1247                             
+1248                             ; iszero32:  if 32-bit value of scratcha is zero, return with carry set.
+1249                             ; Usage:
+1250                             ;      call iszero32
+1251                             ;
+1252                             ; Input:
+1253                             ;      32-bits of scratcha
+1254                             ;
+1255                             ; Output:
+1256                             ;      none (scratcha is not changed)
+1257                             ;
+1258                             ; Uses:
+1259                             ;      sfbr is destroyed.
+1260                             
+1261 00000E7C:                   iszero32:
+1262 00000E7C: 98080000 C0DE0089        int     DEBUG_ISZERO32_ENTRY
+1263 00000E84: 72340000 00000000        move    scratcha0 to sfbr
+1264 00000E8C: 80840000 00000048        jump    rel (isnotzero), if not 0
+1265                             
+1266 00000E94: 72350000 00000000        move    scratcha1 to sfbr
+1267 00000E9C: 80840000 00000038        jump    rel (isnotzero), if not 0
+1268                             
+1269 00000EA4: 72360000 00000000        move    scratcha2 to sfbr
+1270 00000EAC: 80840000 00000028        jump    rel (isnotzero), if not 0
+1271                             
+1272 00000EB4: 72370000 00000000        move    scratcha3 to sfbr
+1273 00000EBC: 80840000 00000018        jump    rel (isnotzero), if not 0
+1274                             
+1275 00000EC4: 58000400 00000000        set     carry                   ; Value is zero
+1276 00000ECC: 98080000 C0DE008A        int     DEBUG_ISZERO32_EXIT_FALSE
+1277 00000ED4: 90080000 00000000        return
+1278                             
+1279 00000EDC:                   isnotzero:
+1280 00000EDC: 60000400 00000000        clear   carry
+1281 00000EE4: 98080000 C0DE008B        int     DEBUG_ISZERO32_EXIT_TRUE
+1282 00000EEC: 90080000 00000000        return
+1283                             
+1284                             
+1285                             
+1286                             ; sub32:  32-bit subtraction.  scratcha -= scratchb
+1287                             ; Usage:
+1288                             ;      call sub32
+1289                             ;
+1290                             ; Input:
+1291                             ;      32-bits of scratchb
+1292                             ;      32-bits of scratcha
+1293                             ;
+1294                             ; Output:
+1295                             ;      32-bits of scratcha, the carry bit contains any borrow
+1296                             ;
+1297                             ; Uses:
+1298                             ;      scratchb is destroyed.
+1299                             ;
+1300                             ; Desc:
+1301                             ;      calculates scratcha = scratcha - scratchb
+1302                             ;
+1303                             ; Algorithm:
+1304                             ;      Calculates the 2s complement of scratchb and adds it to scratcha
+1305                             
+1306 00000EF4:                   sub32:
+1307 00000EF4: 98080000 C0DE008C        int     DEBUG_SUB32_ENTRY
+1308                             
+1309                             ; Ones complement of scratchb:
+1310 00000EFC: 7B5CFF00 00000000        move    scratchb0 xor 255 to scratchb0
+1311 00000F04: 7B5DFF00 00000000        move    scratchb1 xor 255 to scratchb1
+1312 00000F0C: 7B5EFF00 00000000        move    scratchb2 xor 255 to scratchb2
+1313 00000F14: 7B5FFF00 00000000        move    scratchb3 xor 255 to scratchb3
+1314                             
+1315                             ; Add one
+1316 00000F1C: 7E5C0100 00000000        move    scratchb0 + 1 to scratchb0
+1317 00000F24: 7F5D0000 00000000        move    scratchb1 + 0 to scratchb1 with carry
+1318 00000F2C: 7F5E0000 00000000        move    scratchb2 + 0 to scratchb2 with carry
+1319 00000F34: 7F5F0000 00000000        move    scratchb3 + 0 to scratchb3 with carry
+1320                                    ;jump   rel (add32)             ; "correct" coding would be
+1321                                                                    ;       call    rel (add32)
+1322                                                                    ;       return
+1323                                                                    ; but nested "call"s are messy
+1324 00000F3C: 98080000 C0DE008D        int     DEBUG_SUB32_2s_COMP
+1325                             
+1326                                    ; fall through to add32
+1327                             
+1328                             
+1329                             
+1330                             ; add32:  32-bit addition.  scratcha += scratchb
+1331                             ; Usage:
+1332                             ;      call add32
+1333                             ;
+1334                             ; Input:
+1335                             ;      32-bits of scratchb
+1336                             ;      32-bits of scratcha
+1337                             ;
+1338                             ; Output:
+1339                             ;      32-bits of scratcha, the carry bit contains any overflow
+1340                             ;
+1341                             ; Returns:
+1342                             ;      The carry bit has any overflow generated from the addition
+1343                             ;
+1344                             ; Uses:
+1345                             ;      scratchb is destroyed.
+1346                             ;
+1347                             ; Desc:
+1348                             ;      This operation is surprisingly difficult with the NCR instruction
+1349                             ;      set and probably represents a major departure between NCR's intended
+1350                             ;      use of the chip and Intel's requirements.
+1351                             ;
+1352                             ; Algorithm:
+1353                             ;      Uses the "register to register move" instruction (an 8-bit move)
+1354                             ;      which includes an obscure ability to add an 8-bit value.  The 8-bit
+1355                             ;      value must be a constant coded into the "move" instruction.  32-bit
+1356                             ;      addition requires 4 additions plus dealing with byte to byte carrys.
+1357                             ;
+1358                             ;      Move the 4 bytes of scratchb into the 4 instructions where +XXX
+1359                             ;      appears.  +XXX is a place holder to (a) persuade the assembler to
+1360                             ;      generate the right opcode and (b) provide a visual pattern in a hex
+1361                             ;      dump to be sure the right place is modified.
+1362                             ;
+1363                             ;      Complication!  The move memory instruction is the only mechanism the
+1364                             ;      NCR chip provides usable for modifying instructions.  Unfortunately,
+1365                             ;      it demands the source and destination be the same number of bytes
+1366                             ;      past the last 4-byte boundary.  That is, the source and destination
+1367                             ;      address must have the same least significant 2 bits.  (If they are
+1368                             ;      not, an "illegal instruction exception occurs.)  As the destination
+1369                             ;      is always byte 1 of an instruction, scratchb1 is the only register
+1370                             ;      aligned correctly.
+1371                             
+1372 00000F44:                   add32:
+1373 00000F44: 98080000 C0DE008E        int     DEBUG_ADD32_ENTRY
+1374 00000F4C: C0000001 00000000 00000FB5       move    memory 1, pass(REG_BASE+0x5c+1), add1+1         ; mod code for bits 8-15
+1375                                                                                    ; and make B1 available
+1376 00000F58: 725C0000 00000000        move    scratchb0 to sfbr                       ; Move B0 to B1
+1377 00000F60: 6A5D0000 00000000        move    sfbr      to scratchb1
+1378 00000F68: C0000001 00000000 00000FAD       move    memory 1, pass(REG_BASE+0x5c+1), add0+1         ; bits 0-7 patch
+1379                             
+1380 00000F74: 725E0000 00000000        move    scratchb2 to sfbr                       ; move B2 to B1
+1381 00000F7C: 6A5D0000 00000000        move    sfbr      to scratchb1
+1382 00000F84: C0000001 00000000 00000FBD       move    memory 1, pass(REG_BASE+0x5c+1), add2+1         ; 16-23 patch
+1383                             
+1384 00000F90: 725F0000 00000000        move    scratchb3 to sfbr                       ; move B3 to B1
+1385 00000F98: 6A5D0000 00000000        move    sfbr    to scratchb1
+1386 00000FA0: C0000001 00000000 00000FC5       move    memory 1, pass(REG_BASE+0x5c+1), add3+1         ; 24-31 patch
+1387                             
+1388                             absolute       XXX=127 ; place holder only--actual value is patched (above)
+1389                             
+1390 00000FAC: 7E347F00 00000000 add0:  move    scratcha0+XXX to scratcha0      ; add bits 7-0
+1391 00000FB4: 7F357F00 00000000 add1:  move    scratcha1+XXX to scratcha1 with carry   ; add bits 15-8
+1392 00000FBC: 7F367F00 00000000 add2:  move    scratcha2+XXX to scratcha2 with carry   ; add bits 23-16
+1393 00000FC4: 7F377F00 00000000 add3:  move    scratcha3+XXX to scratcha3 with carry   ; add bits 31-24
+1394 00000FCC: 98080000 C0DE008F        int     DEBUG_ADD32_EXIT
+1395 00000FD4: 90080000 00000000        return
+1396                             
+1397                             
+1398                             
+1399                             
+1400                             ; cmp32:  Compare scratcha to scratchb; if equal, return with carry set.
+1401                             ; Usage:
+1402                             ;      call cmp32
+1403                             ;
+1404                             ; Input:
+1405                             ;      32-bits of scratcha
+1406                             ;      32-bits of scratchb
+1407                             ;
+1408                             ; Output:
+1409                             ;      32-bits of scratcha, the carry bit contains any overflow
+1410                             ;
+1411                             ; Returns:
+1412                             ;      The carry bit has any overflow generated from the addition
+1413                             ;
+1414                             ; Uses:
+1415                             ;      scratchb1 is destroyed.
+1416                             
+1417 00000FDC:                   cmp32:
+1418 00000FDC: 98080000 C0DE0090        int     DEBUG_CMP32_ENTRY
+1419                             
+1420 00000FE4: C0000001 00000000 00000FF1       move    memory 1, pass(REG_BASE+0x5c+1), cmp1+1
+1421 00000FF0: 73357F00 00000000 cmp1:  move    scratcha1 xor XXX to sfbr       ; cmp bits 15-8
+1422 00000FF8: 80840000 0000009C        jump    rel (cmp9), if not 0
+1423                             
+1424 00001000: 725C0000 00000000        move    scratchb0 to sfbr
+1425 00001008: 6A5D0000 00000000        move    sfbr      to scratchb1
+1426 00001010: C0000001 00000000 0000101D       move    memory 1, pass(REG_BASE+0x5c+1), cmp0+1
+1427                             
+1428 0000101C: 73347F00 00000000 cmp0:  move    scratcha0 xor XXX to sfbr       ; cmp bits 7-0
+1429 00001024: 80840000 00000070        jump    rel (cmp9), if not 0
+1430                             
+1431 0000102C: 725E0000 00000000        move    scratchb2 to sfbr
+1432 00001034: 6A5D0000 00000000        move    sfbr      to scratchb1
+1433 0000103C: C0000001 00000000 00001049       move    memory 1, pass(REG_BASE+0x5c+1), cmp2+1
+1434                             
+1435 00001048: 73367F00 00000000 cmp2:  move    scratcha2 xor XXX to sfbr       ; cmp bits 23-16
+1436 00001050: 80840000 00000044        jump    rel (cmp9), if not 0
+1437                             
+1438 00001058: 725F0000 00000000        move    scratchb3 to sfbr
+1439 00001060: 6A5D0000 00000000        move    sfbr      to scratchb1
+1440 00001068: C0000001 00000000 00001075       move    memory 1, pass(REG_BASE+0x5c+1), cmp3+1
+1441                             
+1442 00001074: 73377F00 00000000 cmp3:  move    scratcha3 xor XXX to sfbr       ; cmp bits 31-24
+1443 0000107C: 80840000 00000018        jump    rel (cmp9), if not 0
+1444                             
+1445                             ; Values must be equal
+1446 00001084: 58000400 00000000        set     carry
+1447 0000108C: 98080000 C0DE0091        int     DEBUG_CMP32_EXIT_TRUE
+1448 00001094: 90080000 00000000        return
+1449                             
+1450 0000109C: 60000400 00000000 cmp9:  clear   carry
+1451 000010A4: 98080000 C0DE0092        int     DEBUG_CMP32_EXIT_FALSE
+1452 000010AC: 90080000 00000000        return
+1453                             
+1454                             
+1455                             ; targ_id_q_tag_to_addr:  given target id and q_tag, calc reselect_tbl address
+1456                             ;              scratcha0 with the left one position
+1457                             ; Usage:
+1458                             ;      <put targ_id in scratch1>
+1459                             ;      <put q_tag in scratcha0>
+1460                             ;      call targ_id_q_tag_to_addr
+1461                             ;
+1462                             ; Input:
+1463                             ;      16-bits of scratcha (scratcha0, scratcha1)
+1464                             ;
+1465                             ; Output:
+1466                             ;      32-bits of scratcha;
+1467                             ;      Contains the address in the reselect table of the corresponding
+1468                             ;      entry
+1469                             ;
+1470                             ; Uses:
+1471                             ;      none
+1472                             ;
+1473                             ; Desc:
+1474                             ;      The operation corresponds to
+1475                             ;      scratcha = &resel_tbl [targ<<8 | q_tag]
+1476                             
+1477 000010B4:                   targ_id_q_tag_to_addr:
+1478 000010B4: 98080000 C0DE0093        int     DEBUG_ID_TO_ADDR_ENTRY
+1479 000010BC: 60000400 00000000        clear   carry
+1480 000010C4: 79340000 00000000        move    scratcha0 shl 0 to scratcha0
+1481 000010CC: 79350000 00000000        move    scratcha1 shl 0 to scratcha1
+1482                             
+1483 000010D4: 60000400 00000000        clear   carry
+1484 000010DC: 79340000 00000000        move    scratcha0 shl 0 to scratcha0
+1485 000010E4: 79350000 00000000        move    scratcha1 shl 0 to scratcha1
+1486                             
+1487 000010EC: 78360000 00000000        move    0 to scratcha2
+1488 000010F4: 78370000 00000000        move    0 to scratcha3
+1489                             
+1490 000010FC: C0000004 00000068 00000000       move    memory 4, bss3+4, pass(REG_BASE+0x5c)
+1491 00001108: 98080000 C0DE0094        int     DEBUG_ID_TO_ADDR_EXIT
+1492 00001110: 80880000 FFFFFE2C        jump    rel (add32)             ; scratcha = &resel_tbl[targ<<8 | q_tag]
+1493                                    ; return performed from add32
+1494                             
+
+--SYMBOL---------------------------VALUE------TYPE-------
+ASSERT_GENERAL_PURPOSE_1          C0DE0130  ABSOLUTE              
+ASSERT_DATA_PTR_SAVED             C0DE012E  ABSOLUTE              
+ASSERT_GENERAL_PURPOSE_2          C0DE0131  ABSOLUTE              
+ASSERT_GENERAL_PURPOSE_3          C0DE0132  ABSOLUTE              
+ASSERT_RESELECT_TBL_PTR           C0DE012D  ABSOLUTE              
+ASSERT_SELECT_TBL_PTR             C0DE012F  ABSOLUTE              
+BYTE_LANE_2                       00000002  ABSOLUTE              
+BYTE_LANE_1                       00000001  ABSOLUTE              
+BYTE_LANE_3                       00000003  ABSOLUTE              
+DATA_CORRUPTED                    DEAD0000  ABSOLUTE              
+DEBUG_ADD32_EXIT                  C0DE008F  ABSOLUTE              
+DEBUG_ADD32_ENTRY                 C0DE008E  ABSOLUTE              
+DEBUG_CMD_EXIT                    C0DE0075  ABSOLUTE              
+DEBUG_CMD_ENTRY                   C0DE0074  ABSOLUTE              
+DEBUG_CMP32_ENTRY                 C0DE0090  ABSOLUTE              
+DEBUG_CMP32_EXIT_FALSE            C0DE0092  ABSOLUTE              
+DEBUG_CMP32_EXIT_TRUE             C0DE0091  ABSOLUTE              
+DEBUG_CNTRLR_Q_INC_DONE           C0DE006C  ABSOLUTE              
+DEBUG_CNTRLR_Q_ZAP                C0DE006B  ABSOLUTE              
+DEBUG_COPY_ENTRY_ENTRY            C0DE0086  ABSOLUTE              
+DEBUG_COPY_ENTRY_EXIT_FALSE       C0DE0088  ABSOLUTE              
+DEBUG_COPY_ENTRY_EXIT_TRUE        C0DE0087  ABSOLUTE              
+DEBUG_DATA_IN_ENTRY               C0DE0076  ABSOLUTE              
+DEBUG_DATA_IN_EXIT                C0DE0077  ABSOLUTE              
+DEBUG_DATA_OUT_ENTRY              C0DE0078  ABSOLUTE              
+DEBUG_DATA_OUT_EXIT               C0DE0079  ABSOLUTE              
+DEBUG_DISCONNECT_EXIT             C0DE0095  ABSOLUTE              
+DEBUG_GENERAL_PURPOSE_1           C0DE009A  ABSOLUTE              
+DEBUG_GENERAL_PURPOSE_2           C0DE009B  ABSOLUTE              
+DEBUG_GENERAL_PURPOSE_3           C0DE009C  ABSOLUTE              
+DEBUG_ID_TO_ADDR_ENTRY            C0DE0093  ABSOLUTE              
+DEBUG_ID_TO_ADDR_EXIT             C0DE0094  ABSOLUTE              
+DEBUG_IGNORE_WIDE_EXIT            C0DE0097  ABSOLUTE              
+DEBUG_INIT_EXIT                   C0DE0066  ABSOLUTE              
+DEBUG_INIT_ENTRY                  C0DE0065  ABSOLUTE              
+DEBUG_IO_COMPLETE_ENTRY           C0DE0084  ABSOLUTE              
+DEBUG_IO_COMPLETE_EXIT            C0DE0085  ABSOLUTE              
+DEBUG_ISZERO32_ENTRY              C0DE0089  ABSOLUTE              
+DEBUG_ISZERO32_EXIT_FALSE         C0DE008A  ABSOLUTE              
+DEBUG_ISZERO32_EXIT_TRUE          C0DE008B  ABSOLUTE              
+DEBUG_MAIN_ENTRY                  C0DE0073  ABSOLUTE              
+DEBUG_MSG_CMD_COMPLETE            C0DE007E  ABSOLUTE              
+DEBUG_MSG_DISCONNECT              C0DE007D  ABSOLUTE              
+DEBUG_MSG_EXTENDED                C0DE0080  ABSOLUTE              
+DEBUG_MSG_EXTENDED_BIT_BUCKET     C0DE0081  ABSOLUTE              
+DEBUG_MSG_IGNORE_WIDE             C0DE007F  ABSOLUTE              
+DEBUG_MSG_IN_ENTRY                C0DE007C  ABSOLUTE              
+DEBUG_MSG_OUT_ENTRY               C0DE006E  ABSOLUTE              
+DEBUG_MSG_OUT_EXIT                C0DE006F  ABSOLUTE              
+DEBUG_MSG_REJECT                  C0DE009D  ABSOLUTE              
+DEBUG_MSG_SAVE_DATA_PTRS          C0DE0082  ABSOLUTE              
+DEBUG_MSG_SAVE_DATA_PTRS_EXIT     C0DE0083  ABSOLUTE              
+DEBUG_NOT_USED                    C0DE0071  ABSOLUTE              
+DEBUG_OTHER_MSG_EXIT              C0DE0098  ABSOLUTE              
+DEBUG_RESELECTED_ENTRY            C0DE0070  ABSOLUTE              
+DEBUG_RESELECTED_EXIT             C0DE0072  ABSOLUTE              
+DEBUG_SCHEDULAR_ENTRY             C0DE0067  ABSOLUTE              
+DEBUG_SCHEDULAR_EXIT              C0DE006D  ABSOLUTE              
+DEBUG_SCHEDULE_READY              C0DE0068  ABSOLUTE              
+DEBUG_SELECT_ATN                  C0DE0069  ABSOLUTE              
+DEBUG_SELECT_NO_ATN               C0DE006A  ABSOLUTE              
+DEBUG_STATUS_ENTRY                C0DE007A  ABSOLUTE              
+DEBUG_STATUS_EXIT                 C0DE007B  ABSOLUTE              
+DEBUG_STAT_NOT_GOOD_EXIT          C0DE0096  ABSOLUTE              
+DEBUG_SUB32_2s_COMP               C0DE008D  ABSOLUTE              
+DEBUG_SUB32_ENTRY                 C0DE008C  ABSOLUTE              
+DEBUG_SUCCESSFUL_SELECTION        C0DE0099  ABSOLUTE              
+ERROR_OTHER_MSG                   00000005  ABSOLUTE              
+ERROR_RESELECT_ID                 00000004  ABSOLUTE              
+ERROR_REQ_DONE_Q_FULL             00000002  ABSOLUTE              
+ERROR_STAT_NOT_GOOD               00000001  ABSOLUTE              
+ERROR_UNKNOWN_PHASE               00000003  ABSOLUTE              
+ERROR_WRONG_PHASE                 00000006  ABSOLUTE              
+LED_GREEN                         00000010  ABSOLUTE              
+LED_OFF                           00000018  ABSOLUTE              
+LED_RED                           00000008  ABSOLUTE              
+LED_RED_GREEN                     00000000  ABSOLUTE              
+MSG_DISCONNECT                    00000004  ABSOLUTE              
+MSG_COMMAND_COMPLETE              00000000  ABSOLUTE              
+MSG_EXTENDED                      00000001  ABSOLUTE              
+MSG_IGNORE_WIDE_RESIDUE           00000023  ABSOLUTE              
+MSG_REJECT                        00000007  ABSOLUTE              
+MSG_SAVE_DATA_PTRS                00000002  ABSOLUTE              
+OFFSETOF_BYTES_MSG_OUT            00000010  ABSOLUTE              
+OFFSETOF_DSA_SG_PTR               0000002C  ABSOLUTE              
+OFFSETOF_MSG_OUT_LEN              00000008  ABSOLUTE              
+OFFSETOF_PTR_MSG_OUT              0000000C  ABSOLUTE              
+OFFSETOF_REQ_DEST                 00000008  ABSOLUTE              
+OFFSETOF_REQ_TBL                  00000004  ABSOLUTE              
+OFFSETOF_SG_ENT_PTR               00000004  ABSOLUTE              
+PATCH                             00000000  ABSOLUTE              
+SIZEOF_CNTRLR_BUF                 0000002C  ABSOLUTE              
+SIZEOF_REQ_DONE_ENT               00000004  ABSOLUTE              
+SIZEOF_SG_ENTRY                   00000008  ABSOLUTE              
+SIZEOF_STRUCT_SDC                 0000000C  ABSOLUTE              
+XXX                               0000007F  ABSOLUTE              
+SCRIPT                            00000000  CODE SEGMENT          
+dsa_relative_table                00000006  DATA SEGMENT          
+add32                             00000F44  ENTRY                 
+cmd_sent                          000006DC  ENTRY                 
+cmd_phase                         000006C0  ENTRY                 
+cmp32                             00000FDC  ENTRY                 
+cntrlr_q_p                        00000000  ENTRY                 
+copy_buf                          00000018  ENTRY                 
+copy_entry                        00000DAC  ENTRY                 
+data_analyzer_trig                00000030  ENTRY                 
+data_in_phase                     0000073C  ENTRY                 
+data_out_phase                    00000804  ENTRY                 
+err_unknown_phase                 00000694  ENTRY                 
+got_reselected                    000004D8  ENTRY                 
+ignore_wide_flag                  00000010  ENTRY                 
+init                              00000070  ENTRY                 
+iszero32                          00000E7C  ENTRY                 
+main                              0000065C  ENTRY                 
+msg_in_phase                      000008F0  ENTRY                 
+msg_sent                          0000049C  ENTRY                 
+req_done_ptr                      00000008  ENTRY                 
+sched_empty                       000004B4  ENTRY                 
+schedular                         000000C4  ENTRY                 
+sel_no_atn                        00000274  ENTRY                 
+status_phase                      000008D0  ENTRY                 
+targ_id_q_tag_to_addr             000010B4  ENTRY                 
+add0                              00000FAC  LABEL                 
+add1                              00000FB4  LABEL                 
+add2                              00000FBC  LABEL                 
+add3                              00000FC4  LABEL                 
+bad_error                         0000069C  LABEL                 
+bss0                              00000040  LABEL                 
+bss1                              0000004C  LABEL                 
+bss2                              00000058  LABEL                 
+bss3                              00000064  LABEL                 
+cmd_1                             00000714  LABEL                 
+cmp0                              0000101C  LABEL                 
+cmp1                              00000FF0  LABEL                 
+cmp2                              00001048  LABEL                 
+cmp3                              00001074  LABEL                 
+cmp9                              0000109C  LABEL                 
+copy0                             00000DC0  LABEL                 
+copy1                             00000E30  LABEL                 
+copy2                             00000E50  LABEL                 
+data_in_loop                      000007B4  LABEL                 
+data_out_loop                     0000087C  LABEL                 
+din_0                             00000788  LABEL                 
+do_save_data_ptrs                 00000B54  LABEL                 
+dout_0                            00000850  LABEL                 
+dsp_1                             00000B9C  LABEL                 
+dsp_2                             00000C14  LABEL                 
+dsp_3                             00000C78  LABEL                 
+dsp_4                             00000C8C  LABEL                 
+dsp_5                             00000C98  LABEL                 
+dsp_6                             00000CB8  LABEL                 
+garbage                           00000038  LABEL                 
+io_complete                       00000CDC  LABEL                 
+iod_1                             00000CF0  LABEL                 
+iod_2                             00000D18  LABEL                 
+iod_full                          00000D9C  LABEL                 
+iod_nowrap                        00000D84  LABEL                 
+isnotzero                         00000EDC  LABEL                 
+itself_0                          00000468  LABEL                 
+itself_1                          00000654  LABEL                 
+itself_2                          000001DC  LABEL                 
+mi_1                              00000938  LABEL                 
+mi_2                              0000099C  LABEL                 
+mi_3                              000009E8  LABEL                 
+mi_4                              00000A10  LABEL                 
+mi_5                              00000B30  LABEL                 
+mi_loop                           00000B10  LABEL                 
+msg_in_done                       00000B30  LABEL                 
+msg_out_phase                     00000480  LABEL                 
+res_2                             00000590  LABEL                 
+resel_1                           00000584  LABEL                 
+res_0                             00000558  LABEL                 
+resel_x                           0000053C  LABEL                 
+sch_0                             00000224  LABEL                 
+sch_2                             000002F8  LABEL                 
+sch_3                             00000318  LABEL                 
+sch_4                             00000364  LABEL                 
+sch_no_wrap                       000003D0  LABEL                 
+sched_loop                        0000011C  LABEL                 
+selected                          0000029C  LABEL                 
+sub32                             00000EF4  LABEL                 
+test_0_pass                       00000470  LABEL                 
+test_0                            00000410  LABEL                 
+test_1                            000005FC  LABEL                 
+test_1_pass                       0000065C  LABEL                 
+test_2                            00000184  LABEL                 
+test_2_pass                       000001E4  LABEL                 
+CNTRLR_Q                          00000000  PASS                  
+&CNTRLR_Q[CNTRLR_Q_SIZE]          00000000  PASS                  
+REQ_DONE_Q                        00000000  PASS                  
+&REQ_DONE_Q[REQ_DONE_Q_SIZE]      00000000  PASS                  
+RESELECT_TBL                      00000000  PASS                  
+REG_BASE+0x34                     00000000  PASS                  
+REG_BASE+0x10                     00000000  PASS                  
+REG_BASE+0x5c                     00000000  PASS                  
+REQ_TBL_PTR                       00000000  PASS                  
+NO_WORK_TO_DO                     00000000  PASS                  
+REG_BASE+0x5c+0                   00000000  PASS                  
+REG_BASE+0x34+0                   00000000  PASS                  
+REG_BASE+0x34+1                   00000000  PASS                  
+HALT_REASON                       00000000  PASS                  
+NEXT_ADDR                         00000000  PASS                  
+SDB_DMA_FLUSH_RD                  00000000  PASS                  
+STATUS_BUF                        00000000  PASS                  
+MSG_IN_BUF                        00000000  PASS                  
+REG_BASE+0x34+2                   00000000  PASS                  
+MSG_IN_BUF+1                      00000000  PASS                  
+MSG_IN_BUF+2                      00000000  PASS                  
+MSG_IN_BUF+3                      00000000  PASS                  
+MSG_IN_BUF+4                      00000000  PASS                  
+MSG_IN_BUF+5                      00000000  PASS                  
+MSG_IN_BUF+6                      00000000  PASS                  
+MSG_IN_BUF+7                      00000000  PASS                  
+REG_BASE+0x5c+3                   00000000  PASS                  
+MSG_IN_CNT                        00000000  PASS                  
+REG_BASE+0x5c+1                   00000000  PASS                  
+dsa_cmd_buf                       00000020  TABLE                 
+dsa_cmd_len                       00000018  TABLE                 
+dsa_dummy                         00000000  TABLE                 
+dsa_msg_out_buf                   00000010  TABLE                 
+dsa_msg_out_len                   00000008  TABLE                 
+dsa_sg_ptr                        00000028  TABLE                 

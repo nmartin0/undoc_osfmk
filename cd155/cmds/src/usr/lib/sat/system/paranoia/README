@@ -1,0 +1,7 @@
+Paranoia (paranoia)
+
+This test checks the accuracy of floating point computations performed
+on this system. It demonstrates the correctness of the compiler, math
+libraries, and floating point trap handler as well as the underlying
+processor and memory hardware.
+

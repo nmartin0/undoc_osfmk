@@ -1,0 +1,139 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+bnode=`/sbin/getmagic BOOT_FIRST_NODE`
+/sbin/rm -f /dev/io0/*
+/sbin/rmknod /dev/io0/rrz0a c 23 0 $bnode
+/sbin/rmknod /dev/io0/rrz0b c 23 1 $bnode
+/sbin/rmknod /dev/io0/rrz0c c 23 2 $bnode
+/sbin/rmknod /dev/io0/rrz0d c 23 3 $bnode
+/sbin/rmknod /dev/io0/rrz0e c 23 4 $bnode
+/sbin/rmknod /dev/io0/rrz0f c 23 5 $bnode
+/sbin/rmknod /dev/io0/rrz0g c 23 6 $bnode
+/sbin/rmknod /dev/io0/rrz0h c 23 7 $bnode
+/sbin/rmknod /dev/io0/rrz0i c 23 8 $bnode
+/sbin/rmknod /dev/io0/rrz0j c 23 9 $bnode
+/sbin/rmknod /dev/io0/rrz0k c 23 10 $bnode
+/sbin/rmknod /dev/io0/rrz0l c 23 11 $bnode
+/sbin/rmknod /dev/io0/rrz0m c 23 12 $bnode
+/sbin/rmknod /dev/io0/rrz0n c 23 13 $bnode
+/sbin/rmknod /dev/io0/rrz0o c 23 14 $bnode
+/sbin/rmknod /dev/io0/scsi0 c 23 15 $bnode
+/sbin/rmknod /dev/io0/rz0a b 3 0 $bnode
+/sbin/rmknod /dev/io0/rz0b b 3 1 $bnode
+/sbin/rmknod /dev/io0/rz0c b 3 2 $bnode
+/sbin/rmknod /dev/io0/rz0d b 3 3 $bnode
+/sbin/rmknod /dev/io0/rz0e b 3 4 $bnode
+/sbin/rmknod /dev/io0/rz0f b 3 5 $bnode
+/sbin/rmknod /dev/io0/rz0g b 3 6 $bnode
+/sbin/rmknod /dev/io0/rz0h b 3 7 $bnode
+/sbin/rmknod /dev/io0/rz0i b 3 8 $bnode
+/sbin/rmknod /dev/io0/rz0j b 3 9 $bnode
+/sbin/rmknod /dev/io0/rz0k b 3 10 $bnode
+/sbin/rmknod /dev/io0/rz0l b 3 11 $bnode
+/sbin/rmknod /dev/io0/rz0m b 3 12 $bnode
+/sbin/rmknod /dev/io0/rz0n b 3 13 $bnode
+/sbin/rmknod /dev/io0/rz0o b 3 14 $bnode
+/sbin/rmknod /dev/io0/rmt6 c 8 96 $bnode
+/sbin/rmknod /dev/io0/nrmt6 c 8 104 $bnode
+/sbin/rmknod /dev/io0/rrz1a c 23 16 $bnode
+/sbin/rmknod /dev/io0/rrz1b c 23 17 $bnode
+/sbin/rmknod /dev/io0/rrz1c c 23 18 $bnode
+/sbin/rmknod /dev/io0/rrz1d c 23 19 $bnode
+/sbin/rmknod /dev/io0/rrz1e c 23 20 $bnode
+/sbin/rmknod /dev/io0/rrz1f c 23 21 $bnode
+/sbin/rmknod /dev/io0/rrz1g c 23 22 $bnode
+/sbin/rmknod /dev/io0/rrz1h c 23 23 $bnode
+/sbin/rmknod /dev/io0/rrz1i c 23 24 $bnode
+/sbin/rmknod /dev/io0/rrz1j c 23 25 $bnode
+/sbin/rmknod /dev/io0/rrz1k c 23 26 $bnode
+/sbin/rmknod /dev/io0/rrz1l c 23 27 $bnode
+/sbin/rmknod /dev/io0/rrz1m c 23 28 $bnode
+/sbin/rmknod /dev/io0/rrz1n c 23 29 $bnode
+/sbin/rmknod /dev/io0/rrz1o c 23 30 $bnode
+/sbin/rmknod /dev/io0/scsi1 c 23 31 $bnode
+/sbin/rmknod /dev/io0/rz1a b 3 16 $bnode
+/sbin/rmknod /dev/io0/rz1b b 3 17 $bnode
+/sbin/rmknod /dev/io0/rz1c b 3 18 $bnode
+/sbin/rmknod /dev/io0/rz1d b 3 19 $bnode
+/sbin/rmknod /dev/io0/rz1e b 3 20 $bnode
+/sbin/rmknod /dev/io0/rz1f b 3 21 $bnode
+/sbin/rmknod /dev/io0/rz1g b 3 22 $bnode
+/sbin/rmknod /dev/io0/rz1h b 3 23 $bnode
+/sbin/rmknod /dev/io0/rz1i b 3 24 $bnode
+/sbin/rmknod /dev/io0/rz1j b 3 25 $bnode
+/sbin/rmknod /dev/io0/rz1k b 3 26 $bnode
+/sbin/rmknod /dev/io0/rz1l b 3 27 $bnode
+/sbin/rmknod /dev/io0/rz1m b 3 28 $bnode
+/sbin/rmknod /dev/io0/rz1n b 3 29 $bnode
+/sbin/rmknod /dev/io0/rz1o b 3 30 $bnode
+/sbin/rmknod /dev/io0/rrz2a c 23 32 $bnode
+/sbin/rmknod /dev/io0/rrz2b c 23 33 $bnode
+/sbin/rmknod /dev/io0/rrz2c c 23 34 $bnode
+/sbin/rmknod /dev/io0/rrz2d c 23 35 $bnode
+/sbin/rmknod /dev/io0/rrz2e c 23 36 $bnode
+/sbin/rmknod /dev/io0/rrz2f c 23 37 $bnode
+/sbin/rmknod /dev/io0/rrz2g c 23 38 $bnode
+/sbin/rmknod /dev/io0/rrz2h c 23 39 $bnode
+/sbin/rmknod /dev/io0/rrz2i c 23 30 $bnode
+/sbin/rmknod /dev/io0/rrz2j c 23 41 $bnode
+/sbin/rmknod /dev/io0/rrz2k c 23 42 $bnode
+/sbin/rmknod /dev/io0/rrz2l c 23 43 $bnode
+/sbin/rmknod /dev/io0/rrz2m c 23 44 $bnode
+/sbin/rmknod /dev/io0/rrz2n c 23 45 $bnode
+/sbin/rmknod /dev/io0/rrz2o c 23 46 $bnode
+/sbin/rmknod /dev/io0/scsi2 c 23 47 $bnode
+/sbin/rmknod /dev/io0/rz2a b 3 32 $bnode
+/sbin/rmknod /dev/io0/rz2b b 3 33 $bnode
+/sbin/rmknod /dev/io0/rz2c b 3 34 $bnode
+/sbin/rmknod /dev/io0/rz2d b 3 35 $bnode
+/sbin/rmknod /dev/io0/rz2e b 3 36 $bnode
+/sbin/rmknod /dev/io0/rz2f b 3 37 $bnode
+/sbin/rmknod /dev/io0/rz2g b 3 38 $bnode
+/sbin/rmknod /dev/io0/rz2h b 3 39 $bnode
+/sbin/rmknod /dev/io0/rz2i b 3 40 $bnode
+/sbin/rmknod /dev/io0/rz2j b 3 42 $bnode
+/sbin/rmknod /dev/io0/rz2k b 3 42 $bnode
+/sbin/rmknod /dev/io0/rz2l b 3 43 $bnode
+/sbin/rmknod /dev/io0/rz2m b 3 44 $bnode
+/sbin/rmknod /dev/io0/rz2n b 3 45 $bnode
+/sbin/rmknod /dev/io0/rz2o b 3 46 $bnode
+/sbin/rmknod /dev/io0/rrz3a c 23 48 $bnode
+/sbin/rmknod /dev/io0/rrz3b c 23 49 $bnode
+/sbin/rmknod /dev/io0/rrz3c c 23 50 $bnode
+/sbin/rmknod /dev/io0/rrz3d c 23 51 $bnode
+/sbin/rmknod /dev/io0/rrz3e c 23 52 $bnode
+/sbin/rmknod /dev/io0/rrz3f c 23 53 $bnode
+/sbin/rmknod /dev/io0/rrz3g c 23 54 $bnode
+/sbin/rmknod /dev/io0/rrz3h c 23 55 $bnode
+/sbin/rmknod /dev/io0/rrz3i c 23 56 $bnode
+/sbin/rmknod /dev/io0/rrz3j c 23 57 $bnode
+/sbin/rmknod /dev/io0/rrz3k c 23 58 $bnode
+/sbin/rmknod /dev/io0/rrz3l c 23 59 $bnode
+/sbin/rmknod /dev/io0/rrz3m c 23 60 $bnode
+/sbin/rmknod /dev/io0/rrz3n c 23 61 $bnode
+/sbin/rmknod /dev/io0/rrz3o c 23 62 $bnode
+/sbin/rmknod /dev/io0/scsi3 c 23 63 $bnode
+/sbin/rmknod /dev/io0/rz3a b 3 48 $bnode
+/sbin/rmknod /dev/io0/rz3b b 3 49 $bnode
+/sbin/rmknod /dev/io0/rz3c b 3 50 $bnode
+/sbin/rmknod /dev/io0/rz3d b 3 51 $bnode
+/sbin/rmknod /dev/io0/rz3e b 3 52 $bnode
+/sbin/rmknod /dev/io0/rz3f b 3 53 $bnode
+/sbin/rmknod /dev/io0/rz3g b 3 54 $bnode
+/sbin/rmknod /dev/io0/rz3h b 3 55 $bnode
+/sbin/rmknod /dev/io0/rz3i b 3 56 $bnode
+/sbin/rmknod /dev/io0/rz3j b 3 57 $bnode
+/sbin/rmknod /dev/io0/rz3k b 3 58 $bnode
+/sbin/rmknod /dev/io0/rz3l b 3 59 $bnode
+/sbin/rmknod /dev/io0/rz3m b 3 60 $bnode
+/sbin/rmknod /dev/io0/rz3n b 3 61 $bnode
+/sbin/rmknod /dev/io0/rz3o b 3 62 $bnode

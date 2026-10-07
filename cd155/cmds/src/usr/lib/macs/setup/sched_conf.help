@@ -1,0 +1,166 @@
+# 
+# $Copyright
+# Copyright 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+# $Copyright
+# Copyright 1994 Intel Corporation.
+#        INTEL CONFIDENTIAL
+# Permission to use, copy, modify, and distribute this software and 
+# its online documentation for any purpose is hereby granted.
+# Intel Coprporation, Inc makes no representations about 
+# the suitability of this software for any purpose.
+# It is provided "as is" without express or implied warranty.
+#
+# INTEL CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD 
+# TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF 
+# MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL INTEL CORPORATION.
+# BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+# OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# Copyright$
+#
+  
+#
+#  Help strings
+#
+
+N_BINS_help="
+Defines how many of the BINS node-size breakdowns appear in the summary report
+"
+
+BINS_help="
+Defines the node size breakdowns that appear in the summary report.
+For example if '1 256 512' were specified, the report would indicate
+how many 1-node jobs ran, how many 256-node jobs ran and how many
+512-node jobs ran.  BINS should be specified in ascending sequence and
+the last node-size should be equal to the total nodes available in
+the system
+"
+
+ACT_GRP_LEVEL_help="
+Defines how many levels of grouping there are in your accounting setup.
+For example:  If ACT_GRP_LEVEL=3, and the account name convention 
+was to name accounts in the form 'ssspppg',
+	where sss is site name,
+	ppp is project number and
+	g is sub-project/group number/code,
+the accounting data will be summarized and reported in 3 levels:
+by site, project and group
+"
+
+ACT_NAME_SIM_help="
+How many characters (left to right) corresponding to each ACT_GRP_LEVEL
+In the case of above example, it should be then
+ACT_NAME_SIM	3 3 1
+"
+
+ACT_GRP_LABEL_help="
+Defines the category label of each ACT_GRP_LEVEL which is used in 
+accounting reports.
+"
+
+N_BATCH_QUEUE_help="
+Defines how many batch queues are available
+"
+
+BATCH_QUEUE_help="
+Defines the name of each of the N_BATCH_QUEUE, delimited by a space
+"
+
+N_DEDICATE_QUEUE_help="
+Defines how many dedicated queues are available
+"
+
+DEDICATE_QUEUE_help="
+Defines the name of each of the N_DEDICATE_QUEUE, delimited by a space
+"
+
+NODES_help="
+The total number of nodes available on the system
+"
+
+MAILER_help="
+The type of mailer which will be used to mail users and ADMIN in the 
+case of accounting problems. (Typical values: /usr/bin/mailx, /bin/mail)
+"
+
+ADMIN_help="
+When there is some kind of accounting error (overdrawn account), 
+the MACD mails a message to the user causing the problem.  If ADMIN is not 
+empty, then the MACD will also send a message to the specified system 
+administrator.
+"
+
+OPERATOR_help="
+In case of a detectable system problem, the OPERATOR is notified 
+by a broadcast to the operator terminal.  The OPERATOR string should give 
+the name of the system operator.
+"
+
+SWITCHLOG_help="
+Because the MACD logs can get rather long, they are switched periodically.  
+SWITCHLOG specifies how often the log files are to be 
+changed.  SWITCHLOG takes one of three values:	
+		SWITCHLOG daily
+		SWITCHLOG weekly
+		SWITCHLOG monthly
+"
+
+MACDMODE_help="
+MACDMODE allows the administrator to turn off monitoring of CPU quotas.  
+Allowed values are:
+	acctonly	Only provide accounting reports.  
+	macwatch	Provide both accounting reports and CPU quotas.
+"
+
+ENFORCE_help="
+Specifies the desired level of job control when quotas are exceeded.  
+	<blank>		do not kill jobs 
+	acctkill	kill jobs when account's allocation is exhausted 
+	userkill	kill jobs when user's allocation is exhausted 
+"
+
+QUEUE_CHARGE_help="
+Specifies the charge rate for a particular batch queue. 
+"
+
+DEF_QRATE_help="
+Specifies the charge rate for interactive jobs or for jobs run in queues 
+that are undefined in the NQSTABLE file.
+"
+
+UNDERUSE_help="
+Specifies the charge rate for underutilized nodes for an NQS job.  
+Under-used node-time is defined as the idle node-time when at least one 
+application is running in an NQS partition.
+"
+
+
+IDLERATE_help="
+Specifies the charge rate for idle node-time accrued by NQS jobs.  Idle 
+time is defined as the time when there is no application running in an NQS 
+partition that has been assigned to a job.
+"
+
+
+SYNC_INTERVAL_help="
+Specifies the desired time interval in minutes that is used for MACD 
+synchronization.  At this interval, MACD gets status information from SMD 
+and synchronizes the disk database with the internal tables.
+"
+#############
+prompt="
+Please specify or validate the MACS scheduling parameters given in the
+following prompts.  The values displayed in brackets are the default
+values.  To use the defaults, just press the Return key.  If you want
+to change the default or when no default is given, enter the desired
+value followed by the Return key.  If you want more information on
+a parameter, enter a question mark (?).
+"

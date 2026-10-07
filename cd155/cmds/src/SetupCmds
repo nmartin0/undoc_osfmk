@@ -1,0 +1,29 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+
+# This script is designed to be run as the initial setup of a commands/libs
+# sandbox.  You should be able to check this file out, source the setup.csh
+# file in your BUILD_XDEV directory, run this script, 
+# check out cmds/libs source, cd to the right directory, and
+# run 'cmake'.  Good luck.
+# 
+
+chmod +w Makeconf
+here=`pwd`
+cat Makeconf | sed "s;^OSFTOP=.*;OSFTOP=$here/..;g" > Makeconf.new
+mv -f Makeconf.new Makeconf
+[ -d ../obj ] || mkdir ../obj
+[ -d ../obj/ipsc860 ] || mkdir ../obj/ipsc860
+[ -d cmds_libs ] || ln -s . cmds_libs
+[ -d cmds_libs/src ] || ln -s . cmds_libs/src
+

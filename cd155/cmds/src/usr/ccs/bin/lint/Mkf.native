@@ -1,0 +1,58 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0
+
+#
+# Make file for creating lint libraries after OSF/1 is booted
+#
+#
+DATAFILES		= ${ANSI_LIST} ${LLIB_LIST}
+
+LIB_IDIR		= /usr/ccs/lib/
+
+CFLAGS	= \
+	-DNEWCALL	\
+	-DHOSTIEEE	\
+	-DSDBDEBUG	\
+	-DTWOPASS	\
+	-DSINGLE_PRECISION	\
+	-D_COMPILER	\
+	-DLINT
+
+ANSI_LIST = llib-lansi.ln
+LLIB_LIST =	\
+	llib-lc.ln	\
+	llib-port.ln	\
+	llib-lm.ln	\
+	llib-lcrses.ln
+
+NLINT1	= /usr/ccs/lib/lint1
+
+#
+#	This builds the lint libraries for OSF/1.  N.B, that this
+#	needs to be done RUNNING on an OSF/1 system.
+
+all: ${DATAFILES}
+	cp ${DATAFILES} ${LIB_IDIR}
+
+$(ANSI_LIST): $$(@:.ln=.c)
+	$(CC) -E -C $* | $(NLINT1) -wAP -MA -L$@
+
+
+$(LLIB_LIST): $$(@:.ln=.c)
+	$(CC) ${_CCFLAGS_} -E -C $(@:.ln=.c) | $(NLINT1) -Nn2500 -Nd3000 -L$@
+

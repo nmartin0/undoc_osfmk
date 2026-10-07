@@ -1,0 +1,262 @@
+#!/sbin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# (c) Copyright 1990, 1991, OPEN SOFTWARE FOUNDATION, INC.
+# ALL RIGHTS RESERVED
+#
+#
+# OSF/1 Release 1.0.3
+
+PATH=/sbin
+HOME=/
+export PATH
+
+#
+# Check filesystems in three stages:
+#
+# First:
+#	fsck root, usr and boot-node vnode paging filesystems, fstab passes 1..2
+#	mount root, usr and boot-node vnode paging filesystems
+# Second:
+#	boot the mesh. We delay the boot-node vnode pager setup (swapon)
+#	to make sure the remote nodes with devices (disks) have enough time
+#	to initialize and become ready to receive device requests. If the
+#	device requests come too fast the boot-node will hang waiting for the
+#	remote node to respond.
+# Third:
+#	perform a swapon for the boot-node vnode paging filesystem.
+#	fsck, mount and setup vnode pagers for the remaining filesystems.
+#	At this stage fsck can go parallel for nodes and disk-spindles.
+#
+# It is critical that service nodes supporting filesystems
+# be up and running before fscks are attempted.
+#
+# Always check the 'root' filesystem
+#
+echo "Checking root filesystem"
+/sbin/fsck -y -P1..1
+st=$?
+if [ "$st" -eq 8 ]; then
+       	echo "Retrying fsck ..."
+	/sbin/fsck -y -P1..1
+	st=$?
+fi
+case "$st" in
+0)
+	;;
+4)
+	echo "Root filesystem modified."
+	/sbin/reboot -n
+	exit
+	;;
+8)
+	echo "Automatic reboot failed. Run fsck manually."
+	/sbin/init S
+	exit
+	;;
+12)
+	echo "Reboot interrupted"
+	/sbin/init S
+	exit
+	;;
+*)
+	echo "Unknown error in reboot"
+	/sbin/init S
+	exit
+	;;
+esac
+
+if [ -r /fastboot ]
+then
+	echo "Fast boot ... skip remaining disk checks"
+else
+#
+# Do required local filesystem to boot mesh nodes: '/usr'.
+#
+	echo "Checking local filesystems"
+	/sbin/fsck -y -p -P2..2
+	st=$?
+	if [ "$st" -eq 8 ]; then
+        	echo "Retrying fsck ..."
+		/sbin/fsck -y -P2..2
+		st=$?
+	fi
+	case "$st" in
+	0)
+		;;
+	4)
+		;;
+	8)
+		echo "Automatic reboot failed. Run fsck manually."
+		/sbin/init S
+		exit
+		;;
+	12)
+		echo "Reboot interrupted"
+		/sbin/init S
+		exit
+		;;
+	*)
+		echo "Unknown error in reboot"
+		/sbin/init S
+		exit
+		;;
+	esac
+fi
+
+#
+# Mount local (required to boot mesh) filesystems
+#	starting with /etc/fstab pass 1 ending with pass 2.
+#
+echo "Mounting local filesystems"
+/sbin/mount -vat ufs -P1..2
+
+#
+# provide default vnode paging for root(s) of paging tree(s)
+#
+rm -f /tmp/when_swapon_ran1
+/sbin/init.d/paging default
+
+#
+# Boot remaining nodes on the mesh
+#
+rm -f /tmp/when_bootmesh_ran
+rm -f /etc/nx/bootmesh.time
+/sbin/bootmesh.sh
+skipit=`/sbin/getmagic DISABLE_BOOTMESH`
+if [ "$skipit" -ne 0 ]
+then
+        /sbin/disablemesh
+else
+        /sbin/reset_boot_node_list.sh
+fi
+
+#
+# Set timezone
+#
+TZ=EST5EDT
+if [ -s /etc/TIMEZONE ]; then
+        . /etc/TIMEZONE
+else
+        echo "ERROR: /etc/TIMEZONE missing. Assuming $TZ"
+fi
+/sbin/settime
+
+#
+# Wait for remote nodes to come out to accept device requests and rforks
+# from parallel fsck.
+#
+sleep 5
+
+# If you want to turn on watchdog, uncomment the following line. Note: If
+# there are nodes which did not boot, watchdog will not know about them,
+# declare them as dead and possibly automatically reboot the system!
+watchdog on
+
+#
+# Check the remaining filesystems:
+#	"/etc/fstab", pass 3 filesystems are boot-node local but not required
+#		to boot the mesh.
+#	Pass 4 and above are all remote filesystems.
+#
+if [ -r /fastboot ]
+then
+	echo "Fast boot ... skipping local disk checks"
+else
+	echo "Check remaining local filesystems"
+	/sbin/fsck -y -p -P3..3
+	st=$?
+	if [ "$st" -eq 8 ]; then
+        	echo "Retrying fsck ..."
+		/sbin/fsck -y -P3..3
+		st=$?
+	fi
+	case "$st" in
+	0)
+		;;
+	4)
+		;;
+	8)
+		echo "Automatic reboot failed. Run fsck manually."
+		/sbin/init S
+		exit
+		;;
+	12)
+		echo "Reboot interrupted"
+		/sbin/init S
+		exit
+		;;
+	*)
+		echo "Unknown error in reboot"
+		/sbin/init S
+		exit
+		;;
+	esac
+fi
+
+#
+# provide vnode pagers for paging trees
+#
+rm -f /tmp/when_swapon_ran
+/sbin/init.d/paging
+
+#
+# Check remote filesystems:
+#
+if [ -r /fastboot ]
+then
+	echo "Fast boot ... skipping remote disk checks"
+else
+	echo "Check remote filesystems"
+	/sbin/fsck -y -p -P4
+	st=$?
+	if [ "$st" -eq 8 ]; then
+        	echo "Retrying fsck ..."
+		/sbin/fsck -y -P4
+		st=$?
+	fi
+	case "$st" in
+	0)
+		;;
+	4)
+		;;
+	8)
+		echo "Automatic reboot failed. Run fsck manually."
+		/sbin/init S
+		exit
+		;;
+	12)
+		echo "Reboot interrupted"
+		/sbin/init S
+		exit
+		;;
+	*)
+		echo "Unknown error in reboot"
+		/sbin/init S
+		exit
+		;;
+	esac
+fi
+
+#
+# Remove fastboot flag
+#
+/sbin/rm -f /fastboot
+
+#
+# mount remaining ufs filesystems, fstab pass 3 on up.
+#
+echo 'Mount remaining filesystems'
+/sbin/mount -a -v -t ufs -P3
+/sbin/mount -a -v -t pfs -P3
+

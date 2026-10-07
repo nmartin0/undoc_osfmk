@@ -1,0 +1,385 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# This script is used to install standard Paragon tools such as IPD, SPV,
+# as well as motif, dgl, opengl. 
+# This install assumes that the related tools tar files are on
+# a remote system. It prompts user to get correct information.
+
+DEFAULTS_FILE=/etc/defaults/install
+DIST_ADDRESS=0.0.0.0
+DIST_NODENAME=unknown
+DIST_PATH=/distribution
+TOOLS_TAR=tools.tar
+TOOLS_DOC_TAR=tools.doc.tar
+MOTIF_TAR=motif.tar
+DGL_TAR=dgl.tar
+OPENGL_TAR=opengl.tar
+TFLAG=Y
+MFLAG=Y
+DFLAG=Y
+OFLAG=Y
+TGET=""
+TDGET=""
+MGET=""
+DGET=""
+OGET=""
+ASK_QUESTIONS=0
+
+
+###########################################################################
+# FUNCTION:     GetTarFiles
+#
+#       This function will go to the distribution system and retrieve the
+#       tar files. If a failure happens, the user will be given the chance
+#       to change the information.
+###########################################################################
+GetTarFiles()
+{
+        GET_COMPRESSED=1
+        Done=0
+        if [ "$TFLAG" = "Y" ]; then
+		TGET="get $TOOLS_TAR.Z"
+		TDGET="get $TOOLS_DOC_TAR.Z"
+	fi
+        if [ "$MFLAG" = "Y" ]; then
+        	MGET="get $MOTIF_TAR.Z"
+	fi
+        if [ "$DFLAG" = "Y" ]; then
+        	DGET="get $DGL_TAR.Z"
+	fi
+        if [ "$OFLAG" = "Y" ]; then
+        	OGET="get $OPENGL_TAR.Z"
+	fi
+        while [ $Done -eq 0 ]; do
+                echo "Username for FTP'ing files from $DIST_NODENAME:[anonymous] \c"
+                read FTP_USER
+                if [ -z "$FTP_USER" ]; then
+                        FTP_USER=anonymous
+                fi
+                ftp -n -v $DIST_ADDRESS <<EOF1
+                        user $FTP_USER
+                        binary
+                        lcd /home
+                        cd $DIST_PATH
+                        $TGET
+                        $TDGET
+                        $MGET
+                        $DGET
+                        $OGET
+                        quit
+EOF1
+
+
+# Check to make sure each of the files has been copied down to the target
+# machine. If these files are not here, give the user a change to repeat.
+
+                Fail=0
+                if [ ! -f /home/$TOOLS_TAR.Z -a "$TFLAG" = "Y" ]; then
+                        echo "WARNING: $TOOLS_TAR.Z was not retrieved."
+                        Fail=1
+                fi
+                if [ ! -f /home/$MOTIF_TAR.Z -a "$MFLAG" = "Y" ]; then
+                        echo "WARNING: $MOTIF_TAR.Z was not retrieved."
+                        Fail=1
+                fi
+                if [ ! -f /home/$DGL_TAR.Z -a "$DFLAG" = "Y"  ]; then
+                        echo "WARNING: $DGL_TAR.Z was not retrieved."
+                        Fail=1
+
+                fi
+                if [ ! -f /home/$OPENGL_TAR.Z -a "$OFLAG" = "Y"  ]; then
+                        echo "WARNING: $OPENGL_TAR.Z was not retrieved."
+                        Fail=1
+                fi
+
+                if [ $Fail -eq 0 ]; then
+
+# Uncompress the files we just retrieved.
+                        if [ $GET_COMPRESSED -eq 1 ]; then
+                                Fail=0
+                                if [ "$TFLAG" = "Y" ]; then
+                                	cd /home
+                                	echo "Uncompressing $TOOLS_TAR.Z..."
+                                	uncompress $TOOLS_TAR.Z
+                                	if [ $? -ne 0 ]; then
+                                       	 	Fail=1
+                                	fi
+					if [ $Fail -eq 0 ]; then
+						cd /
+                                		echo "Extracting $TOOLS_TAR..."
+						tar xf /home/$TOOLS_TAR
+                                		if [ $? -ne 0 ]; then
+                                       	 		Fail=1
+                                		fi
+						rm -f /home/$TOOLS_TAR
+                                		if [ $Fail -eq 0 ]; then
+                                			echo "Done installing standard Paragon tools."
+							echo
+						fi
+						if [ $Fail -eq 0 ]; then
+						   if [ ! -f /home/$TOOLS_DOC_TAR.Z ]; then
+							echo "WARNING: $TOOLS_DOC_TAR.Z is not available to install tools documentation."
+						   	echo
+						   else
+							echo "Uncompressing $TOOLS_DOC_TAR.Z..."
+							cd /home
+							uncompress $TOOLS_DOC_TAR.Z
+						   	if [ $? -ne 0 ]; then
+							  echo "WARNING: Problem uncompressing $TOOLS_DOC_TAR.Z"
+							else
+							  cd /usr/share
+							  echo "Extracting $TOOLS_DOC_TAR..."
+							  tar xf /home/$TOOLS_DOC_TAR
+							  if [ $? -ne 0 ]; then
+							     echo "WARNING: problem extracting  $TOOLS_DOC_TAR"
+							  else
+							     echo "Done installing online documentation for tools"
+							  fi
+							  echo
+							  rm -f /home/$TOOLS_DOC_TAR
+							fi
+						   fi
+						fi
+					fi
+				fi
+                                if [ "$MFLAG" = "Y" ]; then
+                                	cd /home
+                                	echo "Uncompressing $MOTIF_TAR.Z..."
+                                	uncompress $MOTIF_TAR.Z
+                                	if [ $? -ne 0 ]; then
+                                       	 	Fail=1
+                                	fi
+					if [ $Fail -eq 0 ]; then
+						cd /
+                                		echo "Extracting $MOTIF_TAR..."
+						tar xf /home/$MOTIF_TAR
+                                		if [ $? -ne 0 ]; then
+                                       	 		Fail=1
+                                		fi
+						rm -f /home/$MOTIF_TAR
+                                		if [ $Fail -eq 0 ]; then
+                                			echo "Done installing motif."
+							echo
+						fi
+					fi
+				fi
+                                if [ "$DFLAG" = "Y" ]; then
+                                	cd /home
+                                	echo "Uncompressing $DGL_TAR.Z..."
+                                	uncompress $DGL_TAR.Z
+                                	if [ $? -ne 0 ]; then
+                                       	 	Fail=1
+                                	fi
+					if [ $Fail -eq 0 ]; then
+						cd /
+                                		echo "Extracting $DGL_TAR..."
+						tar xf /home/$DGL_TAR
+                                		if [ $? -ne 0 ]; then
+                                       	 		Fail=1
+                                		fi
+						rm -f /home/$DGL_TAR
+                                		if [ $Fail -eq 0 ]; then
+                                			echo "Done installing dgl."
+							echo
+						fi
+					fi
+				fi
+                                if [ "$OFLAG" = "Y" ]; then
+                                	cd /home
+                                	echo "Uncompressing $OPENGL_TAR.Z..."
+                                	uncompress $OPENGL_TAR.Z
+                                	if [ $? -ne 0 ]; then
+                                       	 	Fail=1
+                                	fi
+					if [ $Fail -eq 0 ]; then
+						cd /
+                                		echo "Extracting $OPENGL_TAR..."
+						tar xf /home/$OPENGL_TAR
+                                		if [ $? -ne 0 ]; then
+                                       	 		Fail=1
+                                		fi
+						rm -f /home/$OPENGL_TAR
+                                		if [ $Fail -eq 0 ]; then
+                                			echo "Done installing opengl."
+							echo
+						fi
+					fi
+				fi
+                                if [ $Fail -eq 1 ]; then
+                                        echo "ERROR: At least one of the tar files was corrupt!"
+                                fi
+                        fi
+                fi
+                if [ $Fail -eq 1 ]; then
+                        echo "\n"
+                        echo "There were errors retrieving or uncompressing the tar files."
+                        Confirm=1
+			rm -f /home/$TOOLS_TAR.Z /home/$TOOLS_TAR /home/$MOTIF_TAR.Z /home/$MOTIF_TAR /home/$DGL_TAR.Z /home/$DGL_TAR /home/$OPENGL_TAR.Z /home/$OPENGL_TAR 
+
+                        while [ $Confirm -eq 1 ]; do
+                                echo "\n"
+                echo "================= RESPONSE SUMMARY ==============================="
+                echo "Install standard Paragon tools:		"$TFLAG
+                echo "Install motif:				"$MFLAG
+                echo "Install dgl:				"$DFLAG
+                echo "Install opengl:				"$OFLAG
+                echo "Distribution Node:			"$DIST_NODENAME
+                echo "Distribution IP Addr:			"$DIST_ADDRESS
+                echo "Distribution Path:			"$DIST_PATH
+                echo "------------------------------------------------------------------"
+                                echo "Is the above information correct? (y/n/q)[y]\c "; read ans
+                                if [ -z "$ans" ]; then
+                                        ans=Y
+                                fi
+                                if [ $ans = "n" -o $ans = "N" ]; then
+                        		Done=0
+                                        Confirm=0
+                                        AskQuestions
+                                elif [ $ans = "q" -o $ans = "Q" ]; then
+                        		Done=1
+                                        Confirm=0
+                                else
+                                        Confirm=0
+                                fi
+                        done
+
+                else
+                        Done=1
+                fi
+        done
+}
+
+###########################################################################
+# FUNCTION:     AskQuestions()
+#
+#       Ask questions to get all the info
+###########################################################################
+AskQuestions()
+{
+        Qdone=0
+        while [ $Qdone -eq 0 ]; do
+
+             if [ $ASK_QUESTIONS -eq 1 ]; then
+
+		   echo "Would you like to install standard Paragon tools? (y/n)[y]\c "; read ans
+		   if [ -z "$ans" ]; then
+			ans=Y
+		   fi
+		   if [ $ans != "y" -a $ans != "Y" ]; then 
+			TFLAG=N
+		   else
+			TFLAG=Y
+			TGET="get $TOOLS_TAR.Z"
+			TDGET="get $TOOLS_DOC_TAR.Z"
+		   fi
+		   echo "Would you like to install motif? (y/n)[y]\c "; read ans
+		   if [ -z "$ans" ]; then
+			ans=Y
+		   fi
+		   if [ $ans != "y" -a $ans != "Y" ]; then 
+        		MFLAG=N
+		   else
+			MFLAG=Y
+        		MGET="get $MOTIF_TAR.Z"
+		   fi
+		   echo "Would you like to install dgl? (y/n)[y]\c "; read ans
+		   if [ -z "$ans" ]; then
+        		ans=Y
+		   fi
+		   if [ $ans != "y" -a $ans != "Y" ]; then 
+        		DFLAG=N
+		   else
+			DFLAG=Y
+        		DGET="get $DGL_TAR.Z"
+		   fi
+		   echo "Would you like to install opengl? (y/n)[y]\c "; read ans
+		   if [ -z "$ans" ]; then
+        		ans=Y
+		   fi
+		   if [ $ans != "y" -a $ans != "Y" ]; then 
+        		OFLAG=N
+		   else
+			OFLAG=Y
+        		OGET="get $OPENGL_TAR.Z"
+		   fi
+		   if [ "$TFLAG" = "N" -a "$MFLAG" = "N" -a "$DFLAG" = "N" -a "$OFLAG" = "N" ]; then
+			echo
+			echo "No files got retrieved to install Paragon tools."
+			echo
+			exit 1
+		   fi
+                   echo "Distribution Node Name [$DIST_NODENAME]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_NODENAME=$ans
+                   fi
+                   echo "Distribution IP Address [$DIST_ADDRESS]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_ADDRESS=$ans
+                   fi
+                   echo "Distribution Path [$DIST_PATH]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_PATH=$ans
+                   fi
+
+		fi
+		ASK_QUESTIONS=1
+                echo "\n"
+                echo "================= RESPONSE SUMMARY ==============================="
+                echo "Install standard Paragon tools:		"$TFLAG
+                echo "Install motif:				"$MFLAG
+                echo "Install dgl:				"$DFLAG
+                echo "Install opengl:				"$OFLAG
+                echo "Distribution Node:			"$DIST_NODENAME
+                echo "Distribution IP Addr:			"$DIST_ADDRESS
+                echo "Distribution Path:			"$DIST_PATH
+                echo "------------------------------------------------------------------"
+                echo "Is the above information correct? (y/n/q)[n] \c "
+                read ans
+                if [ -z "$ans" ]; then
+                        ans="N"
+                fi
+                if [ $ans = "y" -o $ans = "Y" ]; then
+                        Qdone=1
+                fi
+                if [ $ans = "q" -o $ans = "Q" ]; then
+                        Qdone=1
+                        Done=1
+                fi
+        done
+}
+###########################################################################
+#                      S T A R T  O F  I N S T A L L A T I O N
+###########################################################################
+
+if [ -f $DEFAULTS_FILE ]; then
+	DIST_ADDRESS=`grep DIST_ADDRESS $DEFAULTS_FILE | cut -f2 -d' '`
+	DIST_NODENAME=`grep DIST_NODENAME $DEFAULTS_FILE | cut -f2 -d' '`
+	DIST_PATH=`grep DIST_PATH $DEFAULTS_FILE | cut -f2 -d' '`
+fi
+if [ -z "$DIST_ADDRESS" ]; then
+	DIST_ADDRESS=0.0.0.0
+	ASK_QUESTIONS=1
+fi
+if [ -z "$DIST_NODENAME" ]; then
+	DIST_NODENAME=unknown
+	ASK_QUESTIONS=1
+fi
+if [ -z "$DIST_PATH" ]; then
+	DIST_PATH=/distribution
+	ASK_QUESTIONS=1
+fi
+
+AskQuestions
+if [ $ans != "q" -a $ans != "Q" ]; then
+   GetTarFiles
+fi

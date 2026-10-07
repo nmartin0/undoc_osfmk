@@ -1,0 +1,209 @@
+#!/bin/sh
+# 
+# $Copyright
+# Copyright 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+# This script is used to install the Basic Math Libraries.
+# This install assumes that the libraries and documentation tar file are on
+# a remote system. It prompts user to get correct information.
+
+DEFAULTS_FILE=/etc/defaults/install
+DIST_ADDRESS=0.0.0.0
+DIST_NODENAME=unknown
+DIST_PATH=/distribution
+BML_DOC_TAR=bml.doc.tar
+ASK_QUESTIONS=0
+
+
+###########################################################################
+# FUNCTION:     GetTarFiles
+#
+#       This function will go to the distribution system and retrieve the
+#       basic math libraries and documentation tar file.  If a failure 
+#       happens, the user will be given the chance to change the information.
+###########################################################################
+GetTarFiles()
+{
+        Done=0
+        while [ $Done -eq 0 ]; do
+                echo "Username for FTP'ing files from $DIST_NODENAME:[anonymous] \c"
+                read FTP_USER
+                if [ -z "$FTP_USER" ]; then
+                        FTP_USER=anonymous
+                fi
+                ftp -n -v $DIST_ADDRESS <<EOF1
+                     user $FTP_USER
+                     binary
+                     lcd /home
+                     cd $DIST_PATH
+                     get libkmath.a
+                     get libkmath_r.a
+                     get $BML_DOC_TAR.Z
+                     quit
+EOF1
+
+
+# Check to make sure each of the files has been copied down to the target
+# machine. If these files are not here, give the user a change to repeat.
+                Fail=0
+                if [ ! -f /home/libkmath.a ]; then
+                        echo "ERROR: libkmath.a was not retrieved."
+                        Fail=1
+                fi
+                if [ ! -f /home/libkmath_r.a ]; then
+                        echo "ERROR: libkmath_r.a was not retrieved."
+                        Fail=1
+                fi
+                if [ ! -f /home/$BML_DOC_TAR.Z ]; then
+                        echo "ERROR: $BML_DOC_TAR.Z was not retrieved."
+                        Fail=1
+
+                fi
+
+                if [ $Fail -eq 0 ]; then
+# Install the basic math libraries and create the links in usr/lib if they
+# do not exist.
+		   echo "Installing basic math libraries..."
+                   cd /usr/ccs/lib
+                   cp /home/libkmath.a libkmath.a
+                   if [ $? -ne 0 ]; then
+                           Fail=1
+                   fi
+                   rm /home/libkmath.a
+                   cp /home/libkmath_r.a libkmath_r.a
+                   if [ $? -ne 0 ]; then
+                           Fail=1
+                   fi
+                   rm /home/libkmath_r.a
+                   if [ $Fail -eq 0 ]; then
+                      chown root libkmath.a libkmath_r.a
+                      chgrp system libkmath.a libkmath_r.a
+                      chmod 644 libkmath.a libkmath_r.a
+                   fi
+                   cd /usr/lib
+                   if [ ! -f libkmath.a ]; then
+                      ln -s ../ccs/lib/libkmath.a libkmath.a
+                   fi
+                   if [ ! -f libkmath_r.a ]; then
+                      ln -s ../ccs/lib/libkmath_r.a libkmath_r.a
+                   fi
+
+# Uncompress the documentation tar file we just retrieved.
+
+                   if [ $Fail -eq 0 ]; then             
+                      echo "Done installing basic math libraries"
+		      echo "Installing basic math library documentation..."
+                      cd /home
+                      echo "Uncompressing $BML_DOC_TAR.Z..."
+                      uncompress $BML_DOC_TAR.Z
+                      if [ $? -ne 0 ]; then
+                              Fail=1
+                      fi
+		      if [ $Fail -eq 0 ]; then
+		 	 cd /usr/share
+                         echo "Extracting $BML_DOC_TAR..."
+			 tar xpf /home/$BML_DOC_TAR
+                         if [ $? -ne 0 ]; then
+                               	Fail=1
+                         fi
+			 rm -f /home/$BML_DOC_TAR
+                         if [ $Fail -eq 0 ]; then
+                             echo "Done installing basic math library documentation."
+		             echo
+			 fi
+	              fi
+                   fi
+                fi
+	        if [ $Fail -eq 0 ]; then
+                   Done=1
+                else 
+                   echo "There were errors retrieving or uncompressing the files."
+                   rm -f /home/libkmath.a /home/libkmath_r.a /home/$BML_DOC_TAR.Z
+		   ASK_QUESTIONS=0
+                   AskQuestions
+                fi
+        done
+}
+
+###########################################################################
+# FUNCTION:     AskQuestions()
+#
+#       Ask questions to get all the info
+###########################################################################
+AskQuestions()
+{
+        Qdone=0
+        while [ $Qdone -eq 0 ]; do
+
+             if [ $ASK_QUESTIONS -eq 1 ]; then
+                   echo "Distribution Node Name [$DIST_NODENAME]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_NODENAME=$ans
+                   fi
+                   echo "Distribution IP Address [$DIST_ADDRESS]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_ADDRESS=$ans
+                   fi
+                   echo "Distribution Path [$DIST_PATH]: \c"; read ans
+                   if [ ! -z "$ans" ]; then
+                        DIST_PATH=$ans
+                   fi
+
+		fi
+		ASK_QUESTIONS=1
+                echo "\n"
+                echo "================= RESPONSE SUMMARY ==============================="
+                echo "Distribution Node:                       "$DIST_NODENAME
+                echo "Distribution IP Addr:                    "$DIST_ADDRESS
+                echo "Distribution Path:                       "$DIST_PATH
+                echo "------------------------------------------------------------------"
+                echo "Is the above information correct? (y/n/q)[n] \c "
+                read ans
+                if [ -z "$ans" ]; then
+                        ans="N"
+                fi
+                if [ $ans = "y" -o $ans = "Y" ]; then
+                        Qdone=1
+                fi
+                if [ $ans = "q" -o $ans = "Q" ]; then
+                        Qdone=1
+                        Done=1
+                fi
+        done
+}
+###########################################################################
+#                      S T A R T  O F  I N S T A L L A T I O N
+###########################################################################
+
+OLD_UMASK=`umask`
+umask 022
+if [ -f $DEFAULTS_FILE ]; then
+	DIST_ADDRESS=`grep DIST_ADDRESS $DEFAULTS_FILE | cut -f2 -d' '`
+	DIST_NODENAME=`grep DIST_NODENAME $DEFAULTS_FILE | cut -f2 -d' '`
+	DIST_PATH=`grep DIST_PATH $DEFAULTS_FILE | cut -f2 -d' '`
+fi
+if [ -z "$DIST_ADDRESS" ]; then
+	DIST_ADDRESS=0.0.0.0
+	ASK_QUESTIONS=1
+fi
+if [ -z "$DIST_NODENAME" ]; then
+	DIST_NODENAME=unknown
+	ASK_QUESTIONS=1
+fi
+if [ -z "$DIST_PATH" ]; then
+	DIST_PATH=/distribution
+	ASK_QUESTIONS=1
+fi
+
+AskQuestions
+if [ $ans != "q" -a $ans != "Q" ]; then
+   GetTarFiles
+fi
+umask $OLD_UMASK
+exit 0

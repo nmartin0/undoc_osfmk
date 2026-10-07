@@ -1,0 +1,39 @@
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+"test6" README
+==============
+
+Source: node.c errexit.c
+
+Desc:	"node.c" tests the writing of 31 different datasets;
+	while writing the data to the dataset, it also creates scenario for
+        twrite to fail and return negative values.
+
+Invoke:	load [0] node.rx [/cfs/ctape0 [TEST01]]
+
+Note:	* use 1 scratch tape
+	* "test6.sh" calls "node.rx" 
+	* log is on "test6.SLr0" 
+	* result is on "test6.SRr0" 
+	* tape will not be unloaded after the test because of the 
+	  undocumented "set_tapedev" statement
+	* USE "test1a", "test1b", or "test1c" to verify.  The C source needs
+	  to be changed with constant UEXITRET=0 (use "node_a6.c", "node_b6.c",
+	  and "node_c6.c")
+
+Algo:   * write 31 dataset using different "data control block" settings
+	* each dataset contains JMAX * IMAX numbers of record (i.e. JMAX * IMAX
+	  "twrite" is called) with JMAX = 2 and IMAX = 101
+	* NULL user exit call is used                             
+	* use "test1[abc].c" to verify (read) the tape content with source 
+          change to UEXITRET=0
+

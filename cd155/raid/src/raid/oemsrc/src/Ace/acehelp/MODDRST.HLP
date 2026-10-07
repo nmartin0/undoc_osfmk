@@ -1,0 +1,201 @@
+     EXPLANATION OF OPTION
+ 
+     Use this option to modify a drive's status by adding it, deleting it, 
+     failing it, or reconstructing its drive data.  
+ 
+     NOTE:  A procedure for modifying a drive status is included in the 
+            help screens following the explanation of option.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                  (CONTINUED)
+  HOW TO MODIFY A DRIVE'S STATUS
+ 
+   ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+   HOW TO MODIFY                          ³  STATUS BECOMES . . .
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   Add a non-existent (1) drive           ³ Spare (2)
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   Delete an optimal (0) drive            ³ Non-existent (1)
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   Fail an optimal (0) drive              ³
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´ Failed (3)
+   Fail a warning (5) drive               ³
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   Reconstruct data on a failed (3)       ³ Replace (4) to Optimal (0)
+   drive *                                ³
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   Format a failed (3) drive before       ³ Formatting (8) to
+   reconstructing drive data              ³ Replace (4) to Optimal (0)
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   * This occurs automatically if you have not disabled the 
+     "Auto-detection Of Drive Replacement And Reconstruction" option.
+   ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+                                  (CONTINUED)
+   "ADD" DRIVE STATUS
+ 
+     WHAT "ADD" MEANS:  Adding a drive through software causes the array 
+     controller to change the drive status from "Non-existent" (1) to 
+     "Spare" (2), thus making the drive available for you to create a 
+     logical unit.  
+ 
+     WHEN TO ADD A DRIVE:  You do NOT need to use this option (unless you 
+     mistakenly delete a drive).  It is a feature for non-NCR array 
+     subsystems.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                  (CONTINUED)
+     "DELETE" DRIVE STATUS
+ 
+     WHAT "DELETE" MEANS:  Deleting a drive through software causes the 
+     array controller to change the drive status from "Spare" (2) to "Non-
+     existent" (1).  This means you can never delete a drive that is part 
+     of a logical unit.  First, delete the logical unit (after backing up 
+     any data on it), then delete the drive.
+ 
+     WHEN TO DELETE A DRIVE:  Delete a drive when you plan to remove the 
+     drive from an array subsystem (or integrated array) but are not 
+     planning to replace it.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     "FAIL" DRIVE STATUS
+ 
+     WHAT "FAIL" MEANS:  Failing a drive through software causes the array 
+     controller to change the drive status from "Optimal" (0) or "Warning" 
+     (5) to "Failed" (3).  Once a drive is failed, the array controller can 
+     NOT access that drive's data until you reconstruct the drive data 
+     (select the "Reconstruct" drive data option).  
+ 
+     IMPORTANT NOTE:  Do NOT fail a drive in a RAID 0 logical unit
+                      because there is no parity.  Do NOT fail a 
+                      drive in a RAID 1, 3, or 5 logical unit if
+                      the logical unit is already degraded.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                  (CONTINUED)
+     WHEN TO FAIL A DRIVE:  Fail a drive in the following circumstances:
+ 
+          - If the drive status is "Warning" (5) and you want
+            to replace the drive.  You should fail the drive
+            before you replace it.
+ 
+          - When you want to format a drive in a logical unit.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                (CONTINUED)
+     "RECONSTRUCT" DRIVE STATUS
+ 
+     WHAT "RECONSTRUCT" MEANS:  Reconstructing data on a drive causes the 
+     array controller to do the following, in order:
+ 
+          - Sense that there is a new drive in the array,
+          - Change the drive status to "Replace" (4),
+          - Copy special array controller files to the new drive,
+          - Recalculate data and parity from the data and parity
+            on the other drives,
+          - Write the recalculated data and parity to the new drive,
+          - Change the drive status to "Optimal" (0).
+ 
+ 
+     WHEN TO RECONSTRUCT DRIVE DATA:  When you replace a drive, the array 
+     controller AUTOMATICALLY starts reconstructing the drive data (unless 
+     you have disabled the "Auto-detection Of Drive Replacement And 
+     Reconstruction" option using acf).  If you replace a drive and 
+     reconstruction does NOT start automatically, manually initiate 
+     reconstruction using this option.
+ 
+ 
+                                  (CONTINUED)
+     IMPORTANT NOTE:  Remember, a RAID 0 array does not have parity so 
+                      you can NOT recover the data by reconstructing 
+                      it.  You must restore the RAID 0 array to a 
+                      working state by formatting the logical unit, 
+                      then copying the data from the back-up media 
+                      file-by-file (see the "Format Logical Unit" 
+                      option in the logical unit window).
+ 
+     ABOUT FORMATTING A DRIVE 
+ 
+     Most of the time, a drive is pre-formatted, so the array controller 
+     does not format it again.  However, you may want to format a drive 
+     that is already in the logical unit if you suspect that the drive is 
+     still good.
+ 
+     First, to force a drive format, you must disable the "Auto-detection 
+     Of Drive Replacement And Reconstruction" option (using acf).  Then, 
+     replace the drive, and reconstruction will NOT automatically start.  
+     Next, select the "Reconstruct" drive data option in the drive window 
+     to manually initiate reconstruction, and the Array Configuration 
+     Editor gives you the choice to format the drive.  Press "y" to format 
+     the drive.  While the drive is formatting, the drive status is 
+     "Formatting" (8).
+                                  (CONTINUED)
+     PROCEDURE -- MODIFYING A DRIVE STATUS: 
+     ADDING, DELETING, FAILING OR RECONSTRUCTING
+ 
+     NOTE:  See the other help options for the specific steps to add, 
+            delete, or fail a drive, or to reconstruct drive data. 
+ 
+     1.   Select a drive by pressing the arrow keys.
+ 
+     2.   Press a key corresponding to one of the options in the
+          drive window.  For example, press "a" to add a drive.
+ 
+     NOTE:  See the "Help" option in the drive window for more 
+            information about the drive operations you can perform.
+ 
+     3.   If necessary, press "c" to confirm that you want to continue
+          with the operation you selected, or press "q" to quit.

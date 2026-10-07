@@ -1,0 +1,22 @@
+2D FFT (fft)
+
+Enclosed are source and makefile for creating a parallel 2dfft that runs on the
+iPSC/860. Included is a driver routine that attempts to run the 27 test cases
+on the input file, in.dat. Not all test cases will execute successfully, as
+some are either too small or too large for your machine. The driver contains
+code to by-pass such cases. This code assumes that there are 8Mbytes of mem-
+ory per processor. If your machine has more memory, change the dimension of
+the arrays and the number in line 53 of driver2d.f.
+
+The routine that performs the parallel 2dfft (file fft2d) assumes that the
+matrix is stored with the first dimension distributed (i.e., the matrix is
+decomposed into horizontal strips that are stored on successive processors).
+The user can specify how the matrix is stored upon returning from the 2dfft.
+Set the parameter 
+		distrib = 2
+to return with the second dimension distributed. Any other value for this
+parameter causes the routine to return with the original decomposition (first
+dimension distributed). Returning with the second dimension distributed is
+significantly faster.
+
+The software that is enclosed works for COMPLEX*8 data.

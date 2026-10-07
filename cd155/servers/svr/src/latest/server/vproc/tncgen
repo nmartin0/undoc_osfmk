@@ -1,0 +1,134 @@
+#!/bin/sh -
+# 
+# $Copyright
+# Copyright 1993, 1994 , 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+#
+# Copyright (c) 1993, Locus Computing Corporation
+# All rights reserved
+#
+# HISTORY
+# $Log: tncgen,v $
+# Revision 1.2  1994/11/18  20:51:09  mtm
+# Copyright additions/changes
+#
+# Revision 1.1  1994/04/28  19:20:59  chrisp
+# Changes for introduction of tncgen and support of i386 builds.
+# Generated prototype header files changed for consistency with tnc/.
+#
+#  Reviewer: dleslie, cfj
+#  Risk: M
+#  Benefit or PTS #: 9188
+#  Testing: Builds and tested on i386 platform.
+#  Module(s):
+#      Modified Files:
+#      	bvp_init.c bvp_vpops.c bvp_vpsops.c
+#      Added Files:
+#      	gen_dispatch_table.sh gen_op_macros.sh gen_prototypes.sh
+#      	gen_table_struct.sh tncgen vp.ops vprocgen.mk vps.ops
+#      Removed Files:
+#      	maketables.sh
+#
+# $EndLog$
+#
+# This script is the frontend for a set of scripts (gen_xxx.sh) generating
+# table declarations, wrapper routines, remote operations client
+# and server stubs for vproc, virtual process system and private
+# operations derived from operation definition (.ops) files.
+#
+
+: ${CPP=/lib/cpp} 	# C pre-processor - directly invoked (not cc -E)
+: ${AWK=awk}
+
+NAME=`basename $0`
+TMPDIR=/tmp/$$
+[ -d $TMPDIR ] || mkdir $TMPDIR
+trap 'rm -rf $TMPDIR' 1 2 5 15
+
+usage='usage: $NAME [transformation] [options] [ops file]\n
+  with transformation generating one of:\n
+    -c client-side stubs\n
+    -d dispatch table instantiations\n
+    -i IDL definitions (MIG)\n
+    -m operation invocation macros\n
+    -p prototype declarations of operation functions\n
+    -s server-side stubs\n
+    -t struct declaration for operations table\n
+    -w migration interlock wrapper routines\n
+  and with options:\n
+    -D preprocessor definitions\n
+    -U preprocessor un-definitions\n
+    -n specifies type name (used by -p)\n
+    -o output filename overriding standard output\n
+    -q qualifier (used by -i)\n
+    -x symbol prefix (overriding xxx for input xxx.ops)'
+
+#
+# Analyze the options:
+#
+shift
+while [ $# -gt 0 ]; do
+	case "$1" in
+	    -c)  GENERATE=client_stubs;;
+	    -d)  GENERATE=dispatch_table;;
+	    -D)  shift; DEFINES="$DEFINES $1";;
+	    -D*) DEFINES="$DEFINES $1";;
+	    -i)  GENERATE=mig;;
+	    -m)  GENERATE=op_macros;;
+	    -n)  shift; NAME="$1";;
+	    -o)  shift; exec 1> "$1";;
+	    -p)  GENERATE=prototypes;;
+	    -q)  shift; QUALIFIER="$1";;
+	    -s)  GENERATE=server_stubs;;
+	    -t)  GENERATE=table_struct;;
+	    -U)  shift; DEFINES="$DEFINES $1";;
+	    -U*) DEFINES="$DEFINES $1";;
+	    -w)  GENERATE=migrate_wrappers;;
+	    -x)  shift; PREFIX="$1";;
+	    -*)  echo "$NAME: unknown option $1"
+		 echo $usage
+		 exit 2;;
+	    *)   break;;
+	esac
+	shift
+done
+
+#
+# Normalize so that input is taken from standard input,
+# and output is written to standard output.
+#
+IN="$*"
+case $# in
+    0)	;;
+    1)	if [ ! -r $IN ]; then
+		echo "$NAME: can't read operations definitions file $file"
+		exit 1
+	fi
+	#
+	# Prefix defaults to name of current .ops file
+	#
+	if [ "$PREFIX" = "" ]; then
+		PREFIX=`basename $IN`
+		PREFIX=`expr "$PREFIX" : "\(.*\)\.ops"`
+	fi
+	exec 0< $IN
+	;;
+    *)	echo $usage
+	exit 2
+	;;
+esac
+
+#
+# Pipe standard input through the C preprocessor and into the appropriate
+# dotted transformation script.
+#
+$CPP $DEFINES | . vproc/gen_$GENERATE.sh
+
+rm -rf $TMPDIR

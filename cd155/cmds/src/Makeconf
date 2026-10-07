@@ -1,0 +1,231 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# This file is used by all 'makes' in the cmds/libs build environment.
+# Portions of this file were formerly in the set.env file, the 
+# setup/IPSC860/host.sh file, and the lonecmd.sh script.  Localizing it
+# here enables you to just say 'make' in the right directory without all
+# the rigamarole.  ldo.1 is dead, RIP.
+#
+# This can be used in 'sandboxes' or for transmittal builds.  It relies on 
+# shadowing using a 'backing tree' rooted at $GOLD_TOP for the obj 
+# tree if something sought during the build can't be found in the user's 
+# tree.  
+#
+# If doing a transmittal build, set XMIT_BLD.  This will turn off shadowing.
+#
+# If you want to change the names of compiler tools you invoke, do it here.
+COMPILER=icc
+ANSI_LD=ld860
+ANSI_AS=as860
+_AS_=as860
+_AR_=ar860
+ANSI_CC=${COMPILER}
+WRITABLE_STRINGS_CC=${COMPILER}
+#
+#
+#
+# ifdef CC_OPT_LEVEL the override "-O"
+# -O1 == not "-O", unable to use "-O1" as cc complains... libc/IPSC860/*.s
+CC_OPT_LEVEL=
+.EXPORT: COMPILER ANSI_CC WRITABLE_STRINGS_CC ANSI_LD ANSI_AS CC_OPT_LEVEL
+#
+
+
+#
+# Setup variables describing the current environment
+# If building for target other than i860, change these.
+MACHINE=i860
+TARGET_MACHINE=IPSC860
+target_machine=ipsc860
+CPUTYPE=I860
+cputype=i860
+
+.EXPORT: MACHINE TARGET_MACHINE target_machine CPUTYPE cputype
+
+#
+# Environment variables for the host compilers
+#
+
+#
+# Use coff (gcc) or macho version of gcc
+#
+HOST_OBJECT_FORMAT=A_OUT
+CMD_OBJECT_FORMAT=COFF
+KERNEL_OBJECT_FORMAT=COFF
+
+ARCHIVE_FORMAT=COFF
+
+.EXPORT: ARCHIVE_FORMAT
+
+#
+#
+# Define these if you do not have them
+# see usr/lib/makefiles/standard.mk
+#
+
+#NO_VFPRINTF=NO_VFPRINTF
+#.EXPORT: NO_VFPRINTF
+
+#NO_SETENV=NO_SETENV
+#.EXPORT: NO_SETENV
+
+#NO_PW_STAYOPEN=NO_PW_STAYOPEN
+#.EXPORT: NO_PW_STAYOPEN
+
+NO_DIRENT=NO_DIRENT
+.EXPORT: NO_DIRENT
+
+#NO_UUDECODE=NO_UUDECODE
+#.EXPORT NO_UUDECODE
+#
+NO_SHARED_LIBRARIES=NO_SHARED_LIBRARIES
+.EXPORT: NO_SHARED_LIBRARIES
+#
+USE_STATIC_LIBRARIES=USE_STATIC_LIBRARIES
+.EXPORT: USE_STATIC_LIBRARIES
+#
+NO_LD_STRIP=
+.EXPORT: NO_LD_STRIP
+
+# This is used by the 'release' program, which is called when you do
+# a 'cmake install_all'.  It is the program used to strip commands after
+# they are installed in a release tree.  'release' finds this program
+# on the the user's PATH (using execlp()).
+STRIP_PGM=strip860
+.EXPORT: STRIP_PGM
+
+# MY_RELEASE is set to the release the main cvs trunk is currently
+# moving towards.
+MY_RELEASE=${MY_RELEASE?${MY_RELEASE}:R1_3}
+
+# GOLD_TOP is a 'gold' tree to 'shadow' for headers and libs.  If you are
+# not at ssd, you'll want to change this value.  
+# If you are on a branch, set it to the branch's 'gold' tree.
+GOLD_TOP=${GOLD_TOP?${GOLD_TOP}:/afs/ssd/i860/${MY_RELEASE}/Cmds}
+
+# If you want no afs backing tree for cmds/libs obj tree 
+# but want to populate it all yourself (as would normally be the case
+# only for transmittal builds of the whole world), uncomment this
+# next line
+#XMIT_BLD=1
+
+# This is filled in by SetupCmds.  It should be set to the name of the
+# directory in which this file sits, followed by '/..'. 
+OSFTOP=/tmp_mnt/vol/bigrls1/copywr/bld0/cmds/src/..
+
+expdir=${OSFTOP}/obj/${target_machine}
+EXPORTDIR=${XMIT_BLD?${expdir}:${GOLD_TOP}/obj/${target_machine}}
+libdir=${BUILD_XDEV}/lib
+
+# BUILD_HOST defaults to X86.
+BUILD_HOST=${BUILD_HOST?${BUILD_HOST}:X86}
+
+# BLD_LIBDIR is the location in which PGI libraries (particularly libic.a and
+# libm.a) are found.  These are no longer built in the cmds/libs build, as
+# they are not built from source and it's too easy to miss a release and get
+# out of date.  So we rely on the cross-development environment, which is
+# more likely to be up to date.
+X86_BLD_LIBDIR=${X86_BLD_LIBDIR?${X86_BLD_LIBDIR}:/afs/ssd/i860/pgi/i860/lib}
+sparc_BLD_LIBDIR=${sparc_BLD_LIBDIR?${sparc_BLD_LIBDIR}:${PARAGON_XDEV}/paragon/lib-coff}
+i860_BLD_LIBDIR=${i860_BLD_LIBDIR?${i860_BLD_LIBDIR}:/usr/ccs/lib}
+BLD_LIBDIR=${${BUILD_HOST}_BLD_LIBDIR}
+
+INCDIRS=-I${expdir}/usr/include -I${EXPORTDIR}/usr/include
+LIBDIRS=-L${expdir}/usr/ccs/lib -L${EXPORTDIR}/usr/ccs/lib -L${BLD_LIBDIR}
+SHLIBDIRS=-L${expdir}/usr/shlib -L${EXPORTDIR}/usr/shlib
+MIGCOM=${libdir}/migcom
+LEXER=${LEXER?${LEXER}:${libdir}/ncform}
+YACCPAR=${YACCPAR?${YACCPAR}:${libdir}/yaccpar}
+
+.EXPORT: INCDIRS LIBDIRS SHLIBDIRS MIGCOM LEXER YACCPAR
+
+OBJECT_FORMAT=${CMD_OBJECT_FORMAT}
+
+.EXPORT: OBJECT_FORMAT
+
+COFF_GCC_EXEC_PREFIX=${libdir}/
+.EXPORT: COFF_GCC_EXEC_PREFIX
+
+#
+# Site/Environment stuff
+#
+SITE=OSF
+OWNER=root
+GROUP=system
+
+.EXPORT: SITE OWNER GROUP
+
+#
+GOLD_SRCDIR=${GOLD_SRCDIR?${GOLD_SRCDIR}:${GOLD_TOP}/src}
+
+# If you're changing anything in usr/lib/makefiles in your tree, set this
+# to
+#MAKEFILEPATH=${OSFTOP}/src/usr/lib/makefiles
+MAKEFILEPATH=${XMIT_BLD?${OSFTOP}/src/usr/lib/makefiles:${GOLD_SRCDIR}/usr/lib/makefiles}
+
+EXPORTBASE=${expdir}
+SOURCEBASE=${OSFTOP}/src
+SOURCEDIR=
+OBJECTDIR=${OSFTOP}/obj/${target_machine}
+
+.EXPORT: MAKEFILEPATH EXPORTBASE SOURCEBASE SOURCEDIR OBJECTDIR
+
+# This seems to be the best way to pass the name of the invoking program
+# to sub-makes.  Perhaps there is a better way.
+MAKE=cmake
+.EXPORT: MAKE
+
+# These take the place of the old 'mk' and 'osf1ad' symbolic links at the
+# top of the cmds source tree.  
+# Set MKREL to the top of the kernel release tree, such that
+# ${MKREL}/include points to the top of a tree of header files.
+# If MKREL is set in the environment, that value is used.
+MKREL=${MKREL?${MKREL}:/afs/ssd/i860/${MY_RELEASE}/Kernel/release/i860_mach}
+# Set SVROBJ to the top of the server obj tree, such that
+# ${SVROBJ}/include points to the top of a tree of header files.
+# If SVROBJ is set in the environment, that value is used.
+SVROBJ=${SVROBJ?${SVROBJ}:/afs/ssd/i860/${MY_RELEASE}/Server/obj/i860_mach/latest/server}
+
+# This is the configuration of server you're building to run with.  Change
+# this if necessary -- some header files are found in this directory in the
+# server 'obj' tree.
+SVRCONFIG=STD+WS
+.EXPORT: MKREL SVROBJ SVRCONFIG
+
+# These are needed for 'cmake -n install_all' to work, so developers can see
+# what would happen if they actually tried to install their software.
+#
+# If you're doing a transmittal build, you'll need to change this to the
+# root of your release tree, so you can actually do the 'cmake install_all'..
+# If TOSTAGE is set in the environment, that value is used.
+TOSTAGE=${TOSTAGE?${TOSTAGE}:/tmp}
+
+SETUP_DIR=${XMIT_BLD?${OSFTOP}/src/setup:${GOLD_SRCDIR}/setup}
+RELEASE_OPTIONS=-idfile ${SETUP_DIR}/osf1_idlist
+.EXPORT: TOSTAGE RELEASE_OPTIONS
+
+# This is used for tools to be compiled and run during the build process
+# on the build platform.  We want to use the native compiler, libraries,
+# and crt0.o.
+HOST_CC=LPATH=/lib:/usr/lib:${LPATH}; export LPATH; cc
+.EXPORT: HOST_CC
+
+# This is to enable Makedep files to include dependencies on libraries
+# and crt0.o etc., based on what the compiler finds at link time.  The
+# VERBOSE_LD flag is whatever flag the compiler uses to tell the loader
+# to spit out the list of files it's linking, one per line.  A sed
+# script in usr/lib/makefiles/programs.mk then puts the output in a file
+# called _LOAD.d, each line prefaced by the name of the program.  The
+# _LOAD.d file is then processed by 'md' along with the other .d files to
+# produce Makedep.
+VERBOSE_LD=-Wl,-t
+.EXPORT: VERBOSE_LD

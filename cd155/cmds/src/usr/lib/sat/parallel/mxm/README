@@ -1,0 +1,9 @@
+Matrix Multiply (mxm)
+
+This parallel test involves multiplying two large matrices. This is the
+standard demonstration of maximum floating point performance on many
+systems since it vectorizes well and is a good match to pipelined
+architectures. In this parallel implementation there is a high ratio
+of computation to communication and the test is expected to run
+at near peak processor speed.
+

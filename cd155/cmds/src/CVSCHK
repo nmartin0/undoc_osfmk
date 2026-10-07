@@ -1,0 +1,32 @@
+#!/bin/sh
+# verify current source is same as what's in RCS
+#
+if [ "$1" != "" ] ; then
+	cd $1
+fi
+CWD=`pwd`
+if [ `basename $CWD` = "CVS" ] ; then
+	echo skipping $CWD
+	exit
+fi
+if [ ! -r CVS ] ; then
+	echo missing $CWD/CVS directory.
+	exit
+fi
+REP=`cat CVS/Repository`
+for f in `find . -maxdepth 1 -type f -print` ; do
+# is file in CVS?
+        if [ ! -d $f -a -r $REP/$f,v ] ; then
+		rev=`cvs log $f | awk '/^revision/ {print $2 ; exit}'`
+                cvs diff -r $rev $f >/dev/null 2>&1
+        	if [ $? -eq 1 ] ; then
+			echo -n $CWD/$f different from CVS version
+        		if [ "$2" = "cvs_co" ] ; then
+				echo -n ", checking out CVS version"
+				rm -f $f
+				cvs_co $f
+        		fi
+			echo "."
+        	fi
+        fi
+done

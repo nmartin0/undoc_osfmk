@@ -1,0 +1,54 @@
+// 
+// $Copyright
+// Copyright 1993, 1994, 1995  Intel Corporation
+// INTEL CONFIDENTIAL
+// The technical data and computer software contained herein are subject
+// to the copyright notices; trademarks; and use and disclosure
+// restrictions identified in the file located in /etc/copyright on
+// this system.
+// Copyright$
+// 
+ 
+/*
+ * Signal trampoline code. Called/jmp'ed from emulator to start the processing
+ * of a user supplied signal handler. Sigtramp calls user specified handler
+ * which returns here and we do s sigreturn syscall so the server/emulator can
+ * resume execution correctly.
+ *
+ *	_sigtramp( sig, code, *context, *handler() )
+ *		    r16   r17    r18     r19
+ *
+ * Emulator is passed the address of _sigtramp() via sigvec() or sigaction()
+ * syscalls.
+ *
+ *
+ * Remember that with 4.3 semantics signals & longjumps are tied together!
+ */
+
+#include "SYS.h"
+
+	.text
+	.align	4
+	.globl	__sigtramp
+	.globl	_sigreturn
+__sigtramp:
+	mov	r18,r4			// trust me, its okay to do this
+	calli	r19
+	 nop
+	mov	r4,r16
+	br	_sigreturn
+	 nop
+
+/*
+ * sigvec( sig, vec, ovec)
+ *	int		sig;
+ *	struct sigvec	*vec, *ovec;
+ */
+
+ENTRY(sigvec)
+	mov	__sigtramp,r19		// address of sigtramp stub
+	//orh	0x8000,r19,r19		// for backward compatibility
+	or	SYS_sigvec,r0,r31
+	trap	r31,r31,r0
+	bc	_cerror
+	RET

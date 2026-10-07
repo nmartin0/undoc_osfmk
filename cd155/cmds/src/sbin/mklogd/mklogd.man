@@ -1,0 +1,76 @@
+# 
+# $Copyright
+# Copyright 1993, 1994, 1995  Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+.TH MKLOGD 8 "2 January 1995"
+.SH NAME
+mklogd - shuttle output from remote micro-kernels to the syslog daemon
+.SH SYNOPSIS
+.B mklogd
+.RB [ " \-vd {node\-list} " ]
+.SH DESCRIPTION
+\'mklogd\' was designed to collect and display remote Micro-Kernel (MK) output.
+Remote (non-boot-node) MK printf()'s, assert()'s and panic messages are
+buffered locally at each MK. \'mklogd\' works in conjunction with each MK
+to collect the buffered MK output and send it to the system-logger daemon
+\'syslogd\'.  \'syslogd\' timestamps the output and writes it to the files
+\'/var/adm/syslog/kern.log\' and \'/dev/console\'. With \'mklogd\' the output
+of remote MK's can be observed and acted upon by a system administrator.
+.BR
+.LP
+\'mklogd\' implements the following algorithm: 
+.LP
+Allocate an IPC port which will receive remote micro-kernel output.
+For each (non-boot-node) node which has booted a Mach micro-kernel, install the
+\'port\' as the norma special port '\NORMA_CONSOLE_LOG_PORT\'. The act of
+setting the '\NORMA_CONSOLE_LOG_PORT\' creates a kernel thread \'conslog\'
+who's sole purpose in life is to drain buffered MK console output and send it
+over the norma special port.
+The MK console character output routine has been modified to buffer all output. The \`conslog\' thread drains this output by
+building and sending Mach messages containing the output. Upon reception of the
+console output message, \'mklogd\' reformats it by identifing it as a critical
+kernel message from node \'x\'. \'mklogd\' then write's the message to a
+\'fifo\' (\`/dev/klog\') which \'syslogd\' is listening on (ala select()).
+\'syslogd\' reads from the kernel message file and writes the data to
+\'/dev/console\' and \'/var/adm/syslog/kern.log\'.
+.LP
+.SH OPTIONS
+.TP
+.B \-v
+Enable verbose output.
+.TP
+.B \-d
+Enable runtime debug output.
+.TP
+.B node\-list
+Set the Norma special port '\NORMA_CONSOLE_LOG_PORT\' only for the specified
+nodes. Normally, set the '\NORMA_CONSOLE_LOG_PORT\' in all nodes which have
+booted a Mach kernel.
+.LP
+To disable remote MK console logging, set the bootmagic variable
+\'CONSLOG=0\'.
+.LP
+Normal operation of \'mklogd\' implies the first message received from a node
+is discarded because it is the normal node startup banter. Should one desire
+to see the first message, set the bootmagic variable \'MKLOGD_FLAGS=1\'.
+.LP
+.SH SEE ALSO
+.TP
+.B syslogd(8)
+.LP
+.SH DIAGNOSTICS
+.LP
+Due to SYSV \'fifo\' limitations/bugs, \'mklogd\' must execute on the boot-node.
+\'mklogd\' will detect the case of non-boot-node execution and exit.
+
+Exit status is normally 0.
+.TP
+.SH "BUGS"
+.LP

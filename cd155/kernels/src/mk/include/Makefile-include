@@ -1,0 +1,293 @@
+# 
+# $Copyright
+# Copyright 1991, 1994, 1995 Intel Corporation
+# INTEL CONFIDENTIAL
+# The technical data and computer software contained herein are subject
+# to the copyright notices; trademarks; and use and disclosure
+# restrictions identified in the file located in /etc/copyright on
+# this system.
+# Copyright$
+# 
+ 
+# 
+# Mach Operating System
+# Copyright (c) 1992 Carnegie Mellon University
+# All Rights Reserved.
+# 
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+# CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+# ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Carnegie Mellon requests users of this software to return to
+# 
+#  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+#  School of Computer Science
+#  Carnegie Mellon University
+#  Pittsburgh PA 15213-3890
+# 
+# any improvements or extensions that they make and grant Carnegie Mellon 
+# the rights to redistribute these changes.
+#
+# HISTORY
+# $Log: Makefile-include,v $
+# Revision 1.4  1994/11/18  20:24:13  mtm
+# Copyright additions/changes
+#
+# Revision 1.3  1993/06/30  22:15:32  dleslie
+# Adding copyright notices required by legal folks
+#
+# Revision 1.2  1993/04/27  20:13:02  dleslie
+# Copy of R1.0 sources onto main trunk
+#
+# Revision 1.1.10.2  1993/04/22  18:12:35  dleslie
+# First R1_0 release
+#
+# Revision 2.2.2.1  92/03/28  10:02:19  jeffreyh
+# 	Picked up from MK71
+# 	[92/03/20            jeffreyh]
+# 
+# Revision 2.2  92/03/05  23:09:41  rpd
+# 	Created.
+# 	[92/02/28            rpd]
+# 
+
+# The including Makefile should define KERNEL_0, etc as follows:
+#
+#	KERNEL_*	Files installed from ${MAKETOP}kernel
+#	THREADS_*	Files installed from ${MAKETOP}user/threads
+#	LIBMACH_*	Files installed from ${MAKETOP}user/libmach
+#	BOOTSTRAP_*	Files installed from ${MAKETOP}bootstrap
+#	STRANGE_*	'Dummy' files created in the installation directory
+#	OBJECT_*	Files created in the object directory (eg, by mig)
+#
+# where the numeric suffix indicates the level in the directory hierarchy
+# of the files.
+#
+# The including Makefile must define installation rules for the STRANGE_*
+# files (to create them in the installation directory) and rules for
+# the OBJECT_* files (to create them in the object directory).
+#
+# The including Makefile should define IDIRS as the directories
+# that must be exist in the install/release include hierarchies.
+
+KERNEL = ${KERNEL_0} ${KERNEL_1} ${KERNEL_2} ${KERNEL_3}
+
+THREADS = ${THREADS_0} ${THREADS_1}
+
+LIBMACH = ${LIBMACH_0} ${LIBMACH_1}
+
+BOOTSTRAP = ${BOOTSTRAP_0} ${BOOTSTRAP_1}
+
+STRANGE = ${STRANGE_0} ${STRANGE_1}
+
+OBJECT = ${OBJECT_0} ${OBJECT_1} ${OBJECT_2}
+
+# Files which are installed with 'preinstall':
+
+PREFILES = ${KERNEL} ${THREADS} ${LIBMACH} ${BOOTSTRAP} ${STRANGE}
+
+PREINSTALL = ${PREFILES;.*;${INSTALLDIR}/include/&}
+
+# Files which are installed with 'install':
+
+ALLFILES = ${PREFILES} ${OBJECT}
+
+INSTALL = ${ALLFILES;.*;${INSTALLDIR}/include/&}
+
+# Files which are released with 'release'
+
+RELEASE = ${ALLFILES;.*;${TRELEASEDIR}/include/&}
+
+# top-level targets
+# The 'install' target assumes that a 'preinstall' has already happened,
+# so that (for example) mig files can find their includes.  As usual,
+# the 'release' target assumes that a 'install' has already happened.
+# We use 'mkidirs' and 'mkrdirs' to ensure that directories are created
+# before copying into them.
+
+MKIDIRS = ${IDIRS;.*;include/&}
+MKRDIRS = ${MKIDIRS}
+
+all :: install
+
+preinstall :: mkidirs ${PREINSTALL}
+
+install :: mkidirs ${INSTALL}
+
+release :: mkrdirs ${RELEASE}
+
+clean ::
+	${RM} ${INSTALL}
+
+# installation rule for KERNEL_0:
+
+KERNEL_0_INCS = ${KERNEL_0;.*;${INSTALLDIR}/include/&}
+
+${KERNEL_0_INCS} : ${MAKETOP}kernel/$${@;.*/([^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for KERNEL_1:
+
+KERNEL_1_INCS = ${KERNEL_1;.*;${INSTALLDIR}/include/&}
+
+${KERNEL_1_INCS} : ${MAKETOP}kernel/$${@;.*/([^/]*/[^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for KERNEL_2:
+
+KERNEL_2_INCS = ${KERNEL_2;.*;${INSTALLDIR}/include/&}
+
+${KERNEL_2_INCS} : ${MAKETOP}kernel/$${@;.*/([^/]*/[^/]*/[^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for KERNEL_3:
+
+KERNEL_3_INCS = ${KERNEL_3;.*;${INSTALLDIR}/include/&}
+
+${KERNEL_3_INCS} : ${MAKETOP}kernel/$${@;.*/([^/]*/[^/]*/[^/]*/[^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for THREADS_0:
+
+THREADS_0_INCS = ${THREADS_0;.*;${INSTALLDIR}/include/&}
+
+${THREADS_0_INCS} : ${MAKETOP}user/threads/$${@;.*/([^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for THREADS_1:
+
+THREADS_1_INCS = ${THREADS_1;.*;${INSTALLDIR}/include/&}
+
+${THREADS_1_INCS} : ${MAKETOP}user/threads/$${@;.*/([^/]*/[^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for LIBMACH_0:
+
+LIBMACH_0_INCS = ${LIBMACH_0;.*;${INSTALLDIR}/include/&}
+
+${LIBMACH_0_INCS} : ${MAKETOP}user/libmach/$${@;.*/([^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for LIBMACH_1:
+
+LIBMACH_1_INCS = ${LIBMACH_1;.*;${INSTALLDIR}/include/&}
+
+${LIBMACH_1_INCS} : ${MAKETOP}user/libmach/$${@;.*/([^/]*/[^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for BOOTSTRAP_0:
+
+BOOTSTRAP_0_INCS = ${BOOTSTRAP_0;.*;${INSTALLDIR}/include/&}
+
+${BOOTSTRAP_0_INCS} : ${MAKETOP}bootstrap/$${@;.*/([^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for BOOTSTRAP_1:
+
+BOOTSTRAP_1_INCS = ${BOOTSTRAP_1;.*;${INSTALLDIR}/include/&}
+
+${BOOTSTRAP_1_INCS} : ${MAKETOP}bootstrap/$${@;.*/([^/]*/[^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for OBJECT_0:
+
+OBJECT_0_INCS = ${OBJECT_0;.*;${INSTALLDIR}/include/&}
+
+${OBJECT_0_INCS} : $${@;.*/([^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for OBJECT_1:
+
+OBJECT_1_INCS = ${OBJECT_1;.*;${INSTALLDIR}/include/&}
+
+${OBJECT_1_INCS} : $${@;.*/([^/]*/[^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# installation rule for OBJECT_2:
+
+OBJECT_2_INCS = ${OBJECT_2;.*;${INSTALLDIR}/include/&}
+
+${OBJECT_2_INCS} : $${@;.*/([^/]*/[^/]*/[^/]*);\1}
+	${RM} $@
+	${CP} $? $@
+	${CHMOD_INC} $@
+
+# release rules
+
+LEVEL_0_FILES = ${KERNEL_0} ${THREADS_0} ${LIBMACH_0} \
+	${BOOTSTRAP_0} ${OBJECT_0} ${STRANGE_0}
+
+LEVEL_0_RELS = ${LEVEL_0_FILES;.*;${TRELEASEDIR}/include/&}
+
+${LEVEL_0_RELS} : $${@;.*/(include/[^/]*);${FRELEASEDIR}/\1}
+	${RM} $@
+	${CP} $? $@
+
+LEVEL_1_FILES = ${KERNEL_1} ${THREADS_1} ${LIBMACH_1} \
+	${BOOTSTRAP_1} ${OBJECT_1} ${STRANGE_1}
+
+LEVEL_1_RELS = ${LEVEL_1_FILES;.*;${TRELEASEDIR}/include/&}
+
+${LEVEL_1_RELS} : $${@;.*/(include/[^/]*/[^/]*);${FRELEASEDIR}/\1}
+	${RM} $@
+	${CP} $? $@
+
+LEVEL_2_FILES = ${KERNEL_2} ${THREADS_2} ${LIBMACH_2} \
+	${BOOTSTRAP_2} ${OBJECT_2} ${STRANGE_2}
+
+LEVEL_2_RELS = ${LEVEL_2_FILES;.*;${TRELEASEDIR}/include/&}
+
+${LEVEL_2_RELS} : $${@;.*/(include/[^/]*/[^/]*/[^/]*);${FRELEASEDIR}/\1}
+	${RM} $@
+	${CP} $? $@
+
+LEVEL_3_FILES = ${KERNEL_3} ${THREADS_3} ${LIBMACH_3} \
+	${BOOTSTRAP_3} ${OBJECT_3} ${STRANGE_3}
+
+LEVEL_3_RELS = ${LEVEL_3_FILES;.*;${TRELEASEDIR}/include/&}
+
+${LEVEL_3_RELS} : $${@;.*/(include/[^/]*/[^/]*/[^/]*/[^/]*);${FRELEASEDIR}/\1}
+	${RM} $@
+	${CP} $? $@
+
+
+
+
+
+
+
+
+
+
+
+
